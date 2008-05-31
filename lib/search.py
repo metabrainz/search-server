@@ -70,7 +70,7 @@ class TextSearch(object):
         self.defaultField = u''
         try:
             sys.stderr.write(indexName + "\n")
-            self.index = xapian.WritableDatabase(indexName, xapian.DB_OPEN)
+            self.index = xapian.Database(indexName)
         except xapian.Error, msg:
 	    text = str(msg)
             raise NoSuchIndexError(text)
