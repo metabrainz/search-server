@@ -1,0 +1,34 @@
+Intro
+-----
+
+This is the Lucene text searching back-end for MusicBrainz!
+
+Requirements:
+-------------
+
+In order to run this index server, you need to have run the following:
+
+apache2, with mod_fastcgi   - this version is tested with apache 2.0.x
+python 2.4+                 - http://python.org
+PyLucene 2.2.x              - http://downloads.osafoundation.org/PyLucene
+PyUnac 1.7.x                - http://download.gna.org/unac/python-unac-1.7.0.tar.gz
+flup                        - http://trac.saddi.com/flup (release r2311 was used)
+
+Required for Python 2.4 or earlier
+cytpes-0.9.6                - http://starship.python.net/crew/theller/ctypes/
+
+Install:
+--------
+
+Short version:
+
+- install apache2
+- install and enable mod_fastcgi, mod_rewrite
+- install admin/mbsearch.conf as one of the site configs
+- review and make appropriate changes to admin/mbsearch.conf
+- install indexes into /var/index or change the settings in mbserach.conf
+- install server code into /home/lucene/lucene_server or change settings in mbsearch.conf
+
+Long version:
+
+Santa Claus will deliver this soon!
