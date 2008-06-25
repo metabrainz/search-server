@@ -26,7 +26,9 @@
 import sys, os
 import xapian
 from unac import unac
+from escape_ideographic import addSpacesToIdeographicStrings
 import time
+import re
 
 # TODO: 
 # auto index update
@@ -67,6 +69,10 @@ class TextSearch(object):
         self.rel = 0
         self.offset = 0
 
+	self.escapeTermBoost = re.compile(u"\^[0-9]*\.?[0-9]+")
+	self.dotsRe = re.compile("((?:\w\.){2,})")
+	self.uuidRe = re.compile("[a-z0-9]{8}[:-][a-z0-9]{4}[:-][a-z0-9]{4}[:-][a-z0-9]{4}[:-][a-z0-9]{12}")
+
         self.defaultField = u''
         try:
             sys.stderr.write(indexName + "\n")
@@ -75,7 +81,11 @@ class TextSearch(object):
 	    text = str(msg)
             raise NoSuchIndexError(text)
 
+        self.weight = xapian.BM25Weight(0, 0, 1, .1, .5);
         self.en = enquire = xapian.Enquire(self.index)
+        self.en.set_weighting_scheme(self.weight)
+        self.en.set_sort_by_relevance_then_value(0, True)
+
         self.qp = xapian.QueryParser()
         self.qp.set_database(self.index)
         self.qp.set_stemming_strategy(xapian.QueryParser.STEM_NONE)
@@ -105,12 +115,6 @@ class TextSearch(object):
         '''
         return text.replace(u'&', u'&amp;').replace(u'<', u'&lt;').replace(u'>', u'&gt;')
  
-    def unEscapeUUID(self, uuid):
-        '''
-        Convert a dashless UUID to a standard UUID with dashes.
-        '''
-        return "%s-%s-%s-%s-%s" % (uuid[0:8], uuid[8:12], uuid[12:16], uuid[16:20], uuid[20:32])
-
     def setDuration(self, dur):
         '''
         If a duration is set, the search can color code track lengths
@@ -164,12 +168,64 @@ class TextSearch(object):
         out += u'height="13" width="28" align="middle" border="0">'
         return out
 
+    def lowercaseQuery(self, query):
+	'''
+	Change the query to all lower case since Xapian seems to have some case sensitivity issues.
+	But, don't change everything to lowercase -- AND, OR, NOT, XOR in uppercase must be preserved.
+	'''
+
+	out = []
+	for word in query.split(u' '):
+	    if word not in (u'AND', u'OR', u'NOT', u'XOR'): word = word.lower()
+	    out.append(word)
+
+        return u' '.join(out)
+
     def mangleQuery(self, query):
         '''
         For backwards compatibility, filter a query before passing it to lucene. Returns
         filtered query. e.g. type:1 -> type:person (for artists)
         '''
         return query
+
+    def removeTermBoosting(self, query):
+        '''
+	Removes term boosting from old queries since Xapain doesn't support them
+        '''
+        return self.escapeTermBoost.sub("", query)
+
+    def removeDots(self, query):
+	'''
+	Remove dots between characters so we can find R.E.M.
+	'''
+
+	bits = []
+	index = 0
+	for m in self.dotsRe.finditer(query):
+	    bits.append(query[index:m.start()])
+	    acronym = query[m.start():m.end()]
+	    bits.append(acronym.replace(u".", u""))
+	    index = m.end()
+
+	if index < len(query):
+	    bits.append(query[index:len(query)])
+
+	return u''.join(bits)
+
+    def removeDashesFromMBIDs(self, query):
+
+	bits = []
+	index = 0
+	for m in self.uuidRe.finditer(query):
+	    bits.append(query[index:m.start()])
+	    acronym = query[m.start():m.end()]
+	    bits.append(acronym.replace(u"-", u""))
+	    index = m.end()
+
+	if index < len(query):
+	    bits.append(query[index:len(query)])
+
+	return u''.join(bits)
 
     def queryIndex(self, query, offset, maxHits):
         '''
@@ -178,14 +234,23 @@ class TextSearch(object):
 
         if not query: raise QueryError(u"No query was sent")
 
-
         try:
-            query = unac.unac_string(self.mangleQuery(unicode(query, 'utf-8')))
+            query = unicode(query, 'utf-8')
+	    self.f = open("/tmp/log", "a")
+	    print >>self.f, "query: '%s'" % query.encode('utf-8', 'replace') 
+	    self.f.close()
+            query = self.lowercaseQuery(query)
+            query = self.mangleQuery(query)
+            query = self.removeTermBoosting(query)
+            query = self.removeDots(query)
+	    query = self.removeDashesFromMBIDs(query)
+            query = unac.unac_string(query)
+            query = addSpacesToIdeographicStrings(query)
         except UnicodeDecodeError:
             raise QueryError(u"Unicode decode problem: Invalid utf-8 characters passed to search query.")
 
         try:
-	    parsedQuery = self.qp.parse_query(unac.unac_string(query), 
+	    parsedQuery = self.qp.parse_query(query, 
 			      	              xapian.QueryParser.FLAG_PHRASE | 
 				              xapian.QueryParser.FLAG_BOOLEAN | 
 				              xapian.QueryParser.FLAG_LOVEHATE,
@@ -216,7 +281,7 @@ class TextSearch(object):
 	    dataDict['_score'] = match.percent
 	    hits.append(dataDict)
             
-        return hits
+        return (hits, matches.get_matches_estimated())
  
     def log_error(self, msg):
         log = open("/tmp/slow_queries.txt", "a")
@@ -227,7 +292,7 @@ class TextSearch(object):
  
     def search(self, query, maxHits, offset, type='xml'):
         if maxHits < 1: maxHits = MAX_HITS
-        hits = self.queryIndex(query, offset, maxHits);
+        (hits, total) = self.queryIndex(query, offset, maxHits);
         redirect = ""
         if len(hits) == 1:
            doc = hits[0]
@@ -237,7 +302,7 @@ class TextSearch(object):
 
         if type == 'html':
             # This comment will be used by the MB server to determine the number of hits returned
-            stats = u"<!--\nhits=%d\noffset=%d\n" % (len(hits), offset)
+            stats = u"<!--\nhits=%d\noffset=%d\n" % (total, offset)
             if redirect: stats += u"redirect=%s\n" % redirect
             stats += u"-->"
             return stats.encode('utf-8') + self.asHTML(hits, maxHits, offset).encode('utf-8')

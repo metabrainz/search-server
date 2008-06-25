@@ -45,17 +45,19 @@ class AnnotationSearch(search.TextSearch):
        out += u'<tr class="searchresultsheader"><td>Score</td><td>Type</td><td>Name</td><td>Annotation</td>'
        out += u'</tr>'
        
-       for doc in hits:
-           type = doc.get('type')
-           text = doc.get('text')
-           mbid = doc.get('mbid')
-           name = doc.get('name')
+       for i, doc in enumerate(hits):
+           type = doc.get('type') or u''
+           text = doc.get('text') or u''
+           mbid = doc.get('mbid') or u''
+           name = doc.get('name') or u''
 
            out += u'<tr class="searchresults%s">' % search.oddeven[i % 2]
            out += u"<td>%d</td>" % doc['_score']
            out += u"<td>%s</td>" % self.escape(type)
            out += u"<td><a href=\"/%s/%s.html\">%s</a></td>" % (self.escape(type), 
                                                                self.escape(mbid), self.escape(name))
+
+           text = text.replace(u"\\n", u"\n");
            out += u"<td>%%WIKIBEGIN%%%s%%WIKIEND%%</td>" % (self.escape(text)) 
            out += u"</tr>"
        out += u"</table></div>"
