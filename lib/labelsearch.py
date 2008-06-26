@@ -74,9 +74,7 @@ class LabelSearch(search.TextSearch):
        if rel: out += u'<td>Rel</td>'
        out += u'</tr>'
        
-       for i in xrange(offset, min(count, count + offset)):
-           doc = hits.doc(i)
-
+       for i, doc in enumerate(hits):
            label = doc.get('label') or u''
            sortname = doc.get('sortname') or u''
            comment = doc.get('comment') or u''
@@ -104,9 +102,7 @@ class LabelSearch(search.TextSearch):
        '''
 
        out = '<label-list count="%d" offset="%d">' % (count, offset)
-       for i in xrange(offset, min(count, count + offset)):
-           doc = hits.doc(i)
-
+       for i, doc in enumerate(hits):
            label = doc.get('label') or u''
            sortname = doc.get('sortname') or u''
            type = doc.get('type') or u''

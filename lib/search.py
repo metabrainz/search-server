@@ -84,11 +84,13 @@ class TextSearch(object):
         self.weight = xapian.BM25Weight(0, 0, 1, .1, .5);
         self.en = enquire = xapian.Enquire(self.index)
         self.en.set_weighting_scheme(self.weight)
-        self.en.set_sort_by_relevance_then_value(0, True)
+        #self.en.set_docid_order(xapian.Enquire.DONT_CARE)
+        self.en.set_sort_by_relevance_then_value(0, False)
 
         self.qp = xapian.QueryParser()
         self.qp.set_database(self.index)
         self.qp.set_stemming_strategy(xapian.QueryParser.STEM_NONE)
+	self.qp.set_default_op(xapian.Query.OP_AND)
 
     def close(self):
 	'''
@@ -253,7 +255,8 @@ class TextSearch(object):
 	    parsedQuery = self.qp.parse_query(query, 
 			      	              xapian.QueryParser.FLAG_PHRASE | 
 				              xapian.QueryParser.FLAG_BOOLEAN | 
-				              xapian.QueryParser.FLAG_LOVEHATE,
+				              xapian.QueryParser.FLAG_LOVEHATE |
+				              xapian.QueryParser.FLAG_PURE_NOT,
 				              self.defaultField)
         except xapian.Error, msg:
 	    text = str(msg)
@@ -294,7 +297,7 @@ class TextSearch(object):
         if maxHits < 1: maxHits = MAX_HITS
         (hits, total) = self.queryIndex(query, offset, maxHits);
         redirect = ""
-        if len(hits) == 1:
+        if total == 1:
            doc = hits[0]
            redirect = doc.get('trid')
            if not redirect: redirect = doc.get('reid')

@@ -90,7 +90,7 @@ class ArtistSearch(search.TextSearch):
        '''
 
        out = '<artist-list count="%d" offset="%d">' % (count, offset)
-       for doc in hits:
+       for i, doc in enumerate(hits):
            artist = doc.get('artist') or u''
            sortname = doc.get('sortname') or u''
            artype = doc.get('type') or u''
