@@ -114,6 +114,7 @@ class TrackSearch(search.TextSearch):
        out = '<track-list count="%d" offset="%d">' % (count, offset)
        for doc in hits:
            artist = doc.get('artist') or u''
+           sortname = doc.get('sortname') or u''
            arid = doc.get('arid') or u''
            album = doc.get('release') or u''
            alid = doc.get('reid') or u''
@@ -126,7 +127,8 @@ class TrackSearch(search.TextSearch):
            out += u' ext:score="%d">' % doc['_score']
            out += u"<title>%s</title>" % self.escape(track)
            if dur: out += u"<duration>%s</duration>" % self.escape(dur)
-           out += u'<artist id="%s"><name>%s</name></artist>' % (self.escape(arid), self.escape(artist))
+           out += u'<artist id="%s"><name>%s</name>' % (self.escape(arid), self.escape(artist))
+           out += u'<sortname>%s</sortname></artist>' % (self.escape(sortname))
            out += u'<release-list><release id="%s"><title>%s</title>' % \
                   (self.escape(alid), self.escape(album))
            if tnum:
