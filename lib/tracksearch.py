@@ -45,7 +45,7 @@ class TrackSearch(search.TextSearch):
    def __init__(self, index):
        search.TextSearch.__init__(self, index)
        self.setDefaultField('track')
-       self.setPrefixes(('artist', 'arid', 'reid', 'trid', 'release', 'track', 'tnum', 'tracks', 'dur', 'type'))
+       self.setPrefixes(('artist', 'arid', 'reid', 'trid', 'release', 'track', 'tnum', 'tracks', 'dur', 'qdur', 'type'))
 
    def mangleQuery(self, query):
        query = re.sub("type:(\d+)", replaceType, query)
@@ -59,7 +59,8 @@ class TrackSearch(search.TextSearch):
        rel = self.rel
        
        out = u'<div><table class="searchresults" id="TagLookupTrackResults">'
-       out += u'<tr class="searchresultsheader"><td>Score</td><td>Num</td><td>Track</td><td>Duration</td><td>Type</td><td>Artist</td><td>Release</td><td>Tracks</td>'
+       out += u'<tr class="searchresultsheader"><td>Score</td><td>Artist</td>'
+       out += u'<td>Release</td><td>Track</td><td>Num</td><td>Length</td><td>Tracks</td><td>Type</td>'
        if self.tport or self.mbt: 
            out += u"<td>Tagger</td>"
        elif rel: 
@@ -79,21 +80,21 @@ class TrackSearch(search.TextSearch):
 
            out += u'<tr class="searchresults%s">' % search.oddeven[i % 2]
            out += u"<td>%d</td>" % doc['_score']
-           out += u'<td align="center">%s</td>' % self.escape(tnum)
-           out += u"<td><a href=\"/track/%s.html\">%s</a></td>" % \
+           out += u'<td><span class="linkartist-icon"><a href=\"/artist/%s.html\">%s</a></span></td>' % \
+                  (self.escape(arid), self.escape(artist))
+           out += u'<td><span class="linkrelease-icon"><a href=\"/album/%s.html\">%s</a></span></td>' % \
+                  (self.escape(reid), self.escape(album))
+           out += u'<td><span class="linktrack-icon"><a href=\"/track/%s.html\">%s</a></span></td>' % \
                   (self.escape(trid), self.escape(track))
+           out += u'<td align="center">%s</td>' % self.escape(tnum)
            out += u'<td align="center" class="tlen %s">' % self.getTrackLenClass(dur)
            if dur:
                out += u'%d:%02d' % (dur / 60000, (dur % 60000) / 1000)
            else:
                out += u"&nbsp;" 
            out += u"</td>"
-           out += u"<td>%s</td>" % self.escape(type)
-           out += u"<td><a href=\"/artist/%s.html\">%s</a></td>" % \
-                  (self.escape(arid), self.escape(artist))
-           out += u"<td><a href=\"/album/%s.html\">%s</a></td>" % \
-                  (self.escape(reid), self.escape(album))
            out += u'<td align="center">%d</td>' % tracks
+           out += u"<td>%s</td>" % self.escape(type)
 
            if self.tport or self.mbt:
                out += u'<td style="white-space: nowrap">'

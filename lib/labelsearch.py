@@ -85,7 +85,7 @@ class LabelSearch(search.TextSearch):
 
            out += u'<tr class="searchresults%s">' % search.oddeven[i % 2]
            out += u"<td>%d</td>" % doc['_score']
-           out += u"<td><a href=\"/label/%s.html\">%s</a>" % \
+           out += u"<td><span class=\"linklabel-icon\"><a href=\"/label/%s.html\">%s</a></span>" % \
                    (self.escape(laid), self.escape(label))
            if comment: out += " (%s)" % self.escape(comment)
            out += u"</td><td>%s</td>" % self.escape(sortname)

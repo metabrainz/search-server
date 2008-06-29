@@ -73,7 +73,7 @@ class ArtistSearch(search.TextSearch):
 
            out += u'<tr class="searchresults%s">' % search.oddeven[i % 2]
            out += u"<td>%d</td>" % doc['_score']
-           out += u"<td><a href=\"/artist/%s.html\">%s</a>" % \
+           out += u"<td><span class=\"linkartist-icon\"><a href=\"/artist/%s.html\">%s</a></span>" % \
                    (self.escape(arid), self.escape(artist))
            if comment: out += " (%s)" % self.escape(comment)
            out += u"</td><td>%s</td>" % self.escape(sortname)

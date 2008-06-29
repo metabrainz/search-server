@@ -65,8 +65,9 @@ class ReleaseSearch(search.TextSearch):
        rel = self.rel
 
        out = u'<div><table class="searchresults">'
-       out += u'<tr class="searchresultsheader"><td>Score</td><td>Release</td><td>Artist</td><td>Tracks</td>'
-       out += u'<td style="white-space: nowrap">CD ids</td><td>Date</td><td>Type</td><td style="white-space: nowrap">Lang/script</td>'
+       out += u'<tr class="searchresultsheader"><td>Score</td><td>Artst</td><td style="white-space: nowrap">Release title</td>'
+       out += u'<td style="white-space: nowrap">Tracks</td><td style="white-space: nowrap">CD ids</td>'
+       out += u'<td>Released:</td><td>Type</td><td style="white-space: nowrap">Lang/script</td>'
        if self.tport: 
            out += u"<td>Tagger</td>"
        elif rel: 
@@ -101,11 +102,12 @@ class ReleaseSearch(search.TextSearch):
 
            out += u'<tr class="searchresults%s">' % self.escape(search.oddeven[i % 2])
            out += u"<td>%d</td>" % doc['_score']
-           out += u"<td><a href=\"/release/%s.html\">%s</a></td>" % \
-                  (self.escape(reid), self.escape(album))
-           out += u"<td><a href=\"/artist/%s.html\">%s</a></td>" % \
+           out += u"<td><span class=\"linkrelease-icon\"><a href=\"/artist/%s.html\">%s</a></td>" % \
                   (self.escape(arid), self.escape(artist))
-           out += u'<td align="center">%s</td><td align="center">%s</td>' % (self.escape(tracks), self.escape(cdids))
+           out += u"<td><span class=\"linkrelease-icon\"><a href=\"/release/%s.html\">%s</a></span></td>" % \
+                  (self.escape(reid), self.escape(album))
+           out += u'<td align="center">%s <img src="/images/notes.gif" alt="Tracks"/></td>' % self.escape(tracks)
+           out += u'<td align="center">%s <img src="/images/cd.gif" alt="Disc IDs"/></td>' % self.escape(cdids)
            out += u"<td>"
            for date, country in zip(dates, countries):
                out += "%s %s " % (self.escape(country), self.escape(date))

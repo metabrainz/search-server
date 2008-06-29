@@ -54,7 +54,7 @@ class AnnotationSearch(search.TextSearch):
            out += u'<tr class="searchresults%s">' % search.oddeven[i % 2]
            out += u"<td>%d</td>" % doc['_score']
            out += u"<td>%s</td>" % self.escape(type)
-           out += u"<td><a href=\"/%s/%s.html\">%s</a></td>" % (self.escape(type), 
+           out += u"<td><span class=\"link%s-icon\"><a href=\"/%s/%s.html\">%s</a></td>" % (self.escape(type), self.escape(type),
                                                                self.escape(mbid), self.escape(name))
 
            text = text.replace(u"\\n", u"\n");

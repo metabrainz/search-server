@@ -81,16 +81,15 @@ class TextSearch(object):
 	    text = str(msg)
             raise NoSuchIndexError(text)
 
-        self.weight = xapian.BM25Weight(0, 0, 1, .1, .5);
         self.en = enquire = xapian.Enquire(self.index)
+        self.weight = xapian.BM25Weight(0, 0, 1, .5, .5);
         self.en.set_weighting_scheme(self.weight)
-        #self.en.set_docid_order(xapian.Enquire.DONT_CARE)
+        self.en.set_docid_order(xapian.Enquire.DONT_CARE)
         self.en.set_sort_by_relevance_then_value(0, False)
 
         self.qp = xapian.QueryParser()
         self.qp.set_database(self.index)
         self.qp.set_stemming_strategy(xapian.QueryParser.STEM_NONE)
-	self.qp.set_default_op(xapian.Query.OP_AND)
 
     def close(self):
 	'''
@@ -214,6 +213,14 @@ class TextSearch(object):
 
 	return u''.join(bits)
 
+
+    def removeApostrophe(self, query):
+	'''
+	Xapian considers ' as part of a word in order to not split things like "don't" and generate a bunch
+	of t fragments. I can see that for text, but for searching names and titles, no so much.
+	'''
+	return query.replace(u"'", u'')
+
     def removeDashesFromMBIDs(self, query):
 
 	bits = []
@@ -245,6 +252,7 @@ class TextSearch(object):
             query = self.mangleQuery(query)
             query = self.removeTermBoosting(query)
             query = self.removeDots(query)
+            query = self.removeApostrophe(query)
 	    query = self.removeDashesFromMBIDs(query)
             query = unac.unac_string(query)
             query = addSpacesToIdeographicStrings(query)
@@ -260,14 +268,14 @@ class TextSearch(object):
 				              self.defaultField)
         except xapian.Error, msg:
 	    text = str(msg)
-	    raise QueryError(text.encode('utf-8'))
+	    raise QueryError(text)
 
         try:
 	    self.en.set_query(parsedQuery)
 	    matches = self.en.get_mset(offset, maxHits)
         except Exception, msg:
             text = str(msg)
-            raise SearchError(text.encode('utf-8'))
+            raise SearchError(text)
 
         if not matches.get_matches_estimated(): raise NoResultsError()
 
