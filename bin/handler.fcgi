@@ -116,14 +116,10 @@ def search(environ, start_response):
     searchobj.setShowRelationshipLink(rel);
     try:
         content = searchobj.search(query, maxHits, offset, fmt)
-    except search.QueryError, e:
-        text = e.message
+    except search.QueryError, text:
+        text = str(text)
         text += "\n"
-        if text.startswith(u'org.apache.lucene.queryParser.'):
-            text = text[30:]
-        if text.startswith(u'org.apache.lucene.search.'):
-            text = text[25:]
-        start_response('403 BAD REQUEST', [('Content-Type', 'text/plain')])
+        start_response('400 BAD REQUEST', [('Content-Type', 'text/plain')])
         return text.encode('utf-8', 'replace')
     except search.SearchError:
         start_response('500 INTERNAL SERVER ERROR', [('Content-Type', 'text/plain')])

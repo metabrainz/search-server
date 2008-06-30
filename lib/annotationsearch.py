@@ -57,7 +57,7 @@ class AnnotationSearch(search.TextSearch):
            out += u"<td><span class=\"link%s-icon\"><a href=\"/%s/%s.html\">%s</a></td>" % (self.escape(type), self.escape(type),
                                                                self.escape(mbid), self.escape(name))
 
-           text = text.replace(u"\\n", u"\n");
+           text = text.replace(u"\\n", u"\n")
            out += u"<td>%%WIKIBEGIN%%%s%%WIKIEND%%</td>" % (self.escape(text)) 
            out += u"</tr>"
        out += u"</table></div>"
