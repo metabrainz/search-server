@@ -75,7 +75,6 @@ class TextSearch(object):
 
         self.defaultField = u''
         try:
-            sys.stderr.write(indexName + "\n")
             self.index = xapian.Database(indexName)
         except xapian.Error, msg:
 	    text = str(msg)
@@ -245,9 +244,9 @@ class TextSearch(object):
 
         try:
             query = unicode(query, 'utf-8')
-	    self.f = open("/tmp/log", "a")
-	    print >>self.f, "query: '%s'" % query.encode('utf-8', 'replace') 
-	    self.f.close()
+	    #self.f = open("/tmp/log", "a")
+	    #print >>self.f, "query: '%s'" % query.encode('utf-8', 'replace') 
+	    #self.f.close()
             query = self.lowercaseQuery(query)
             query = self.mangleQuery(query)
             query = self.removeTermBoosting(query)

@@ -1,7 +1,16 @@
-Intro
------
+Introduction
+------------
 
-This is the Lucene text searching back-end for MusicBrainz!
+This is the Xapian text searching back-end for MusicBrainz. This is a dead simple
+transclusion based server, which outputs only HTML or XML *fragments*. It does not
+serve complete documents!
+
+A regular MusicBrainz server installation will call this search server and
+render the appropriate HTML page or XML header/footer to create complete HTML/XML
+documents.
+
+Before you can run this server, you will need to install and run the search_index
+project's builder.py script to create xapian indexes.
 
 Requirements:
 -------------
@@ -10,7 +19,8 @@ In order to run this index server, you need to have run the following:
 
 apache2, with mod_fastcgi   - this version is tested with apache 2.0.x
 python 2.4+                 - http://python.org
-PyLucene 2.2.x              - http://downloads.osafoundation.org/PyLucene
+xapian-core 1.0.x           - http://xapian.org/download.php
+xapian-bindings 1.0.x       - http://xapian.org/download.php
 PyUnac 1.7.x                - http://download.gna.org/unac/python-unac-1.7.0.tar.gz
 flup                        - http://trac.saddi.com/flup (release r2311 was used)
 
@@ -20,15 +30,52 @@ cytpes-0.9.6                - http://starship.python.net/crew/theller/ctypes/
 Install:
 --------
 
-Short version:
+Using a standalone development server
 
-- install apache2
-- install and enable mod_fastcgi, mod_rewrite
-- install admin/mbsearch.conf as one of the site configs
-- review and make appropriate changes to admin/mbsearch.conf
-- install indexes into /var/index or change the settings in mbserach.conf
-- install server code into /home/lucene/lucene_server or change settings in mbsearch.conf
+To run the super-easy development server, create indexes from a MB database using
+the search_index project. Stash all the generated indexes (in the data dir) in
+some directory where it makes sense to keep indexes, say /var/index
 
-Long version:
+Then:
 
-Santa Claus will deliver this soon!
+  > cd bin
+  > ./standalone.py -i /var/index
+
+This will start the server on port 8001 and serve indexes from /var/index. You
+can give the standalone server the -p option to change the port the server listens on.
+Alternatively, the location of the indexes can also be specified with the INDEXDIR
+environment variable.
+
+DO NOT USE THIS SERVER IN A PRODUCTION ENVIRONMENT!
+
+
+Apache2 installation notes:
+
+1. install apache2
+2. install and enable mod_fastcgi, mod_rewrite
+3. install admin/mbsearch.conf as one of the site configs
+4. review and make appropriate changes to admin/mbsearch.conf
+5. install indexes into /var/index or change the settings in mbsearch.conf
+6. install server code into /home/search/search_server or change settings in mbsearch.conf
+
+
+Using the seach server:
+-----------------------
+
+To use the standalone server, request any resource and give the following arguments:
+
+  fmt      can be 'xml' or 'html' (default)
+  type     must one of artist, release, track, annotation, label or freedb
+  query    a full xapian query
+  max      The maximum number of hits to return
+  tport    The port number to use for Picard tagger links
+  mbt      Set if Classic Tagger links should be output
+  rel      If non-zero AR creation Rel links will be output
+  offset   The offset in hits to start showing results (used for paging)
+
+By convention, the URL used should be:
+
+    http://localhost:8001/ws/1/<type>/?query=love&type=artist&fmt=xml
+
+The apache2 installation parses the resource path and determines the type from it, and the
+type argument can be omitted.
