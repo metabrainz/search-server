@@ -3,9 +3,13 @@
 from flup.server.fcgi_fork import WSGIServer; 
 from cgi import FieldStorage;
 import time
+import os
 import sys
 
-sys.path.append("../lib")
+#sys.path.append(os.getcwd()+"../lib")
+sys.path.append("/home/search/lucene_server/lib")
+
+os.chdir(os.environ["INDEXDIR"])
 
 import labelsearch
 import artistsearch
@@ -131,4 +135,4 @@ def search(environ, start_response):
     start_response('200 OK', [('Content-Type', 'text/%s' % fmt)])
     return content
 
-WSGIServer(search, bindAddress = '/tmp/mbsearch.fcgi.sock').run() 
+WSGIServer(search, bindAddress = '/tmp/mbsearch.fcgi.sock', maxRequests = 100, minSpare = 5, maxSpare = 10, maxChildren = 20).run() 

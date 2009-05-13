@@ -64,7 +64,31 @@ class FreeDBSearch(search.TextSearch):
 
    def asXML(self, hits, maxHits, offset):
        '''
-       Output an freedb search result as XML -- except we don't support that. :-)
+       Output a freedb search result as XML
        '''
 
-       return u""
+       out = '<release-list count="%d" offset="%d">' % (hits.length(), offset)
+       for i in xrange(offset, min(hits.length(), maxHits + offset)):
+           doc = hits.doc(i)
+
+           artist = doc.get('artist') or u''
+           title = doc.get('title') or u''
+           tracks = doc.get('tracks') or u''
+           discid = doc.get('discid') or u''
+           cat = doc.get('cat') or u''
+           year = doc.get('year') or u''
+
+           out += u'<release>' 
+           out += u' ext:score="%d"' % int(hits.score(i) * 100)
+           out += u'><title>%s</title>' % self.escape(title)
+
+           out += u'<artist><name>'
+           out += u"%s" % self.escape(artist)
+           out += u"</name></artist>"
+           if tracks: out += u'<track-list count="%s"/>' % self.escape(tracks)
+           out += u'<freedbid>%s</freedbid>' % self.escape(discid)
+           out += u'<category>%s</category>' % self.escape(cat)
+           out += u'<year>%s</year>' % self.escape(year)
+           out += u'</release>'
+       out += u"</release-list>"
+       return out
