@@ -6,9 +6,7 @@ import time
 import os
 import sys
 
-#sys.path.append(os.getcwd()+"../lib")
-sys.path.append("/home/search/lucene_server/lib")
-
+sys.path.append(os.environ["LIBDIR"])
 os.chdir(os.environ["INDEXDIR"])
 
 import labelsearch
@@ -34,7 +32,7 @@ def search(environ, start_response):
     global la_search
 
     try:
-        indexDir = environ['INDEXDIR']
+        indexDir = os.environ['INDEXDIR']
     except KeyError:
         start_response('403 BAD REQUEST', [('Content-Type', 'text/plain')])
         return "INDEXDIR environment variable not set. Search server misconfigured.\n"
