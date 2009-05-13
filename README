@@ -1,0 +1,19 @@
+Intro
+-----
+
+This is the Lucene text searching back-end for MusicBrainz!
+
+Requirements:
+-------------
+
+In order to run this index server, you need to have run the following:
+
+apache, with mod_python     - this version is tested with apache 1.3.x and mod_python 2.7.x
+python 2.4+                 - http://python.org
+Python Levenshtein (latest) - http://trific.ath.cx/resources/python/levenshtein/
+PyLucene 1.0.x              - http://downloads.osafoundation.org/PyLucene
+PyUnac 1.7.x                - http://download.gna.org/unac/python-unac-1.7.0.tar.gz
+flup
+
+Required for Python 2.4 or earlier
+cytpes-0.9.6                - http://starship.python.net/crew/theller/ctypes/
