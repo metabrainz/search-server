@@ -34,7 +34,7 @@ import org.apache.lucene.analysis.standard.*;
 
 /**
  * Filters StandardTokenizer with StandardFilter, AccentFilter, LowerCaseFilter
- * and StopFilter, using a list of English stop words.
+ * and no stop words.
  */
 public class StandardUnaccentAnalyzer extends Analyzer {
 
@@ -43,7 +43,6 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         TokenStream result = new StandardFilter(tokenStream);
         result = new AccentFilter(result);
         result = new LowerCaseFilter(result);
-        result = new StopFilter(result, StopAnalyzer.ENGLISH_STOP_WORDS);
         return result;
     }
     
@@ -61,7 +60,6 @@ public class StandardUnaccentAnalyzer extends Analyzer {
             streams.filteredTokenStream = new StandardFilter(streams.tokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowerCaseFilter(streams.filteredTokenStream);
-            streams.filteredTokenStream = new StopFilter(streams.filteredTokenStream, StopAnalyzer.ENGLISH_STOP_WORDS);
         }
         else {
             streams.tokenStream.reset(reader);
