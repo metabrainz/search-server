@@ -127,13 +127,13 @@ class TrackSearch(search.TextSearch):
            tnum = int(doc.get('tnum') or u'0')
            dur = doc.get('dur') or u''
 
-           out += u'<track id="%s"' % self.escape(doc.get('trid'))
+           out += u'<track id="%s"' % self.escapeAttr(doc.get('trid'))
            out += u' ext:score="%d">' % int(hits.score(i) * 100)
            out += u"<title>%s</title>" % self.escape(track)
            if dur: out += u"<duration>%s</duration>" % self.escape(dur)
-           out += u'<artist id="%s"><name>%s</name></artist>' % (self.escape(arid), self.escape(artist))
+           out += u'<artist id="%s"><name>%s</name></artist>' % (self.escapeAttr(arid), self.escape(artist))
            out += u'<release-list><release id="%s"><title>%s</title>' % \
-                  (self.escape(alid), self.escape(album))
+                  (self.escapeAttr(alid), self.escape(album))
            if tnum:
                if tracks:
                    out += u'<track-list offset="%d" count="%d"/>' % (tnum - 1, tracks)

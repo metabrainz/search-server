@@ -120,7 +120,7 @@ class LabelSearch(search.TextSearch):
            end = doc.get('end') or u''
            comment = doc.get('comment') or u''
 
-           out += u'<label id="%s"' % self.escape(doc.get('laid'))
+           out += u'<label id="%s"' % self.escapeAttr(doc.get('laid'))
            if type: out += u' type="%s"' % type
            out += u' ext:score="%d"' % int(hits.score(i) * 100)
            out += u'><name>%s</name>' % self.escape(label)
@@ -128,8 +128,8 @@ class LabelSearch(search.TextSearch):
                out += u"<sort-name>%s</sort-name>" % self.escape(sortname)
            if begin or end:
                out += u'<life-span'
-               if begin: out += u' begin="%s"' % self.escape(begin)
-               if end: out += u' end="%s"' % self.escape(end)
+               if begin: out += u' begin="%s"' % self.escapeAttr(begin)
+               if end: out += u' end="%s"' % self.escapeAttr(end)
                out += u'/>'
            if comment:
                out += u"<disambiguation>%s</disambiguation>" % self.escape(comment)

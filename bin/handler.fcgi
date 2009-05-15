@@ -12,12 +12,14 @@ os.chdir(os.environ["INDEXDIR"])
 import labelsearch
 import artistsearch
 import releasesearch
+import releasegroupsearch
 import tracksearch
 import annotationsearch
 import freedbsearch
 
 ar_search = None
 re_search = None
+rg_search = None
 tr_search = None
 an_search = None
 fd_search = None
@@ -26,6 +28,7 @@ la_search = None
 def search(environ, start_response):
     global ar_search
     global re_search
+    global rg_search
     global tr_search
     global an_search
     global fd_search
@@ -80,6 +83,12 @@ def search(environ, start_response):
         re_search.setDuration(dur)
         searchobj = re_search
 
+    elif type == 'release_group':
+        if not rg_search:
+            rg_search = releasegroupsearch.ReleaseGroupSearch(indexDir + "/releasegroup_index")
+        rg_search.setTaggerPort(tport)
+        searchobj = rg_search
+
     elif type == 'track':
         if not tr_search:
             tr_search = tracksearch.TrackSearch(indexDir + "/track_index")
@@ -105,7 +114,7 @@ def search(environ, start_response):
 
     else:
         start_response('403 BAD REQUEST', [('Content-Type', 'text/plain')])
-        return "invalid resource requested. %s must be one of artist/release/track/label/annotation." % type
+        return "invalid resource requested. %s must be one of artist/release/release_group/track/label/annotation." % type
 
     import search
     ret = 0

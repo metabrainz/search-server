@@ -145,33 +145,33 @@ class ReleaseSearch(search.TextSearch):
 
            if status: type = (type + (u" %s" % status)).strip()
 
-           out += u'<release id="%s"' % self.escape(reid)
-           if type: out += u' type="%s"' % self.escape(type.title())
+           out += u'<release id="%s"' % self.escapeAttr(reid)
+           if type: out += u' type="%s"' % self.escapeAttr(type.title())
            out += u' ext:score="%d"' % int(hits.score(i) * 100)
            out += u'><title>%s</title>' % self.escape(album)
 
            if lang or script:
                out += u'<text-representation'
-               if lang: out += u' language="%s"' % self.escape(lang.upper())
-               if script: out += u' script="%s"' % self.escape(script)
+               if lang: out += u' language="%s"' % self.escapeAttr(lang.upper())
+               if script: out += u' script="%s"' % self.escapeAttr(script)
                out += u'/>'
            if asin and asin != u"          ": out += u'<asin>%s</asin>' % self.escape(asin.upper())
 
-           out += u'<artist id="%s"><name>' % self.escape(arid)
+           out += u'<artist id="%s"><name>' % self.escapeAttr(arid)
            out += u"%s" % self.escape(artist)
            out += u"</name></artist>"
            if dates and len(dates):
                out += u'<release-event-list>'
                for country, date, label, catno, barcode in zip(countries, dates, labels, catnos, barcodes):
-                   out += u'<event date="%s"'  % self.escape(date.strip())
-                   out += u' country="%s"' % self.escape(country.strip().upper())
-                   out += u' label="%s"' % self.escape(label.strip())
-                   out += u' catno="%s"' % self.escape(catno.strip())
-                   out += u' barcode="%s"' % self.escape(barcode.strip())
+                   out += u'<event date="%s"'  % self.escapeAttr(date.strip())
+                   out += u' country="%s"' % self.escapeAttr(country.strip().upper())
+                   out += u' label="%s"' % self.escapeAttr(label.strip())
+                   out += u' catno="%s"' % self.escapeAttr(catno.strip())
+                   out += u' barcode="%s"' % self.escapeAttr(barcode.strip())
                    out += u'/>'
                out += u'</release-event-list>'
-           if cdids: out += u'<disc-list count="%s"/>' % self.escape(cdids)
-           if tracks: out += u'<track-list count="%s"/>' % self.escape(tracks)
+           if cdids: out += u'<disc-list count="%s"/>' % self.escapeAttr(cdids)
+           if tracks: out += u'<track-list count="%s"/>' % self.escapeAttr(tracks)
            out += u'</release>'
        out += u"</release-list>"
        return out

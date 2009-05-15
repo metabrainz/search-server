@@ -115,6 +115,12 @@ class TextSearch(object):
         Escape XML/HTML entities and convert output to utf-8
         '''
         return text.replace(u'&', u'&amp;').replace(u'<', u'&lt;').replace(u'>', u'&gt;')
+
+    def escapeAttr(self, text):
+        '''
+        Escape XML/HTML entities and convert output to utf-8
+        '''
+        return text.replace(u'&', u'&amp;').replace(u'<', u'&lt;').replace(u'>', u'&gt;').replace(u'"', u'&quot;')
  
     def unEscapeUUID(self, uuid):
         '''

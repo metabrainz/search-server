@@ -103,7 +103,7 @@ class ArtistSearch(search.TextSearch):
            end = doc.get('end') or u''
            comment = doc.get('comment') or u''
 
-           out += u'<artist id="%s"' % self.escape(doc.get('arid'))
+           out += u'<artist id="%s"' % self.escapeAttr(doc.get('arid'))
            if artype: out += u' type="%s"' % artype.title()
            out += u' ext:score="%d"' % int(hits.score(i) * 100)
            out += u'><name>%s</name>' % self.escape(artist)
@@ -111,8 +111,8 @@ class ArtistSearch(search.TextSearch):
                out += u"<sort-name>%s</sort-name>" % self.escape(sortname)
            if begin or end:
                out += u'<life-span'
-               if begin: out += u' begin="%s"' % self.escape(begin)
-               if end: out += u' end="%s"' % self.escape(end)
+               if begin: out += u' begin="%s"' % self.escapeAttr(begin)
+               if end: out += u' end="%s"' % self.escapeAttr(end)
                out += u'/>'
            if comment:
                out += u"<disambiguation>%s</disambiguation>" % self.escape(comment)
