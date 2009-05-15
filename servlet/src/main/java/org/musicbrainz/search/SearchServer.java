@@ -55,6 +55,11 @@ public class SearchServer {
         searchers.put("track", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/track_index/"), null), true)));
     }
 
+    public SearchServer(Map<String, IndexSearcher> searchers) {
+        analyzer = new StandardUnaccentAnalyzer();
+        this.searchers = searchers;
+    }
+
     public void close() {
     }
 

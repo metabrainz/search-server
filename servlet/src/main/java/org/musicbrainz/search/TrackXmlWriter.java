@@ -29,61 +29,61 @@
 package org.musicbrainz.search;
 
 import java.io.*;
+
 import org.apache.lucene.document.Document;
-import org.apache.commons.lang.StringUtils;
 
 public class TrackXmlWriter extends XmlWriter {
 
-	public void write(PrintWriter out, Results results) throws IOException {
-		writeHeader(out);
-		out.write("<track-list count=\"" + results.totalHits + "\" offset=\"" + results.offset + "\">");
-		for (Result result: results.results) {
-				Document doc = result.doc;
+    public void write(PrintWriter out, Results results) throws IOException {
+        writeHeader(out);
+        out.write("<track-list count=\"" + results.totalHits + "\" offset=\"" + results.offset + "\">");
+        for (Result result : results.results) {
+            Document doc = result.doc;
 
-				out.write("<track id=\"");
-				Utils.escapeXml(out, doc.get("trid"));
-				out.write('"');
-				out.write(" ext:score=\"");
-				out.print((int)(result.score * 100));
-				out.write("\">");
+            out.write("<track id=\"");
+            Utils.escapeXml(out, doc.get(TrackIndexFieldName.TRACK_ID.getFieldname()));
+            out.write('"');
+            out.write(" ext:score=\"");
+            out.print((int) (result.score * 100));
+            out.write("\">");
 
-				String title = doc.get("track");
-				if (title != null) {
-					out.write("<title>");
-					Utils.escapeXml(out, title);
-					out.write("</title>");
-				}
+            String title = doc.get(TrackIndexFieldName.TRACK.getFieldname());
+            if (title != null) {
+                out.write("<title>");
+                Utils.escapeXml(out, title);
+                out.write("</title>");
+            }
 
-				String duration = doc.get("dur");
-				if (duration != null) {
-					out.write("<duration>" + duration + "</duration>");
-				}
+            String duration = doc.get(TrackIndexFieldName.DURATION.getFieldname());
+            if (duration != null) {
+                out.write("<duration>" + duration + "</duration>");
+            }
 
-				String artistName = doc.get("artist");
-				if (artistName != null) {
-					out.write("<artist id=\"");
-					Utils.escapeXml(out, doc.get("arid"));
-					out.write("\"><name>");
-					Utils.escapeXml(out, artistName);
-					out.write("</name></artist>");
-				}
+            String artistName = doc.get(TrackIndexFieldName.ARTIST.getFieldname());
+            if (artistName != null) {
+                out.write("<artist id=\"");
+                Utils.escapeXml(out, doc.get(TrackIndexFieldName.ARTIST_ID.getFieldname()));
+                out.write("\"><name>");
+                Utils.escapeXml(out, artistName);
+                out.write("</name></artist>");
+            }
 
-				String releaseName = doc.get("release");
-				if (releaseName != null) {
-					out.write("<release id=\"");
-					Utils.escapeXml(out, doc.get("reid"));
-					out.write("\"><title>");
-					Utils.escapeXml(out, releaseName);
-					out.write("</title>");
-					out.write("<track-list offset=\"");
-					out.write(doc.get("tnum"));
-					out.write("\"/></release>");
-				}
+            String releaseName = doc.get(TrackIndexFieldName.RELEASE.getFieldname());
+            if (releaseName != null) {
+                out.write("<release id=\"");
+                Utils.escapeXml(out, doc.get(TrackIndexFieldName.RELEASE_ID.getFieldname()));
+                out.write("\"><title>");
+                Utils.escapeXml(out, releaseName);
+                out.write("</title>");
+                out.write("<track-list offset=\"");
+                out.write(doc.get(TrackIndexFieldName.TRACKNUM.getFieldname()));
+                out.write("\"/></release>");
+            }
 
-				out.write("</track>");
-		}
-		out.write("</track-list>");
-		writeFooter(out);
-	}
+            out.write("</track>");
+        }
+        out.write("</track-list>");
+        writeFooter(out);
+    }
 
 }

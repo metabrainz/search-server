@@ -29,66 +29,69 @@
 package org.musicbrainz.search;
 
 import java.io.*;
+
 import org.apache.lucene.document.Document;
 import org.apache.commons.lang.StringUtils;
 
 public class ArtistXmlWriter extends XmlWriter {
 
-	public void write(PrintWriter out, Results results) throws IOException {
-		writeHeader(out);
-		out.write("<artist-list count=\"" + results.totalHits + "\" offset=\"" + results.offset + "\">");
-		for (Result result: results.results) {
-				Document doc = result.doc;
+    public void write(PrintWriter out, Results results) throws IOException {
+        writeHeader(out);
+        out.write("<artist-list count=\"" + results.totalHits + "\" offset=\"" + results.offset + "\">");
+        for (Result result : results.results) {
+            Document doc = result.doc;
 
-				out.write("<artist id=\"");
-				Utils.escapeXml(out, doc.get("arid"));
-				out.write('"');
-				String artype = doc.get("artype");
-				if (artype != null) {
-					out.write(" type=\"");
-					Utils.escapeXml(out, StringUtils.capitalize(artype));
-					out.write('"');
-				}
-				out.write(" ext:score=\"");
-				out.print((int)(result.score * 100));
-				out.write("\">");
+            out.write("<artist id=\"");
+            Utils.escapeXml(out, doc.get(ArtistIndexFieldName.ARTIST_ID.getFieldname()));
+            out.write('"');
+            String artype = doc.get(ArtistIndexFieldName.TYPE.getFieldname());
+            if (artype != null) {
+                out.write(" type=\"");
+                Utils.escapeXml(out, StringUtils.capitalize(artype));
+                out.write('"');
+            }
+            out.write(" ext:score=\"");
+            out.print((int) (result.score * 100));
+            out.write("\">");
 
-				String name = doc.get("artist");
-				if (name != null) {
-					out.write("<name>");
-					Utils.escapeXml(out, name);
-					out.write("</name>");
-				}
+            String name = doc.get(ArtistIndexFieldName.ARTIST.getFieldname());
+            if (name != null) {
+                out.write("<name>");
+                Utils.escapeXml(out, name);
+                out.write("</name>");
+            }
 
-				String sortname = doc.get("sortname");
-				if (sortname != null) {
-					out.write("<sort-name>");
-					Utils.escapeXml(out, sortname);
-					out.write("</sort-name>");
-				}
+            String sortname = doc.get(ArtistIndexFieldName.SORTNAME.getFieldname());
+            if (sortname != null) {
+                out.write("<sort-name>");
+                Utils.escapeXml(out, sortname);
+                out.write("</sort-name>");
+            }
 
-				String begin = doc.get("begin");
-				String end = doc.get("end");
-				if (begin != null || end != null) {
-					out.write("<life-span");
-					if (begin != null)
-						out.write(" begin=\"" + begin + "\"");
-					if (end != null)
-						out.write(" end=\"" + end + "\"");
-					out.write("/>");
-				}
+            String begin = doc.get(ArtistIndexFieldName.BEGIN.getFieldname());
+            String end = doc.get(ArtistIndexFieldName.END.getFieldname());
+            if (begin != null || end != null) {
+                out.write("<life-span");
+                if (begin != null) {
+                    out.write(" begin=\"" + begin + "\"");
+                }
+                if (end != null) {
+                    out.write(" end=\"" + end + "\"");
+                }
+                out.write("/>");
+            }
 
-				String comment = doc.get("comment");
-				if (comment != null) {
-					out.write("<disambiguation>");
-					Utils.escapeXml(out, comment);
-					out.write("</disambiguation>");
-				}
+            String comment = doc.get(ArtistIndexFieldName.COMMENT.getFieldname());
+            if (comment != null) {
+                out.write("<disambiguation>");
+                Utils.escapeXml(out, comment);
+                out.write("</disambiguation>");
+            }
 
-				out.write("</artist>");
-		}
-		out.write("</artist-list>");
-		writeFooter(out);
-	}
+            out.write("</artist>");
+        }
+        out.write("</artist-list>");
+        writeFooter(out);
+    }
 
 }
