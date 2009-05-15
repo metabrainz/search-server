@@ -31,53 +31,56 @@ package org.musicbrainz.search;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
+
 import org.apache.lucene.queryParser.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.NIOFSDirectory;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 public class SearchServer {
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
-	private Analyzer analyzer;
+    private Analyzer analyzer;
     private Map<String, IndexSearcher> searchers;
-    
+
     public SearchServer(String indexDir) throws IOException {
-		analyzer = new StandardUnaccentAnalyzer();
-		searchers = new HashMap<String, IndexSearcher>();
-        searchers.put("artist", new IndexSearcher(indexDir + "/artist_index/"));
-        searchers.put("label", new IndexSearcher(indexDir + "/label_index/"));
-        searchers.put("release", new IndexSearcher(indexDir + "/release_index/"));
-        searchers.put("track", new IndexSearcher(indexDir + "/track_index/"));
+        analyzer = new StandardUnaccentAnalyzer();
+        searchers = new HashMap<String, IndexSearcher>();
+        searchers.put("artist", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/artist_index/"), null), true)));
+        searchers.put("label", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/label_index/"), null), true)));
+        searchers.put("release", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/release_index/"), null), true)));
+        searchers.put("track", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/track_index/"), null), true)));
     }
 
     public void close() {
     }
 
-	public Results search(String indexName, String query, int offset, int limit) throws IOException {
-		//log.info("Searching for '" + query + "' in the " + indexName + " index.");
-		IndexSearcher searcher = searchers.get(indexName);
-		QueryParser parser = new QueryParser(indexName, analyzer);
-		TopDocCollector collector = new TopDocCollector(offset + limit);
-		try {
-			searcher.search(parser.parse(query), collector);
-		}
-		catch (ParseException e) {
-		}
-		Results results = new Results();
-		results.offset = offset;
-		results.totalHits = collector.getTotalHits();
-		TopDocs topDocs = collector.topDocs();
-		ScoreDoc docs[] = topDocs.scoreDocs;
-		float maxScore = topDocs.getMaxScore();
-		for (int i = offset; i < docs.length; i++) {
-			Result result = new Result();
-			result.score = docs[i].score / maxScore;
-			result.doc = searcher.doc(docs[i].doc);
-			results.results.add(result);
-		}
-		return results;
-	}
-    
+    public Results search(String indexName, String query, int offset, int limit) throws IOException {
+        //log.info("Searching for '" + query + "' in the " + indexName + " index.");
+        IndexSearcher searcher = searchers.get(indexName);
+        QueryParser parser = new QueryParser(indexName, analyzer);
+        TopDocCollector collector = new TopDocCollector(offset + limit);
+        try {
+            searcher.search(parser.parse(query), collector);
+        }
+        catch (ParseException e) {
+        }
+        Results results = new Results();
+        results.offset = offset;
+        results.totalHits = collector.getTotalHits();
+        TopDocs topDocs = collector.topDocs();
+        ScoreDoc docs[] = topDocs.scoreDocs;
+        float maxScore = topDocs.getMaxScore();
+        for (int i = offset; i < docs.length; i++) {
+            Result result = new Result();
+            result.score = docs[i].score / maxScore;
+            result.doc = searcher.doc(docs[i].doc);
+            results.results.add(result);
+        }
+        return results;
+    }
+
 }
