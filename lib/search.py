@@ -65,6 +65,7 @@ class TextSearch(object):
         self.mbt = 0
         self.rel = 0
         self.offset = 0
+	self.lastupdate = u""
 
         self.useMulti = True
         self.defaultField = "artist"
@@ -181,6 +182,28 @@ class TextSearch(object):
         out += u'height="13" width="28" align="middle" border="0">'
         return out
 
+    def getLastUpdate(self):
+
+	if not self.lastupdate:
+	    try:
+                parsedQuery = PyLucene.QueryParser("meta", self.analyzer).parse("updated")
+            except Exception, msg:
+		self.lastupdate = " ";
+		return self.lastupdate
+
+	    hits = []
+	    try:
+		hits = self.index.search(parsedQuery);
+	    except Exception, msg:
+		self.lastupdate = " ";
+		return self.lastupdate
+
+	    if len(hits) > 0:
+		doc = hits.doc(0)
+		self.lastupdate = doc.get('meta')
+
+	return '<p class="lastupdated" align="right">%s</p>' % self.lastupdate
+
     def mangleQuery(self, query):
         '''
         For backwards compatibility, filter a query before passing it to lucene. Returns
@@ -255,6 +278,6 @@ class TextSearch(object):
             stats = u"<!--\nhits=%d\noffset=%d\n" % (len(hits), offset)
             if redirect: stats += u"redirect=%s\n" % redirect
             stats += u"-->"
-            return stats.encode('utf-8') + self.asHTML(hits, maxHits, offset).encode('utf-8')
+            return stats.encode('utf-8') + self.asHTML(hits, maxHits, offset).encode('utf-8') + self.getLastUpdate().encode('utf-8')
         else:
             return self.asXML(hits, maxHits, offset).encode('utf-8')

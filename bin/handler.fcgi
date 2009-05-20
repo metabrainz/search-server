@@ -16,6 +16,7 @@ import releasegroupsearch
 import tracksearch
 import annotationsearch
 import freedbsearch
+import cdstubsearch
 
 ar_search = None
 re_search = None
@@ -24,6 +25,7 @@ tr_search = None
 an_search = None
 fd_search = None
 la_search = None
+cd_search = None
 
 def search(environ, start_response):
     global ar_search
@@ -33,6 +35,7 @@ def search(environ, start_response):
     global an_search
     global fd_search
     global la_search
+    global cd_search
 
     try:
         indexDir = os.environ['INDEXDIR']
@@ -112,9 +115,14 @@ def search(environ, start_response):
             la_search = labelsearch.LabelSearch(indexDir + "/label_index")
         searchobj = la_search
 
+    elif type == 'cdstub':
+        if not cd_search:
+            cd_search = cdstubsearch.CDStubSearch(indexDir + "/cdstub_index")
+        searchobj = cd_search
+
     else:
         start_response('403 BAD REQUEST', [('Content-Type', 'text/plain')])
-        return "invalid resource requested. %s must be one of artist/release/release_group/track/label/annotation." % type
+        return "invalid resource requested. %s must be one of artist/release/release_group/track/label/annotation/cdstub." % type
 
     import search
     ret = 0
