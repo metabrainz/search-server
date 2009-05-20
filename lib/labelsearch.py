@@ -61,6 +61,7 @@ class LabelSearch(search.TextSearch):
 
    def mangleQuery(self, query):
        query = re.sub("type:(\d)", replaceType, query)
+       query = re.sub("code:0+", "code:", query)
        return query
 
    def asHTML(self, hits, maxHits, offset):

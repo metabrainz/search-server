@@ -56,6 +56,7 @@ class ReleaseSearch(search.TextSearch):
    def mangleQuery(self, query):
        query = re.sub("type:(\d+)", replaceType, query)
        query = re.sub("status:(\d)", replaceStatus, query)
+       query = re.sub("barcode:0+", "barcode:", query)
        return query
 
    def asHTML(self, hits, maxHits, offset):
