@@ -28,22 +28,40 @@
 
 package org.musicbrainz.search;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.Writer;
 import java.io.IOException;
 
-public abstract class XmlWriter extends ResultsWriter {
+public abstract class  XmlWriter extends ResultsWriter {
 
-	public void writeHeader(Writer out) throws IOException {
-		out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-				  "<metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\" xmlns:ext=\"http://musicbrainz.org/ns/ext-1.0#\">");
-	}
+    static final JAXBContext context = initContext();
 
-	public void writeFooter(Writer out) throws IOException {
-		out.write("</metadata>");
-	}
 
-	public String getMimeType() {
-		return "application/xml; charset=UTF-8";
-	}
+    public void writeHeader(Writer out) throws IOException {
+        out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\" xmlns:ext=\"http://musicbrainz.org/ns/ext-1.0#\">");
+    }
+
+    public void writeFooter(Writer out) throws IOException {
+        out.write("</metadata>");
+    }
+
+    public String getMimeType() {
+        return "application/xml; charset=UTF-8";
+    }
+
+    private static JAXBContext initContext(){
+        try
+        {
+            return JAXBContext.newInstance("com.jthink.brainz.mmd");
+        }
+        catch(JAXBException ex)
+        {
+             //Unable to initilize jaxb context, should never happen
+            throw new RuntimeException(ex);
+        }
+    }
+
 
 }

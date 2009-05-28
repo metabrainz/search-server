@@ -29,69 +29,92 @@
 package org.musicbrainz.search;
 
 import java.io.*;
+import java.math.BigInteger;
 
 import org.apache.lucene.document.Document;
 import org.apache.commons.lang.StringUtils;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+
+import com.jthink.brainz.mmd.*;
+
+
 public class ArtistXmlWriter extends XmlWriter {
 
     public void write(PrintWriter out, Results results) throws IOException {
-        writeHeader(out);
-        out.write("<artist-list count=\"" + results.totalHits + "\" offset=\"" + results.offset + "\">");
-        for (Result result : results.results) {
-            Document doc = result.doc;
 
-            out.write("<artist id=\"");
-            Utils.escapeXml(out, doc.get(ArtistIndexFieldName.ARTIST_ID.getFieldname()));
-            out.write('"');
-            String artype = doc.get(ArtistIndexFieldName.TYPE.getFieldname());
-            if (artype != null) {
-                out.write(" type=\"");
-                Utils.escapeXml(out, StringUtils.capitalize(artype));
-                out.write('"');
-            }
-            out.write(" ext:score=\"");
-            out.print((int) (result.score * 100));
-            out.write("\">");
+        try
+        {
 
-            String name = doc.get(ArtistIndexFieldName.ARTIST.getFieldname());
-            if (name != null) {
-                out.write("<name>");
-                Utils.escapeXml(out, name);
-                out.write("</name>");
-            }
+            Marshaller m = context.createMarshaller();
+            ObjectFactory of = new ObjectFactory();
 
-            String sortname = doc.get(ArtistIndexFieldName.SORTNAME.getFieldname());
-            if (sortname != null) {
-                out.write("<sort-name>");
-                Utils.escapeXml(out, sortname);
-                out.write("</sort-name>");
-            }
+            Metadata metadata = of.createMetadata();
+            ArtistList artistList = of.createArtistList();
 
-            String begin = doc.get(ArtistIndexFieldName.BEGIN.getFieldname());
-            String end = doc.get(ArtistIndexFieldName.END.getFieldname());
-            if (begin != null || end != null) {
-                out.write("<life-span");
-                if (begin != null) {
-                    out.write(" begin=\"" + begin + "\"");
+            for (Result result : results.results) {
+                Document doc = result.doc;
+                Artist artist = of.createArtist();
+
+                artist.setId(doc.get(ArtistIndexFieldName.ARTIST_ID.getFieldname()));
+
+                String artype = doc.get(ArtistIndexFieldName.TYPE.getFieldname());
+                if (artype != null) {
+                    artist.setType(Utils.escapeXml(StringUtils.capitalize(artype)));
                 }
-                if (end != null) {
-                    out.write(" end=\"" + end + "\"");
+
+                artist.getOtherAttributes().put(new QName("ext:score"),String.valueOf((int)(result.score * 100)));
+
+                String name = doc.get(ArtistIndexFieldName.ARTIST.getFieldname());
+                if (name != null) {
+                    artist.setName(Utils.escapeXml(name));
+
                 }
-                out.write("/>");
-            }
 
-            String comment = doc.get(ArtistIndexFieldName.COMMENT.getFieldname());
-            if (comment != null) {
-                out.write("<disambiguation>");
-                Utils.escapeXml(out, comment);
-                out.write("</disambiguation>");
-            }
+                String sortname = doc.get(ArtistIndexFieldName.SORTNAME.getFieldname());
+                if (sortname != null) {
+                    artist.setSortName(Utils.escapeXml(name));
 
-            out.write("</artist>");
+                }
+
+                String begin = doc.get(ArtistIndexFieldName.BEGIN.getFieldname());
+                String end   = doc.get(ArtistIndexFieldName.END.getFieldname());
+                if (begin != null || end != null) {
+                    LifeSpan lifespan= of.createLifeSpan();
+                    if (begin != null) {
+                        lifespan.setBegin(begin);
+
+                    }
+                    if (end != null) {
+                        lifespan.setEnd(end);
+
+                    }
+                    artist.setLifeSpan(lifespan);
+                                        
+                }
+
+                String comment = doc.get(ArtistIndexFieldName.COMMENT.getFieldname());
+                if (comment != null) {
+                    artist.setDisambiguation(comment);
+                }
+
+                artistList.getArtist().add(artist);
+
+            }
+            artistList.setCount(BigInteger.valueOf(results.results.size()));
+            artistList.setOffset(BigInteger.valueOf(results.offset));
+            metadata.setArtistList(artistList);
+            m.marshal(metadata,out);
+
         }
-        out.write("</artist-list>");
-        writeFooter(out);
+        catch(JAXBException je)
+        {
+            throw new IOException(je);
+        }
     }
 
 }
