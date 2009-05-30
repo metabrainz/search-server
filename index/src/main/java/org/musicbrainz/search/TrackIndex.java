@@ -43,9 +43,9 @@ public class TrackIndex extends Index {
 
     public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
         PreparedStatement st = conn.prepareStatement(
-                "SELECT artist.gid, artist.name, " +
+                "SELECT artist.gid as artist_gid, artist.name as artist_name, " +
                         "track.gid, track.name, " +
-                        "album.gid, album.name, track.length, albumjoin.sequence " +
+                        "album.gid as album_gid, album.name as album_name, track.length, albumjoin.sequence " +
                         "FROM track " +
                         "JOIN artist ON track.artist=artist.id " +
                         "JOIN albumjoin ON track.id=albumjoin.track " +
@@ -64,15 +64,15 @@ public class TrackIndex extends Index {
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
         Document doc = new Document();
 
-        addArtistGidToDocument(doc, rs.getString(1));
-        addArtistToDocument(doc, rs.getString(2));
-        addTrackGidToDocument(doc, rs.getString(3));
-        addTrackToDocument(doc, rs.getString(4));
-        addReleaseGidToDocument(doc, rs.getString(5));
-        addReleaseToDocument(doc, rs.getString(6));
-        addQuantizedDurationToDocument(doc, NumberTools.longToString(rs.getLong(7)));
-        addDurationToDocument(doc, NumberTools.longToString(rs.getLong(7) / 2000));
-        addTrackNoToDocument(doc, NumberTools.longToString(rs.getLong(8)));
+        addArtistGidToDocument(doc, rs.getString("artist_gid"));
+        addArtistToDocument(doc, rs.getString("artist_name"));
+        addTrackGidToDocument(doc, rs.getString("gid"));
+        addTrackToDocument(doc, rs.getString("name"));
+        addReleaseGidToDocument(doc, rs.getString("album_gid"));
+        addReleaseToDocument(doc, rs.getString("album_name"));
+        addQuantizedDurationToDocument(doc, NumberTools.longToString(rs.getLong("length")));
+        addDurationToDocument(doc, NumberTools.longToString(rs.getLong("length") / 2000));
+        addTrackNoToDocument(doc, NumberTools.longToString(rs.getLong("sequence")));
         return doc;
     }
 

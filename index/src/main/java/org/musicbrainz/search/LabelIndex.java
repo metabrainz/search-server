@@ -30,7 +30,6 @@ import java.sql.*;
 
 public class LabelIndex extends Index {
 
-
     public String getName() {
         return "label";
     }
@@ -44,12 +43,12 @@ public class LabelIndex extends Index {
 
     public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = conn.prepareStatement("SELECT ref, name FROM labelalias WHERE ref BETWEEN ? AND ?");
+        PreparedStatement st = conn.prepareStatement("SELECT ref as label, name as alias FROM labelalias WHERE ref BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            int labelId = rs.getInt(1);
+            int labelId = rs.getInt("label");
             List<String> list;
             if (!aliases.containsKey(labelId)) {
                 list = new LinkedList<String>();
@@ -57,11 +56,11 @@ public class LabelIndex extends Index {
             } else {
                 list = aliases.get(labelId);
             }
-            list.add(rs.getString(2));
+            list.add(rs.getString("alias"));
         }
         st.close();
         st = conn.prepareStatement(
-                "SELECT label.id, gid, label.name, sortname, type, begindate, enddate, resolution, labelcode, lower(isocode) " +
+                "SELECT label.id, gid, label.name, sortname, type, begindate, enddate, resolution, labelcode, lower(isocode) as country " +
                         "FROM label JOIN country ON label.country=country.id WHERE label.id BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -75,34 +74,38 @@ public class LabelIndex extends Index {
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
 
         Document doc = new Document();
-        int labelId = rs.getInt(1);
-        addLabelGidToDocument(doc, rs.getString(2));
-        addLabelToDocument(doc, rs.getString(3));
-        addSortNameToDocument(doc, rs.getString(4));
+        int labelId = rs.getInt("id");
+        addLabelGidToDocument(doc, rs.getString("gid"));
+        addLabelToDocument(doc, rs.getString("name"));
+        addSortNameToDocument(doc, rs.getString("sortname"));
 
-        Integer type = rs.getInt(5);
+        Integer type = rs.getInt("type");
         if (type == null) {
             type = 0;
         }
         addTypeToDocument(doc, LabelType.values()[type]);
 
-        String begin = rs.getString(6);
+        String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {
             addBeginDateToDocument(doc, normalizeDate(begin));
         }
 
-        String end = rs.getString(7);
+        String end = rs.getString("enddate");
         if (end != null && !end.isEmpty()) {
             addEndDateToDocument(doc, normalizeDate(end));
         }
 
-        String comment = rs.getString(8);
+        String comment = rs.getString("resolution");
         if (comment != null && !comment.isEmpty()) {
             addCommentToDocument(doc, comment);
         }
 
-        addCodeToDocument(doc, rs.getString(9));
-        addCountryToDocument(doc, rs.getString(10));
+        String labelcode = rs.getString("labelcode");
+        if (labelcode != null && !labelcode.isEmpty()) {
+        	addCodeToDocument(doc, labelcode);
+        }
+        
+        addCountryToDocument(doc, rs.getString("country"));
 
         if (aliases.containsKey(labelId)) {
             for (String alias : aliases.get(labelId)) {
@@ -139,22 +142,18 @@ public class LabelIndex extends Index {
 
     public void addCommentToDocument(Document doc, String comment) {
         doc.add(new Field(LabelIndexFieldName.COMMENT.getFieldname(), comment, Field.Store.YES, Field.Index.ANALYZED));
-
     }
 
     public void addCodeToDocument(Document doc, String code) {
         doc.add(new Field(LabelIndexFieldName.CODE.getFieldname(), code, Field.Store.YES, Field.Index.ANALYZED));
-
     }
 
     public void addCountryToDocument(Document doc, String country) {
         doc.add(new Field(LabelIndexFieldName.COUNTRY.getFieldname(), country, Field.Store.YES, Field.Index.ANALYZED));
-
     }
 
     public void addAliasToDocument(Document doc, String alias) {
         doc.add(new Field(LabelIndexFieldName.ALIAS.getFieldname(), alias, Field.Store.NO, Field.Index.ANALYZED));
-
     }
 
 }

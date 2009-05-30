@@ -45,7 +45,7 @@ public class ReleaseIndex extends Index {
     public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
         Map<Integer, List<List<String>>> events = new HashMap<Integer, List<List<String>>>();
         PreparedStatement st = conn.prepareStatement(
-                "SELECT album, lower(isocode), releasedate, label.name, catno, barcode " +
+                "SELECT album, lower(isocode) as country, releasedate, label.name as label, catno, barcode " +
                         "FROM release " +
                         "LEFT JOIN country ON release.country=country.id " +
                         "LEFT JOIN label ON release.label=label.id " +
@@ -54,7 +54,7 @@ public class ReleaseIndex extends Index {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            int albumId = rs.getInt(1);
+            int albumId = rs.getInt("album");
             List<List<String>> list;
             if (!events.containsKey(albumId)) {
                 list = new LinkedList<List<String>>();
@@ -63,17 +63,18 @@ public class ReleaseIndex extends Index {
                 list = events.get(albumId);
             }
             List<String> entry = new ArrayList<String>(5);
-            entry.add(rs.getString(2));
-            entry.add(rs.getString(3));
-            entry.add(rs.getString(4));
-            entry.add(rs.getString(5));
-            entry.add(rs.getString(6));
+            entry.add(rs.getString("country"));
+            entry.add(rs.getString("releasedate"));
+            entry.add(rs.getString("label"));
+            entry.add(rs.getString("catno"));
+            entry.add(rs.getString("barcode"));
             list.add(entry);
         }
         st.close();
         st = conn.prepareStatement(
-                "SELECT album.id, artist.gid, artist.name, " +
-                        "album.gid, album.name, attributes, tracks, discids, asin, language, script " +
+                "SELECT album.id, album.gid, album.name, " +
+						"artist.gid as artist_gid, artist.name as artist_name, " +
+                        "attributes, tracks, discids, asin, language, script " +
                         "FROM album " +
                         "JOIN albummeta ON album.id=albummeta.id " +
                         "JOIN artist ON album.artist=artist.id " +
@@ -91,14 +92,17 @@ public class ReleaseIndex extends Index {
     //TODO Script, Language
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<List<String>>> events) throws SQLException {
         Document doc = new Document();
-        int albumId = rs.getInt(1);
-        addArtistGidToDocument(doc, rs.getString(2));
-        addArtistToDocument(doc, rs.getString(3));
-        addReleaseGidToDocument(doc, rs.getString(4));
-        addReleaseToDocument(doc, rs.getString(5));
-        addNumTracksToDocument(doc, rs.getString(7));
-        addDiscIdsToDocument(doc, rs.getString(8));
-        addAsinToDocument(doc, rs.getString(9));
+        int albumId = rs.getInt("id");
+        addReleaseGidToDocument(doc, rs.getString("gid"));
+        addReleaseToDocument(doc, rs.getString("name"));        
+        addArtistGidToDocument(doc, rs.getString("artist_gid"));
+        addArtistToDocument(doc, rs.getString("artist_name"));
+        addNumTracksToDocument(doc, rs.getString("tracks"));
+        addDiscIdsToDocument(doc, rs.getString("discids"));
+        String asin = rs.getString("asin");
+        if (asin != null && !asin.isEmpty()) {
+        	addAsinToDocument(doc, asin);
+        }
         //addLanguageToDocument(doc, rs.getString(10));, TODO Need to chnage SQL
         //addScriptToDocument(doc, rs.getString(11));    TODO Need to chnage SQL
 

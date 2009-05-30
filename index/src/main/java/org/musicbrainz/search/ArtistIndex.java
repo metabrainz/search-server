@@ -30,8 +30,6 @@ import java.sql.*;
 
 public class ArtistIndex extends Index {
 
-    private String[] TYPES = {"unknown", "person", "group"};
-
     public String getName() {
         return "artist";
     }
@@ -45,12 +43,12 @@ public class ArtistIndex extends Index {
 
     public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = conn.prepareStatement("SELECT ref, name FROM artistalias WHERE ref BETWEEN ? AND ?");
+        PreparedStatement st = conn.prepareStatement("SELECT ref as artist, name as alias FROM artistalias WHERE ref BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            int artistId = rs.getInt(1);
+            int artistId = rs.getInt("artist");
             List<String> list;
             if (!aliases.containsKey(artistId)) {
                 list = new LinkedList<String>();
@@ -58,7 +56,7 @@ public class ArtistIndex extends Index {
             } else {
                 list = aliases.get(artistId);
             }
-            list.add(rs.getString(2));
+            list.add(rs.getString("alias"));
         }
         st.close();
         st = conn.prepareStatement(
@@ -75,28 +73,28 @@ public class ArtistIndex extends Index {
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
         Document doc = new Document();
-        int artistId = rs.getInt(1);
-        addArtistGidToDocument(doc, rs.getString(2));
-        addArtistToDocument(doc, rs.getString(3));
-        addSortNameToDocument(doc, rs.getString(4));
+        int artistId = rs.getInt("id");
+        addArtistGidToDocument(doc, rs.getString("gid"));
+        addArtistToDocument(doc, rs.getString("name"));
+        addSortNameToDocument(doc, rs.getString("sortname"));
 
-        Integer type = rs.getInt(5);
+        Integer type = rs.getInt("type");
         if (type == null) {
             type = 0;
         }
         addTypeToDocument(doc, ArtistType.values()[type]);
 
-        String begin = rs.getString(6);
+        String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {
             addBeginDateToDocument(doc, normalizeDate(begin));
         }
 
-        String end = rs.getString(7);
+        String end = rs.getString("enddate");
         if (end != null && !end.isEmpty()) {
             addEndDateToDocument(doc, normalizeDate(end));
         }
 
-        String comment = rs.getString(8);
+        String comment = rs.getString("resolution");
         if (comment != null && !comment.isEmpty()) {
             addCommentToDocument(doc, comment);
         }
@@ -108,7 +106,6 @@ public class ArtistIndex extends Index {
         }
         return doc;
     }
-
 
     public void addArtistGidToDocument(Document doc, String artistId) {
         doc.add(new Field(ArtistIndexFieldName.ARTIST_ID.getFieldname(), artistId, Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -136,13 +133,10 @@ public class ArtistIndex extends Index {
 
     public void addCommentToDocument(Document doc, String comment) {
         doc.add(new Field(ArtistIndexFieldName.COMMENT.getFieldname(), comment, Field.Store.YES, Field.Index.ANALYZED));
-
     }
 
     public void addAliasToDocument(Document doc, String alias) {
         doc.add(new Field(ArtistIndexFieldName.ALIAS.getFieldname(), alias, Field.Store.NO, Field.Index.ANALYZED));
-
     }
-
 
 }
