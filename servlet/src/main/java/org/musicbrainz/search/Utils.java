@@ -54,9 +54,4 @@ public class Utils {
         }
 	}
     
-    public static String escapeXml(String str) throws IOException {
-        return str.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-    }
-
-
 }

@@ -64,20 +64,20 @@ public class ArtistXmlWriter extends XmlWriter {
 
                 String artype = doc.get(ArtistIndexFieldName.TYPE.getFieldname());
                 if (artype != null) {
-                    artist.setType(Utils.escapeXml(StringUtils.capitalize(artype)));
+                    artist.setType(StringUtils.capitalize(artype));
                 }
 
                 artist.getOtherAttributes().put(new QName("ext:score"),String.valueOf((int)(result.score * 100)));
 
                 String name = doc.get(ArtistIndexFieldName.ARTIST.getFieldname());
                 if (name != null) {
-                    artist.setName(Utils.escapeXml(name));
+                    artist.setName(name);
 
                 }
 
                 String sortname = doc.get(ArtistIndexFieldName.SORTNAME.getFieldname());
                 if (sortname != null) {
-                    artist.setSortName(Utils.escapeXml(name));
+                    artist.setSortName(name);
 
                 }
 

@@ -91,13 +91,13 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("<track id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
         assertTrue(output.contains("<title>Gravitational Lenz</title>"));
-        //assertTrue(output.contains("duration=\"2430\""))
+        assertTrue(output.contains("<duration>2340</duration>"));
         assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("release id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
-        //assertTrue(output.contains("offset=\"5\""));
-        //assertTrue(output.contains("count=\"10\""));
+        assertTrue(output.contains("offset=\"5\""));
+        assertTrue(output.contains("count=\"10\""));
 
     }
 }

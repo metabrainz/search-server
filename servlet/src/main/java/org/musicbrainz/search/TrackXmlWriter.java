@@ -29,61 +29,86 @@
 package org.musicbrainz.search;
 
 import java.io.*;
+import java.math.BigInteger;
 
 import org.apache.lucene.document.Document;
+
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+
+import com.jthink.brainz.mmd.*;
 
 public class TrackXmlWriter extends XmlWriter {
 
     public void write(PrintWriter out, Results results) throws IOException {
-        writeHeader(out);
-        out.write("<track-list count=\"" + results.totalHits + "\" offset=\"" + results.offset + "\">");
-        for (Result result : results.results) {
-            Document doc = result.doc;
 
-            out.write("<track id=\"");
-            Utils.escapeXml(out, doc.get(TrackIndexFieldName.TRACK_ID.getFieldname()));
-            out.write('"');
-            out.write(" ext:score=\"");
-            out.print((int) (result.score * 100));
-            out.write("\">");
 
-            String title = doc.get(TrackIndexFieldName.TRACK.getFieldname());
-            if (title != null) {
-                out.write("<title>");
-                Utils.escapeXml(out, title);
-                out.write("</title>");
+        try {
+
+            Marshaller m = context.createMarshaller();
+            ObjectFactory of = new ObjectFactory();
+
+            Metadata metadata = of.createMetadata();
+            TrackList trackList = of.createTrackList();
+
+            for (Result result : results.results) {
+                Document doc = result.doc;
+                Track track = of.createTrack();
+                track.setId(doc.get(TrackIndexFieldName.TRACK_ID.getFieldname()));
+                track.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
+
+                String name = doc.get(TrackIndexFieldName.TRACK.getFieldname());
+                if (name != null) {
+                    track.setTitle(name);
+                }
+
+                String duration = doc.get(TrackIndexFieldName.DURATION.getFieldname());
+                if (duration != null) {
+                     track.setDuration(BigInteger.valueOf(Long.parseLong(duration)));
+                }
+
+
+                String artistName = doc.get(TrackIndexFieldName.ARTIST.getFieldname());
+                if (artistName != null) {
+
+                    Artist artist = of.createArtist();
+                    artist.setName(artistName);
+                    artist.setId(doc.get(ReleaseIndexFieldName.ARTIST_ID.getFieldname()));
+                    track.setArtist(artist);
+                }
+
+                String releaseName = doc.get(TrackIndexFieldName.RELEASE.getFieldname());
+                if (releaseName != null) {
+                    Release release = of.createRelease();
+                    release.setId(doc.get(TrackIndexFieldName.RELEASE_ID.getFieldname()));
+                    release.setTitle(releaseName);
+
+                    String trackNo = doc.get(TrackIndexFieldName.TRACKNUM.getFieldname());
+                    String tracks  = doc.get(TrackIndexFieldName.NUM_TRACKS.getFieldname());
+                    if(trackNo!=null) {
+                        TrackList releaseTrackList = of.createTrackList();
+                        releaseTrackList.setOffset(BigInteger.valueOf(Long.parseLong(trackNo)));
+                        if (tracks != null) {
+                            releaseTrackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
+                        }
+                        release.setTrackList(releaseTrackList);
+
+                    }
+                    ReleaseList releaseList = of.createReleaseList();
+                    releaseList.getRelease().add(release);
+                    track.setReleaseList(releaseList);
+                }
+                trackList.getTrack().add(track);
             }
-
-            String duration = doc.get(TrackIndexFieldName.DURATION.getFieldname());
-            if (duration != null) {
-                out.write("<duration>" + duration + "</duration>");
-            }
-
-            String artistName = doc.get(TrackIndexFieldName.ARTIST.getFieldname());
-            if (artistName != null) {
-                out.write("<artist id=\"");
-                Utils.escapeXml(out, doc.get(TrackIndexFieldName.ARTIST_ID.getFieldname()));
-                out.write("\"><name>");
-                Utils.escapeXml(out, artistName);
-                out.write("</name></artist>");
-            }
-
-            String releaseName = doc.get(TrackIndexFieldName.RELEASE.getFieldname());
-            if (releaseName != null) {
-                out.write("<release id=\"");
-                Utils.escapeXml(out, doc.get(TrackIndexFieldName.RELEASE_ID.getFieldname()));
-                out.write("\"><title>");
-                Utils.escapeXml(out, releaseName);
-                out.write("</title>");
-                out.write("<track-list offset=\"");
-                out.write(doc.get(TrackIndexFieldName.TRACKNUM.getFieldname()));
-                out.write("\"/></release>");
-            }
-
-            out.write("</track>");
+            trackList.setCount(BigInteger.valueOf(results.results.size()));
+            trackList.setOffset(BigInteger.valueOf(results.offset));
+            metadata.setTrackList(trackList);
+            m.marshal(metadata,out);
         }
-        out.write("</track-list>");
-        writeFooter(out);
+        catch (JAXBException je) {
+            throw new IOException(je);
+        }
     }
 
 }

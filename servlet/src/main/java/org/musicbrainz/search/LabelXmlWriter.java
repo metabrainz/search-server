@@ -29,69 +29,81 @@
 package org.musicbrainz.search;
 
 import java.io.*;
+import java.math.BigInteger;
 
 import org.apache.lucene.document.Document;
 import org.apache.commons.lang.StringUtils;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+
+import com.jthink.brainz.mmd.*;
+
 public class LabelXmlWriter extends XmlWriter {
 
     public void write(PrintWriter out, Results results) throws IOException {
-        writeHeader(out);
-        out.write("<label-list count=\"" + results.totalHits + "\" offset=\"" + results.offset + "\">");
-        for (Result result : results.results) {
-            Document doc = result.doc;
 
-            out.write("<label id=\"");
-            Utils.escapeXml(out, doc.get(LabelIndexFieldName.LABEL_ID.getFieldname()));
-            out.write('"');
-            String artype = doc.get(LabelIndexFieldName.TYPE.getFieldname());
-            if (artype != null) {
-                out.write(" type=\"");
-                Utils.escapeXml(out, StringUtils.capitalize(artype));
-                out.write('"');
-            }
-            out.write(" ext:score=\"");
-            out.print((int) (result.score * 100));
-            out.write("\">");
+        try {
 
-            String name = doc.get(LabelIndexFieldName.LABEL.getFieldname());
-            if (name != null) {
-                out.write("<name>");
-                Utils.escapeXml(out, name);
-                out.write("</name>");
-            }
+            Marshaller m = context.createMarshaller();
+            ObjectFactory of = new ObjectFactory();
 
-            String sortname = doc.get(LabelIndexFieldName.SORTNAME.getFieldname());
-            if (sortname != null) {
-                out.write("<sort-name>");
-                Utils.escapeXml(out, sortname);
-                out.write("</sort-name>");
-            }
+            Metadata metadata = of.createMetadata();
+            LabelList labelList = of.createLabelList();
 
-            String begin = doc.get(LabelIndexFieldName.BEGIN.getFieldname());
-            String end = doc.get(LabelIndexFieldName.END.getFieldname());
-            if (begin != null || end != null) {
-                out.write("<life-span");
-                if (begin != null) {
-                    out.write(" begin=\"" + begin + "\"");
+            for (Result result : results.results) {
+                Document doc = result.doc;
+                Label label = of.createLabel();
+                label.setId(doc.get(LabelIndexFieldName.LABEL_ID.getFieldname()));
+                label.setType(StringUtils.capitalize(doc.get(LabelIndexFieldName.TYPE.getFieldname())));
+
+                label.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
+
+                String name = doc.get(LabelIndexFieldName.LABEL.getFieldname());
+                if (name != null) {
+                    label.setName(name);
+
                 }
-                if (end != null) {
-                    out.write(" end=\"" + end + "\"");
+
+                String sortname = doc.get(LabelIndexFieldName.SORTNAME.getFieldname());
+                if (sortname != null) {
+                    label.setSortName(sortname);
+
                 }
-                out.write("/>");
-            }
 
-            String comment = doc.get(LabelIndexFieldName.COMMENT.getFieldname());
-            if (comment != null) {
-                out.write("<disambiguation>");
-                Utils.escapeXml(out, comment);
-                out.write("</disambiguation>");
-            }
+                String begin = doc.get(LabelIndexFieldName.BEGIN.getFieldname());
+                String end = doc.get(LabelIndexFieldName.END.getFieldname());
+                if (begin != null || end != null) {
+                    LifeSpan lifespan = of.createLifeSpan();
+                    if (begin != null) {
+                        lifespan.setBegin(begin);
 
-            out.write("</label>");
+                    }
+                    if (end != null) {
+                        lifespan.setEnd(end);
+
+                    }
+                    label.setLifeSpan(lifespan);
+
+                }
+
+                String comment = doc.get(LabelIndexFieldName.COMMENT.getFieldname());
+                if (comment != null) {
+                    label.setDisambiguation(comment);
+                }
+
+                labelList.getLabel().add(label);
+
+            }
+            labelList.setCount(BigInteger.valueOf(results.results.size()));
+            labelList.setOffset(BigInteger.valueOf(results.offset));
+            metadata.setLabelList(labelList);
+            m.marshal(metadata,out);
+
         }
-        out.write("</label-list>");
-        writeFooter(out);
+        catch (JAXBException je) {
+            throw new IOException(je);
+        }
     }
-
 }

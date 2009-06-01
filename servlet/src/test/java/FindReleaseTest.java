@@ -114,7 +114,7 @@ public class FindReleaseTest extends TestCase {
         //System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
-        assertTrue(output.contains("release id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
 //        assertTrue(output.contains("language=\"ENG\""));
 //        assertTrue(output.contains("script=\"Latn\""));
 //        assertTrue(output.contains("type=\"Album Official\""));
@@ -125,9 +125,12 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<track-list count=\"10\""));
         assertTrue(output.contains("date=\"2005\""));
         assertTrue(output.contains("country=\"GB\""));
-        assertTrue(output.contains("label=\"Wrath Records\""));
-//        assertTrue(output.contains("barcode=\"-\""));       Code doesnt show if '-' but loks like should looking at main server
-        assertTrue(output.contains("catalog-number=\"WRATHCD25\""));   //Why does formast define as this, but main server returns cat-no
+
+
+//      assertTrue(output.contains("label=\"Wrath Records\"")); #5225 this is what current service returns but invalid for MMD
+        assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
+//      assertTrue(output.contains("barcode=\"-\""));       Code doesnt show if '-' but looks like should looking at main server
+        assertTrue(output.contains("catalog-number=\"WRATHCD25\""));   // #5225 but current service breaks MMD and returns as catno
 
 
     }

@@ -124,11 +124,11 @@ public class FindLabelTest extends TestCase {
         //System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
-        assertTrue(output.contains("<label id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
+        assertTrue(output.contains("id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("type=\"Production\""));
         assertTrue(output.contains("<name>Jockey Slut</name>"));
         assertTrue(output.contains("<sort-name>Jockey Slut</sort-name>"));
-        assertTrue(output.contains("<life-span begin=\"1993\""));
+        assertTrue(output.contains("begin=\"1993\""));
         assertTrue(output.contains("end=\"2004\""));
     }
 }
