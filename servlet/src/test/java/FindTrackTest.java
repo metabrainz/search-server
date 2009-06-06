@@ -1,22 +1,22 @@
-import junit.framework.TestCase;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.queryParser.QueryParser;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.*;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
+import junit.framework.TestCase;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.Result;
+import org.musicbrainz.search.Results;
+import org.musicbrainz.search.ResultsWriter;
+import org.musicbrainz.search.SearchServer;
+import org.musicbrainz.search.TrackIndex;
+import org.musicbrainz.search.TrackIndexField;
+import org.musicbrainz.search.TrackXmlWriter;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
@@ -38,17 +38,18 @@ public class FindTrackTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
 
-        TrackIndex li = new TrackIndex();
+        TrackIndex ti = new TrackIndex();
         Document doc = new Document();
-        li.addTrackGidToDocument(doc, "7ca7782b-a602-448b-b108-bb881a7be2d6");
-        li.addTrackToDocument(doc, "Gravitational Lenz");
-        li.addReleaseGidToDocument(doc, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
-        li.addReleaseToDocument(doc, "Our Glorious 5 Year Plan");
-        li.addArtistGidToDocument(doc, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        li.addArtistToDocument(doc, "Farming Incident");
-        li.addDurationToDocument(doc, "00000000002340");
-        li.addNumTracksToDocument(doc, "10");
-        li.addTrackNoToDocument(doc, "00000000000005");
+        ti.addFieldToDocument(doc, TrackIndexField.TRACK_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
+        ti.addFieldToDocument(doc, TrackIndexField.TRACK, "Gravitational Lenz");
+        ti.addFieldToDocument(doc, TrackIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
+        ti.addFieldToDocument(doc, TrackIndexField.RELEASE, "Our Glorious 5 Year Plan");
+        ti.addFieldToDocument(doc, TrackIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        ti.addFieldToDocument(doc, TrackIndexField.ARTIST, "Farming Incident");
+        ti.addFieldToDocument(doc, TrackIndexField.DURATION, "00000000002340");
+        ti.addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, "10");
+        ti.addFieldToDocument(doc, TrackIndexField.TRACKNUM, "00000000000005");
+        
         writer.addDocument(doc);
         writer.close();
         Map<String, IndexSearcher> searchers = new HashMap<String, IndexSearcher>();
@@ -61,15 +62,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexFieldName.TRACK_ID.getFieldname()));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexFieldName.TRACK.getFieldname()));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexFieldName.ARTIST_ID.getFieldname()));
-        assertEquals("Farming Incident", doc.get(TrackIndexFieldName.ARTIST.getFieldname()));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexFieldName.RELEASE_ID.getFieldname()));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexFieldName.RELEASE.getFieldname()));
-        assertEquals("00000000000005", doc.get(TrackIndexFieldName.TRACKNUM.getFieldname()));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexFieldName.RELEASE.getFieldname()));
-        assertEquals("00000000002340", doc.get(TrackIndexFieldName.DURATION.getFieldname()));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID.getName()));
+        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK.getName()));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID.getName()));
+        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST.getName()));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID.getName()));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE.getName()));
+        assertEquals("00000000000005", doc.get(TrackIndexField.TRACKNUM.getName()));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE.getName()));
+        assertEquals("00000000002340", doc.get(TrackIndexField.DURATION.getName()));
     }
 
     /**

@@ -31,13 +31,13 @@ public class FindLabelTest extends TestCase {
 
         LabelIndex li = new LabelIndex();
         Document doc = new Document();
-        li.addLabelGidToDocument(doc, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
-        li.addLabelToDocument(doc, "Jockey Slut");
-        li.addSortNameToDocument(doc, "Jockey Slut");
-        li.addBeginDateToDocument(doc, "1993");
-        li.addEndDateToDocument(doc, "2004");
-        li.addTypeToDocument(doc, LabelType.PRODUCTION);
-        li.addCountryToDocument(doc, "GB");
+        li.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
+        li.addFieldToDocument(doc, LabelIndexField.LABEL, "Jockey Slut");
+        li.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Jockey Slut");
+        li.addFieldToDocument(doc, LabelIndexField.BEGIN, "1993");
+        li.addFieldToDocument(doc, LabelIndexField.END, "2004");
+        li.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+        li.addFieldToDocument(doc, LabelIndexField.COUNTRY, "GB");
         writer.addDocument(doc);
         writer.close();
         Map<String, IndexSearcher> searchers = new HashMap<String, IndexSearcher>();
@@ -50,14 +50,14 @@ public class FindLabelTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
-        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexFieldName.LABEL_ID.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.LABEL.getFieldname()));
-        assertEquals("1993", doc.get(LabelIndexFieldName.BEGIN.getFieldname()));
-        assertEquals("2004", doc.get(LabelIndexFieldName.END.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.ALIAS.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.COMMENT.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.SORTNAME.getFieldname()));
-        assertEquals("production", doc.get(LabelIndexFieldName.TYPE.getFieldname()));
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL.getName()));
+        assertEquals("1993", doc.get(LabelIndexField.BEGIN.getName()));
+        assertEquals("2004", doc.get(LabelIndexField.END.getName()));
+        assertNull(doc.get(LabelIndexField.ALIAS.getName()));
+        assertNull(doc.get(LabelIndexField.COMMENT.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME.getName()));
+        assertEquals("production", doc.get(LabelIndexField.TYPE.getName()));
     }
 
 
@@ -66,14 +66,14 @@ public class FindLabelTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
-        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexFieldName.LABEL_ID.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.LABEL.getFieldname()));
-        assertEquals("1993", doc.get(LabelIndexFieldName.BEGIN.getFieldname()));
-        assertEquals("2004", doc.get(LabelIndexFieldName.END.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.ALIAS.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.COMMENT.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.SORTNAME.getFieldname()));
-        assertEquals("production", doc.get(LabelIndexFieldName.TYPE.getFieldname()));
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL.getName()));
+        assertEquals("1993", doc.get(LabelIndexField.BEGIN.getName()));
+        assertEquals("2004", doc.get(LabelIndexField.END.getName()));
+        assertNull(doc.get(LabelIndexField.ALIAS.getName()));
+        assertNull(doc.get(LabelIndexField.COMMENT.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME.getName()));
+        assertEquals("production", doc.get(LabelIndexField.TYPE.getName()));
     }
 
     public void testFindLabelBySortname() throws Exception {
@@ -81,14 +81,14 @@ public class FindLabelTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
-        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexFieldName.LABEL_ID.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.LABEL.getFieldname()));
-        assertEquals("1993", doc.get(LabelIndexFieldName.BEGIN.getFieldname()));
-        assertEquals("2004", doc.get(LabelIndexFieldName.END.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.ALIAS.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.COMMENT.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.SORTNAME.getFieldname()));
-        assertEquals("production", doc.get(LabelIndexFieldName.TYPE.getFieldname()));
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL.getName()));
+        assertEquals("1993", doc.get(LabelIndexField.BEGIN.getName()));
+        assertEquals("2004", doc.get(LabelIndexField.END.getName()));
+        assertNull(doc.get(LabelIndexField.ALIAS.getName()));
+        assertNull(doc.get(LabelIndexField.COMMENT.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME.getName()));
+        assertEquals("production", doc.get(LabelIndexField.TYPE.getName()));
     }
 
     public void testFindLabelByCountry() throws Exception {
@@ -96,14 +96,14 @@ public class FindLabelTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
-        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexFieldName.LABEL_ID.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.LABEL.getFieldname()));
-        assertEquals("1993", doc.get(LabelIndexFieldName.BEGIN.getFieldname()));
-        assertEquals("2004", doc.get(LabelIndexFieldName.END.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.ALIAS.getFieldname()));
-        assertNull(doc.get(LabelIndexFieldName.COMMENT.getFieldname()));
-        assertEquals("Jockey Slut", doc.get(LabelIndexFieldName.SORTNAME.getFieldname()));
-        assertEquals("production", doc.get(LabelIndexFieldName.TYPE.getFieldname()));
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL.getName()));
+        assertEquals("1993", doc.get(LabelIndexField.BEGIN.getName()));
+        assertEquals("2004", doc.get(LabelIndexField.END.getName()));
+        assertNull(doc.get(LabelIndexField.ALIAS.getName()));
+        assertNull(doc.get(LabelIndexField.COMMENT.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME.getName()));
+        assertEquals("production", doc.get(LabelIndexField.TYPE.getName()));
     }
 
     /**

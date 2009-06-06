@@ -12,14 +12,14 @@ public enum ArtistType {
     PERSON("person"),
     GROUP("group"),;
 
-    private String fieldname;
+    private String name;
 
-    ArtistType(String fieldname) {
-        this.fieldname = fieldname;
+    ArtistType(String name) {
+        this.name = name;
     }
 
-    public String getFieldname() {
-        return fieldname;
+    public String getName() {
+        return name;
     }
 
 }

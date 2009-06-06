@@ -23,7 +23,6 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Document;
 
 import java.sql.*;
@@ -72,71 +71,40 @@ public class ArtistIndex extends Index {
     }
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
+    	
         Document doc = new Document();
         int artistId = rs.getInt("id");
-        addArtistGidToDocument(doc, rs.getString("gid"));
-        addArtistToDocument(doc, rs.getString("name"));
-        addSortNameToDocument(doc, rs.getString("sortname"));
+        addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, rs.getString("gid"));
+        addFieldToDocument(doc, ArtistIndexField.ARTIST, rs.getString("name"));
+        addFieldToDocument(doc, ArtistIndexField.SORTNAME, rs.getString("sortname"));
 
         Integer type = rs.getInt("type");
         if (type == null) {
             type = 0;
         }
-        addTypeToDocument(doc, ArtistType.values()[type]);
+        addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.values()[type].getName());
 
         String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {
-            addBeginDateToDocument(doc, normalizeDate(begin));
+        	addFieldToDocument(doc, ArtistIndexField.BEGIN, normalizeDate(begin));
         }
 
         String end = rs.getString("enddate");
         if (end != null && !end.isEmpty()) {
-            addEndDateToDocument(doc, normalizeDate(end));
+        	addFieldToDocument(doc, ArtistIndexField.BEGIN, normalizeDate(end));
         }
 
         String comment = rs.getString("resolution");
         if (comment != null && !comment.isEmpty()) {
-            addCommentToDocument(doc, comment);
+        	addFieldToDocument(doc, ArtistIndexField.COMMENT, comment);
         }
 
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {
-                addAliasToDocument(doc, alias);
+            	addFieldToDocument(doc, ArtistIndexField.ALIAS, alias);
             }
         }
         return doc;
-    }
-
-    public void addArtistGidToDocument(Document doc, String artistId) {
-        doc.add(new Field(ArtistIndexFieldName.ARTIST_ID.getFieldname(), artistId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addArtistToDocument(Document doc, String artist) {
-        doc.add(new Field(ArtistIndexFieldName.ARTIST.getFieldname(), artist, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addSortNameToDocument(Document doc, String sortName) {
-        doc.add(new Field(ArtistIndexFieldName.SORTNAME.getFieldname(), sortName, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addTypeToDocument(Document doc, ArtistType type) {
-        doc.add(new Field(ArtistIndexFieldName.TYPE.getFieldname(), type.getFieldname(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addBeginDateToDocument(Document doc, String date) {
-        doc.add(new Field(ArtistIndexFieldName.BEGIN.getFieldname(), date, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addEndDateToDocument(Document doc, String date) {
-        doc.add(new Field(ArtistIndexFieldName.END.getFieldname(), date, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addCommentToDocument(Document doc, String comment) {
-        doc.add(new Field(ArtistIndexFieldName.COMMENT.getFieldname(), comment, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addAliasToDocument(Document doc, String alias) {
-        doc.add(new Field(ArtistIndexFieldName.ALIAS.getFieldname(), alias, Field.Store.NO, Field.Index.ANALYZED));
     }
 
 }

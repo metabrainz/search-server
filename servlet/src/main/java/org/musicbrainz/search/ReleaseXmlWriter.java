@@ -30,7 +30,6 @@ package org.musicbrainz.search;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.Locale;
 
 import org.apache.lucene.document.Document;
 import org.apache.commons.lang.StringUtils;
@@ -58,29 +57,28 @@ public class ReleaseXmlWriter extends XmlWriter {
             for (Result result : results.results) {
                 Document doc = result.doc;
                 Release release = of.createRelease();
-                release.setId(doc.get(ReleaseIndexFieldName.RELEASE_ID.getFieldname()));
+                release.setId(doc.get(ReleaseIndexField.RELEASE_ID.getName()));
 
                 release.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
-                String name = doc.get(ReleaseIndexFieldName.RELEASE.getFieldname());
+                String name = doc.get(ReleaseIndexField.RELEASE.getName());
                 if (name != null) {
                     release.setTitle(name);
 
                 }
 
-                String asin = doc.get(ReleaseIndexFieldName.AMAZON_ID.getFieldname());
+                String asin = doc.get(ReleaseIndexField.AMAZON_ID.getName());
                 if (asin != null) {
                     release.setAsin(asin);
 
                 }
 
-
                 TextRepresentation tr = of.createTextRepresentation();
-                String script = doc.get(ReleaseIndexFieldName.SCRIPT.getFieldname());
+                String script = doc.get(ReleaseIndexField.SCRIPT.getName());
                 if (script != null) {
                     tr.setScript(script);
                 }
-                String lang = doc.get(ReleaseIndexFieldName.LANGUAGE.getFieldname());
+                String lang = doc.get(ReleaseIndexField.LANGUAGE.getName());
                 if (lang != null) {
                     tr.setLanguage(lang.toUpperCase(Locale.US));
                 }
@@ -88,14 +86,14 @@ public class ReleaseXmlWriter extends XmlWriter {
                 if (script != null || lang != null) {
                     release.setTextRepresentation(tr);
                 }
-                
-                String[] countries = doc.getValues(ReleaseIndexFieldName.COUNTRY.getFieldname());
+
+                String[] countries = doc.getValues(ReleaseIndexField.COUNTRY.getName());
                 if (countries.length > 0) {
                     ReleaseEventList eventList = of.createReleaseEventList();
-                    String[] dates = doc.getValues(ReleaseIndexFieldName.DATE.getFieldname());
-                    String[] labels = doc.getValues(ReleaseIndexFieldName.LABEL.getFieldname());
-                    String[] catnos = doc.getValues(ReleaseIndexFieldName.CATALOG_NO.getFieldname());
-                    String[] barcodes = doc.getValues(ReleaseIndexFieldName.BARCODE.getFieldname());
+                    String[] dates = doc.getValues(ReleaseIndexField.DATE.getName());
+                    String[] labels = doc.getValues(ReleaseIndexField.LABEL.getName());
+                    String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO.getName());
+                    String[] barcodes = doc.getValues(ReleaseIndexField.BARCODE.getName());
 
                     for (int i = 0; i < countries.length; i++) {
                         Event event = of.createEvent();
@@ -126,23 +124,23 @@ public class ReleaseXmlWriter extends XmlWriter {
                     release.setReleaseEventList(eventList);
                 }
 
-                String artistName = doc.get(ReleaseIndexFieldName.ARTIST.getFieldname());
+                String artistName = doc.get(ReleaseIndexField.ARTIST.getName());
                 if (artistName != null) {
 
                     Artist artist = of.createArtist();
                     artist.setName(artistName);
-                    artist.setId(doc.get(ReleaseIndexFieldName.ARTIST_ID.getFieldname()));
+                    artist.setId(doc.get(ReleaseIndexField.ARTIST_ID.getName()));
                     release.setArtist(artist);
                 }
 
-                String discIds = doc.get(ReleaseIndexFieldName.NUM_DISC_IDS.getFieldname());
+                String discIds = doc.get(ReleaseIndexField.NUM_DISC_IDS.getName());
                 if (discIds != null) {
                     DiscList discList = of.createDiscList();
                     discList.setCount(BigInteger.valueOf(Long.parseLong(discIds)));
                     release.setDiscList(discList);
                 }
 
-                String tracks = doc.get(ReleaseIndexFieldName.NUM_TRACKS.getFieldname());
+                String tracks = doc.get(ReleaseIndexField.NUM_TRACKS.getName());
                 if (tracks != null) {
                     TrackList trackList = of.createTrackList();
                     trackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));

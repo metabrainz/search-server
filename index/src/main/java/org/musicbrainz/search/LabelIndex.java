@@ -23,7 +23,6 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Document;
 
 import java.sql.*;
@@ -75,85 +74,44 @@ public class LabelIndex extends Index {
 
         Document doc = new Document();
         int labelId = rs.getInt("id");
-        addLabelGidToDocument(doc, rs.getString("gid"));
-        addLabelToDocument(doc, rs.getString("name"));
-        addSortNameToDocument(doc, rs.getString("sortname"));
+        addFieldToDocument(doc, LabelIndexField.LABEL_ID, rs.getString("gid"));
+        addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
+        addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
 
         Integer type = rs.getInt("type");
         if (type == null) {
             type = 0;
         }
-        addTypeToDocument(doc, LabelType.values()[type]);
+        addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.values()[type].getName());
 
         String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {
-            addBeginDateToDocument(doc, normalizeDate(begin));
+        	addFieldToDocument(doc, LabelIndexField.BEGIN, normalizeDate(begin));
         }
 
         String end = rs.getString("enddate");
         if (end != null && !end.isEmpty()) {
-            addEndDateToDocument(doc, normalizeDate(end));
+        	addFieldToDocument(doc, LabelIndexField.END, normalizeDate(end));
         }
 
         String comment = rs.getString("resolution");
         if (comment != null && !comment.isEmpty()) {
-            addCommentToDocument(doc, comment);
+        	addFieldToDocument(doc, LabelIndexField.COMMENT, comment);
         }
 
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
-        	addCodeToDocument(doc, labelcode);
+        	addFieldToDocument(doc, LabelIndexField.CODE, labelcode);
         }
         
-        addCountryToDocument(doc, rs.getString("country"));
+        addFieldToDocument(doc, LabelIndexField.COUNTRY, rs.getString("country"));
 
         if (aliases.containsKey(labelId)) {
             for (String alias : aliases.get(labelId)) {
-                addAliasToDocument(doc, alias);
+                addFieldToDocument(doc, LabelIndexField.ALIAS, alias);
             }
         }
         return doc;
-    }
-
-
-    public void addLabelGidToDocument(Document doc, String artistId) {
-        doc.add(new Field(LabelIndexFieldName.LABEL_ID.getFieldname(), artistId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addLabelToDocument(Document doc, String artist) {
-        doc.add(new Field(LabelIndexFieldName.LABEL.getFieldname(), artist, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addSortNameToDocument(Document doc, String sortName) {
-        doc.add(new Field(LabelIndexFieldName.SORTNAME.getFieldname(), sortName, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addTypeToDocument(Document doc, LabelType type) {
-        doc.add(new Field(LabelIndexFieldName.TYPE.getFieldname(), type.getFieldname(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addBeginDateToDocument(Document doc, String date) {
-        doc.add(new Field(LabelIndexFieldName.BEGIN.getFieldname(), date, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addEndDateToDocument(Document doc, String date) {
-        doc.add(new Field(LabelIndexFieldName.END.getFieldname(), date, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addCommentToDocument(Document doc, String comment) {
-        doc.add(new Field(LabelIndexFieldName.COMMENT.getFieldname(), comment, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addCodeToDocument(Document doc, String code) {
-        doc.add(new Field(LabelIndexFieldName.CODE.getFieldname(), code, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addCountryToDocument(Document doc, String country) {
-        doc.add(new Field(LabelIndexFieldName.COUNTRY.getFieldname(), country, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addAliasToDocument(Document doc, String alias) {
-        doc.add(new Field(LabelIndexFieldName.ALIAS.getFieldname(), alias, Field.Store.NO, Field.Index.ANALYZED));
     }
 
 }

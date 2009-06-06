@@ -60,29 +60,29 @@ public class ArtistXmlWriter extends XmlWriter {
                 Document doc = result.doc;
                 Artist artist = of.createArtist();
 
-                artist.setId(doc.get(ArtistIndexFieldName.ARTIST_ID.getFieldname()));
+                artist.setId(doc.get(ArtistIndexField.ARTIST_ID.getName()));
 
-                String artype = doc.get(ArtistIndexFieldName.TYPE.getFieldname());
+                String artype = doc.get(ArtistIndexField.TYPE.getName());
                 if (artype != null) {
                     artist.setType(StringUtils.capitalize(artype));
                 }
 
                 artist.getOtherAttributes().put(new QName("ext:score"),String.valueOf((int)(result.score * 100)));
 
-                String name = doc.get(ArtistIndexFieldName.ARTIST.getFieldname());
+                String name = doc.get(ArtistIndexField.ARTIST.getName());
                 if (name != null) {
                     artist.setName(name);
 
                 }
 
-                String sortname = doc.get(ArtistIndexFieldName.SORTNAME.getFieldname());
+                String sortname = doc.get(ArtistIndexField.SORTNAME.getName());
                 if (sortname != null) {
                     artist.setSortName(name);
 
                 }
 
-                String begin = doc.get(ArtistIndexFieldName.BEGIN.getFieldname());
-                String end   = doc.get(ArtistIndexFieldName.END.getFieldname());
+                String begin = doc.get(ArtistIndexField.BEGIN.getName());
+                String end   = doc.get(ArtistIndexField.END.getName());
                 if (begin != null || end != null) {
                     LifeSpan lifespan= of.createLifeSpan();
                     if (begin != null) {
@@ -97,7 +97,7 @@ public class ArtistXmlWriter extends XmlWriter {
                                         
                 }
 
-                String comment = doc.get(ArtistIndexFieldName.COMMENT.getFieldname());
+                String comment = doc.get(ArtistIndexField.COMMENT.getName());
                 if (comment != null) {
                     artist.setDisambiguation(comment);
                 }

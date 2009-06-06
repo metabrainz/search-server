@@ -55,25 +55,25 @@ public class LabelXmlWriter extends XmlWriter {
             for (Result result : results.results) {
                 Document doc = result.doc;
                 Label label = of.createLabel();
-                label.setId(doc.get(LabelIndexFieldName.LABEL_ID.getFieldname()));
-                label.setType(StringUtils.capitalize(doc.get(LabelIndexFieldName.TYPE.getFieldname())));
+                label.setId(doc.get(LabelIndexField.LABEL_ID.getName()));
+                label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE.getName())));
 
                 label.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
-                String name = doc.get(LabelIndexFieldName.LABEL.getFieldname());
+                String name = doc.get(LabelIndexField.LABEL.getName());
                 if (name != null) {
                     label.setName(name);
 
                 }
 
-                String sortname = doc.get(LabelIndexFieldName.SORTNAME.getFieldname());
+                String sortname = doc.get(LabelIndexField.SORTNAME.getName());
                 if (sortname != null) {
                     label.setSortName(sortname);
 
                 }
 
-                String begin = doc.get(LabelIndexFieldName.BEGIN.getFieldname());
-                String end = doc.get(LabelIndexFieldName.END.getFieldname());
+                String begin = doc.get(LabelIndexField.BEGIN.getName());
+                String end = doc.get(LabelIndexField.END.getName());
                 if (begin != null || end != null) {
                     LifeSpan lifespan = of.createLifeSpan();
                     if (begin != null) {
@@ -88,7 +88,7 @@ public class LabelXmlWriter extends XmlWriter {
 
                 }
 
-                String comment = doc.get(LabelIndexFieldName.COMMENT.getFieldname());
+                String comment = doc.get(LabelIndexField.COMMENT.getName());
                 if (comment != null) {
                     label.setDisambiguation(comment);
                 }

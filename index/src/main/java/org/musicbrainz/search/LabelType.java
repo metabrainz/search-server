@@ -8,6 +8,7 @@ package org.musicbrainz.search;
  * To change this template use File | Settings | File Templates.
  */
 public enum LabelType {
+	
     UNKNOWN("unknown"),
     DISTRIBUTOR("distributor"),
     HOLDING("holding"),
@@ -17,14 +18,14 @@ public enum LabelType {
     REISSUE_PROD("reissue prod."),
     PUBLISHER("publisher"),;
 
-    private String fieldname;
+    private String name;
 
-    LabelType(String fieldname) {
-        this.fieldname = fieldname;
+    LabelType(String name) {
+        this.name = name;
     }
 
-    public String getFieldname() {
-        return fieldname;
+    public String getName() {
+        return name;
     }
 
 }

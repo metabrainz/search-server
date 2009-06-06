@@ -22,6 +22,9 @@ package org.musicbrainz.search;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
 
 public abstract class Index {
@@ -32,6 +35,10 @@ public abstract class Index {
 
 	protected String normalizeDate(String date) {
 		return date.replace("-00", "");
+	}
+	
+	public void addFieldToDocument(Document doc, IndexField field, String value) {
+		doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
 	}
 
 }

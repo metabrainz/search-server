@@ -23,7 +23,6 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Document;
 
 import java.sql.*;
@@ -73,13 +72,14 @@ public class ReleaseIndex extends Index {
         st.close();
         st = conn.prepareStatement(
                 "SELECT album.id, album.gid, album.name, " +
-                        "artist.gid as artist_gid, artist.name as artist_name, " +
-                        "attributes, tracks, discids, asin, language.isocode_3b, script.isocode  " +
+						"artist.gid as artist_gid, artist.name as artist_name, " +
+                        "attributes, tracks, discids, asin, " +
+                        "language.isocode_3t as language, script.isocode as script " +
                         "FROM album " +
                         "JOIN albummeta ON album.id=albummeta.id " +
                         "JOIN artist ON album.artist=artist.id " +
                         "LEFT JOIN language ON album.language=language.id " +
-                        "LEFT JOIN script on script=script.id " +
+                        "LEFT JOIN script ON album.script=script.id " +
                         "WHERE album.id BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -94,26 +94,24 @@ public class ReleaseIndex extends Index {
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<List<String>>> events) throws SQLException {
         Document doc = new Document();
         int albumId = rs.getInt("id");
-        addReleaseGidToDocument(doc, rs.getString("gid"));
-        addReleaseToDocument(doc, rs.getString("name"));
-        addArtistGidToDocument(doc, rs.getString("artist_gid"));
-        addArtistToDocument(doc, rs.getString("artist_name"));
-        addNumTracksToDocument(doc, rs.getString("tracks"));
-        addDiscIdsToDocument(doc, rs.getString("discids"));
-
+        addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
+        addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
+        addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, rs.getString("artist_gid"));
+        addFieldToDocument(doc, ReleaseIndexField.ARTIST, rs.getString("artist_name"));
+        addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, rs.getString("tracks"));
+        addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
+        
         String asin = rs.getString("asin");
         if (asin != null && !asin.isEmpty()) {
-            addAsinToDocument(doc, asin);
+        	addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, asin);
         }
-
-        String langCode = rs.getString("isocode_3b");
-        if (langCode != null) {
-            addLanguageToDocument(doc, langCode);
+        String language = rs.getString("language");
+        if (language != null && !language.isEmpty()) {
+        	addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, language);
         }
-
-        String scriptCode = rs.getString("isocode");
-        if (scriptCode != null) {
-            addScriptToDocument(doc, scriptCode);
+        String script = rs.getString("script");
+        if (script != null && !script.isEmpty()) {
+        	addFieldToDocument(doc, ReleaseIndexField.SCRIPT, script);
         }
 
         if (events.containsKey(albumId)) {
@@ -123,91 +121,34 @@ public class ReleaseIndex extends Index {
                 if (str == null || str.isEmpty()) {
                     str = "-";
                 }
-                addCountryToDocument(doc, str);
+                addFieldToDocument(doc, ReleaseIndexField.COUNTRY, str);
 
                 str = entry.get(1);
                 if (str == null || str.isEmpty()) {
                     str = "-";
                 }
-                addDateToDocument(doc, normalizeDate(str));
+                addFieldToDocument(doc, ReleaseIndexField.DATE, normalizeDate(str));
 
                 str = entry.get(2);
                 if (str == null || str.isEmpty()) {
                     str = "-";
                 }
-                addLabelToDocument(doc, str);
+                addFieldToDocument(doc, ReleaseIndexField.LABEL, str);
 
                 str = entry.get(3);
                 if (str == null || str.isEmpty()) {
                     str = "-";
                 }
-                addCatalogNoToDocument(doc, str);
+                addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, str);
 
                 str = entry.get(4);
                 if (str == null || str.isEmpty()) {
                     str = "-";
                 }
-                addBarcodeToDocument(doc, str);
+                addFieldToDocument(doc, ReleaseIndexField.BARCODE, str);
             }
         }
         return doc;
-    }
-
-    public void addArtistGidToDocument(Document doc, String artistId) {
-        doc.add(new Field(ReleaseIndexFieldName.ARTIST_ID.getFieldname(), artistId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addArtistToDocument(Document doc, String artist) {
-        doc.add(new Field(ReleaseIndexFieldName.ARTIST.getFieldname(), artist, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addReleaseGidToDocument(Document doc, String releaseId) {
-        doc.add(new Field(ReleaseIndexFieldName.RELEASE_ID.getFieldname(), releaseId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addReleaseToDocument(Document doc, String release) {
-        doc.add(new Field(ReleaseIndexFieldName.RELEASE.getFieldname(), release, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addNumTracksToDocument(Document doc, String numTracks) {
-        doc.add(new Field(ReleaseIndexFieldName.NUM_TRACKS.getFieldname(), numTracks, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addDiscIdsToDocument(Document doc, String discIds) {
-        doc.add(new Field(ReleaseIndexFieldName.NUM_DISC_IDS.getFieldname(), discIds, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addAsinToDocument(Document doc, String asin) {
-        doc.add(new Field(ReleaseIndexFieldName.AMAZON_ID.getFieldname(), asin, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addLanguageToDocument(Document doc, String language) {
-        doc.add(new Field(ReleaseIndexFieldName.LANGUAGE.getFieldname(), language, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addScriptToDocument(Document doc, String script) {
-        doc.add(new Field(ReleaseIndexFieldName.SCRIPT.getFieldname(), script, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-
-    public void addCountryToDocument(Document doc, String country) {
-        doc.add(new Field(ReleaseIndexFieldName.COUNTRY.getFieldname(), country, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addDateToDocument(Document doc, String date) {
-        doc.add(new Field(ReleaseIndexFieldName.DATE.getFieldname(), date, Field.Store.YES, Field.Index.NOT_ANALYZED));
-    }
-
-    public void addLabelToDocument(Document doc, String label) {
-        doc.add(new Field(ReleaseIndexFieldName.LABEL.getFieldname(), label, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addCatalogNoToDocument(Document doc, String catalogNo) {
-        doc.add(new Field(ReleaseIndexFieldName.CATALOG_NO.getFieldname(), catalogNo, Field.Store.YES, Field.Index.ANALYZED));
-    }
-
-    public void addBarcodeToDocument(Document doc, String barcode) {
-        doc.add(new Field(ReleaseIndexFieldName.BARCODE.getFieldname(), barcode, Field.Store.YES, Field.Index.ANALYZED));
     }
 
 }

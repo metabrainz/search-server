@@ -55,37 +55,37 @@ public class TrackXmlWriter extends XmlWriter {
             for (Result result : results.results) {
                 Document doc = result.doc;
                 Track track = of.createTrack();
-                track.setId(doc.get(TrackIndexFieldName.TRACK_ID.getFieldname()));
+                track.setId(doc.get(TrackIndexField.TRACK_ID.getName()));
                 track.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
-                String name = doc.get(TrackIndexFieldName.TRACK.getFieldname());
+                String name = doc.get(TrackIndexField.TRACK.getName());
                 if (name != null) {
                     track.setTitle(name);
                 }
 
-                String duration = doc.get(TrackIndexFieldName.DURATION.getFieldname());
+                String duration = doc.get(TrackIndexField.DURATION.getName());
                 if (duration != null) {
                      track.setDuration(BigInteger.valueOf(Long.parseLong(duration)));
                 }
 
 
-                String artistName = doc.get(TrackIndexFieldName.ARTIST.getFieldname());
+                String artistName = doc.get(TrackIndexField.ARTIST.getName());
                 if (artistName != null) {
 
                     Artist artist = of.createArtist();
                     artist.setName(artistName);
-                    artist.setId(doc.get(ReleaseIndexFieldName.ARTIST_ID.getFieldname()));
+                    artist.setId(doc.get(ReleaseIndexField.ARTIST_ID.getName()));
                     track.setArtist(artist);
                 }
 
-                String releaseName = doc.get(TrackIndexFieldName.RELEASE.getFieldname());
+                String releaseName = doc.get(TrackIndexField.RELEASE.getName());
                 if (releaseName != null) {
                     Release release = of.createRelease();
-                    release.setId(doc.get(TrackIndexFieldName.RELEASE_ID.getFieldname()));
+                    release.setId(doc.get(TrackIndexField.RELEASE_ID.getName()));
                     release.setTitle(releaseName);
 
-                    String trackNo = doc.get(TrackIndexFieldName.TRACKNUM.getFieldname());
-                    String tracks  = doc.get(TrackIndexFieldName.NUM_TRACKS.getFieldname());
+                    String trackNo = doc.get(TrackIndexField.TRACKNUM.getName());
+                    String tracks  = doc.get(TrackIndexField.NUM_TRACKS.getName());
                     if(trackNo!=null) {
                         TrackList releaseTrackList = of.createTrackList();
                         releaseTrackList.setOffset(BigInteger.valueOf(Long.parseLong(trackNo)));
