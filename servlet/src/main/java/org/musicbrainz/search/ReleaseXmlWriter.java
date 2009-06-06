@@ -30,6 +30,7 @@ package org.musicbrainz.search;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.util.Locale;
 
 import org.apache.lucene.document.Document;
 import org.apache.commons.lang.StringUtils;
@@ -73,6 +74,21 @@ public class ReleaseXmlWriter extends XmlWriter {
 
                 }
 
+
+                TextRepresentation tr = of.createTextRepresentation();
+                String script = doc.get(ReleaseIndexFieldName.SCRIPT.getFieldname());
+                if (script != null) {
+                    tr.setScript(script);
+                }
+                String lang = doc.get(ReleaseIndexFieldName.LANGUAGE.getFieldname());
+                if (lang != null) {
+                    tr.setLanguage(lang.toUpperCase(Locale.US));
+                }
+
+                if (script != null || lang != null) {
+                    release.setTextRepresentation(tr);
+                }
+                
                 String[] countries = doc.getValues(ReleaseIndexFieldName.COUNTRY.getFieldname());
                 if (countries.length > 0) {
                     ReleaseEventList eventList = of.createReleaseEventList();
@@ -138,7 +154,7 @@ public class ReleaseXmlWriter extends XmlWriter {
             releaseList.setCount(BigInteger.valueOf(results.results.size()));
             releaseList.setOffset(BigInteger.valueOf(results.offset));
             metadata.setReleaseList(releaseList);
-            m.marshal(metadata,out);
+            m.marshal(metadata, out);
         }
         catch (JAXBException je) {
             throw new IOException(je);

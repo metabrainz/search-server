@@ -73,11 +73,13 @@ public class ReleaseIndex extends Index {
         st.close();
         st = conn.prepareStatement(
                 "SELECT album.id, album.gid, album.name, " +
-						"artist.gid as artist_gid, artist.name as artist_name, " +
-                        "attributes, tracks, discids, asin, language, script " +
+                        "artist.gid as artist_gid, artist.name as artist_name, " +
+                        "attributes, tracks, discids, asin, language.isocode_3b, script.isocode  " +
                         "FROM album " +
                         "JOIN albummeta ON album.id=albummeta.id " +
                         "JOIN artist ON album.artist=artist.id " +
+                        "LEFT JOIN language ON album.language=language.id " +
+                        "LEFT JOIN script on script=script.id " +
                         "WHERE album.id BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -88,23 +90,31 @@ public class ReleaseIndex extends Index {
         st.close();
     }
 
-    //TODO Type
-    //TODO Script, Language
+    //TODO Release Type, Release Status
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<List<String>>> events) throws SQLException {
         Document doc = new Document();
         int albumId = rs.getInt("id");
         addReleaseGidToDocument(doc, rs.getString("gid"));
-        addReleaseToDocument(doc, rs.getString("name"));        
+        addReleaseToDocument(doc, rs.getString("name"));
         addArtistGidToDocument(doc, rs.getString("artist_gid"));
         addArtistToDocument(doc, rs.getString("artist_name"));
         addNumTracksToDocument(doc, rs.getString("tracks"));
         addDiscIdsToDocument(doc, rs.getString("discids"));
+
         String asin = rs.getString("asin");
         if (asin != null && !asin.isEmpty()) {
-        	addAsinToDocument(doc, asin);
+            addAsinToDocument(doc, asin);
         }
-        //addLanguageToDocument(doc, rs.getString(10));, TODO Need to chnage SQL
-        //addScriptToDocument(doc, rs.getString(11));    TODO Need to chnage SQL
+
+        String langCode = rs.getString("isocode_3b");
+        if (langCode != null) {
+            addLanguageToDocument(doc, langCode);
+        }
+
+        String scriptCode = rs.getString("isocode");
+        if (scriptCode != null) {
+            addScriptToDocument(doc, scriptCode);
+        }
 
         if (events.containsKey(albumId)) {
             for (List<String> entry : events.get(albumId)) {

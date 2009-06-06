@@ -33,8 +33,8 @@ public class FindReleaseTest extends TestCase {
         Document doc = new Document();
         li.addReleaseGidToDocument(doc, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
         li.addReleaseToDocument(doc, "Our Glorious 5 Year Plan");
-        li.addScriptToDocument(doc, "latn");
-        li.addLanguageToDocument(doc, "eng");
+        li.addScriptToDocument(doc,"Latn");
+        li.addLanguageToDocument(doc,"eng");
         li.addArtistGidToDocument(doc, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
         li.addArtistToDocument(doc, "Farming Incident");
         li.addNumTracksToDocument(doc, "10");
@@ -73,6 +73,10 @@ public class FindReleaseTest extends TestCase {
         assertEquals("2005", doc.get(ReleaseIndexFieldName.DATE.getFieldname()));
         assertEquals(1, doc.getFields(ReleaseIndexFieldName.NUM_DISC_IDS.getFieldname()).length);
         assertEquals("1", doc.get(ReleaseIndexFieldName.NUM_DISC_IDS.getFieldname()));
+        assertEquals("eng", doc.get(ReleaseIndexFieldName.LANGUAGE.getFieldname()));
+        assertEquals("Latn", doc.get(ReleaseIndexFieldName.SCRIPT.getFieldname()));
+
+
     }
 
     public void testFindReleaseByArtistName() throws Exception {
@@ -94,6 +98,9 @@ public class FindReleaseTest extends TestCase {
         assertEquals("2005", doc.get(ReleaseIndexFieldName.DATE.getFieldname()));
         assertEquals(1, doc.getFields(ReleaseIndexFieldName.NUM_DISC_IDS.getFieldname()).length);
         assertEquals("1", doc.get(ReleaseIndexFieldName.NUM_DISC_IDS.getFieldname()));
+        assertEquals("eng", doc.get(ReleaseIndexFieldName.LANGUAGE.getFieldname()));
+        assertEquals("Latn", doc.get(ReleaseIndexFieldName.SCRIPT.getFieldname()));
+
     }
 
     /**
@@ -111,12 +118,12 @@ public class FindReleaseTest extends TestCase {
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        //System.out.println("Xml is" + output);
+        System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
-//        assertTrue(output.contains("language=\"ENG\""));
-//        assertTrue(output.contains("script=\"Latn\""));
+        assertTrue(output.contains("language=\"ENG\""));
+        assertTrue(output.contains("script=\"Latn\""));
 //        assertTrue(output.contains("type=\"Album Official\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
@@ -131,7 +138,6 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
 //      assertTrue(output.contains("barcode=\"-\""));       Code doesnt show if '-' but looks like should looking at main server
         assertTrue(output.contains("catalog-number=\"WRATHCD25\""));   // #5225 but current service breaks MMD and returns as catno
-
 
     }
 }
