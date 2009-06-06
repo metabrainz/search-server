@@ -30,6 +30,7 @@ package org.musicbrainz.search;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.util.Locale;
 
 import org.apache.lucene.document.Document;
 import org.apache.commons.lang.StringUtils;
