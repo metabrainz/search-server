@@ -29,31 +29,29 @@ public class FindArtistTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
 
-        ArtistIndex ai = new ArtistIndex();
-
         //General Purpose Artist
         {
             Document doc = new Document();
-            ai.addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-            ai.addFieldToDocument(doc, ArtistIndexField.ARTIST, "Farming Incident");
-            ai.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Farming Incident");
-            ai.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1999-04");
-            ai.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
+            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST, "Farming Incident");
+            Index.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Farming Incident");
+            Index.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1999-04");
+            Index.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
             writer.addDocument(doc);
         }
 
         //Artist with & on name and aliases
         {
             Document doc = new Document();
-            ai.addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, "ccd4879c-5e88-4385-b131-bf65296bf245");
-            ai.addFieldToDocument(doc, ArtistIndexField.ARTIST, "Echo & The Bunnymen");
-            ai.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Echo & The Bunnymen");
-            ai.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1978");
-            ai.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
-            ai.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo And The Bunnymen");
-            ai.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo & The Bunnyman");
-            ai.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo and The Bunymen");
-            ai.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo & The Bunymen");
+            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, "ccd4879c-5e88-4385-b131-bf65296bf245");
+            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST, "Echo & The Bunnymen");
+            Index.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Echo & The Bunnymen");
+            Index.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1978");
+            Index.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
+            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo And The Bunnymen");
+            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo & The Bunnyman");
+            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo and The Bunymen");
+            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo & The Bunymen");
             writer.addDocument(doc);
         }
 

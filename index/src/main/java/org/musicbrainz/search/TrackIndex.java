@@ -29,19 +29,23 @@ import java.sql.*;
 
 public class TrackIndex extends Index {
 
-    public String getName() {
+    public TrackIndex(Connection dbConnection) {
+		super(dbConnection);
+	}
+
+	public String getName() {
         return "track";
     }
 
-    public int getMaxId(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
+    public int getMaxId() throws SQLException {
+        Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM track");
         rs.next();
         return rs.getInt(1);
     }
 
-    public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
-        PreparedStatement st = conn.prepareStatement(
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+        PreparedStatement st = dbConnection.prepareStatement(
                 "SELECT artist.gid as artist_gid, artist.name as artist_name, " +
                         "track.gid, track.name, " +
                         "album.gid as album_gid, album.name as album_name, track.length, albumjoin.sequence " +

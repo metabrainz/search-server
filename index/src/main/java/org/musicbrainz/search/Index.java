@@ -29,15 +29,21 @@ import org.apache.lucene.index.IndexWriter;
 
 public abstract class Index {
 
-	public abstract int getMaxId(Connection conn) throws SQLException;
+	protected Connection dbConnection;
+	
+	public Index(Connection dbConnection) {
+		this.dbConnection = dbConnection;
+	}
+	
+	public abstract int getMaxId() throws SQLException;
     public abstract String getName();
-	public abstract void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException;
+	public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
 
-	protected String normalizeDate(String date) {
+	protected static String normalizeDate(String date) {
 		return date.replace("-00", "");
 	}
 	
-	public void addFieldToDocument(Document doc, IndexField field, String value) {
+	public static void addFieldToDocument(Document doc, IndexField field, String value) {
 		doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
 	}
 

@@ -29,20 +29,24 @@ import java.sql.*;
 
 public class LabelIndex extends Index {
 
-    public String getName() {
+    public LabelIndex(Connection dbConnection) {
+		super(dbConnection);
+	}
+
+	public String getName() {
         return "label";
     }
 
-    public int getMaxId(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
+    public int getMaxId() throws SQLException {
+        Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM label");
         rs.next();
         return rs.getInt(1);
     }
 
-    public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = conn.prepareStatement("SELECT ref as label, name as alias FROM labelalias WHERE ref BETWEEN ? AND ?");
+        PreparedStatement st = dbConnection.prepareStatement("SELECT ref as label, name as alias FROM labelalias WHERE ref BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -58,7 +62,7 @@ public class LabelIndex extends Index {
             list.add(rs.getString("alias"));
         }
         st.close();
-        st = conn.prepareStatement(
+        st = dbConnection.prepareStatement(
                 "SELECT label.id, gid, label.name, sortname, type, begindate, enddate, resolution, labelcode, lower(isocode) as country " +
                         "FROM label JOIN country ON label.country=country.id WHERE label.id BETWEEN ? AND ?");
         st.setInt(1, min);

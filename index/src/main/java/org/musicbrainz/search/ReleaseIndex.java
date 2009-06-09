@@ -29,21 +29,24 @@ import java.sql.*;
 
 public class ReleaseIndex extends Index {
 
+    public ReleaseIndex(Connection dbConnection) {
+		super(dbConnection);
+	}
 
-    public String getName() {
+	public String getName() {
         return "release";
     }
 
-    public int getMaxId(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
+    public int getMaxId() throws SQLException {
+        Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM album");
         rs.next();
         return rs.getInt(1);
     }
 
-    public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<List<String>>> events = new HashMap<Integer, List<List<String>>>();
-        PreparedStatement st = conn.prepareStatement(
+        PreparedStatement st = dbConnection.prepareStatement(
                 "SELECT album, lower(isocode) as country, releasedate, label.name as label, catno, barcode " +
                         "FROM release " +
                         "LEFT JOIN country ON release.country=country.id " +
@@ -70,7 +73,7 @@ public class ReleaseIndex extends Index {
             list.add(entry);
         }
         st.close();
-        st = conn.prepareStatement(
+        st = dbConnection.prepareStatement(
                 "SELECT album.id, album.gid, album.name, " +
 						"artist.gid as artist_gid, artist.name as artist_name, " +
                         "attributes, tracks, discids, asin, " +

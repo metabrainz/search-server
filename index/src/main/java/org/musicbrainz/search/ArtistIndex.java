@@ -29,20 +29,24 @@ import java.sql.*;
 
 public class ArtistIndex extends Index {
 
-    public String getName() {
+    public ArtistIndex(Connection dbConnection) {
+		super(dbConnection);
+	}
+
+	public String getName() {
         return "artist";
     }
 
-    public int getMaxId(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
+    public int getMaxId() throws SQLException {
+        Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM artist");
         rs.next();
         return rs.getInt(1);
     }
 
-    public void indexData(IndexWriter indexWriter, Connection conn, int min, int max) throws SQLException, IOException {
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = conn.prepareStatement("SELECT ref as artist, name as alias FROM artistalias WHERE ref BETWEEN ? AND ?");
+        PreparedStatement st = dbConnection.prepareStatement("SELECT ref as artist, name as alias FROM artistalias WHERE ref BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -58,7 +62,7 @@ public class ArtistIndex extends Index {
             list.add(rs.getString("alias"));
         }
         st.close();
-        st = conn.prepareStatement(
+        st = dbConnection.prepareStatement(
                 "SELECT id, gid, name, sortname, type, begindate, enddate, resolution " +
                         "FROM artist WHERE id BETWEEN ? AND ?");
         st.setInt(1, min);

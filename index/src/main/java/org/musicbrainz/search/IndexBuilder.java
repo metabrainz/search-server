@@ -82,18 +82,26 @@ public class IndexBuilder
 			System.exit(1);
 		}
 
-		// Connect to database
+		// Connect to main database
 		String url = "jdbc:postgresql://" + options.getMainDatabaseHost() + "/" + options.getMainDatabaseName();
 		Properties props = new Properties();
 		props.setProperty("user", options.getMainDatabaseUser());
 		props.setProperty("password", options.getMainDatabasePassword());
-		Connection conn = DriverManager.getConnection(url, props);
+		Connection mainDbConn = DriverManager.getConnection(url, props);
+		
+		// Connect to raw database
+		url = "jdbc:postgresql://" + options.getRawDatabaseHost() + "/" + options.getRawDatabaseName();
+		props = new Properties();
+		props.setProperty("user", options.getRawDatabaseUser());
+		props.setProperty("password", options.getRawDatabasePassword());
+		Connection rawDbConn = DriverManager.getConnection(url, props);
 
 		Index[] indexes = {
-			new TrackIndex(),
-			new ReleaseIndex(),
-			new ArtistIndex(),
-			new LabelIndex(),
+			new ArtistIndex(mainDbConn),
+			new ReleaseIndex(mainDbConn),
+			new TrackIndex(mainDbConn),
+			new LabelIndex(mainDbConn),
+			new CDStubIndex(rawDbConn),
 		};
 
 		Analyzer analyzer = new StandardUnaccentAnalyzer();
@@ -115,11 +123,13 @@ public class IndexBuilder
 			indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
 			indexWriter.setMergeFactor(MERGE_FACTOR);
 
-			int maxId = options.isTest() ? MAX_TEST_ID : index.getMaxId(conn);
+			int maxId = index.getMaxId();
+			if (options.isTest() && MAX_TEST_ID < maxId)
+				maxId = MAX_TEST_ID;
 			int j = 0;
 			while (j < maxId) {
 				System.out.print("  Indexing " + j + "..." + (j + IDS_PER_CHUNK) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
-				index.indexData(indexWriter, conn, j, j + IDS_PER_CHUNK);
+				index.indexData(indexWriter, j, j + IDS_PER_CHUNK);
 				j += IDS_PER_CHUNK;
 			}
 			System.out.println("\n  Optimizing");
@@ -161,7 +171,7 @@ class IndexBuilderOptions {
     public String getRawDatabaseHost() { return rawDatabaseHost; }
     
 	@Option(name="--raw-db-name", aliases = { "-a" }, usage="The name of the raw database server to connect to. (default: musicbrainz_db_raw)")
-    private String rawDatabaseName = "musicbrainz_db";     
+    private String rawDatabaseName = "musicbrainz_db_raw";     
 	public String getRawDatabaseName() { return rawDatabaseName; }
 
     @Option(name="--raw-db-user", aliases = { "-s" }, usage="The username for the raw database to connect with. (default: musicbrainz_user)")
@@ -173,8 +183,8 @@ class IndexBuilderOptions {
 	public String getRawDatabasePassword() { return rawDatabasePassword; }
 
     // Indexes directory
-    @Option(name="--indexes-dir", usage="The directory . (default: -blank-)")
-    private String indexesDir = "./data/";
+    @Option(name="--indexes-dir", usage="The directory . (default: ./data/)")
+    private String indexesDir = "." + System.getProperty("file.separator") + "data" + System.getProperty("file.separator");
 	public String getIndexesDir() {
 		if (!indexesDir.endsWith(System.getProperty("file.separator")))
 			return indexesDir + System.getProperty("file.separator"); 
@@ -183,8 +193,8 @@ class IndexBuilderOptions {
 	}	
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="Which indexes to build (artist, release, release-group, track, annotation, label, cd-stub)")
-    private String indexes = "artist,label,release,track,release-group,track,annotation,label,cd-stub";
+    @Option(name="--indexes", usage="Which indexes to build (artist, release, releasegroup, track, annotation, label, cdstub)")
+    private String indexes = "artist,label,release,track,releasegroup,annotation,cdstub";
     public boolean buildIndex(String indexName) { return indexes.contains(indexName); }
     
     // Test mode

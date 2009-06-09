@@ -29,15 +29,14 @@ public class FindLabelTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
 
-        LabelIndex li = new LabelIndex();
         Document doc = new Document();
-        li.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
-        li.addFieldToDocument(doc, LabelIndexField.LABEL, "Jockey Slut");
-        li.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Jockey Slut");
-        li.addFieldToDocument(doc, LabelIndexField.BEGIN, "1993");
-        li.addFieldToDocument(doc, LabelIndexField.END, "2004");
-        li.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
-        li.addFieldToDocument(doc, LabelIndexField.COUNTRY, "GB");
+        Index.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
+        Index.addFieldToDocument(doc, LabelIndexField.LABEL, "Jockey Slut");
+        Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Jockey Slut");
+        Index.addFieldToDocument(doc, LabelIndexField.BEGIN, "1993");
+        Index.addFieldToDocument(doc, LabelIndexField.END, "2004");
+        Index.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+        Index.addFieldToDocument(doc, LabelIndexField.COUNTRY, "GB");
         writer.addDocument(doc);
         writer.close();
         Map<String, IndexSearcher> searchers = new HashMap<String, IndexSearcher>();

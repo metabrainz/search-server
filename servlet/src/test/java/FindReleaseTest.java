@@ -29,23 +29,22 @@ public class FindReleaseTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
 
-        ReleaseIndex ri = new ReleaseIndex();
         Document doc = new Document();
-        ri.addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
-        ri.addFieldToDocument(doc, ReleaseIndexField.RELEASE, "Our Glorious 5 Year Plan");
-        ri.addFieldToDocument(doc, ReleaseIndexField.SCRIPT, "Latn");
-        ri.addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, "eng");
-        ri.addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        ri.addFieldToDocument(doc, ReleaseIndexField.ARTIST, "Farming Incident");
-        ri.addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, "10");
-        ri.addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, "1");
+        Index.addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
+        Index.addFieldToDocument(doc, ReleaseIndexField.RELEASE, "Our Glorious 5 Year Plan");
+        Index.addFieldToDocument(doc, ReleaseIndexField.SCRIPT, "Latn");
+        Index.addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, "eng");
+        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST, "Farming Incident");
+        Index.addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, "10");
+        Index.addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, "1");
 
         //Per Event
-        ri.addFieldToDocument(doc, ReleaseIndexField.COUNTRY, "gb");
-        ri.addFieldToDocument(doc, ReleaseIndexField.LABEL, "Wrath Records");
-        ri.addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, "WRATHCD25");
-        ri.addFieldToDocument(doc, ReleaseIndexField.DATE, "2005");
-        ri.addFieldToDocument(doc, ReleaseIndexField.BARCODE, "-");
+        Index.addFieldToDocument(doc, ReleaseIndexField.COUNTRY, "gb");
+        Index.addFieldToDocument(doc, ReleaseIndexField.LABEL, "Wrath Records");
+        Index.addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, "WRATHCD25");
+        Index.addFieldToDocument(doc, ReleaseIndexField.DATE, "2005");
+        Index.addFieldToDocument(doc, ReleaseIndexField.BARCODE, "-");
 
         writer.addDocument(doc);
         writer.close();
