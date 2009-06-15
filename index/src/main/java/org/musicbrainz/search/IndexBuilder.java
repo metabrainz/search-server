@@ -28,6 +28,8 @@
 
 package org.musicbrainz.search;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Properties;
 import java.sql.*;
 import java.io.*;
@@ -99,6 +101,7 @@ public class IndexBuilder
 		Index[] indexes = {
 			new ArtistIndex(mainDbConn),
 			new ReleaseIndex(mainDbConn),
+			new ReleaseGroupIndex(mainDbConn),
 			new TrackIndex(mainDbConn),
 			new LabelIndex(mainDbConn),
 			new CDStubIndex(rawDbConn),
@@ -193,9 +196,9 @@ class IndexBuilderOptions {
 	}	
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="Which indexes to build (artist, release, releasegroup, track, annotation, label, cdstub)")
+    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,track,label,annotation,cdstub)")
     private String indexes = "artist,label,release,track,releasegroup,annotation,cdstub";
-    public boolean buildIndex(String indexName) { return indexes.contains(indexName); }
+    public boolean buildIndex(String indexName) { return new ArrayList<String>(Arrays.asList(indexes.split(","))).contains(indexName); }
     
     // Test mode
     @Option(name="--test", aliases = { "-t" }, usage="Test the index builder by creating small text indexes.")
