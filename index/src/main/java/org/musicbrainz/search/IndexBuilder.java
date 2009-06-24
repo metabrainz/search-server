@@ -104,6 +104,7 @@ public class IndexBuilder
 			new ReleaseGroupIndex(mainDbConn),
 			new TrackIndex(mainDbConn),
 			new LabelIndex(mainDbConn),
+			new AnnotationIndex(mainDbConn),
 			new CDStubIndex(rawDbConn),
 		};
 
