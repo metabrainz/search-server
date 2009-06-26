@@ -1,15 +1,23 @@
 import junit.framework.TestCase;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.Index;
+import org.musicbrainz.search.LabelIndexField;
+import org.musicbrainz.search.LabelType;
+import org.musicbrainz.search.LabelXmlWriter;
+import org.musicbrainz.search.ResourceType;
+import org.musicbrainz.search.Result;
+import org.musicbrainz.search.Results;
+import org.musicbrainz.search.ResultsWriter;
+import org.musicbrainz.search.SearchServer;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
@@ -39,13 +47,13 @@ public class FindLabelTest extends TestCase {
         Index.addFieldToDocument(doc, LabelIndexField.COUNTRY, "GB");
         writer.addDocument(doc);
         writer.close();
-        Map<String, IndexSearcher> searchers = new HashMap<String, IndexSearcher>();
-        searchers.put("label", new IndexSearcher(ramDir));
+        Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
+        searchers.put(ResourceType.LABEL, new IndexSearcher(ramDir));
         ss = new SearchServer(searchers);
     }
 
     public void testFindLabelByName() throws Exception {
-        Results res = ss.search("label", "label:\"Jockey Slut\"", 0, 10);
+        Results res = ss.search(ResourceType.LABEL, "label:\"Jockey Slut\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -59,9 +67,23 @@ public class FindLabelTest extends TestCase {
         assertEquals("production", doc.get(LabelIndexField.TYPE.getName()));
     }
 
+    public void testFindLabelByDefault() throws Exception {
+        Results res = ss.search(ResourceType.LABEL, "\"Jockey Slut\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        Document doc = result.doc;
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL.getName()));
+        assertEquals("1993", doc.get(LabelIndexField.BEGIN.getName()));
+        assertEquals("2004", doc.get(LabelIndexField.END.getName()));
+        assertNull(doc.get(LabelIndexField.ALIAS.getName()));
+        assertNull(doc.get(LabelIndexField.COMMENT.getName()));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME.getName()));
+        assertEquals("production", doc.get(LabelIndexField.TYPE.getName()));
+    }
 
     public void testFindLabelByType() throws Exception {
-        Results res = ss.search("label", "type:\"production\"", 0, 10);
+        Results res = ss.search(ResourceType.LABEL, "type:\"production\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -76,7 +98,7 @@ public class FindLabelTest extends TestCase {
     }
 
     public void testFindLabelBySortname() throws Exception {
-        Results res = ss.search("label", "sortname:\"Jockey Slut\"", 0, 10);
+        Results res = ss.search(ResourceType.LABEL, "sortname:\"Jockey Slut\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -91,7 +113,7 @@ public class FindLabelTest extends TestCase {
     }
 
     public void testFindLabelByCountry() throws Exception {
-        Results res = ss.search("label", "country:\"gb\"", 0, 10);
+        Results res = ss.search(ResourceType.LABEL, "country:\"gb\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -113,7 +135,7 @@ public class FindLabelTest extends TestCase {
      */
     public void testOutputAsXml() throws Exception {
 
-        Results res = ss.search("label", "label:\"Jockey Slut\"", 0, 1);
+        Results res = ss.search(ResourceType.LABEL, "label:\"Jockey Slut\"", 0, 1);
         ResultsWriter writer = new LabelXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);

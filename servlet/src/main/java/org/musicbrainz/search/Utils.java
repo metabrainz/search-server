@@ -33,25 +33,25 @@ import java.io.PrintWriter;
 
 public class Utils {
 
-	public static void escapeXml(PrintWriter writer, String str) throws IOException {
+    public static void escapeXml(PrintWriter writer, String str) throws IOException {
         int len = str.length();
         for (int i = 0; i < len; i++) {
             char c = str.charAt(i);
-			switch (c) {
-				case '&':
-					writer.write("&amp;");
-					break;
-				case '<':
-					writer.write("&lt;");
-					break;
-				case '>':
-					writer.write("&gt;");
-					break;
-				default:
-					writer.write(c);
-					break;
-			}
+            switch (c) {
+                case '&':
+                    writer.write("&amp;");
+                    break;
+                case '<':
+                    writer.write("&lt;");
+                    break;
+                case '>':
+                    writer.write("&gt;");
+                    break;
+                default:
+                    writer.write(c);
+                    break;
+            }
         }
-	}
-    
+    }
+
 }

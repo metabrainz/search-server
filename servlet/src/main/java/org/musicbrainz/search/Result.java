@@ -32,9 +32,10 @@ import org.apache.lucene.document.Document;
 
 public class Result {
 
-	public Document doc;
-	public float score;
-    
-	public Result() {}
+    public Document doc;
+    public float score;
+
+    public Result() {
+    }
 
 }

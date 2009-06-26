@@ -30,10 +30,10 @@ package org.musicbrainz.search;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 
-public abstract class  XmlWriter extends ResultsWriter {
+public abstract class XmlWriter extends ResultsWriter {
 
     static final JAXBContext context = initContext();
 
@@ -51,14 +51,12 @@ public abstract class  XmlWriter extends ResultsWriter {
         return "application/xml; charset=UTF-8";
     }
 
-    private static JAXBContext initContext(){
-        try
-        {
+    private static JAXBContext initContext() {
+        try {
             return JAXBContext.newInstance("com.jthink.brainz.mmd");
         }
-        catch(JAXBException ex)
-        {
-             //Unable to initilize jaxb context, should never happen
+        catch (JAXBException ex) {
+            //Unable to initilize jaxb context, should never happen
             throw new RuntimeException(ex);
         }
     }

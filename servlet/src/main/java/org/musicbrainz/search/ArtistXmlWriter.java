@@ -28,27 +28,27 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
-import java.math.BigInteger;
-
-import org.apache.lucene.document.Document;
+import com.jthink.brainz.mmd.Artist;
+import com.jthink.brainz.mmd.ArtistList;
+import com.jthink.brainz.mmd.LifeSpan;
+import com.jthink.brainz.mmd.Metadata;
+import com.jthink.brainz.mmd.ObjectFactory;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.Document;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
-
-import com.jthink.brainz.mmd.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigInteger;
 
 
 public class ArtistXmlWriter extends XmlWriter {
 
     public void write(PrintWriter out, Results results) throws IOException {
 
-        try
-        {
+        try {
 
             Marshaller m = context.createMarshaller();
             ObjectFactory of = new ObjectFactory();
@@ -67,7 +67,7 @@ public class ArtistXmlWriter extends XmlWriter {
                     artist.setType(StringUtils.capitalize(artype));
                 }
 
-                artist.getOtherAttributes().put(new QName("ext:score"),String.valueOf((int)(result.score * 100)));
+                artist.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
                 String name = doc.get(ArtistIndexField.ARTIST.getName());
                 if (name != null) {
@@ -82,9 +82,9 @@ public class ArtistXmlWriter extends XmlWriter {
                 }
 
                 String begin = doc.get(ArtistIndexField.BEGIN.getName());
-                String end   = doc.get(ArtistIndexField.END.getName());
+                String end = doc.get(ArtistIndexField.END.getName());
                 if (begin != null || end != null) {
-                    LifeSpan lifespan= of.createLifeSpan();
+                    LifeSpan lifespan = of.createLifeSpan();
                     if (begin != null) {
                         lifespan.setBegin(begin);
 
@@ -94,7 +94,7 @@ public class ArtistXmlWriter extends XmlWriter {
 
                     }
                     artist.setLifeSpan(lifespan);
-                                        
+
                 }
 
                 String comment = doc.get(ArtistIndexField.COMMENT.getName());
@@ -108,11 +108,10 @@ public class ArtistXmlWriter extends XmlWriter {
             artistList.setCount(BigInteger.valueOf(results.results.size()));
             artistList.setOffset(BigInteger.valueOf(results.offset));
             metadata.setArtistList(artistList);
-            m.marshal(metadata,out);
+            m.marshal(metadata, out);
 
         }
-        catch(JAXBException je)
-        {
+        catch (JAXBException je) {
             throw new IOException(je);
         }
     }

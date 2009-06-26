@@ -1,15 +1,10 @@
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
 import junit.framework.TestCase;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.Index;
+import org.musicbrainz.search.ResourceType;
 import org.musicbrainz.search.Result;
 import org.musicbrainz.search.Results;
 import org.musicbrainz.search.ResultsWriter;
@@ -17,6 +12,11 @@ import org.musicbrainz.search.SearchServer;
 import org.musicbrainz.search.TrackIndexField;
 import org.musicbrainz.search.TrackXmlWriter;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
@@ -48,16 +48,33 @@ public class FindTrackTest extends TestCase {
         Index.addFieldToDocument(doc, TrackIndexField.DURATION, "00000000002340");
         Index.addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, "10");
         Index.addFieldToDocument(doc, TrackIndexField.TRACKNUM, "00000000000005");
-        
+
         writer.addDocument(doc);
         writer.close();
-        Map<String, IndexSearcher> searchers = new HashMap<String, IndexSearcher>();
-        searchers.put("track", new IndexSearcher(ramDir));
+        Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
+        searchers.put(ResourceType.TRACK, new IndexSearcher(ramDir));
         ss = new SearchServer(searchers);
     }
 
     public void testFindTrack() throws Exception {
-        Results res = ss.search("track", "track:\"Gravitational Lenz\"", 0, 10);
+        Results res = ss.search(ResourceType.TRACK, "track:\"Gravitational Lenz\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        Document doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID.getName()));
+        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK.getName()));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID.getName()));
+        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST.getName()));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID.getName()));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE.getName()));
+        assertEquals("00000000000005", doc.get(TrackIndexField.TRACKNUM.getName()));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE.getName()));
+        assertEquals("00000000002340", doc.get(TrackIndexField.DURATION.getName()));
+    }
+
+
+    public void testFindTrackByDefault() throws Exception {
+        Results res = ss.search(ResourceType.TRACK, "\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -79,7 +96,7 @@ public class FindTrackTest extends TestCase {
      */
     public void testOutputAsXml() throws Exception {
 
-        Results res = ss.search("track", "track:\"Gravitational Lenz\"", 0, 10);
+        Results res = ss.search(ResourceType.TRACK, "track:\"Gravitational Lenz\"", 0, 10);
         ResultsWriter writer = new TrackXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);

@@ -28,18 +28,20 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
-import java.math.BigInteger;
-import java.util.Locale;
-
-import org.apache.lucene.document.Document;
+import com.jthink.brainz.mmd.Artist;
+import com.jthink.brainz.mmd.Metadata;
+import com.jthink.brainz.mmd.ObjectFactory;
+import com.jthink.brainz.mmd.ReleaseGroup;
+import com.jthink.brainz.mmd.ReleaseGroupList;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.Document;
 
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
-
-import com.jthink.brainz.mmd.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigInteger;
 
 public class ReleaseGroupXmlWriter extends XmlWriter {
 
@@ -70,7 +72,7 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
 
                 String type = doc.get(ReleaseGroupIndexField.TYPE.getName());
                 if (type != null) {
-                   releaseGroup.getType().add(StringUtils.capitalize(type));
+                    releaseGroup.getType().add(StringUtils.capitalize(type));
                 }
 
 

@@ -1,16 +1,24 @@
 import junit.framework.TestCase;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.ArtistIndexField;
+import org.musicbrainz.search.ArtistType;
+import org.musicbrainz.search.ArtistXmlWriter;
+import org.musicbrainz.search.Index;
+import org.musicbrainz.search.ResourceType;
+import org.musicbrainz.search.Result;
+import org.musicbrainz.search.Results;
+import org.musicbrainz.search.ResultsWriter;
+import org.musicbrainz.search.SearchServer;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.*;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Date;
-import java.io.StringWriter;
-import java.io.PrintWriter;
 
 /**
  * Test retrieving artist from index and Outputting as Xml
@@ -56,13 +64,13 @@ public class FindArtistTest extends TestCase {
         }
 
         writer.close();
-        Map<String, IndexSearcher> searchers = new HashMap<String, IndexSearcher>();
-        searchers.put("artist", new IndexSearcher(ramDir));
+        Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
+        searchers.put(ResourceType.ARTIST, new IndexSearcher(ramDir));
         ss = new SearchServer(searchers);
     }
 
     public void testFindArtistByName() throws Exception {
-        Results res = ss.search("artist", "artist:\"Farming Incident\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -78,7 +86,7 @@ public class FindArtistTest extends TestCase {
 
 
     public void testFindArtistBySortName() throws Exception {
-        Results res = ss.search("artist", "sortname:\"Farming Incident\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "sortname:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -94,7 +102,7 @@ public class FindArtistTest extends TestCase {
 
 
     public void testFindArtistByType() throws Exception {
-        Results res = ss.search("artist", "type:\"group\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "type:\"group\"", 0, 10);
         assertEquals(2, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -109,7 +117,7 @@ public class FindArtistTest extends TestCase {
     }
 
     public void testFindArtistByBeginDate() throws Exception {
-        Results res = ss.search("artist", "begin:\"1999-04\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "begin:\"1999-04\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -124,17 +132,29 @@ public class FindArtistTest extends TestCase {
     }
 
     public void testFindArtistByEndDate() throws Exception {
-        Results res = ss.search("artist", "end:\"1999-04\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "end:\"1999-04\"", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
     public void testFindArtistByTypeNoMatch() throws Exception {
-        Results res = ss.search("artist", "type:\"person\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "type:\"person\"", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
     public void testFindArtistByAlias() throws Exception {
-        Results res = ss.search("artist", "alias:\"Echo And The Bunnymen\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "alias:\"Echo And The Bunnymen\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        Document doc = result.doc;
+        assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID.getName()));
+        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST.getName()));
+        assertEquals("1978", doc.get(ArtistIndexField.BEGIN.getName()));
+        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME.getName()));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE.getName()));
+    }
+
+    public void testFindArtistByDefaultField() throws Exception {
+        Results res = ss.search(ResourceType.ARTIST, "\"Echo & The Bunnymen\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         Document doc = result.doc;
@@ -153,7 +173,7 @@ public class FindArtistTest extends TestCase {
      */
     public void testOutputAsXml() throws Exception {
 
-        Results res = ss.search("artist", "artist:\"Farming Incident\"", 0, 1);
+        Results res = ss.search(ResourceType.ARTIST, "artist:\"Farming Incident\"", 0, 1);
         ResultsWriter writer = new ArtistXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -184,7 +204,7 @@ public class FindArtistTest extends TestCase {
      */
     public void testOutputAsXmlSpecialCharacters() throws Exception {
 
-        Results res = ss.search("artist", "alias:\"Echo And The Bunnymen\"", 0, 1);
+        Results res = ss.search(ResourceType.ARTIST, "alias:\"Echo And The Bunnymen\"", 0, 1);
         ResultsWriter writer = new ArtistXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -201,20 +221,19 @@ public class FindArtistTest extends TestCase {
 
 
     public void testWritingPerformance() throws Exception {
-        Results res = ss.search("artist", "artist:\"Farming Incident\"", 0, 10);
+        Results res = ss.search(ResourceType.ARTIST, "artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
-        
+
         Date start = new Date();
         ResultsWriter writer = new ArtistXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        for(int i=0;i<1000;i++)
-        {
+        for (int i = 0; i < 1000; i++) {
             writer.write(pr, res);
         }
         pr.close();
         Date end = new Date();
-        System.out.println("Time Taken:"+(end.getTime() - start.getTime()) + "ms");
+        System.out.println("Time Taken:" + (end.getTime() - start.getTime()) + "ms");
 
     }
 

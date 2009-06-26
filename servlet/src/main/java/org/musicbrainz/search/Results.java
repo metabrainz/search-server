@@ -28,17 +28,17 @@
 
 package org.musicbrainz.search;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Results {
 
-	public int offset;
-	public int totalHits;
-	public List<Result> results;
-    
-	public Results() {
-		results = new LinkedList<Result>();
-	}
+    public int offset;
+    public int totalHits;
+    public List<Result> results;
+
+    public Results() {
+        results = new LinkedList<Result>();
+    }
 
 }

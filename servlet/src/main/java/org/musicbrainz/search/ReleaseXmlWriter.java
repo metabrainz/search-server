@@ -28,18 +28,17 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
+import com.jthink.brainz.mmd.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.Document;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.Locale;
-
-import org.apache.lucene.document.Document;
-import org.apache.commons.lang.StringUtils;
-
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-
-import com.jthink.brainz.mmd.*;
 
 public class ReleaseXmlWriter extends XmlWriter {
 

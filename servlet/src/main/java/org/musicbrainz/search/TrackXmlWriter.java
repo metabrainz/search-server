@@ -28,16 +28,21 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
-import java.math.BigInteger;
-
+import com.jthink.brainz.mmd.Artist;
+import com.jthink.brainz.mmd.Metadata;
+import com.jthink.brainz.mmd.ObjectFactory;
+import com.jthink.brainz.mmd.Release;
+import com.jthink.brainz.mmd.ReleaseList;
+import com.jthink.brainz.mmd.Track;
+import com.jthink.brainz.mmd.TrackList;
 import org.apache.lucene.document.Document;
 
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
-
-import com.jthink.brainz.mmd.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigInteger;
 
 public class TrackXmlWriter extends XmlWriter {
 
@@ -65,7 +70,7 @@ public class TrackXmlWriter extends XmlWriter {
 
                 String duration = doc.get(TrackIndexField.DURATION.getName());
                 if (duration != null) {
-                     track.setDuration(BigInteger.valueOf(Long.parseLong(duration)));
+                    track.setDuration(BigInteger.valueOf(Long.parseLong(duration)));
                 }
 
 
@@ -85,8 +90,8 @@ public class TrackXmlWriter extends XmlWriter {
                     release.setTitle(releaseName);
 
                     String trackNo = doc.get(TrackIndexField.TRACKNUM.getName());
-                    String tracks  = doc.get(TrackIndexField.NUM_TRACKS.getName());
-                    if(trackNo!=null) {
+                    String tracks = doc.get(TrackIndexField.NUM_TRACKS.getName());
+                    if (trackNo != null) {
                         TrackList releaseTrackList = of.createTrackList();
                         releaseTrackList.setOffset(BigInteger.valueOf(Long.parseLong(trackNo)));
                         if (tracks != null) {
@@ -104,7 +109,7 @@ public class TrackXmlWriter extends XmlWriter {
             trackList.setCount(BigInteger.valueOf(results.results.size()));
             trackList.setOffset(BigInteger.valueOf(results.offset));
             metadata.setTrackList(trackList);
-            m.marshal(metadata,out);
+            m.marshal(metadata, out);
         }
         catch (JAXBException je) {
             throw new IOException(je);

@@ -1,15 +1,23 @@
 import junit.framework.TestCase;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.Index;
+import org.musicbrainz.search.ReleaseGroupIndexField;
+import org.musicbrainz.search.ReleaseGroupType;
+import org.musicbrainz.search.ReleaseGroupXmlWriter;
+import org.musicbrainz.search.ResourceType;
+import org.musicbrainz.search.Result;
+import org.musicbrainz.search.Results;
+import org.musicbrainz.search.ResultsWriter;
+import org.musicbrainz.search.SearchServer;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
@@ -49,7 +57,7 @@ public class FindReleaseGroupTest extends TestCase {
         Document doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP.getName()));
-        assertEquals("707622da-475f-48e1-905d-248718df6521",doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
         assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST.getName()));
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE.getName()));
     }
@@ -61,7 +69,7 @@ public class FindReleaseGroupTest extends TestCase {
         Document doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP.getName()));
-        assertEquals("707622da-475f-48e1-905d-248718df6521",doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
         assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST.getName()));
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE.getName()));
     }
@@ -74,7 +82,7 @@ public class FindReleaseGroupTest extends TestCase {
         Document doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP.getName()));
-        assertEquals("707622da-475f-48e1-905d-248718df6521",doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
         assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST.getName()));
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE.getName()));
     }
@@ -86,11 +94,10 @@ public class FindReleaseGroupTest extends TestCase {
         Document doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP.getName()));
-        assertEquals("707622da-475f-48e1-905d-248718df6521",doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
         assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST.getName()));
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE.getName()));
     }
-
 
 
     /**

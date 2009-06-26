@@ -28,45 +28,65 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.Logger;
-
-import org.apache.lucene.queryParser.*;
-import org.apache.lucene.search.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocCollector;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 public class SearchServer {
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
     private Analyzer analyzer;
-    private Map<String, IndexSearcher> searchers;
+    private Map<ResourceType, IndexSearcher> searchers;         //Maps resource to index
+    private Map<ResourceType, String> defaultSearchFields;      //Maps resource to default search field
 
     public SearchServer(String indexDir) throws IOException {
         analyzer = new StandardUnaccentAnalyzer();
-        searchers = new HashMap<String, IndexSearcher>();
-        searchers.put("artist", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/artist_index/"), null), true)));
-        searchers.put("label", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/label_index/"), null), true)));
-        searchers.put("release", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/release_index/"), null), true)));
-        searchers.put("track", new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/track_index/"), null), true)));
+
+        searchers = new HashMap<ResourceType, IndexSearcher>();
+        searchers.put(ResourceType.ARTIST, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/artist_index/"), null), true)));
+        searchers.put(ResourceType.LABEL, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/label_index/"), null), true)));
+        searchers.put(ResourceType.RELEASE, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/release_index/"), null), true)));
+        searchers.put(ResourceType.TRACK, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/track_index/"), null), true)));
+        searchers.put(ResourceType.RELEASE_GROUP, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/releasegroup_index/"), null), true)));
+        setupDefaultSearchFields();
     }
 
-    public SearchServer(Map<String, IndexSearcher> searchers) {
+    public SearchServer(Map<ResourceType, IndexSearcher> searchers) {
         analyzer = new StandardUnaccentAnalyzer();
         this.searchers = searchers;
+        setupDefaultSearchFields();
+    }
+
+    private void setupDefaultSearchFields() {
+        defaultSearchFields = new HashMap<ResourceType, String>();
+        defaultSearchFields.put(ResourceType.ARTIST, ArtistIndexField.ARTIST.getName());
+        defaultSearchFields.put(ResourceType.LABEL, LabelIndexField.LABEL.getName());
+        defaultSearchFields.put(ResourceType.RELEASE, ReleaseIndexField.RELEASE.getName());
+        defaultSearchFields.put(ResourceType.TRACK, TrackIndexField.TRACK.getName());
+        defaultSearchFields.put(ResourceType.RELEASE_GROUP, ReleaseGroupIndexField.RELEASEGROUP.getName());
     }
 
     public void close() {
     }
 
-    public Results search(String indexName, String query, int offset, int limit) throws IOException {
+    public Results search(ResourceType resourceType, String query, int offset, int limit) throws IOException {
         //log.info("Searching for '" + query + "' in the " + indexName + " index.");
-        IndexSearcher searcher = searchers.get(indexName);
-        QueryParser parser = new QueryParser(indexName, analyzer);
+        IndexSearcher searcher = searchers.get(resourceType);
+        QueryParser parser = new QueryParser(defaultSearchFields.get(resourceType), analyzer);
         TopDocCollector collector = new TopDocCollector(offset + limit);
         try {
             searcher.search(parser.parse(query), collector);

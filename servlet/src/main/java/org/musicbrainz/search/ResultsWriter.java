@@ -28,12 +28,13 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public abstract class ResultsWriter {
 
-	public abstract String getMimeType();
+    public abstract String getMimeType();
 
-	public abstract void write(PrintWriter out, Results results) throws IOException;
+    public abstract void write(PrintWriter out, Results results) throws IOException;
 
 }

@@ -28,84 +28,83 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Map;
 import java.util.logging.Logger;
-import java.util.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 public class SearchServerServlet extends HttpServlet {
 
     final Logger log = Logger.getLogger(SearchServerServlet.class.getName());
 
-	private SearchServer searchServer;
-	private Map<String, Map<String, ResultsWriter>> writers;
+    private SearchServer searchServer;
+    private Map<ResourceType, ResultsWriter> writers;
 
-	@Override
+    @Override
     public void init() {
-		String indexDir = getServletConfig().getInitParameter("index_dir");
-		log.info("Index dir = " + indexDir);
-		try {
-			searchServer = new SearchServer(indexDir);
-		}
-		catch (IOException e) {
-			searchServer = null;
-		}
-	}
+        String indexDir = getServletConfig().getInitParameter("index_dir");
+        log.info("Index dir = " + indexDir);
+        try {
+            searchServer = new SearchServer(indexDir);
+        }
+        catch (IOException e) {
+            searchServer = null;
+        }
 
-	@Override
-	public void destroy() {
-		if (searchServer != null)
-			searchServer.close();
-	}
+        //Map resourcetype to writer, writer can be reused
+        writers.put(ResourceType.ARTIST, new ArtistXmlWriter());
+        writers.put(ResourceType.LABEL, new LabelXmlWriter());
+        writers.put(ResourceType.RELEASE, new ReleaseXmlWriter());
+        writers.put(ResourceType.RELEASE_GROUP, new ReleaseGroupXmlWriter());
+        writers.put(ResourceType.TRACK, new TrackXmlWriter());
 
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-	throws ServletException, IOException {
-		if (searchServer == null) {
-			response.sendError(500, "searchServer == null");
-			return;
-		}
+    }
 
-		request.setCharacterEncoding("UTF-8");
+    @Override
+    public void destroy() {
+        if (searchServer != null) {
+            searchServer.close();
+        }
+    }
 
-		String query = request.getParameter("query");
-		if (query == null || query.isEmpty()) {
-			response.sendError(400, "No query.");
-			return;
-		}
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (searchServer == null) {
+            response.sendError(500, "searchServer == null");
+            return;
+        }
 
-		String type = request.getParameter("type");
-		if (query == null || query.isEmpty()) {
-			response.sendError(400, "No type.");
-			return;
-		}
+        request.setCharacterEncoding("UTF-8");
 
-		int offset = 0;
-		int limit = 10;
-		Results results = searchServer.search(type, query, offset, limit);
+        String query = request.getParameter("query");
+        if (query == null || query.isEmpty()) {
+            response.sendError(400, "No query.");
+            return;
+        }
 
-		ResultsWriter writer = null;
-		if (type.equals("artist")) {
-			writer = new ArtistXmlWriter();
-		}
-		else if (type.equals("label")) {
-			writer = new LabelXmlWriter();
-		}
-		else if (type.equals("track")) {
-			writer = new TrackXmlWriter();
-		}
-		else if (type.equals("release")) {
-			writer = new ReleaseXmlWriter();
-		}
+        String type = request.getParameter("type");
+        if (query == null || query.isEmpty()) {
+            response.sendError(400, "No type.");
+            return;
+        }
+        ResourceType resourceType = ResourceType.valueOf(type);
 
-		response.setCharacterEncoding("UTF-8");
-		response.setContentType(writer.getMimeType());
-
-		PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")));
-		writer.write(out, results);
-		out.close();
-	}
+        int offset = 0;
+        int limit = 10;
+        Results results = searchServer.search(resourceType, query, offset, limit);
+        ResultsWriter writer = writers.get(type);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType(writer.getMimeType());
+        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")));
+        writer.write(out, results);
+        out.close();
+    }
 
 }

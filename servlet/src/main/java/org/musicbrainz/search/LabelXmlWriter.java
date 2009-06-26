@@ -28,17 +28,20 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
-import java.math.BigInteger;
-
-import org.apache.lucene.document.Document;
+import com.jthink.brainz.mmd.Label;
+import com.jthink.brainz.mmd.LabelList;
+import com.jthink.brainz.mmd.LifeSpan;
+import com.jthink.brainz.mmd.Metadata;
+import com.jthink.brainz.mmd.ObjectFactory;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.Document;
 
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
-
-import com.jthink.brainz.mmd.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.math.BigInteger;
 
 public class LabelXmlWriter extends XmlWriter {
 
@@ -99,7 +102,7 @@ public class LabelXmlWriter extends XmlWriter {
             labelList.setCount(BigInteger.valueOf(results.results.size()));
             labelList.setOffset(BigInteger.valueOf(results.offset));
             metadata.setLabelList(labelList);
-            m.marshal(metadata,out);
+            m.marshal(metadata, out);
 
         }
         catch (JAXBException je) {
