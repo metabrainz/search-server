@@ -78,7 +78,7 @@ public class SearchServerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (searchServer == null) {
-            response.sendError(500, "searchServer == null");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "searchServer == null");
             return;
         }
 
@@ -86,19 +86,19 @@ public class SearchServerServlet extends HttpServlet {
 
         String query = request.getParameter("query");
         if (query == null || query.isEmpty()) {
-            response.sendError(400, "No query.");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No query.");
             return;
         }
 
         String type = request.getParameter("type");
         if (query == null || query.isEmpty()) {
-            response.sendError(400, "No type.");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No type.");
             return;
         }
         ResourceType resourceType = ResourceType.getValue(type);
         
         if (resourceType == null) {
-            response.sendError(500, "Unknown resource type");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown resource type");
             return;
         }
         
