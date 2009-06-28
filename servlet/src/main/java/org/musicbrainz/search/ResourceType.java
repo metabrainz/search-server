@@ -20,4 +20,12 @@ public enum ResourceType {
     public String getName() {
         return name;
     }
+
+    public static ResourceType getValue(String value) {
+        for ( ResourceType candidateEnum : ResourceType.values() ) {
+            if(candidateEnum.getName().equals(value)) return candidateEnum;
+        }
+        return null;
+    }
+
 }

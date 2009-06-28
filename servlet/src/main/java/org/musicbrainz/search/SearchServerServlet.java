@@ -36,6 +36,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -44,7 +45,7 @@ public class SearchServerServlet extends HttpServlet {
     final Logger log = Logger.getLogger(SearchServerServlet.class.getName());
 
     private SearchServer searchServer;
-    private Map<ResourceType, ResultsWriter> writers;
+    private Map<ResourceType, ResultsWriter> writers = new HashMap<ResourceType, ResultsWriter>();
 
     @Override
     public void init() {
@@ -94,12 +95,17 @@ public class SearchServerServlet extends HttpServlet {
             response.sendError(400, "No type.");
             return;
         }
-        ResourceType resourceType = ResourceType.valueOf(type);
-
+        ResourceType resourceType = ResourceType.getValue(type);
+        
+        if (resourceType == null) {
+            response.sendError(500, "Unknown resource type");
+            return;
+        }
+        
         int offset = 0;
         int limit = 10;
         Results results = searchServer.search(resourceType, query, offset, limit);
-        ResultsWriter writer = writers.get(type);
+        ResultsWriter writer = writers.get(resourceType);
         response.setCharacterEncoding("UTF-8");
         response.setContentType(writer.getMimeType());
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")));
