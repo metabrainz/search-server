@@ -27,6 +27,9 @@ public class AccentFilterTest extends TestCase {
         doc.add(new Field("name", "t\u00E9st", Field.Store.YES, Field.Index.TOKENIZED));
         writer.addDocument(doc);
         doc = new Document();
+        doc.add(new Field("name", "\u00e1bc\u00e1ef", Field.Store.YES, Field.Index.TOKENIZED));
+        writer.addDocument(doc);
+        doc = new Document();
         doc.add(new Field("name", "qwe 1", Field.Store.YES, Field.Index.TOKENIZED));
         doc.add(new Field("name", "qwe 2", Field.Store.YES, Field.Index.TOKENIZED));
         writer.addDocument(doc);
@@ -54,6 +57,14 @@ public class AccentFilterTest extends TestCase {
         assertEquals(2, hits.length());
         assertEquals("test", hits.doc(0).getField("name").stringValue());
         assertEquals("t\u00E9st", hits.doc(1).getField("name").stringValue());
+    }
+
+    public void testSearchAccented2() throws Exception {
+        IndexSearcher searcher = new IndexSearcher(dir);
+        Query q = new QueryParser("name", analyzer).parse("abcaef");
+        Hits hits = searcher.search(q);
+        assertEquals(1, hits.length());
+        assertEquals("\u00e1bc\u00e1ef", hits.doc(0).getField("name").stringValue());
     }
 
     public void testSearchQe() throws Exception {

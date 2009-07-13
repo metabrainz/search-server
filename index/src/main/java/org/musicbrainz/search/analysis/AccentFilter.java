@@ -81,7 +81,7 @@ public class AccentFilter extends TokenFilter {
                 // copy front of the input
                 if (inputPos < i) {
 					System.arraycopy(input, inputPos, output, outputPos, i - inputPos);
-                    outputPos += i;
+                    outputPos += i - inputPos;
                 }
                 // copy unaccented data
                 System.arraycopy(UnaccentData.data[block], unacPosition,
