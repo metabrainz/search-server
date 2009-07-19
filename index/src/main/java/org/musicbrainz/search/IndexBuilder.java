@@ -40,6 +40,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.apache.commons.lang.time.StopWatch;
 
 public class IndexBuilder
 {
@@ -97,7 +98,10 @@ public class IndexBuilder
 		props.setProperty("user", options.getRawDatabaseUser());
 		props.setProperty("password", options.getRawDatabasePassword());
 		Connection rawDbConn = DriverManager.getConnection(url, props);
-
+		
+		StopWatch clock = new StopWatch();
+		
+		// MusicBrainz data indexing
 		Index[] indexes = {
 			new ArtistIndex(mainDbConn),
 			new ReleaseIndex(mainDbConn),
@@ -118,7 +122,7 @@ public class IndexBuilder
 				continue;
 			}
 			
-			long startTime = System.currentTimeMillis();
+			clock.start();
 			
 			IndexWriter indexWriter;
 			String path = options.getIndexesDir() + index.getName() + "_index";
@@ -140,10 +144,35 @@ public class IndexBuilder
 			indexWriter.optimize();
 			indexWriter.close();
 			
-			long endTime = System.currentTimeMillis();
-			System.out.println("  Finished in " + Float.toString((endTime-startTime)/1000) + " s");
+			clock.stop();
+			System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
+			clock.reset();
 		}
 
+		// FreeDB data indexing
+		FreeDBIndex index = new FreeDBIndex();
+		if (options.buildIndex(index.getName())) {
+			File dumpFile = new File(options.getFreeDBDump());
+			index.setDumpFile(dumpFile);
+			
+			IndexWriter indexWriter;
+			String path = options.getIndexesDir() + index.getName() + "_index";
+			System.out.println("Building index: " + path);
+			indexWriter = new IndexWriter(FSDirectory.getDirectory(path), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+			indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
+			indexWriter.setMergeFactor(MERGE_FACTOR);
+			
+			clock.start();
+			
+			index.indexData(indexWriter);
+			
+			System.out.println("  Optimizing");
+			indexWriter.optimize();
+			indexWriter.close();
+			
+			clock.stop();
+			System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
+		}
     }
     
 }
@@ -194,8 +223,13 @@ class IndexBuilderOptions {
 			return indexesDir + System.getProperty("file.separator"); 
 		else
 			return indexesDir;
-	}	
+	}
 
+	// FreeDB dump file
+	@Option(name="--freedb-dump", usage="The FreeDB dump file to index.")
+	private String freeDBDump = "";
+	public String getFreeDBDump() { return freeDBDump; }
+	
     // Selection of indexes to build
     @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,track,label,annotation,cdstub)")
     private String indexes = "artist,label,release,track,releasegroup,annotation,cdstub";
