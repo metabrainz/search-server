@@ -34,7 +34,6 @@ import com.jthink.brainz.mmd.LifeSpan;
 import com.jthink.brainz.mmd.Metadata;
 import com.jthink.brainz.mmd.ObjectFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.Document;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -56,27 +55,27 @@ public class LabelXmlWriter extends XmlWriter {
             LabelList labelList = of.createLabelList();
 
             for (Result result : results.results) {
-                Document doc = result.doc;
+                MbDocument doc = result.doc;
                 Label label = of.createLabel();
-                label.setId(doc.get(LabelIndexField.LABEL_ID.getName()));
-                label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE.getName())));
+                label.setId(doc.get(LabelIndexField.LABEL_ID));
+                label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
 
                 label.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
-                String name = doc.get(LabelIndexField.LABEL.getName());
+                String name = doc.get(LabelIndexField.LABEL);
                 if (name != null) {
                     label.setName(name);
 
                 }
 
-                String sortname = doc.get(LabelIndexField.SORTNAME.getName());
+                String sortname = doc.get(LabelIndexField.SORTNAME);
                 if (sortname != null) {
                     label.setSortName(sortname);
 
                 }
 
-                String begin = doc.get(LabelIndexField.BEGIN.getName());
-                String end = doc.get(LabelIndexField.END.getName());
+                String begin = doc.get(LabelIndexField.BEGIN);
+                String end = doc.get(LabelIndexField.END);
                 if (begin != null || end != null) {
                     LifeSpan lifespan = of.createLifeSpan();
                     if (begin != null) {
@@ -91,7 +90,7 @@ public class LabelXmlWriter extends XmlWriter {
 
                 }
 
-                String comment = doc.get(LabelIndexField.COMMENT.getName());
+                String comment = doc.get(LabelIndexField.COMMENT);
                 if (comment != null) {
                     label.setDisambiguation(comment);
                 }

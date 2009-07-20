@@ -4,6 +4,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.Index;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.ReleaseIndexField;
 import org.musicbrainz.search.ReleaseXmlWriter;
 import org.musicbrainz.search.ResourceType;
@@ -67,26 +68,25 @@ public class FindReleaseTest extends TestCase {
         Results res = ss.search(ResourceType.RELEASE, "release:\"Our Glorious 5 Year Plan\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE.getName()));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST.getName()));
-        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL.getName()));
-        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
-        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.DATE.getName()).length);
-        assertEquals("2005", doc.get(ReleaseIndexField.DATE.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS.getName()).length);
-        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS.getName()));
-        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE.getName()));
-        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT.getName()));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS.getName()));
-        assertEquals("album", doc.get(ReleaseIndexField.TYPE.getName()));
-
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+        assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
 
     }
 
@@ -94,25 +94,25 @@ public class FindReleaseTest extends TestCase {
         Results res = ss.search(ResourceType.RELEASE, "\"Our Glorious 5 Year Plan\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE.getName()));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST.getName()));
-        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL.getName()));
-        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
-        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.DATE.getName()).length);
-        assertEquals("2005", doc.get(ReleaseIndexField.DATE.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS.getName()).length);
-        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS.getName()));
-        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE.getName()));
-        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT.getName()));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS.getName()));
-        assertEquals("album", doc.get(ReleaseIndexField.TYPE.getName()));
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+        assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
 
     }
 
@@ -120,26 +120,25 @@ public class FindReleaseTest extends TestCase {
         Results res = ss.search(ResourceType.RELEASE, "artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE.getName()));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST.getName()));
-        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL.getName()));
-        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
-        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.DATE.getName()).length);
-        assertEquals("2005", doc.get(ReleaseIndexField.DATE.getName()));
-        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS.getName()).length);
-        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS.getName()));
-        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE.getName()));
-        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT.getName()));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS.getName()));
-        assertEquals("album", doc.get(ReleaseIndexField.TYPE.getName()));
-
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+        assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
     }
 
     /**

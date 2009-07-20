@@ -7,6 +7,7 @@ import org.musicbrainz.search.ArtistIndexField;
 import org.musicbrainz.search.ArtistType;
 import org.musicbrainz.search.ArtistXmlWriter;
 import org.musicbrainz.search.Index;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.ResourceType;
 import org.musicbrainz.search.Result;
 import org.musicbrainz.search.Results;
@@ -73,15 +74,15 @@ public class FindArtistTest extends TestCase {
         Results res = ss.search(ResourceType.ARTIST, "artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST.getName()));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN.getName()));
-        assertNull(doc.get(ArtistIndexField.END.getName()));
-        assertNull(doc.get(ArtistIndexField.ALIAS.getName()));
-        assertNull(doc.get(ArtistIndexField.COMMENT.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME.getName()));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE.getName()));
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertNull(doc.get(ArtistIndexField.END));
+        assertNull(doc.get(ArtistIndexField.ALIAS));
+        assertNull(doc.get(ArtistIndexField.COMMENT));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
 
@@ -89,15 +90,15 @@ public class FindArtistTest extends TestCase {
         Results res = ss.search(ResourceType.ARTIST, "sortname:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST.getName()));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN.getName()));
-        assertNull(doc.get(ArtistIndexField.END.getName()));
-        assertNull(doc.get(ArtistIndexField.ALIAS.getName()));
-        assertNull(doc.get(ArtistIndexField.COMMENT.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME.getName()));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE.getName()));
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertNull(doc.get(ArtistIndexField.END));
+        assertNull(doc.get(ArtistIndexField.ALIAS));
+        assertNull(doc.get(ArtistIndexField.COMMENT));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
 
@@ -105,30 +106,30 @@ public class FindArtistTest extends TestCase {
         Results res = ss.search(ResourceType.ARTIST, "type:\"group\"", 0, 10);
         assertEquals(2, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST.getName()));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN.getName()));
-        assertNull(doc.get(ArtistIndexField.END.getName()));
-        assertNull(doc.get(ArtistIndexField.ALIAS.getName()));
-        assertNull(doc.get(ArtistIndexField.COMMENT.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME.getName()));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE.getName()));
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertNull(doc.get(ArtistIndexField.END));
+        assertNull(doc.get(ArtistIndexField.ALIAS));
+        assertNull(doc.get(ArtistIndexField.COMMENT));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
     public void testFindArtistByBeginDate() throws Exception {
         Results res = ss.search(ResourceType.ARTIST, "begin:\"1999-04\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST.getName()));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN.getName()));
-        assertNull(doc.get(ArtistIndexField.END.getName()));
-        assertNull(doc.get(ArtistIndexField.ALIAS.getName()));
-        assertNull(doc.get(ArtistIndexField.COMMENT.getName()));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME.getName()));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE.getName()));
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertNull(doc.get(ArtistIndexField.END));
+        assertNull(doc.get(ArtistIndexField.ALIAS));
+        assertNull(doc.get(ArtistIndexField.COMMENT));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
     public void testFindArtistByEndDate() throws Exception {
@@ -145,24 +146,24 @@ public class FindArtistTest extends TestCase {
         Results res = ss.search(ResourceType.ARTIST, "alias:\"Echo And The Bunnymen\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID.getName()));
-        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST.getName()));
-        assertEquals("1978", doc.get(ArtistIndexField.BEGIN.getName()));
-        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME.getName()));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE.getName()));
+        MbDocument doc = result.doc;
+        assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST));
+        assertEquals("1978", doc.get(ArtistIndexField.BEGIN));
+        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
     public void testFindArtistByDefaultField() throws Exception {
         Results res = ss.search(ResourceType.ARTIST, "\"Echo & The Bunnymen\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
-        Document doc = result.doc;
-        assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID.getName()));
-        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST.getName()));
-        assertEquals("1978", doc.get(ArtistIndexField.BEGIN.getName()));
-        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME.getName()));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE.getName()));
+        MbDocument doc = result.doc;
+        assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST));
+        assertEquals("1978", doc.get(ArtistIndexField.BEGIN));
+        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
     /**

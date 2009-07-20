@@ -102,7 +102,7 @@ public class SearchServer {
         for (int i = offset; i < docs.length; i++) {
             Result result = new Result();
             result.score = docs[i].score / maxScore;
-            result.doc = searcher.doc(docs[i].doc);
+            result.doc = new MbDocument(searcher.doc(docs[i].doc));
             results.results.add(result);
         }
         return results;

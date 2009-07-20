@@ -35,7 +35,6 @@ import com.jthink.brainz.mmd.Release;
 import com.jthink.brainz.mmd.ReleaseList;
 import com.jthink.brainz.mmd.Track;
 import com.jthink.brainz.mmd.TrackList;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.document.NumberTools;
 
 import javax.xml.bind.JAXBException;
@@ -59,39 +58,39 @@ public class TrackXmlWriter extends XmlWriter {
             TrackList trackList = of.createTrackList();
 
             for (Result result : results.results) {
-                Document doc = result.doc;
+                MbDocument doc = result.doc;
                 Track track = of.createTrack();
-                track.setId(doc.get(TrackIndexField.TRACK_ID.getName()));
+                track.setId(doc.get(TrackIndexField.TRACK_ID));
                 track.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
-                String name = doc.get(TrackIndexField.TRACK.getName());
+                String name = doc.get(TrackIndexField.TRACK);
                 if (name != null) {
                     track.setTitle(name);
                 }
 
-                String duration = doc.get(TrackIndexField.DURATION.getName());
+                String duration = doc.get(TrackIndexField.DURATION);
                 if (duration != null) {
                     track.setDuration(BigInteger.valueOf(NumberTools.stringToLong(duration)));
                 }
 
 
-                String artistName = doc.get(TrackIndexField.ARTIST.getName());
+                String artistName = doc.get(TrackIndexField.ARTIST);
                 if (artistName != null) {
 
                     Artist artist = of.createArtist();
                     artist.setName(artistName);
-                    artist.setId(doc.get(ReleaseIndexField.ARTIST_ID.getName()));
+                    artist.setId(doc.get(ReleaseIndexField.ARTIST_ID));
                     track.setArtist(artist);
                 }
 
-                String releaseName = doc.get(TrackIndexField.RELEASE.getName());
+                String releaseName = doc.get(TrackIndexField.RELEASE);
                 if (releaseName != null) {
                     Release release = of.createRelease();
-                    release.setId(doc.get(TrackIndexField.RELEASE_ID.getName()));
+                    release.setId(doc.get(TrackIndexField.RELEASE_ID));
                     release.setTitle(releaseName);
 
-                    String trackNo = doc.get(TrackIndexField.TRACKNUM.getName());
-                    String tracks = doc.get(TrackIndexField.NUM_TRACKS.getName());
+                    String trackNo = doc.get(TrackIndexField.TRACKNUM);
+                    String tracks = doc.get(TrackIndexField.NUM_TRACKS);
                     if (trackNo != null) {
                         TrackList releaseTrackList = of.createTrackList();
                         releaseTrackList.setOffset(BigInteger.valueOf(NumberTools.stringToLong(trackNo)));

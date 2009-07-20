@@ -34,7 +34,6 @@ import com.jthink.brainz.mmd.LifeSpan;
 import com.jthink.brainz.mmd.Metadata;
 import com.jthink.brainz.mmd.ObjectFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.Document;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -57,32 +56,32 @@ public class ArtistXmlWriter extends XmlWriter {
             ArtistList artistList = of.createArtistList();
 
             for (Result result : results.results) {
-                Document doc = result.doc;
+                MbDocument doc = result.doc;
                 Artist artist = of.createArtist();
 
-                artist.setId(doc.get(ArtistIndexField.ARTIST_ID.getName()));
+                artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
 
-                String artype = doc.get(ArtistIndexField.TYPE.getName());
+                String artype = doc.get(ArtistIndexField.TYPE);
                 if (artype != null) {
                     artist.setType(StringUtils.capitalize(artype));
                 }
 
                 artist.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
-                String name = doc.get(ArtistIndexField.ARTIST.getName());
+                String name = doc.get(ArtistIndexField.ARTIST);
                 if (name != null) {
                     artist.setName(name);
 
                 }
 
-                String sortname = doc.get(ArtistIndexField.SORTNAME.getName());
+                String sortname = doc.get(ArtistIndexField.SORTNAME);
                 if (sortname != null) {
                     artist.setSortName(name);
 
                 }
 
-                String begin = doc.get(ArtistIndexField.BEGIN.getName());
-                String end = doc.get(ArtistIndexField.END.getName());
+                String begin = doc.get(ArtistIndexField.BEGIN);
+                String end = doc.get(ArtistIndexField.END);
                 if (begin != null || end != null) {
                     LifeSpan lifespan = of.createLifeSpan();
                     if (begin != null) {
@@ -97,7 +96,7 @@ public class ArtistXmlWriter extends XmlWriter {
 
                 }
 
-                String comment = doc.get(ArtistIndexField.COMMENT.getName());
+                String comment = doc.get(ArtistIndexField.COMMENT);
                 if (comment != null) {
                     artist.setDisambiguation(comment);
                 }

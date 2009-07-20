@@ -34,7 +34,6 @@ import com.jthink.brainz.mmd.ObjectFactory;
 import com.jthink.brainz.mmd.ReleaseGroup;
 import com.jthink.brainz.mmd.ReleaseGroupList;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.document.Document;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -58,30 +57,30 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
             ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
 
             for (Result result : results.results) {
-                Document doc = result.doc;
+                MbDocument doc = result.doc;
                 ReleaseGroup releaseGroup = of.createReleaseGroup();
-                releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()));
+                releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
 
                 releaseGroup.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
-                String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP.getName());
+                String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
                 if (name != null) {
                     releaseGroup.setTitle(name);
 
                 }
 
-                String type = doc.get(ReleaseGroupIndexField.TYPE.getName());
+                String type = doc.get(ReleaseGroupIndexField.TYPE);
                 if (type != null) {
                     releaseGroup.getType().add(StringUtils.capitalize(type));
                 }
 
 
-                String artistName = doc.get(ReleaseGroupIndexField.ARTIST.getName());
+                String artistName = doc.get(ReleaseGroupIndexField.ARTIST);
                 if (artistName != null) {
 
                     Artist artist = of.createArtist();
                     artist.setName(artistName);
-                    artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID.getName()));
+                    artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
                     releaseGroup.setArtist(artist);
                 }
 
