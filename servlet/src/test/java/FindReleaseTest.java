@@ -45,6 +45,9 @@ public class FindReleaseTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST, "Farming Incident");
         Index.addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, "10");
         Index.addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, "1");
+        Index.addFieldToDocument(doc, ReleaseIndexField.STATUS, "official");
+        Index.addFieldToDocument(doc, ReleaseIndexField.TYPE, "album");
+
 
         //Per Event
         Index.addFieldToDocument(doc, ReleaseIndexField.COUNTRY, "gb");
@@ -81,6 +84,9 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS.getName()));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE.getName()));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT.getName()));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS.getName()));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE.getName()));
+
 
     }
 
@@ -105,6 +111,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS.getName()));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE.getName()));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT.getName()));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS.getName()));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE.getName()));
 
     }
 
@@ -129,6 +137,9 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS.getName()));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE.getName()));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT.getName()));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS.getName()));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE.getName()));
+
     }
 
     /**
@@ -146,13 +157,13 @@ public class FindReleaseTest extends TestCase {
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        //System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("language=\"ENG\""));
         assertTrue(output.contains("script=\"Latn\""));
-//        assertTrue(output.contains("type=\"Album Official\""));
+        assertTrue(output.contains("type=\"Album Official\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));

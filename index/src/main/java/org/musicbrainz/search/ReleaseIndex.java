@@ -24,16 +24,21 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 
 import java.sql.*;
 
 public class ReleaseIndex extends Index {
+    private static final int STATUS_OFFSET = 100;
+    private static final int STATUS_INDEX = 2;
+    private static final int TYPE_OFFSET = 1;
+    private static final int TYPE_INDEX = 1;
 
     public ReleaseIndex(Connection dbConnection) {
-		super(dbConnection);
-	}
+        super(dbConnection);
+    }
 
-	public String getName() {
+    public String getName() {
         return "release";
     }
 
@@ -75,7 +80,7 @@ public class ReleaseIndex extends Index {
         st.close();
         st = dbConnection.prepareStatement(
                 "SELECT album.id, album.gid, album.name, " +
-						"artist.gid as artist_gid, artist.name as artist_name, " +
+                        "artist.gid as artist_gid, artist.name as artist_name, " +
                         "attributes, tracks, discids, asin, " +
                         "language.isocode_3t as language, script.isocode as script " +
                         "FROM album " +
@@ -93,7 +98,6 @@ public class ReleaseIndex extends Index {
         st.close();
     }
 
-    //TODO Release Type, Release Status
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<List<String>>> events) throws SQLException {
         Document doc = new Document();
         int albumId = rs.getInt("id");
@@ -103,18 +107,25 @@ public class ReleaseIndex extends Index {
         addFieldToDocument(doc, ReleaseIndexField.ARTIST, rs.getString("artist_name"));
         addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, rs.getString("tracks"));
         addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
-        
+
+        Integer[] attributes = (Integer[]) rs.getArray("attributes").getArray();
+        int type = attributes[TYPE_INDEX] - TYPE_OFFSET;
+        int status = attributes[STATUS_INDEX] - STATUS_OFFSET;
+
+        addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.values()[status].getName());
+        addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[type].getName());
+
         String asin = rs.getString("asin");
         if (asin != null && !asin.isEmpty()) {
-        	addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, asin);
+            addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, asin);
         }
         String language = rs.getString("language");
         if (language != null && !language.isEmpty()) {
-        	addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, language);
+            addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, language);
         }
         String script = rs.getString("script");
         if (script != null && !script.isEmpty()) {
-        	addFieldToDocument(doc, ReleaseIndexField.SCRIPT, script);
+            addFieldToDocument(doc, ReleaseIndexField.SCRIPT, script);
         }
 
         if (events.containsKey(albumId)) {

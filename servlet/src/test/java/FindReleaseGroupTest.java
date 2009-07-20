@@ -115,7 +115,7 @@ public class FindReleaseGroupTest extends TestCase {
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        //System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\""));

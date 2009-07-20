@@ -58,7 +58,8 @@ public class ReleaseXmlWriter extends XmlWriter {
                 Document doc = result.doc;
                 Release release = of.createRelease();
                 release.setId(doc.get(ReleaseIndexField.RELEASE_ID.getName()));
-
+                release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.TYPE.getName())));
+                release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.STATUS.getName())));
                 release.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
 
                 String name = doc.get(ReleaseIndexField.RELEASE.getName());
@@ -72,6 +73,8 @@ public class ReleaseXmlWriter extends XmlWriter {
                     release.setAsin(asin);
 
                 }
+
+
 
                 TextRepresentation tr = of.createTextRepresentation();
                 String script = doc.get(ReleaseIndexField.SCRIPT.getName());

@@ -29,6 +29,8 @@ import java.sql.*;
 
 public class TrackIndex extends Index {
 
+    private final static int QUANTIZED_DURATION = 2000;
+
     public TrackIndex(Connection dbConnection) {
 		super(dbConnection);
 	}
@@ -48,11 +50,12 @@ public class TrackIndex extends Index {
         PreparedStatement st = dbConnection.prepareStatement(
                 "SELECT artist.gid as artist_gid, artist.name as artist_name, " +
                         "track.gid, track.name, " +
-                        "album.gid as album_gid, album.name as album_name, track.length, albumjoin.sequence " +
+                        "album.gid as album_gid, album.attributes, album.name as album_name, track.length, albumjoin.sequence, albummeta.tracks " +
                         "FROM track " +
                         "JOIN artist ON track.artist=artist.id " +
                         "JOIN albumjoin ON track.id=albumjoin.track " +
                         "JOIN album ON album.id=albumjoin.album " +
+                        "JOIN albummeta ON album.id=albummeta.id " +
                         "WHERE track.id BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -63,7 +66,9 @@ public class TrackIndex extends Index {
         st.close();
     }
 
-    //TODO Numtracks and type
+    //TODO, Add TYPE  as per http://bugs.musicbrainz.org/browser/search_index/branches/lucene-2.x/mbsearch/serverindex/trackindex.py
+    //but may not be needed because never seems to be outputted
+
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
         Document doc = new Document();
 
@@ -73,10 +78,10 @@ public class TrackIndex extends Index {
         addFieldToDocument(doc, TrackIndexField.ARTIST, rs.getString("artist_name"));
         addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("album_gid"));
         addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("album_name"));
-        addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("length")));
-        addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("length") / 2000));
+        addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("tracks"));
+        addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("length")));
+        addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("length") / QUANTIZED_DURATION ));
         addFieldToDocument(doc, TrackIndexField.TRACKNUM, NumberTools.longToString(rs.getLong("sequence")));
-        
         return doc;
     }
 

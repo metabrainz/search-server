@@ -13,7 +13,6 @@ public enum TrackIndexField implements IndexField {
     ARTIST				("artist",		Field.Store.YES,	Field.Index.ANALYZED),
     RELEASE_ID			("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     RELEASE				("release",		Field.Store.YES,	Field.Index.ANALYZED),
-    RELEASE_TYPE		("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     NUM_TRACKS			("tracks",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     DURATION			("dur",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
     QUANTIZED_DURATION	("qdur",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
