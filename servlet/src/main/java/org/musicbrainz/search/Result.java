@@ -28,14 +28,20 @@
 
 package org.musicbrainz.search;
 
-import org.apache.lucene.document.Document;
-
 public class Result {
 
-    public Document doc;
-    public float score;
+	public MbDocument doc;
+	public float score;
 
-    public Result() {
+	public MbDocument getDoc() {
+		return doc;
+	}
+
+	public float getScore() {
+		return score;
+	}
+
+	public Result() {
     }
 
 }
