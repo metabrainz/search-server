@@ -9,7 +9,8 @@ public enum ResourceType {
     LABEL("label"),
     RELEASE("release"),
     RELEASE_GROUP("release-group"),
-    TRACK("track");
+    TRACK("track"), 
+    FREEDB("freedb");
 
     private String name;
 

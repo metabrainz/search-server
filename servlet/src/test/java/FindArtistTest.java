@@ -6,6 +6,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.ArtistIndexField;
 import org.musicbrainz.search.ArtistType;
 import org.musicbrainz.search.ArtistXmlWriter;
+import org.musicbrainz.search.ArtistHtmlWriter;
 import org.musicbrainz.search.Index;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.ResourceType;
@@ -14,6 +15,7 @@ import org.musicbrainz.search.Results;
 import org.musicbrainz.search.ResultsWriter;
 import org.musicbrainz.search.SearchServer;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.SearchServerServlet;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -46,6 +48,7 @@ public class FindArtistTest extends TestCase {
             Index.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Farming Incident");
             Index.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1999-04");
             Index.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
+            Index.addFieldToDocument(doc, ArtistIndexField.COMMENT, "the real one");
             writer.addDocument(doc);
         }
 
@@ -68,6 +71,9 @@ public class FindArtistTest extends TestCase {
         Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
         searchers.put(ResourceType.ARTIST, new IndexSearcher(ramDir));
         ss = new SearchServer(searchers);
+        
+        // Velocity setup
+        SearchServerServlet.setUpVelocity();
     }
 
     public void testFindArtistByName() throws Exception {
@@ -78,9 +84,9 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
         assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
         assertNull(doc.get(ArtistIndexField.END));
         assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertNull(doc.get(ArtistIndexField.COMMENT));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
@@ -94,9 +100,9 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
         assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
         assertNull(doc.get(ArtistIndexField.END));
         assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertNull(doc.get(ArtistIndexField.COMMENT));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
@@ -110,9 +116,9 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
         assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
         assertNull(doc.get(ArtistIndexField.END));
         assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertNull(doc.get(ArtistIndexField.COMMENT));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
@@ -125,9 +131,9 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
         assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
         assertNull(doc.get(ArtistIndexField.END));
         assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertNull(doc.get(ArtistIndexField.COMMENT));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
@@ -197,6 +203,28 @@ public class FindArtistTest extends TestCase {
 
     }
 
+    public void testOutputAsHtml() throws Exception {
+
+        Results res = ss.search(ResourceType.ARTIST, "artist:\"Farming Incident\"", 0, 1);
+        ResultsWriter writer = new ArtistHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+
+        String output = sw.toString();
+//      System.out.println("Xml is" + output);
+//        assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));  group comes before id in output
+//        assertTrue(output.contains("<artist-list count=\"1\" offset=\"0\">"));               offset comes before count in output
+        assertTrue(output.contains("group"));
+        assertTrue(output.contains("Farming Incident"));
+        assertTrue(output.contains("1999-04"));
+        assertTrue(output.contains("the real one"));
+        assertFalse(output.contains("end"));
+        assertFalse(output.contains("alias"));
+        assertFalse(output.contains("disambugation"));
+
+    }
 
     /**
      * Tests that & is converted to valid xml
@@ -220,8 +248,26 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<name>Echo &amp; The Bunnymen</name>"));
     }
 
+    /**
+     * Tests that & is converted to valid html
+     *
+     * @throws Exception
+     */
+    public void testOutputAsHtmlSpecialCharacters() throws Exception {
 
-    public void testWritingPerformance() throws Exception {
+        Results res = ss.search(ResourceType.ARTIST, "alias:\"Echo And The Bunnymen\"", 0, 1);
+        ResultsWriter writer = new ArtistHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+
+        String output = sw.toString();
+        assertTrue(output.contains("group"));
+        assertTrue(output.contains("Echo &amp; The Bunnymen"));
+    }
+    
+    public void testXmlWritingPerformance() throws Exception {
         Results res = ss.search(ResourceType.ARTIST, "artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
 
@@ -234,8 +280,23 @@ public class FindArtistTest extends TestCase {
         }
         pr.close();
         Date end = new Date();
-        System.out.println("Time Taken:" + (end.getTime() - start.getTime()) + "ms");
+        System.out.println("XML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
+    }
+    
+    public void testHtmlWritingPerformance() throws Exception {
+        Results res = ss.search(ResourceType.ARTIST, "artist:\"Farming Incident\"", 0, 10);
+        assertEquals(1, res.totalHits);
 
+        Date start = new Date();
+        ResultsWriter writer = new ArtistHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        for (int i = 0; i < 1000; i++) {
+            writer.write(pr, res);
+        }
+        pr.close();
+        Date end = new Date();
+        System.out.println("HTML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
     }
 
 }

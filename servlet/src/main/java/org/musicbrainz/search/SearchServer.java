@@ -62,6 +62,7 @@ public class SearchServer {
         searchers.put(ResourceType.RELEASE, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/release_index/"), null), true)));
         searchers.put(ResourceType.TRACK, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/track_index/"), null), true)));
         searchers.put(ResourceType.RELEASE_GROUP, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/releasegroup_index/"), null), true)));
+        searchers.put(ResourceType.FREEDB, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/freedb_index/"), null), true)));
         setupDefaultSearchFields();
     }
 
@@ -78,6 +79,8 @@ public class SearchServer {
         defaultSearchFields.put(ResourceType.RELEASE, ReleaseIndexField.RELEASE.getName());
         defaultSearchFields.put(ResourceType.TRACK, TrackIndexField.TRACK.getName());
         defaultSearchFields.put(ResourceType.RELEASE_GROUP, ReleaseGroupIndexField.RELEASEGROUP.getName());
+        //TODO: support multi default search fields and make artist & title default fields
+        defaultSearchFields.put(ResourceType.FREEDB, FreeDBIndexField.ARTIST.getName());
     }
 
     public void close() {

@@ -39,16 +39,27 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.apache.velocity.app.Velocity;
 
 public class SearchServerServlet extends HttpServlet {
 
     final Logger log = Logger.getLogger(SearchServerServlet.class.getName());
-
+    
+    final static int DEFAULT_OFFSET = 0;
+    final static int DEFAULT_LIMIT = 100;
+    
+    final static String RESPONSE_XML = "xml";
+    final static String RESPONSE_HTML = "html";
+    
     private SearchServer searchServer;
-    private Map<ResourceType, ResultsWriter> writers = new HashMap<ResourceType, ResultsWriter>();
+    private boolean isVelocityInitialized = false;
+    private Map<ResourceType, ResultsWriter> xmlWriters = new HashMap<ResourceType, ResultsWriter>();
+    private Map<ResourceType, ResultsWriter> htmlWriters = new HashMap<ResourceType, ResultsWriter>();
 
     @Override
     public void init() {
+        
+        // Setup search server
         String indexDir = getServletConfig().getInitParameter("index_dir");
         log.info("Index dir = " + indexDir);
         try {
@@ -58,16 +69,37 @@ public class SearchServerServlet extends HttpServlet {
             searchServer = null;
         }
 
-        //Map resourcetype to writer, writer can be reused
-        writers.put(ResourceType.ARTIST, new ArtistXmlWriter());
-        writers.put(ResourceType.LABEL, new LabelXmlWriter());
-        writers.put(ResourceType.RELEASE, new ReleaseXmlWriter());
-        writers.put(ResourceType.RELEASE_GROUP, new ReleaseGroupXmlWriter());
-        writers.put(ResourceType.TRACK, new TrackXmlWriter());
+        //Map resourcetype to XML writer, writer can be reused
+        xmlWriters.put(ResourceType.ARTIST, new ArtistXmlWriter());
+        xmlWriters.put(ResourceType.LABEL, new LabelXmlWriter());
+        xmlWriters.put(ResourceType.RELEASE, new ReleaseXmlWriter());
+        xmlWriters.put(ResourceType.RELEASE_GROUP, new ReleaseGroupXmlWriter());
+        xmlWriters.put(ResourceType.TRACK, new TrackXmlWriter());
 
+        // Setup Velocity and the HTML writers
+        setUpVelocity();
+        
+        try {
+            Velocity.init();
+            htmlWriters.put(ResourceType.FREEDB, new FreeDBHtmlWriter());
+            htmlWriters.put(ResourceType.ARTIST, new ArtistHtmlWriter());
+            isVelocityInitialized = true;
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            isVelocityInitialized = false;
+        }
+        
     }
 
-    @Override
+    public static void setUpVelocity() {
+        Velocity.setProperty("resource.loader", "class");
+        Velocity.setProperty("class.resource.loader.class", org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader.class.getName());
+        Velocity.setProperty("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
+        //TODO: remove this DummyLogChute hack and add log4j logging
+        Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM, new DummyLogChute());
+	}
+
+	@Override
     public void destroy() {
         if (searchServer != null) {
             searchServer.close();
@@ -77,11 +109,20 @@ public class SearchServerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // Check if search server is available
         if (searchServer == null) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "searchServer == null");
             return;
         }
 
+        // Check if velocity is initialized
+        if (!isVelocityInitialized) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error during Velocity initialization");
+            return;
+        }
+        
+        // Extract parameters from request
         request.setCharacterEncoding("UTF-8");
 
         String query = request.getParameter("query");
@@ -96,16 +137,47 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
         ResourceType resourceType = ResourceType.getValue(type);
-        
         if (resourceType == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown resource type");
             return;
         }
         
-        int offset = 0;
-        int limit = 10;
+        Integer offset = DEFAULT_OFFSET;
+        String strOffset = request.getParameter("offset");
+        if (strOffset != null && !strOffset.isEmpty()) {
+            offset = new Integer(strOffset);
+        }
+        
+        Integer limit = DEFAULT_LIMIT;
+        String strLimit = request.getParameter("limit");
+        if (strLimit != null && !strLimit.isEmpty()) {
+            limit = new Integer(strLimit);
+        }
+        
+        String responseFormat = request.getParameter("fmt");
+        if (responseFormat == null || responseFormat.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No format supplied");
+            return;
+        }
+
+        // Make the search
         Results results = searchServer.search(resourceType, query, offset, limit);
-        ResultsWriter writer = writers.get(resourceType);
+        
+        // Select the matching writer
+        ResultsWriter writer;
+        if (RESPONSE_XML.equals(responseFormat)) {
+            writer = xmlWriters.get(resourceType);
+        } else {
+            writer = htmlWriters.get(resourceType);
+        }
+        
+        if (writer == null) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "No handler for resource type "+resourceType+" and format "+responseFormat);
+            return;
+        }
+        
+        // Output the response
         response.setCharacterEncoding("UTF-8");
         response.setContentType(writer.getMimeType());
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")));
