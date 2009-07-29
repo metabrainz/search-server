@@ -21,6 +21,8 @@ package org.musicbrainz.search;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
@@ -29,9 +31,15 @@ import java.sql.*;
 
 public class LabelIndex extends Index {
 
+    private Pattern stripLabelCodeOfLeadingZeroes;
+
     public LabelIndex(Connection dbConnection) {
 		super(dbConnection);
-	}
+        stripLabelCodeOfLeadingZeroes =Pattern.compile("^0+");
+
+
+
+    }
 
 	public String getName() {
         return "label";
@@ -105,9 +113,10 @@ public class LabelIndex extends Index {
 
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
-        	addFieldToDocument(doc, LabelIndexField.CODE, labelcode);
+        	Matcher m    = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
+            addFieldToDocument(doc, LabelIndexField.CODE, m.replaceFirst(""));
         }
-        
+
         addFieldToDocument(doc, LabelIndexField.COUNTRY, rs.getString("country"));
 
         if (aliases.containsKey(labelId)) {
