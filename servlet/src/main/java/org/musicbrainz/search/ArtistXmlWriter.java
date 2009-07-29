@@ -35,84 +35,76 @@ import com.jthink.brainz.mmd.Metadata;
 import com.jthink.brainz.mmd.ObjectFactory;
 import org.apache.commons.lang.StringUtils;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 
 
 public class ArtistXmlWriter extends XmlWriter {
 
-    public void write(PrintWriter out, Results results) throws IOException {
+    public Metadata write(Results results) throws IOException {
+        ObjectFactory of = new ObjectFactory();
 
-        try {
+        Metadata metadata = of.createMetadata();
+        ArtistList artistList = of.createArtistList();
 
-            Marshaller m = context.createMarshaller();
-            ObjectFactory of = new ObjectFactory();
+        for (Result result : results.results) {
+            MbDocument doc = result.doc;
+            Artist artist = of.createArtist();
 
-            Metadata metadata = of.createMetadata();
-            ArtistList artistList = of.createArtistList();
+            artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
 
-            for (Result result : results.results) {
-                MbDocument doc = result.doc;
-                Artist artist = of.createArtist();
+            String artype = doc.get(ArtistIndexField.TYPE);
+            if (artype != null) {
+                artist.setType(StringUtils.capitalize(artype));
+            }
 
-                artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
+            artist.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
+            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
+            //mb server May release, dont chnage for now
+            //artist.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
 
-                String artype = doc.get(ArtistIndexField.TYPE);
-                if (artype != null) {
-                    artist.setType(StringUtils.capitalize(artype));
-                }
-
-                artist.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-
-                String name = doc.get(ArtistIndexField.ARTIST);
-                if (name != null) {
-                    artist.setName(name);
-
-                }
-
-                String sortname = doc.get(ArtistIndexField.SORTNAME);
-                if (sortname != null) {
-                    artist.setSortName(name);
-
-                }
-
-                String begin = doc.get(ArtistIndexField.BEGIN);
-                String end = doc.get(ArtistIndexField.END);
-                if (begin != null || end != null) {
-                    LifeSpan lifespan = of.createLifeSpan();
-                    if (begin != null) {
-                        lifespan.setBegin(begin);
-
-                    }
-                    if (end != null) {
-                        lifespan.setEnd(end);
-
-                    }
-                    artist.setLifeSpan(lifespan);
-
-                }
-
-                String comment = doc.get(ArtistIndexField.COMMENT);
-                if (comment != null) {
-                    artist.setDisambiguation(comment);
-                }
-
-                artistList.getArtist().add(artist);
+            String name = doc.get(ArtistIndexField.ARTIST);
+            if (name != null) {
+                artist.setName(name);
 
             }
-            artistList.setCount(BigInteger.valueOf(results.results.size()));
-            artistList.setOffset(BigInteger.valueOf(results.offset));
-            metadata.setArtistList(artistList);
-            m.marshal(metadata, out);
+
+            String sortname = doc.get(ArtistIndexField.SORTNAME);
+            if (sortname != null) {
+                artist.setSortName(name);
+
+            }
+
+            String begin = doc.get(ArtistIndexField.BEGIN);
+            String end = doc.get(ArtistIndexField.END);
+            if (begin != null || end != null) {
+                LifeSpan lifespan = of.createLifeSpan();
+                if (begin != null) {
+                    lifespan.setBegin(begin);
+
+                }
+                if (end != null) {
+                    lifespan.setEnd(end);
+
+                }
+                artist.setLifeSpan(lifespan);
+
+            }
+
+            String comment = doc.get(ArtistIndexField.COMMENT);
+            if (comment != null) {
+                artist.setDisambiguation(comment);
+            }
+
+            artistList.getArtist().add(artist);
 
         }
-        catch (JAXBException je) {
-            throw new IOException(je);
-        }
+        artistList.setCount(BigInteger.valueOf(results.results.size()));
+        artistList.setOffset(BigInteger.valueOf(results.offset));
+        metadata.setArtistList(artistList);
+        return metadata;
     }
+
 
 }

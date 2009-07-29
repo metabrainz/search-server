@@ -28,24 +28,19 @@
 
 package org.musicbrainz.search;
 
+import com.jthink.brainz.mmd.Metadata;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.Writer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public abstract class XmlWriter extends ResultsWriter {
 
     static final JAXBContext context = initContext();
-
-
-    public void writeHeader(Writer out) throws IOException {
-        out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "<metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\" xmlns:ext=\"http://musicbrainz.org/ns/ext-1.0#\">");
-    }
-
-    public void writeFooter(Writer out) throws IOException {
-        out.write("</metadata>");
-    }
 
     public String getMimeType() {
         return "application/xml; charset=UTF-8";
@@ -61,5 +56,59 @@ public abstract class XmlWriter extends ResultsWriter {
         }
     }
 
+    /**
+     * Put results into an XML representation class whereby it can be manipulated further or
+     * converted to an output stream
+     *
+     * @param results
+     * @return
+     * @throws IOException
+     */
+    public abstract Metadata write(Results results) throws IOException;
+
+
+    /**
+     * Write the results to provider writer
+     *
+     * @param out
+     * @param results
+     * @throws IOException
+     */
+    public void write(PrintWriter out, Results results) throws IOException {
+        try {
+            Metadata metadata = write(results);
+            Marshaller m = context.createMarshaller();
+            m.marshal(metadata, out);
+        }
+        catch (JAXBException je) {
+            throw new IOException(je);
+        }
+    }
+
+
+    /**
+     * Write partial xml to outputstream
+     * <p/>
+     * This is for backwards compatability with mb server that wraps the xml header and metadata tags
+     * around the xml results.
+     *
+     * @param out
+     * @param results
+     * @throws IOException
+     */
+    public void writeFragment(PrintWriter out, Results results) throws IOException {
+        try {
+            StringWriter tmpOut = new StringWriter();
+            Metadata metadata = write(results);
+            Marshaller m = context.createMarshaller();
+            m.marshal(metadata, tmpOut);
+            out.append(tmpOut.toString().replace("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\">","")
+                    .replace("</metadata>",""));
+        }
+        catch (JAXBException je) {
+            throw new IOException(je);
+        }
+
+    }
 
 }

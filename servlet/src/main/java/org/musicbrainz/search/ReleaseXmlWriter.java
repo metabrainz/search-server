@@ -28,11 +28,19 @@
 
 package org.musicbrainz.search;
 
-import com.jthink.brainz.mmd.*;
+import com.jthink.brainz.mmd.Artist;
+import com.jthink.brainz.mmd.DiscList;
+import com.jthink.brainz.mmd.Event;
+import com.jthink.brainz.mmd.Label;
+import com.jthink.brainz.mmd.Metadata;
+import com.jthink.brainz.mmd.ObjectFactory;
+import com.jthink.brainz.mmd.Release;
+import com.jthink.brainz.mmd.ReleaseEventList;
+import com.jthink.brainz.mmd.ReleaseList;
+import com.jthink.brainz.mmd.TextRepresentation;
+import com.jthink.brainz.mmd.TrackList;
 import org.apache.commons.lang.StringUtils;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -42,121 +50,116 @@ import java.util.Locale;
 public class ReleaseXmlWriter extends XmlWriter {
 
 
-    public void write(PrintWriter out, Results results) throws IOException {
+    public Metadata write(Results results) throws IOException {
+        ObjectFactory of = new ObjectFactory();
 
+        Metadata metadata = of.createMetadata();
+        ReleaseList releaseList = of.createReleaseList();
 
-        try {
+        for (Result result : results.results) {
+            MbDocument doc = result.doc;
+            Release release = of.createRelease();
+            release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
+            release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.TYPE)));
+            release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.STATUS)));
+            release.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
+            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
+            //mb server May release, dont chnage for now
+            //release.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
 
-            Marshaller m = context.createMarshaller();
-            ObjectFactory of = new ObjectFactory();
+            String name = doc.get(ReleaseIndexField.RELEASE);
+            if (name != null) {
+                release.setTitle(name);
 
-            Metadata metadata = of.createMetadata();
-            ReleaseList releaseList = of.createReleaseList();
-
-            for (Result result : results.results) {
-                MbDocument doc = result.doc;
-                Release release = of.createRelease();
-                release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
-                release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.TYPE)));
-                release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.STATUS)));
-                release.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-
-                String name = doc.get(ReleaseIndexField.RELEASE);
-                if (name != null) {
-                    release.setTitle(name);
-
-                }
-
-                String asin = doc.get(ReleaseIndexField.AMAZON_ID);
-                if (asin != null) {
-                    release.setAsin(asin);
-
-                }
-
-                TextRepresentation tr = of.createTextRepresentation();
-                String script = doc.get(ReleaseIndexField.SCRIPT);
-                if (script != null) {
-                    tr.setScript(script);
-                }
-                String lang = doc.get(ReleaseIndexField.LANGUAGE);
-                if (lang != null) {
-                    tr.setLanguage(lang.toUpperCase(Locale.US));
-                }
-
-                if (script != null || lang != null) {
-                    release.setTextRepresentation(tr);
-                }
-
-                String[] countries = doc.getValues(ReleaseIndexField.COUNTRY);
-                if (countries.length > 0) {
-                    ReleaseEventList eventList = of.createReleaseEventList();
-                    String[] dates = doc.getValues(ReleaseIndexField.DATE);
-                    String[] labels = doc.getValues(ReleaseIndexField.LABEL);
-                    String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
-                    String[] barcodes = doc.getValues(ReleaseIndexField.BARCODE);
-
-                    for (int i = 0; i < countries.length; i++) {
-                        Event event = of.createEvent();
-                        if (!countries[i].equals("-")) {
-                            event.setCountry(StringUtils.upperCase(countries[i]));
-                        }
-
-                        if (!dates[i].equals("-")) {
-                            event.setDate(dates[i]);
-                        }
-
-                        if (!labels[i].equals("-")) {
-                            Label label = of.createLabel();
-                            label.setName(labels[i]);
-                            event.setLabel(label);
-                        }
-
-                        if (!catnos[i].equals("-")) {
-                            event.setCatalogNumber(catnos[i]);
-                        }
-
-                        if (!barcodes[i].equals("-")) {
-                            event.setBarcode(barcodes[i]);
-                        }
-
-                        eventList.getEvent().add(event);
-                    }
-                    release.setReleaseEventList(eventList);
-                }
-
-                String artistName = doc.get(ReleaseIndexField.ARTIST);
-                if (artistName != null) {
-
-                    Artist artist = of.createArtist();
-                    artist.setName(artistName);
-                    artist.setId(doc.get(ReleaseIndexField.ARTIST_ID));
-                    release.setArtist(artist);
-                }
-
-                String discIds = doc.get(ReleaseIndexField.NUM_DISC_IDS);
-                if (discIds != null) {
-                    DiscList discList = of.createDiscList();
-                    discList.setCount(BigInteger.valueOf(Long.parseLong(discIds)));
-                    release.setDiscList(discList);
-                }
-
-                String tracks = doc.get(ReleaseIndexField.NUM_TRACKS);
-                if (tracks != null) {
-                    TrackList trackList = of.createTrackList();
-                    trackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
-                    release.setTrackList(trackList);
-                }
-
-                releaseList.getRelease().add(release);
             }
-            releaseList.setCount(BigInteger.valueOf(results.results.size()));
-            releaseList.setOffset(BigInteger.valueOf(results.offset));
-            metadata.setReleaseList(releaseList);
-            m.marshal(metadata, out);
+
+            String asin = doc.get(ReleaseIndexField.AMAZON_ID);
+            if (asin != null) {
+                release.setAsin(asin);
+
+            }
+
+            TextRepresentation tr = of.createTextRepresentation();
+            String script = doc.get(ReleaseIndexField.SCRIPT);
+            if (script != null) {
+                tr.setScript(script);
+            }
+            String lang = doc.get(ReleaseIndexField.LANGUAGE);
+            if (lang != null) {
+                tr.setLanguage(lang.toUpperCase(Locale.US));
+            }
+
+            if (script != null || lang != null) {
+                release.setTextRepresentation(tr);
+            }
+
+            String[] countries = doc.getValues(ReleaseIndexField.COUNTRY);
+            if (countries.length > 0) {
+                ReleaseEventList eventList = of.createReleaseEventList();
+                String[] dates = doc.getValues(ReleaseIndexField.DATE);
+                String[] labels = doc.getValues(ReleaseIndexField.LABEL);
+                String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
+                String[] barcodes = doc.getValues(ReleaseIndexField.BARCODE);
+
+                for (int i = 0; i < countries.length; i++) {
+                    Event event = of.createEvent();
+                    if (!countries[i].equals("-")) {
+                        event.setCountry(StringUtils.upperCase(countries[i]));
+                    }
+
+                    if (!dates[i].equals("-")) {
+                        event.setDate(dates[i]);
+                    }
+
+                    if (!labels[i].equals("-")) {
+                        Label label = of.createLabel();
+                        label.setName(labels[i]);
+                        event.setLabel(label);
+                    }
+
+                    if (!catnos[i].equals("-")) {
+                        event.setCatalogNumber(catnos[i]);
+                    }
+
+                    if (!barcodes[i].equals("-")) {
+                        event.setBarcode(barcodes[i]);
+                    }
+
+                    eventList.getEvent().add(event);
+                }
+                release.setReleaseEventList(eventList);
+            }
+
+            String artistName = doc.get(ReleaseIndexField.ARTIST);
+            if (artistName != null) {
+
+                Artist artist = of.createArtist();
+                artist.setName(artistName);
+                artist.setId(doc.get(ReleaseIndexField.ARTIST_ID));
+                release.setArtist(artist);
+            }
+
+            String discIds = doc.get(ReleaseIndexField.NUM_DISC_IDS);
+            if (discIds != null) {
+                DiscList discList = of.createDiscList();
+                discList.setCount(BigInteger.valueOf(Long.parseLong(discIds)));
+                release.setDiscList(discList);
+            }
+
+            String tracks = doc.get(ReleaseIndexField.NUM_TRACKS);
+            if (tracks != null) {
+                TrackList trackList = of.createTrackList();
+                trackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
+                release.setTrackList(trackList);
+            }
+
+            releaseList.getRelease().add(release);
         }
-        catch (JAXBException je) {
-            throw new IOException(je);
-        }
+        releaseList.setCount(BigInteger.valueOf(results.results.size()));
+        releaseList.setOffset(BigInteger.valueOf(results.offset));
+        metadata.setReleaseList(releaseList);
+        return metadata;
+
     }
 
 }

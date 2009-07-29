@@ -45,56 +45,51 @@ import java.math.BigInteger;
 public class ReleaseGroupXmlWriter extends XmlWriter {
 
 
-    public void write(PrintWriter out, Results results) throws IOException {
+    public Metadata write(Results results) throws IOException {
 
+        ObjectFactory of = new ObjectFactory();
 
-        try {
+        Metadata metadata = of.createMetadata();
+        ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
 
-            Marshaller m = context.createMarshaller();
-            ObjectFactory of = new ObjectFactory();
+        for (Result result : results.results) {
+            MbDocument doc = result.doc;
+            ReleaseGroup releaseGroup = of.createReleaseGroup();
+            releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
 
-            Metadata metadata = of.createMetadata();
-            ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
+            releaseGroup.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
+            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
+            //mb server May release, dont chnage for now
+            //releaseGroup.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
 
-            for (Result result : results.results) {
-                MbDocument doc = result.doc;
-                ReleaseGroup releaseGroup = of.createReleaseGroup();
-                releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+            String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
+            if (name != null) {
+                releaseGroup.setTitle(name);
 
-                releaseGroup.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-
-                String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
-                if (name != null) {
-                    releaseGroup.setTitle(name);
-
-                }
-
-                String type = doc.get(ReleaseGroupIndexField.TYPE);
-                if (type != null) {
-                    releaseGroup.getType().add(StringUtils.capitalize(type));
-                }
-
-
-                String artistName = doc.get(ReleaseGroupIndexField.ARTIST);
-                if (artistName != null) {
-
-                    Artist artist = of.createArtist();
-                    artist.setName(artistName);
-                    artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
-                    releaseGroup.setArtist(artist);
-                }
-
-
-                releaseGroupList.getReleaseGroup().add(releaseGroup);
             }
-            releaseGroupList.setCount(BigInteger.valueOf(results.results.size()));
-            releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
-            metadata.setReleaseGroupList(releaseGroupList);
-            m.marshal(metadata, out);
+
+            String type = doc.get(ReleaseGroupIndexField.TYPE);
+            if (type != null) {
+                releaseGroup.getType().add(StringUtils.capitalize(type));
+            }
+
+
+            String artistName = doc.get(ReleaseGroupIndexField.ARTIST);
+            if (artistName != null) {
+
+                Artist artist = of.createArtist();
+                artist.setName(artistName);
+                artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
+                releaseGroup.setArtist(artist);
+            }
+
+
+            releaseGroupList.getReleaseGroup().add(releaseGroup);
         }
-        catch (JAXBException je) {
-            throw new IOException(je);
-        }
+        releaseGroupList.setCount(BigInteger.valueOf(results.results.size()));
+        releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
+        metadata.setReleaseGroupList(releaseGroupList);
+        return metadata;
     }
 
 }

@@ -35,77 +35,69 @@ import com.jthink.brainz.mmd.Metadata;
 import com.jthink.brainz.mmd.ObjectFactory;
 import org.apache.commons.lang.StringUtils;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 
 public class LabelXmlWriter extends XmlWriter {
+    public Metadata write(Results results) throws IOException {
+        ObjectFactory of = new ObjectFactory();
 
-    public void write(PrintWriter out, Results results) throws IOException {
+        Metadata metadata = of.createMetadata();
+        LabelList labelList = of.createLabelList();
 
-        try {
+        for (Result result : results.results) {
+            MbDocument doc = result.doc;
+            Label label = of.createLabel();
+            label.setId(doc.get(LabelIndexField.LABEL_ID));
+            label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
 
-            Marshaller m = context.createMarshaller();
-            ObjectFactory of = new ObjectFactory();
+            label.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
+            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
+            //mb server May release, dont chnage for now
+            //label.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
 
-            Metadata metadata = of.createMetadata();
-            LabelList labelList = of.createLabelList();
 
-            for (Result result : results.results) {
-                MbDocument doc = result.doc;
-                Label label = of.createLabel();
-                label.setId(doc.get(LabelIndexField.LABEL_ID));
-                label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
-
-                label.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-
-                String name = doc.get(LabelIndexField.LABEL);
-                if (name != null) {
-                    label.setName(name);
-
-                }
-
-                String sortname = doc.get(LabelIndexField.SORTNAME);
-                if (sortname != null) {
-                    label.setSortName(sortname);
-
-                }
-
-                String begin = doc.get(LabelIndexField.BEGIN);
-                String end = doc.get(LabelIndexField.END);
-                if (begin != null || end != null) {
-                    LifeSpan lifespan = of.createLifeSpan();
-                    if (begin != null) {
-                        lifespan.setBegin(begin);
-
-                    }
-                    if (end != null) {
-                        lifespan.setEnd(end);
-
-                    }
-                    label.setLifeSpan(lifespan);
-
-                }
-
-                String comment = doc.get(LabelIndexField.COMMENT);
-                if (comment != null) {
-                    label.setDisambiguation(comment);
-                }
-
-                labelList.getLabel().add(label);
+            String name = doc.get(LabelIndexField.LABEL);
+            if (name != null) {
+                label.setName(name);
 
             }
-            labelList.setCount(BigInteger.valueOf(results.results.size()));
-            labelList.setOffset(BigInteger.valueOf(results.offset));
-            metadata.setLabelList(labelList);
-            m.marshal(metadata, out);
+
+            String sortname = doc.get(LabelIndexField.SORTNAME);
+            if (sortname != null) {
+                label.setSortName(sortname);
+
+            }
+
+            String begin = doc.get(LabelIndexField.BEGIN);
+            String end = doc.get(LabelIndexField.END);
+            if (begin != null || end != null) {
+                LifeSpan lifespan = of.createLifeSpan();
+                if (begin != null) {
+                    lifespan.setBegin(begin);
+
+                }
+                if (end != null) {
+                    lifespan.setEnd(end);
+
+                }
+                label.setLifeSpan(lifespan);
+
+            }
+
+            String comment = doc.get(LabelIndexField.COMMENT);
+            if (comment != null) {
+                label.setDisambiguation(comment);
+            }
+
+            labelList.getLabel().add(label);
 
         }
-        catch (JAXBException je) {
-            throw new IOException(je);
-        }
+        labelList.setCount(BigInteger.valueOf(results.results.size()));
+        labelList.setOffset(BigInteger.valueOf(results.offset));
+        metadata.setLabelList(labelList);
+        return metadata;
     }
 }

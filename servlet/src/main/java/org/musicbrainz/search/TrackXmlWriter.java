@@ -37,8 +37,6 @@ import com.jthink.brainz.mmd.Track;
 import com.jthink.brainz.mmd.TrackList;
 import org.apache.lucene.document.NumberTools;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -46,74 +44,72 @@ import java.math.BigInteger;
 
 public class TrackXmlWriter extends XmlWriter {
 
-    public void write(PrintWriter out, Results results) throws IOException {
+    public Metadata write(Results results) throws IOException {
 
 
-        try {
+        ObjectFactory of = new ObjectFactory();
 
-            Marshaller m = context.createMarshaller();
-            ObjectFactory of = new ObjectFactory();
+        Metadata metadata = of.createMetadata();
+        TrackList trackList = of.createTrackList();
 
-            Metadata metadata = of.createMetadata();
-            TrackList trackList = of.createTrackList();
+        for (Result result : results.results) {
+            MbDocument doc = result.doc;
+            Track track = of.createTrack();
+            track.setId(doc.get(TrackIndexField.TRACK_ID));
+            track.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
+            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
+            //mb server May release, dont chnage for now
+            //track.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
 
-            for (Result result : results.results) {
-                MbDocument doc = result.doc;
-                Track track = of.createTrack();
-                track.setId(doc.get(TrackIndexField.TRACK_ID));
-                track.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-
-                String name = doc.get(TrackIndexField.TRACK);
-                if (name != null) {
-                    track.setTitle(name);
-                }
-
-                String duration = doc.get(TrackIndexField.DURATION);
-                if (duration != null) {
-                    track.setDuration(BigInteger.valueOf(NumberTools.stringToLong(duration)));
-                }
-
-
-                String artistName = doc.get(TrackIndexField.ARTIST);
-                if (artistName != null) {
-
-                    Artist artist = of.createArtist();
-                    artist.setName(artistName);
-                    artist.setId(doc.get(ReleaseIndexField.ARTIST_ID));
-                    track.setArtist(artist);
-                }
-
-                String releaseName = doc.get(TrackIndexField.RELEASE);
-                if (releaseName != null) {
-                    Release release = of.createRelease();
-                    release.setId(doc.get(TrackIndexField.RELEASE_ID));
-                    release.setTitle(releaseName);
-
-                    String trackNo = doc.get(TrackIndexField.TRACKNUM);
-                    String tracks = doc.get(TrackIndexField.NUM_TRACKS);
-                    if (trackNo != null) {
-                        TrackList releaseTrackList = of.createTrackList();
-                        releaseTrackList.setOffset(BigInteger.valueOf(NumberTools.stringToLong(trackNo)));
-                        if (tracks != null) {
-                            releaseTrackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
-                        }
-                        release.setTrackList(releaseTrackList);
-
-                    }
-                    ReleaseList releaseList = of.createReleaseList();
-                    releaseList.getRelease().add(release);
-                    track.setReleaseList(releaseList);
-                }
-                trackList.getTrack().add(track);
+            String name = doc.get(TrackIndexField.TRACK);
+            if (name != null) {
+                track.setTitle(name);
             }
-            trackList.setCount(BigInteger.valueOf(results.results.size()));
-            trackList.setOffset(BigInteger.valueOf(results.offset));
-            metadata.setTrackList(trackList);
-            m.marshal(metadata, out);
+
+            String duration = doc.get(TrackIndexField.DURATION);
+            if (duration != null) {
+                track.setDuration(BigInteger.valueOf(NumberTools.stringToLong(duration)));
+            }
+
+
+            String artistName = doc.get(TrackIndexField.ARTIST);
+            if (artistName != null) {
+
+                Artist artist = of.createArtist();
+                artist.setName(artistName);
+                artist.setId(doc.get(ReleaseIndexField.ARTIST_ID));
+                track.setArtist(artist);
+            }
+
+            String releaseName = doc.get(TrackIndexField.RELEASE);
+            if (releaseName != null) {
+                Release release = of.createRelease();
+                release.setId(doc.get(TrackIndexField.RELEASE_ID));
+                release.setTitle(releaseName);
+
+                String trackNo = doc.get(TrackIndexField.TRACKNUM);
+                String tracks = doc.get(TrackIndexField.NUM_TRACKS);
+                if (trackNo != null) {
+                    TrackList releaseTrackList = of.createTrackList();
+                    releaseTrackList.setOffset(BigInteger.valueOf(NumberTools.stringToLong(trackNo)));
+                    if (tracks != null) {
+                        releaseTrackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
+                    }
+                    release.setTrackList(releaseTrackList);
+
+                }
+                ReleaseList releaseList = of.createReleaseList();
+                releaseList.getRelease().add(release);
+                track.setReleaseList(releaseList);
+            }
+            trackList.getTrack().add(track);
         }
-        catch (JAXBException je) {
-            throw new IOException(je);
-        }
+        trackList.setCount(BigInteger.valueOf(results.results.size()));
+        trackList.setOffset(BigInteger.valueOf(results.offset));
+        metadata.setTrackList(trackList);
+        return metadata;
     }
+
+
 
 }
