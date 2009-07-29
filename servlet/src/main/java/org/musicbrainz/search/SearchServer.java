@@ -34,8 +34,8 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocCollector;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
@@ -46,6 +46,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class SearchServer {
+
+    protected SearchServer() {
+
+    }
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
@@ -86,20 +90,28 @@ public class SearchServer {
     public void close() {
     }
 
-    public Results search(ResourceType resourceType, String query, int offset, int limit) throws IOException {
-        //log.info("Searching for '" + query + "' in the " + indexName + " index.");
+    /**
+     * Parse and search query from reourceType, returning between results from offset upto limit
+     *
+     * @param resourceType
+     * @param query
+     * @param offset
+     * @param limit
+     * @return
+     * @throws IOException
+     * @throws ParseException if the query was invalid
+     */
+    public Results search(ResourceType resourceType, String query, int offset, int limit) throws IOException, ParseException {
         IndexSearcher searcher = searchers.get(resourceType);
         QueryParser parser = new QueryParser(defaultSearchFields.get(resourceType), analyzer);
-        TopDocCollector collector = new TopDocCollector(offset + limit);
-        try {
-            searcher.search(parser.parse(query), collector);
-        }
-        catch (ParseException e) {
-        }
+        TopScoreDocCollector collector = TopScoreDocCollector.create(offset + limit, true);
+
+        searcher.search(parser.parse(query), collector);
+
         Results results = new Results();
-        results.offset = offset;
-        results.totalHits = collector.getTotalHits();
         TopDocs topDocs = collector.topDocs();
+        results.offset = offset;
+        results.totalHits = topDocs.totalHits;
         ScoreDoc docs[] = topDocs.scoreDocs;
         float maxScore = topDocs.getMaxScore();
         for (int i = offset; i < docs.length; i++) {
