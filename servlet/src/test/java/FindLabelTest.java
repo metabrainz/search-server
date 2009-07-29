@@ -38,15 +38,30 @@ public class FindLabelTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
 
-        Document doc = new Document();
-        Index.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
-        Index.addFieldToDocument(doc, LabelIndexField.LABEL, "Jockey Slut");
-        Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Jockey Slut");
-        Index.addFieldToDocument(doc, LabelIndexField.BEGIN, "1993");
-        Index.addFieldToDocument(doc, LabelIndexField.END, "2004");
-        Index.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
-        Index.addFieldToDocument(doc, LabelIndexField.COUNTRY, "GB");
-        writer.addDocument(doc);
+        {
+            Document doc = new Document();
+            Index.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
+            Index.addFieldToDocument(doc, LabelIndexField.LABEL, "Jockey Slut");
+            Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Jockey Slut");
+            Index.addFieldToDocument(doc, LabelIndexField.BEGIN, "1993");
+            Index.addFieldToDocument(doc, LabelIndexField.END, "2004");
+            Index.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+            Index.addFieldToDocument(doc, LabelIndexField.COUNTRY, "GB");
+            writer.addDocument(doc);
+        }
+
+        {
+            Document doc = new Document();
+            Index.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7503");
+            Index.addFieldToDocument(doc, LabelIndexField.LABEL, "4AD");
+            Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "4AD");
+            Index.addFieldToDocument(doc, LabelIndexField.BEGIN, "1979");
+            Index.addFieldToDocument(doc, LabelIndexField.CODE, "5807");
+            Index.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+            writer.addDocument(doc);
+        }
+
+
         writer.close();
         Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
         searchers.put(ResourceType.LABEL, new IndexSearcher(ramDir));
@@ -85,9 +100,11 @@ public class FindLabelTest extends TestCase {
 
     public void testFindLabelByType() throws Exception {
         Results res = ss.search(ResourceType.LABEL, "type:\"production\"", 0, 10);
-        assertEquals(1, res.totalHits);
+        assertEquals(2, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
+
+        //(This will always come first because searcher sots by score and then docno, and this doc added first)
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
         assertEquals("1993", doc.get(LabelIndexField.BEGIN));
@@ -125,6 +142,21 @@ public class FindLabelTest extends TestCase {
         assertNull(doc.get(LabelIndexField.ALIAS));
         assertNull(doc.get(LabelIndexField.COMMENT));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME));
+        assertEquals("production", doc.get(LabelIndexField.TYPE));
+    }
+
+     public void testFindLabelByCode() throws Exception {
+        Results res = ss.search(ResourceType.LABEL, "code:\"5807\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("4AD", doc.get(LabelIndexField.LABEL));
+        assertEquals("1979", doc.get(LabelIndexField.BEGIN));
+        assertNull(doc.get(LabelIndexField.END));
+        assertNull(doc.get(LabelIndexField.ALIAS));
+        assertNull(doc.get(LabelIndexField.COMMENT));
+        assertEquals("5807", doc.get(LabelIndexField.CODE));
         assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
