@@ -21,6 +21,8 @@ package org.musicbrainz.search;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
@@ -30,12 +32,19 @@ import java.sql.*;
 
 public class ReleaseIndex extends Index {
     private static final int STATUS_OFFSET = 100;
-    private static final int STATUS_INDEX = 2;
+    private static final int STATUS_MIN_VALUE = 100;
+    private static final int STATUS_MAX_VALUE = 103;
+
     private static final int TYPE_OFFSET = 1;
-    private static final int TYPE_INDEX = 1;
+    private static final int TYPE_MIN_VALUE = 1;
+    private static final int TYPE_MAX_VALUE = 11;
+
+    private Pattern stripBarcodeOfLeadingZeroes;
 
     public ReleaseIndex(Connection dbConnection) {
         super(dbConnection);
+
+        stripBarcodeOfLeadingZeroes=Pattern.compile("^0+");
     }
 
     public String getName() {
@@ -109,12 +118,26 @@ public class ReleaseIndex extends Index {
         addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
 
         Integer[] attributes = (Integer[]) rs.getArray("attributes").getArray();
-        int type = attributes[TYPE_INDEX] - TYPE_OFFSET;
-        int status = attributes[STATUS_INDEX] - STATUS_OFFSET;
+        for(int i=1;i<attributes.length;i++)
+        {
+            if(i >=TYPE_MIN_VALUE && i<=TYPE_MAX_VALUE)
+            {
+                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[i - TYPE_OFFSET].getName());
+                break;
+            }
+        }
 
-        addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.values()[status].getName());
-        addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[type].getName());
+        for(int i=0;i<attributes.length;i++)
+        {
+            if(i >=STATUS_MIN_VALUE && i<=STATUS_MAX_VALUE)
+            {
+                addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.values()[i - STATUS_OFFSET].getName());
+                break;
+            }
+        }
 
+
+        
         String asin = rs.getString("asin");
         if (asin != null && !asin.isEmpty()) {
             addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, asin);
@@ -159,7 +182,8 @@ public class ReleaseIndex extends Index {
                 if (str == null || str.isEmpty()) {
                     str = "-";
                 }
-                addFieldToDocument(doc, ReleaseIndexField.BARCODE, str);
+                Matcher m    = stripBarcodeOfLeadingZeroes.matcher(str);
+                addFieldToDocument(doc, ReleaseIndexField.BARCODE, m.replaceFirst(""));
             }
         }
         return doc;
