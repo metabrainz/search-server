@@ -30,12 +30,16 @@ import java.sql.*;
 public class TrackIndex extends Index {
 
     private final static int QUANTIZED_DURATION = 2000;
+    private static final int TYPE_OFFSET = 1;
+
+    private static final int TYPE_MIN_VALUE = 1;
+    private static final int TYPE_MAX_VALUE = 11;
 
     public TrackIndex(Connection dbConnection) {
-		super(dbConnection);
-	}
+        super(dbConnection);
+    }
 
-	public String getName() {
+    public String getName() {
         return "track";
     }
 
@@ -66,9 +70,6 @@ public class TrackIndex extends Index {
         st.close();
     }
 
-    //TODO, Add TYPE  as per http://bugs.musicbrainz.org/browser/search_index/branches/lucene-2.x/mbsearch/serverindex/trackindex.py
-    //but may not be needed because never seems to be outputted
-
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
         Document doc = new Document();
 
@@ -79,8 +80,20 @@ public class TrackIndex extends Index {
         addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("album_gid"));
         addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("album_name"));
         addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("tracks"));
+
+
+        Integer[] attributes = (Integer[]) rs.getArray("attributes").getArray();
+        for(int i=1;i<attributes.length;i++)
+        {
+            if(i >=TYPE_MIN_VALUE && i<=TYPE_MAX_VALUE)
+            {
+                addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseType.values()[i - TYPE_OFFSET].getName());
+                break;
+            }
+        }
+   
         addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("length")));
-        addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("length") / QUANTIZED_DURATION ));
+        addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("length") / QUANTIZED_DURATION));
         addFieldToDocument(doc, TrackIndexField.TRACKNUM, NumberTools.longToString(rs.getLong("sequence")));
         return doc;
     }
