@@ -200,8 +200,8 @@ class IndexBuilderOptions {
     // Raw database connection parameters
     
     @Option(name="--raw-db-host", aliases = { "-o" }, usage="The raw database server to connect to. (default: localhost)")
-    private String rawDatabaseHost = "localhost";
-    public String getRawDatabaseHost() { return rawDatabaseHost; }
+    private String rawDatabaseHost = "";
+    public String getRawDatabaseHost() { return rawDatabaseHost.isEmpty() ? getMainDatabaseHost() : rawDatabaseHost; }
     
 	@Option(name="--raw-db-name", aliases = { "-a" }, usage="The name of the raw database server to connect to. (default: musicbrainz_db_raw)")
     private String rawDatabaseName = "musicbrainz_db_raw";     
