@@ -13,9 +13,9 @@ public class ReleaseMangler implements QueryMangler{
 
     public ReleaseMangler()
     {
-        matchTypeOrdinals=Pattern.compile("(type:)(\\d+)");
-        matchStatusOrdinals=Pattern.compile("(status:)([1-4]+)");
-        matchBarcodeWithLeadingZeroes=Pattern.compile("barcode:0+");
+        matchTypeOrdinals=Pattern.compile("("+ReleaseIndexField.TYPE.getName()+":)(\\d+)");
+        matchStatusOrdinals=Pattern.compile("("+ReleaseIndexField.STATUS.getName()+":)(\\d)");
+        matchBarcodeWithLeadingZeroes=Pattern.compile(ReleaseIndexField.BARCODE.getName()+":0+");
 
     }
 
@@ -32,7 +32,7 @@ public class ReleaseMangler implements QueryMangler{
     private String convertBarcodesWithLeadingZeroes(String query)
     {
         Matcher m    = matchBarcodeWithLeadingZeroes.matcher(query);
-        return m.replaceAll("barcode:");
+        return m.replaceAll(ReleaseIndexField.BARCODE.getName()+":");
 
     }
 
@@ -90,7 +90,7 @@ public class ReleaseMangler implements QueryMangler{
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
              int index = Integer.parseInt(m.group(2)) - 1;
-             if(index<ReleaseStatus.values().length)
+             if(index>=0 && index<ReleaseStatus.values().length)
              {
                 m.appendReplacement(sb, m.group(1) + ReleaseStatus.values()[(index)].getName());
              }

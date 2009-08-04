@@ -11,7 +11,7 @@ public class ReleaseGroupMangler implements QueryMangler{
 
     public ReleaseGroupMangler()
     {
-        matchTypeOrdinals=Pattern.compile("(type:)(\\d+)");
+        matchTypeOrdinals=Pattern.compile("("+ReleaseGroupIndexField.TYPE.getName()+":)(\\d+)");
     }
 
     /**
@@ -31,7 +31,7 @@ public class ReleaseGroupMangler implements QueryMangler{
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
              int index = Integer.parseInt(m.group(2));
-             if(index<ReleaseType.values().length)
+             if(index >=0 && index<ReleaseType.values().length)
              {
                 m.appendReplacement(sb, m.group(1) + ReleaseGroupType.values()[(index)].getName());
              }

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 
-public class TrackMangler implements QueryMangler{
+public class TrackMangler implements QueryMangler {
 
     private Pattern matchTypeOrdinals;
     private Pattern matchDurAndQdur;
@@ -14,13 +14,12 @@ public class TrackMangler implements QueryMangler{
     private Pattern matchTnum;
     private Pattern matchTnumRange;
 
-    public TrackMangler()
-    {
-        matchTypeOrdinals       = Pattern.compile("(type:)(\\d+)");
-        matchDurAndQdur         = Pattern.compile("(dur:)([0-9]+)");
-        matchDurAndQdurRange    = Pattern.compile("(dur:\\[)([0-9]+)( TO )([0-9]+)(\\])");
-        matchTnum               = Pattern.compile("(tnum:)([0-9]+)");
-        matchTnumRange          = Pattern.compile("(tnum:\\[)([0-9]+)( TO )([0-9]+)(\\])");
+    public TrackMangler() {
+        matchTypeOrdinals = Pattern.compile("(" + TrackIndexField.RELEASE_TYPE.getName() + ":)(\\d+)");
+        matchDurAndQdur = Pattern.compile("(" + TrackIndexField.DURATION.getName() + ":)([0-9]+)");
+        matchDurAndQdurRange = Pattern.compile("(" + TrackIndexField.DURATION.getName() + ":\\[)([0-9]+)( TO )([0-9]+)(\\])");
+        matchTnum = Pattern.compile("(" + TrackIndexField.TRACKNUM.getName() + ":)([0-9]+)");
+        matchTnumRange = Pattern.compile("(" + TrackIndexField.TRACKNUM.getName() + ":\\[)([0-9]+)( TO )([0-9]+)(\\])");
 
     }
 
@@ -31,60 +30,58 @@ public class TrackMangler implements QueryMangler{
      * @param query
      * @return
      */
-    private String convertDurAndQdurToOrderable(String query)
-    {
-        Matcher m =  matchDurAndQdur.matcher(query);
+    private String convertDurAndQdurToOrderable(String query) {
+        Matcher m = matchDurAndQdur.matcher(query);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
-             int duration = Integer.parseInt(m.group(2));
-             m.appendReplacement(sb, m.group(1) + NumberTools.longToString(duration));
+            int duration = Integer.parseInt(m.group(2));
+            m.appendReplacement(sb, m.group(1) + NumberTools.longToString(duration));
         }
         m.appendTail(sb);
-        query =  sb.toString();
+        query = sb.toString();
 
-        m  =  matchDurAndQdurRange.matcher(query);
+        m = matchDurAndQdurRange.matcher(query);
         sb = new StringBuffer();
         while (m.find()) {
-             int firstTrackNo = Integer.parseInt(m.group(2));
-             int secondTrackNo = Integer.parseInt(m.group(4));
-             m.appendReplacement(sb, m.group(1)
-                     + NumberTools.longToString(firstTrackNo)
-                     + m.group(3)
-                     + NumberTools.longToString(secondTrackNo)
-                     + m.group(5));
+            int firstTrackNo = Integer.parseInt(m.group(2));
+            int secondTrackNo = Integer.parseInt(m.group(4));
+            m.appendReplacement(sb, m.group(1)
+                    + NumberTools.longToString(firstTrackNo)
+                    + m.group(3)
+                    + NumberTools.longToString(secondTrackNo)
+                    + m.group(5));
         }
         m.appendTail(sb);
         return sb.toString();
     }
 
-     /**
+    /**
      * These values have to be converted to a String representation this allows the values to be ordered
      * i.e 1 comes before 11, allows clauses such as tnum:[1 TO 11] to work
      *
      * @param query
      * @return
      */
-    private String convertTnumToOrderable(String query)
-    {
-        Matcher m =  matchTnum.matcher(query);
+    private String convertTnumToOrderable(String query) {
+        Matcher m = matchTnum.matcher(query);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
-             int trackNo = Integer.parseInt(m.group(2));
-             m.appendReplacement(sb, m.group(1) + NumberTools.longToString(trackNo));
+            int trackNo = Integer.parseInt(m.group(2));
+            m.appendReplacement(sb, m.group(1) + NumberTools.longToString(trackNo));
         }
         m.appendTail(sb);
-        query=sb.toString();
+        query = sb.toString();
 
-        m  =  matchTnumRange.matcher(query);
+        m = matchTnumRange.matcher(query);
         sb = new StringBuffer();
         while (m.find()) {
-             int firstTrackNo = Integer.parseInt(m.group(2));
-             int secondTrackNo = Integer.parseInt(m.group(4));
-             m.appendReplacement(sb, m.group(1)
-                     + NumberTools.longToString(firstTrackNo)
-                     + m.group(3)
-                     + NumberTools.longToString(secondTrackNo)
-                     + m.group(5));
+            int firstTrackNo = Integer.parseInt(m.group(2));
+            int secondTrackNo = Integer.parseInt(m.group(4));
+            m.appendReplacement(sb, m.group(1)
+                    + NumberTools.longToString(firstTrackNo)
+                    + m.group(3)
+                    + NumberTools.longToString(secondTrackNo)
+                    + m.group(5));
         }
         m.appendTail(sb);
         return sb.toString();
@@ -92,30 +89,27 @@ public class TrackMangler implements QueryMangler{
 
     /**
      * Handles query parameters containing
-     *     type:1
-     *
+     * type:1
+     * <p/>
      * Lucene expects
-     *     type:album
+     * type:album
      *
      * @param originalQuery
      * @return query amended as necessary
      */
-    private String convertTypeByOrdinal(String originalQuery)
-    {
+    private String convertTypeByOrdinal(String originalQuery) {
         //Release type
-        Matcher m    = matchTypeOrdinals.matcher(originalQuery);
+        Matcher m = matchTypeOrdinals.matcher(originalQuery);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
             int index = Integer.parseInt(m.group(2)) - 1;
             //Matches behaviour on mb server, if user enters type:0 gets mapped to other
-            if(index==-1) {
-                 m.appendReplacement(sb, m.group(1) + ReleaseType.OTHER.getName());
-            }
-            else if(index<ReleaseType.values().length) {
+            if (index == -1) {
+                m.appendReplacement(sb, m.group(1) + ReleaseType.OTHER.getName());
+            } else if (index < ReleaseType.values().length) {
                 m.appendReplacement(sb, m.group(1) + ReleaseType.values()[(index)].getName());
-            }
-            else {
-                 //Can't map, so leave as is.
+            } else {
+                //Can't map, so leave as is.
                 m.appendReplacement(sb, m.group(1) + m.group(2));
             }
         }
@@ -124,9 +118,8 @@ public class TrackMangler implements QueryMangler{
     }
 
 
-    public String mangleQuery(String query)
-    {
-        return convertTypeByOrdinal( convertTnumToOrderable(convertDurAndQdurToOrderable(query)));
+    public String mangleQuery(String query) {
+        return convertTypeByOrdinal(convertTnumToOrderable(convertDurAndQdurToOrderable(query)));
 
     }
 }

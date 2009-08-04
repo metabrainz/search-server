@@ -9,7 +9,7 @@ public class ArtistMangler implements QueryMangler {
     private Pattern matchTypeOrdinals;
 
     public ArtistMangler() {
-        matchTypeOrdinals = Pattern.compile("(type:)([0-2])");
+        matchTypeOrdinals = Pattern.compile("(" + ArtistIndexField.TYPE.getName() + ":)(\\d)");
     }
 
 
@@ -24,7 +24,7 @@ public class ArtistMangler implements QueryMangler {
      * @return
      */
     private String convertArtype(String query) {
-        return query.replace("artype:",  ArtistIndexField.TYPE.getName()+":");
+        return query.replace("artype:", ArtistIndexField.TYPE.getName() + ":");
     }
 
     /**
@@ -42,7 +42,13 @@ public class ArtistMangler implements QueryMangler {
         Matcher m = matchTypeOrdinals.matcher(query);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
-            m.appendReplacement(sb, m.group(1) + ArtistType.values()[Integer.parseInt(m.group(2))].getName());
+            int index = Integer.parseInt(m.group(2));
+            if (index >= 0 && index < ArtistType.values().length) {
+                m.appendReplacement(sb, m.group(1) + ArtistType.values()[index].getName());
+            } else {
+                //Can't map, so leave as is.
+                m.appendReplacement(sb, m.group(1) + m.group(2));
+            }
         }
         m.appendTail(sb);
         return sb.toString();
