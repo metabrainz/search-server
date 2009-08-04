@@ -42,7 +42,7 @@ public class TrackMangler implements QueryMangler{
         m.appendTail(sb);
         query =  sb.toString();
 
-        m  =  matchDurAndQdurRange.matcher(query);       
+        m  =  matchDurAndQdurRange.matcher(query);
         sb = new StringBuffer();
         while (m.find()) {
              int firstTrackNo = Integer.parseInt(m.group(2));
@@ -75,7 +75,7 @@ public class TrackMangler implements QueryMangler{
         m.appendTail(sb);
         query=sb.toString();
 
-        m  =  matchTnumRange.matcher(query);       
+        m  =  matchTnumRange.matcher(query);
         sb = new StringBuffer();
         while (m.find()) {
              int firstTrackNo = Integer.parseInt(m.group(2));
@@ -106,16 +106,18 @@ public class TrackMangler implements QueryMangler{
         Matcher m    = matchTypeOrdinals.matcher(originalQuery);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
-             int index = Integer.parseInt(m.group(2)) - 1;
-             if(index<ReleaseType.values().length)
-             {
+            int index = Integer.parseInt(m.group(2)) - 1;
+            //Matches behaviour on mb server, if user enters type:0 gets mapped to other
+            if(index==-1) {
+                 m.appendReplacement(sb, m.group(1) + ReleaseType.OTHER.getName());
+            }
+            else if(index<ReleaseType.values().length) {
                 m.appendReplacement(sb, m.group(1) + ReleaseType.values()[(index)].getName());
-             }
-            else
-             {
+            }
+            else {
                  //Can't map, so leave as is.
                 m.appendReplacement(sb, m.group(1) + m.group(2));
-             }
+            }
         }
         m.appendTail(sb);
         return sb.toString();

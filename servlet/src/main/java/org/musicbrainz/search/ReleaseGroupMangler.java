@@ -30,10 +30,10 @@ public class ReleaseGroupMangler implements QueryMangler{
         Matcher m    = matchTypeOrdinals.matcher(query);
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
-             int index = Integer.parseInt(m.group(2)) - 1;
+             int index = Integer.parseInt(m.group(2));
              if(index<ReleaseType.values().length)
              {
-                m.appendReplacement(sb, m.group(1) + ReleaseType.values()[(index)].getName());
+                m.appendReplacement(sb, m.group(1) + ReleaseGroupType.values()[(index)].getName());
              }
             else
              {

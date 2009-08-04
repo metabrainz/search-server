@@ -24,7 +24,7 @@ public class ArtistMangler implements QueryMangler {
      * @return
      */
     private String convertArtype(String query) {
-        return query.replace("artype:", "type:");
+        return query.replace("artype:",  ArtistIndexField.TYPE.getName()+":");
     }
 
     /**

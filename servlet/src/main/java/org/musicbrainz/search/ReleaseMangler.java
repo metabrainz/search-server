@@ -54,7 +54,12 @@ public class ReleaseMangler implements QueryMangler{
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
              int index = Integer.parseInt(m.group(2)) - 1;
-             if(index<ReleaseType.values().length)
+             //Matches behaviour on mb server, if user enters type:0 gets mapped to other                        
+             if(index==-1)
+             {
+                 m.appendReplacement(sb, m.group(1) + ReleaseType.OTHER.getName());
+             }
+             else if(index<ReleaseType.values().length)
              {
                 m.appendReplacement(sb, m.group(1) + ReleaseType.values()[(index)].getName());
              }
