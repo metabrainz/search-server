@@ -7,14 +7,14 @@
   <version>1.0-SNAPSHOT</version>
   <name>MusicBrainz Server Server's Index</name>
   <repositories>
-  	<repository>
-  		<id>maven-snapshot-repository</id>
-  		<url>http://people.apache.org/maven-snapshot-repository/</url>
-  	</repository>
-  	<repository>
-  		<id>java.net</id>
-  		<url>http://download.java.net/maven/2</url>
-  	</repository>
+    <repository>
+      <id>maven-snapshot-repository</id>
+      <url>http://people.apache.org/maven-snapshot-repository/</url>
+    </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/2</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -51,6 +51,12 @@
         <artifactId>commons-compress</artifactId>
         <version>1.0</version>
     </dependency>
+    <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.4.2.0</version>
+      <scope>test</scope>
+    </dependency>
    </dependencies>
    <build>
     <pluginManagement>
@@ -61,8 +67,8 @@
           <configuration>
             <fork>true</fork>
             <compilerVersion>1.6</compilerVersion>
-            <source>1.5</source>
-            <target>1.5</target>
+            <source>1.6</source>
+            <target>1.6</target>
           </configuration>
         </plugin>
       </plugins>
@@ -81,7 +87,15 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <jvm>java</jvm>
+        </configuration>
+      </plugin>
     </plugins>
+
   </build>
   <parent>
     <groupId>org.musicbrainz.search</groupId>

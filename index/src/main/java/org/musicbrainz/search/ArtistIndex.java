@@ -81,12 +81,7 @@ public class ArtistIndex extends Index {
         addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, rs.getString("gid"));
         addFieldToDocument(doc, ArtistIndexField.ARTIST, rs.getString("name"));
         addFieldToDocument(doc, ArtistIndexField.SORTNAME, rs.getString("sortname"));
-
-        Integer type = rs.getInt("type");
-        if (type == null) {
-            type = 0;
-        }
-        addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.values()[type].getName());
+        addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.values()[rs.getInt("type")].getName());
 
         String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {
@@ -95,7 +90,7 @@ public class ArtistIndex extends Index {
 
         String end = rs.getString("enddate");
         if (end != null && !end.isEmpty()) {
-        	addFieldToDocument(doc, ArtistIndexField.BEGIN, normalizeDate(end));
+        	addFieldToDocument(doc, ArtistIndexField.END, normalizeDate(end));
         }
 
         String comment = rs.getString("resolution");
