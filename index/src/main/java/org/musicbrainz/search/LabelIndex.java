@@ -34,14 +34,13 @@ public class LabelIndex extends Index {
     private Pattern stripLabelCodeOfLeadingZeroes;
 
     public LabelIndex(Connection dbConnection) {
-		super(dbConnection);
-        stripLabelCodeOfLeadingZeroes =Pattern.compile("^0+");
-
+        super(dbConnection);
+        stripLabelCodeOfLeadingZeroes = Pattern.compile("^0+");
 
 
     }
 
-	public String getName() {
+    public String getName() {
         return "label";
     }
 
@@ -60,6 +59,7 @@ public class LabelIndex extends Index {
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int labelId = rs.getInt("label");
+
             List<String> list;
             if (!aliases.containsKey(labelId)) {
                 list = new LinkedList<String>();
@@ -72,12 +72,13 @@ public class LabelIndex extends Index {
         st.close();
         st = dbConnection.prepareStatement(
                 "SELECT label.id, gid, label.name, sortname, type, begindate, enddate, resolution, labelcode, lower(isocode) as country " +
-                        "FROM label JOIN country ON label.country=country.id WHERE label.id BETWEEN ? AND ?");
+                        "FROM label LEFT JOIN country ON label.country=country.id WHERE label.id BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, aliases));
+
         }
         st.close();
     }
@@ -89,35 +90,33 @@ public class LabelIndex extends Index {
         addFieldToDocument(doc, LabelIndexField.LABEL_ID, rs.getString("gid"));
         addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
         addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
-
-        Integer type = rs.getInt("type");
-        if (type == null) {
-            type = 0;
-        }
-        addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.values()[type].getName());
+        addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.values()[rs.getInt("type")].getName());
 
         String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {
-        	addFieldToDocument(doc, LabelIndexField.BEGIN, normalizeDate(begin));
+            addFieldToDocument(doc, LabelIndexField.BEGIN, normalizeDate(begin));
         }
 
         String end = rs.getString("enddate");
         if (end != null && !end.isEmpty()) {
-        	addFieldToDocument(doc, LabelIndexField.END, normalizeDate(end));
+            addFieldToDocument(doc, LabelIndexField.END, normalizeDate(end));
         }
 
         String comment = rs.getString("resolution");
         if (comment != null && !comment.isEmpty()) {
-        	addFieldToDocument(doc, LabelIndexField.COMMENT, comment);
+            addFieldToDocument(doc, LabelIndexField.COMMENT, comment);
         }
 
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
-        	Matcher m    = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
+            Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
             addFieldToDocument(doc, LabelIndexField.CODE, m.replaceFirst(""));
         }
 
-        addFieldToDocument(doc, LabelIndexField.COUNTRY, rs.getString("country"));
+        String country = rs.getString("country");
+        if (country != null && !country.isEmpty()) {
+            addFieldToDocument(doc, LabelIndexField.COUNTRY, country);
+        }
 
         if (aliases.containsKey(labelId)) {
             for (String alias : aliases.get(labelId)) {
