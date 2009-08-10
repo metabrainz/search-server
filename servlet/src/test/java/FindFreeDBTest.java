@@ -3,11 +3,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.FreeDBHtmlWriter;
 import org.musicbrainz.search.FreeDBIndexField;
+import org.musicbrainz.search.FreeDBSearch;
 import org.musicbrainz.search.Index;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.ResourceType;
 import org.musicbrainz.search.Result;
 import org.musicbrainz.search.Results;
 import org.musicbrainz.search.ResultsWriter;
@@ -18,8 +19,6 @@ import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Test retrieving FreeDB entries from index and Outputting as Html
@@ -34,7 +33,8 @@ public class FindFreeDBTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-
+        SearchServerServlet.setUpVelocity();
+        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
 
@@ -42,7 +42,7 @@ public class FindFreeDBTest extends TestCase {
         {
             Document doc = new Document();
             Index.addFieldToDocument(doc, FreeDBIndexField.ARTIST, "Ska-P");
-            Index.addFieldToDocument(doc, FreeDBIndexField.TITLE, "Lágrimas & Gozos");
+            Index.addFieldToDocument(doc, FreeDBIndexField.TITLE, "L\u00e1grimas & Gozos");
             Index.addFieldToDocument(doc, FreeDBIndexField.CATEGORY, "folk");
             Index.addFieldToDocument(doc, FreeDBIndexField.DISCID, "c20c4b0d");
             Index.addFieldToDocument(doc, FreeDBIndexField.TRACKS, "13");
@@ -51,21 +51,16 @@ public class FindFreeDBTest extends TestCase {
         }
 
         writer.close();
-        Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
-        searchers.put(ResourceType.FREEDB, new IndexSearcher(ramDir));
-        ss = new SearchServer(searchers);
-        
-        // Velocity setup
-        SearchServerServlet.setUpVelocity();
+        ss = new FreeDBSearch(new IndexSearcher(ramDir,true));
     }
 
     public void testSearchFreeDBByArtist() throws Exception {
-        Results res = ss.search(ResourceType.FREEDB, "artist:\"Ska-P\"", 0, 10);
+        Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
-        assertEquals("Lágrimas & Gozos", doc.get(FreeDBIndexField.TITLE));
+        assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
         assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
         assertEquals("c20c4b0d", doc.get(FreeDBIndexField.DISCID));
         assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
@@ -73,12 +68,12 @@ public class FindFreeDBTest extends TestCase {
     }
 
     public void testSearchFreeDBByTitle() throws Exception {
-        Results res = ss.search(ResourceType.FREEDB, "title:\"Lágrimas & Gozos\"", 0, 10);
+        Results res = ss.searchLucene("title:\"L\u00e1grimas & Gozos\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
-        assertEquals("Lágrimas & Gozos", doc.get(FreeDBIndexField.TITLE));
+        assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
         assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
         assertEquals("c20c4b0d", doc.get(FreeDBIndexField.DISCID));
         assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
@@ -86,12 +81,12 @@ public class FindFreeDBTest extends TestCase {
     }
 
     public void testSearchFreeDBByDiscId() throws Exception {
-        Results res = ss.search(ResourceType.FREEDB, "discid:\"c20c4b0d\"", 0, 10);
+        Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
-        assertEquals("Lágrimas & Gozos", doc.get(FreeDBIndexField.TITLE));
+        assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
         assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
         assertEquals("c20c4b0d", doc.get(FreeDBIndexField.DISCID));
         assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
@@ -99,34 +94,54 @@ public class FindFreeDBTest extends TestCase {
     }
 
     public void testSearchFreeDBByYear() throws Exception {
-        Results res = ss.search(ResourceType.FREEDB, "year:\"2008\"", 0, 10);
+        Results res = ss.searchLucene("year:\"2008\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
-        assertEquals("Lágrimas & Gozos", doc.get(FreeDBIndexField.TITLE));
+        assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
         assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
         assertEquals("c20c4b0d", doc.get(FreeDBIndexField.DISCID));
         assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
         assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
     }
 
-    public void testFindArtistByDefaultField() throws Exception {
-        Results res = ss.search(ResourceType.FREEDB, "\"Ska-P\"", 0, 10);
-        assertEquals(1, res.totalHits);
-        Result result = res.results.get(0);
-        MbDocument doc = result.doc;
-        assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
-        assertEquals("Lágrimas & Gozos", doc.get(FreeDBIndexField.TITLE));
-        assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
-        assertEquals("c20c4b0d", doc.get(FreeDBIndexField.DISCID));
-        assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
-        assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
+    public void testSearchFreeDBByDefaultField() throws Exception {
+
+        //by artist
+        {
+            Results res = ss.searchLucene("\"Ska-P\"", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
+            assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
+            assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
+            assertEquals("c20c4b0d", doc.get(FreeDBIndexField.DISCID));
+            assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
+            assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
+        }
+
+        //by title
+        {
+            Results res = ss.searchLucene("\"L\u00e1grimas & Gozos\"", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
+            assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
+            assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
+            assertEquals("c20c4b0d", doc.get(FreeDBIndexField.DISCID));
+            assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
+            assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
+        }
+
+
     }
 
     public void testOutputAsHtml() throws Exception {
 
-        Results res = ss.search(ResourceType.FREEDB, "artist:\"Ska-P\"", 0, 1);
+        Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 1);
         ResultsWriter writer = new FreeDBHtmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -147,7 +162,7 @@ public class FindFreeDBTest extends TestCase {
      */
     public void testOutputAsHtmlSpecialCharacters() throws Exception {
 
-        Results res = ss.search(ResourceType.FREEDB, "artist:\"Ska-P\"", 0, 1);
+        Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 1);
         ResultsWriter writer = new FreeDBHtmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -157,9 +172,9 @@ public class FindFreeDBTest extends TestCase {
         String output = sw.toString();
         assertTrue(output.contains("L&aacute;grimas &amp; Gozos"));
     }
-    
+
     public void testHtmlWritingPerformance() throws Exception {
-        Results res = ss.search(ResourceType.FREEDB, "artist:\"Ska-P\"", 0, 10);
+        Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 10);
         assertEquals(1, res.totalHits);
 
         Date start = new Date();

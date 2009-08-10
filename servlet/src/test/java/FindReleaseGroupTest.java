@@ -6,9 +6,9 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.Index;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.ReleaseGroupIndexField;
+import org.musicbrainz.search.ReleaseGroupSearch;
 import org.musicbrainz.search.ReleaseGroupType;
 import org.musicbrainz.search.ReleaseGroupXmlWriter;
-import org.musicbrainz.search.ResourceType;
 import org.musicbrainz.search.Result;
 import org.musicbrainz.search.Results;
 import org.musicbrainz.search.ResultsWriter;
@@ -17,8 +17,6 @@ import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
@@ -41,18 +39,44 @@ public class FindReleaseGroupTest extends TestCase {
         Document doc = new Document();
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
+        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASES, "secret");
+
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, "The Wedding Present");
         writer.addDocument(doc);
         writer.close();
-        Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
-        searchers.put(ResourceType.RELEASE_GROUP, new IndexSearcher(ramDir));
-        ss = new SearchServer(searchers);
+        ss = new ReleaseGroupSearch(new IndexSearcher(ramDir,true));
+    }
+
+    public void testFindReleaseGroupById() throws Exception {
+        Results res = ss.searchLucene("rgid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID));
+        assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST));
+        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseGroupByName() throws Exception {
-        Results res = ss.search(ResourceType.RELEASE_GROUP, "releasegroup:\"Nobody's Twisting Your Arm\"", 0, 10);
+        Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID));
+        assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST));
+        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseGroupByReleases() throws Exception {
+        Results res = ss.searchLucene("releasegroup:\"secret\"", 0, 10);
+        assertEquals(0, res.totalHits);
+        res = ss.searchLucene("releases:\"secret\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -64,7 +88,7 @@ public class FindReleaseGroupTest extends TestCase {
     }
 
     public void testFindReleaseGroupByArtist() throws Exception {
-        Results res = ss.search(ResourceType.RELEASE_GROUP, "artist:\"The Wedding Present\"", 0, 10);
+        Results res = ss.searchLucene("artist:\"The Wedding Present\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -77,7 +101,7 @@ public class FindReleaseGroupTest extends TestCase {
 
 
     public void testFindReleaseGroupByType() throws Exception {
-        Results res = ss.search(ResourceType.RELEASE_GROUP, "type:\"single\"", 0, 10);
+        Results res = ss.searchLucene("type:\"single\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -89,7 +113,9 @@ public class FindReleaseGroupTest extends TestCase {
     }
 
     public void testFindReleaseGroupByDefault() throws Exception {
-        Results res = ss.search(ResourceType.RELEASE_GROUP, "\"Nobody's Twisting Your Arm\"", 0, 10);
+        Results res = ss.searchLucene("\"secret\"", 0, 10);
+        assertEquals(0, res.totalHits);
+        res = ss.searchLucene("\"Nobody's Twisting Your Arm\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -109,7 +135,7 @@ public class FindReleaseGroupTest extends TestCase {
      */
     public void testOutputAsXml() throws Exception {
 
-        Results res = ss.search(ResourceType.RELEASE_GROUP, "releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
+        Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
         ResultsWriter writer = new ReleaseGroupXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);

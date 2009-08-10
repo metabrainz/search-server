@@ -29,71 +29,99 @@
 package org.musicbrainz.search;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.util.List;
 import java.util.logging.Logger;
 
-public class SearchServer {
+public abstract class SearchServer {
 
-    protected SearchServer() {
-
-    }
+    private Analyzer analyzer;
+    protected XmlWriter xmlWriter;
+    protected HtmlWriter htmlWriter;
+    protected QueryMangler queryMangler;
+    protected List<String> defaultFields;
+    protected IndexSearcher indexSearcher;
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
-    private Analyzer analyzer;
-    private Map<ResourceType, IndexSearcher> searchers;         //Maps resource to index
-    private Map<ResourceType, String> defaultSearchFields;      //Maps resource to default search field
 
-    public SearchServer(String indexDir) throws IOException {
+    protected SearchServer() {
         analyzer = new StandardUnaccentAnalyzer();
-
-        searchers = new HashMap<ResourceType, IndexSearcher>();
-        searchers.put(ResourceType.ARTIST, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/artist_index/"), null), true)));
-        searchers.put(ResourceType.LABEL, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/label_index/"), null), true)));
-        searchers.put(ResourceType.RELEASE, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/release_index/"), null), true)));
-        searchers.put(ResourceType.TRACK, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/track_index/"), null), true)));
-        searchers.put(ResourceType.RELEASE_GROUP, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/releasegroup_index/"), null), true)));
-        searchers.put(ResourceType.FREEDB, new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + "/freedb_index/"), null), true)));
-        setupDefaultSearchFields();
     }
 
-    public SearchServer(Map<ResourceType, IndexSearcher> searchers) {
-        analyzer = new StandardUnaccentAnalyzer();
-        this.searchers = searchers;
-        setupDefaultSearchFields();
+    protected IndexSearcher createIndexSearcherFromFileIndex(String indexDir,String indexName) throws Exception
+    {
+        return new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + '/' + indexName + '/'), null), true));
+
     }
 
-    private void setupDefaultSearchFields() {
-        defaultSearchFields = new HashMap<ResourceType, String>();
-        defaultSearchFields.put(ResourceType.ARTIST, ArtistIndexField.ARTIST.getName());
-        defaultSearchFields.put(ResourceType.LABEL, LabelIndexField.LABEL.getName());
-        defaultSearchFields.put(ResourceType.RELEASE, ReleaseIndexField.RELEASE.getName());
-        defaultSearchFields.put(ResourceType.TRACK, TrackIndexField.TRACK.getName());
-        defaultSearchFields.put(ResourceType.RELEASE_GROUP, ReleaseGroupIndexField.RELEASEGROUP.getName());
-        //TODO: support multi default search fields and make artist & title default fields
-        defaultSearchFields.put(ResourceType.FREEDB, FreeDBIndexField.ARTIST.getName());
-    }
 
     public void close() {
     }
 
+
+    public QueryMangler getQueryMangler() {
+        return queryMangler;
+    }
+
+    public XmlWriter getXmlWriter() {
+        return xmlWriter;
+    }
+
+    public HtmlWriter getHtmlWriter() {
+        return htmlWriter;
+    }
+
+    public List<String> getSearchFields() {
+        return defaultFields;
+    }
+
+    protected IndexSearcher getIndexSearcher() {
+        return indexSearcher;
+    }
+
+
+    public ResultsWriter getWriter(String fmt) {
+        if (SearchServerServlet.RESPONSE_XML.equals(fmt)) {
+            return getXmlWriter();
+        } else {
+            return getHtmlWriter();
+        }
+    }
+
     /**
-     * Parse and search query from reourceType, returning between results from offset upto limit
+     * Process query from Mbserver before sending to lucene searcher, returning between results from offset upto limit
      *
-     * @param resourceType
+     * @param query
+     * @param offset
+     * @param limit
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    public Results search(String query, int offset, int limit) throws IOException, ParseException {
+
+        if (getQueryMangler() != null) {
+            query = getQueryMangler().mangleQuery(query);
+        }
+        return searchLucene(query, offset, limit);
+    }
+
+    /**
+     * Parse and search lucene query, returning between results from offset upto limit
+     *
      * @param query
      * @param offset
      * @param limit
@@ -101,13 +129,39 @@ public class SearchServer {
      * @throws IOException
      * @throws ParseException if the query was invalid
      */
-    public Results search(ResourceType resourceType, String query, int offset, int limit) throws IOException, ParseException {
-        IndexSearcher searcher = searchers.get(resourceType);
-        QueryParser parser = new QueryParser(defaultSearchFields.get(resourceType), analyzer);
+    public Results searchLucene(String query, int offset, int limit) throws IOException, ParseException {
+        IndexSearcher searcher = getIndexSearcher();
+        QueryParser parser = getParser();
         TopScoreDocCollector collector = TopScoreDocCollector.create(offset + limit, true);
-
         searcher.search(parser.parse(query), collector);
+        return processResults(searcher, collector, offset);
 
+    }
+
+    /**
+     * Get Query Parser for parsing queries for this resourcetype
+     *
+     * @return
+     */
+    private QueryParser getParser() {
+        if (getSearchFields().size() > 1) {
+            return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
+        } else {
+            return new QueryParser(defaultFields.get(0), analyzer);
+
+        }
+    }
+
+    /**
+     * Process results of search
+     *
+     * @param searcher
+     * @param collector
+     * @param offset
+     * @return
+     * @throws IOException
+     */
+    private Results processResults(IndexSearcher searcher, TopScoreDocCollector collector, int offset) throws IOException {
         Results results = new Results();
         TopDocs topDocs = collector.topDocs();
         results.offset = offset;
@@ -122,5 +176,4 @@ public class SearchServer {
         }
         return results;
     }
-
 }

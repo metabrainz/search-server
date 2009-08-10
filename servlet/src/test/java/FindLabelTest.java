@@ -5,10 +5,10 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.Index;
 import org.musicbrainz.search.LabelIndexField;
+import org.musicbrainz.search.LabelSearch;
 import org.musicbrainz.search.LabelType;
 import org.musicbrainz.search.LabelXmlWriter;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.ResourceType;
 import org.musicbrainz.search.Result;
 import org.musicbrainz.search.Results;
 import org.musicbrainz.search.ResultsWriter;
@@ -17,8 +17,6 @@ import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
@@ -42,7 +40,8 @@ public class FindLabelTest extends TestCase {
             Document doc = new Document();
             Index.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
             Index.addFieldToDocument(doc, LabelIndexField.LABEL, "Jockey Slut");
-            Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Jockey Slut");
+            Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Slut, Jockey");
+            Index.addFieldToDocument(doc, LabelIndexField.ALIAS, "Jockeys");
             Index.addFieldToDocument(doc, LabelIndexField.BEGIN, "1993");
             Index.addFieldToDocument(doc, LabelIndexField.END, "2004");
             Index.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
@@ -63,13 +62,11 @@ public class FindLabelTest extends TestCase {
 
 
         writer.close();
-        Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
-        searchers.put(ResourceType.LABEL, new IndexSearcher(ramDir));
-        ss = new SearchServer(searchers);
+        ss = new LabelSearch(new IndexSearcher(ramDir, true));
     }
 
-    public void testFindLabelByName() throws Exception {
-        Results res = ss.search(ResourceType.LABEL, "label:\"Jockey Slut\"", 0, 10);
+    public void testFindLabelById() throws Exception {
+        Results res = ss.searchLucene("laid:\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -79,27 +76,75 @@ public class FindLabelTest extends TestCase {
         assertEquals("2004", doc.get(LabelIndexField.END));
         assertNull(doc.get(LabelIndexField.ALIAS));
         assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME));
+        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
+        assertEquals("production", doc.get(LabelIndexField.TYPE));
+    }
+
+    public void testFindLabelByName() throws Exception {
+        Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+        assertEquals("1993", doc.get(LabelIndexField.BEGIN));
+        assertEquals("2004", doc.get(LabelIndexField.END));
+        assertNull(doc.get(LabelIndexField.ALIAS));
+        assertNull(doc.get(LabelIndexField.COMMENT));
+        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
         assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelByDefault() throws Exception {
-        Results res = ss.search(ResourceType.LABEL, "\"Jockey Slut\"", 0, 10);
-        assertEquals(1, res.totalHits);
-        Result result = res.results.get(0);
-        MbDocument doc = result.doc;
-        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
-        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-        assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-        assertEquals("2004", doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
-        assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME));
-        assertEquals("production", doc.get(LabelIndexField.TYPE));
+
+        {
+            Results res = ss.searchLucene("\"Jockey Slut\"", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+            assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
+            assertEquals("2004", doc.get(LabelIndexField.END));
+            assertNull(doc.get(LabelIndexField.ALIAS));
+            assertNull(doc.get(LabelIndexField.COMMENT));
+            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
+            assertEquals("production", doc.get(LabelIndexField.TYPE));
+        }
+
+        {
+            Results res = ss.searchLucene("\"Slut Jockey\"", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+            assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
+            assertEquals("2004", doc.get(LabelIndexField.END));
+            assertNull(doc.get(LabelIndexField.ALIAS));
+            assertNull(doc.get(LabelIndexField.COMMENT));
+            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
+            assertEquals("production", doc.get(LabelIndexField.TYPE));
+        }
+
+        {
+            Results res = ss.searchLucene("\"Jockeys\"", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+            assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
+            assertEquals("2004", doc.get(LabelIndexField.END));
+            assertNull(doc.get(LabelIndexField.ALIAS));
+            assertNull(doc.get(LabelIndexField.COMMENT));
+            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
+            assertEquals("production", doc.get(LabelIndexField.TYPE));
+        }
     }
 
     public void testFindLabelByType() throws Exception {
-        Results res = ss.search(ResourceType.LABEL, "type:\"production\"", 0, 10);
+        Results res = ss.searchLucene("type:\"production\"", 0, 10);
         assertEquals(2, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -111,12 +156,12 @@ public class FindLabelTest extends TestCase {
         assertEquals("2004", doc.get(LabelIndexField.END));
         assertNull(doc.get(LabelIndexField.ALIAS));
         assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME));
+        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
         assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelBySortname() throws Exception {
-        Results res = ss.search(ResourceType.LABEL, "sortname:\"Jockey Slut\"", 0, 10);
+        Results res = ss.searchLucene("sortname:\"Slut, Jockey\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -126,12 +171,12 @@ public class FindLabelTest extends TestCase {
         assertEquals("2004", doc.get(LabelIndexField.END));
         assertNull(doc.get(LabelIndexField.ALIAS));
         assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME));
+        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
         assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelByCountry() throws Exception {
-        Results res = ss.search(ResourceType.LABEL, "country:\"gb\"", 0, 10);
+        Results res = ss.searchLucene("country:\"gb\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -141,12 +186,12 @@ public class FindLabelTest extends TestCase {
         assertEquals("2004", doc.get(LabelIndexField.END));
         assertNull(doc.get(LabelIndexField.ALIAS));
         assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Jockey Slut", doc.get(LabelIndexField.SORTNAME));
+        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
         assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
-     public void testFindLabelByCode() throws Exception {
-        Results res = ss.search(ResourceType.LABEL, "code:\"5807\"", 0, 10);
+    public void testFindLabelByCode() throws Exception {
+        Results res = ss.searchLucene("code:\"5807\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -168,7 +213,7 @@ public class FindLabelTest extends TestCase {
      */
     public void testOutputAsXml() throws Exception {
 
-        Results res = ss.search(ResourceType.LABEL, "label:\"Jockey Slut\"", 0, 1);
+        Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
         ResultsWriter writer = new LabelXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -181,7 +226,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("type=\"Production\""));
         assertTrue(output.contains("<name>Jockey Slut</name>"));
-        assertTrue(output.contains("<sort-name>Jockey Slut</sort-name>"));
+        assertTrue(output.contains("<sort-name>Slut, Jockey</sort-name>"));
         assertTrue(output.contains("begin=\"1993\""));
         assertTrue(output.contains("end=\"2004\""));
     }

@@ -28,6 +28,9 @@
 
 package org.musicbrainz.search;
 
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.velocity.app.Velocity;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,13 +39,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.EnumMap;
 import java.util.logging.Logger;
-
-import org.apache.velocity.app.Velocity;
-import org.apache.lucene.queryParser.ParseException;
 
 public class SearchServerServlet extends HttpServlet {
 
@@ -54,52 +51,25 @@ public class SearchServerServlet extends HttpServlet {
     final static String RESPONSE_XML = "xml";
     final static String RESPONSE_HTML = "html";
 
-    private SearchServer searchServer;
     private boolean isVelocityInitialized = false;
-    private EnumMap<ResourceType, ResultsWriter> xmlWriters  = new EnumMap<ResourceType, ResultsWriter>(ResourceType.class);
-    private EnumMap<ResourceType, ResultsWriter> htmlWriters = new EnumMap<ResourceType, ResultsWriter>(ResourceType.class);
-    private EnumMap<ResourceType, QueryMangler> queryManglers = new EnumMap<ResourceType, QueryMangler>(ResourceType.class);
 
     @Override
     public void init() {
 
-        // Setup search server
         String indexDir = getServletConfig().getInitParameter("index_dir");
         log.info("Index dir = " + indexDir);
-        try {
-            searchServer = new SearchServer(indexDir);
-        }
-        catch (IOException e) {
-            searchServer = null;
-        }
 
-        //Map resourcetype to XML writer, writer can be reused
-        xmlWriters.put(ResourceType.ARTIST, new ArtistXmlWriter());
-        xmlWriters.put(ResourceType.LABEL, new LabelXmlWriter());
-        xmlWriters.put(ResourceType.RELEASE, new ReleaseXmlWriter());
-        xmlWriters.put(ResourceType.RELEASE_GROUP, new ReleaseGroupXmlWriter());
-        xmlWriters.put(ResourceType.TRACK, new TrackXmlWriter());
-
-        // Setup Velocity and the HTML writers
+        // Setup Velocity and Search server
         setUpVelocity();
 
         try {
             Velocity.init();
-            htmlWriters.put(ResourceType.FREEDB, new FreeDBHtmlWriter());
-            htmlWriters.put(ResourceType.ARTIST, new ArtistHtmlWriter());
+            SearchServerFactory.init(indexDir);
             isVelocityInitialized = true;
         } catch (Exception e1) {
             e1.printStackTrace();
             isVelocityInitialized = false;
         }
-
-        //Setup query manglers
-        queryManglers.put(ResourceType.ARTIST, new ArtistMangler());
-        queryManglers.put(ResourceType.LABEL, new LabelMangler());
-        queryManglers.put(ResourceType.RELEASE, new ReleaseMangler());
-        queryManglers.put(ResourceType.RELEASE_GROUP, new ReleaseGroupMangler());
-        queryManglers.put(ResourceType.TRACK, new TrackMangler());
-
 
     }
 
@@ -113,24 +83,16 @@ public class SearchServerServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        if (searchServer != null) {
-            searchServer.close();
-        }
+        SearchServerFactory.close();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Check if search server is available
-        if (searchServer == null) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "searchServer == null");
-            return;
-        }
-
         // Check if velocity is initialized
         if (!isVelocityInitialized) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error during Velocity initialization");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error during Velocity/SearchServer initialization");
             return;
         }
 
@@ -174,29 +136,16 @@ public class SearchServerServlet extends HttpServlet {
 
         // Make the search
         try {
-            //Make any mods we need
-            QueryMangler qm = queryManglers.get(resourceType);
-            if(qm!=null)
-            {
-                query=qm.mangleQuery(query);
-            }
-            Results results = searchServer.search(resourceType, query, offset, limit);
 
-            // Select the matching writer
-            ResultsWriter writer;
-            if (RESPONSE_XML.equals(responseFormat)) {
-                writer = xmlWriters.get(resourceType);
-            } else {
-                writer = htmlWriters.get(resourceType);
-            }
+            SearchServer searchServer = SearchServerFactory.getSearchServer(resourceType);
+            Results results = searchServer.search(query, offset, limit);
+            ResultsWriter writer = searchServer.getWriter(responseFormat);
 
             if (writer == null) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                         "No handler for resource type " + resourceType + " and format " + responseFormat);
                 return;
             }
-
-            // Output the response
             response.setCharacterEncoding("UTF-8");
             response.setContentType(writer.getMimeType());
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")));

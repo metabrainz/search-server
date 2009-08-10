@@ -6,6 +6,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.Index;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.ReleaseIndexField;
+import org.musicbrainz.search.ReleaseSearch;
 import org.musicbrainz.search.ReleaseXmlWriter;
 import org.musicbrainz.search.ResourceType;
 import org.musicbrainz.search.Result;
@@ -49,7 +50,6 @@ public class FindReleaseTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseIndexField.STATUS, "official");
         Index.addFieldToDocument(doc, ReleaseIndexField.TYPE, "album");
 
-
         //Per Event
         Index.addFieldToDocument(doc, ReleaseIndexField.COUNTRY, "gb");
         Index.addFieldToDocument(doc, ReleaseIndexField.LABEL, "Wrath Records");
@@ -61,11 +61,37 @@ public class FindReleaseTest extends TestCase {
         writer.close();
         Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
         searchers.put(ResourceType.RELEASE, new IndexSearcher(ramDir));
-        ss = new SearchServer(searchers);
+        ss = new ReleaseSearch(new IndexSearcher(ramDir,true));
+    }
+
+    public void testFindReleaseById() throws Exception {
+        Results res = ss.search("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+        assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+
     }
 
     public void testFindReleaseByName() throws Exception {
-        Results res = ss.search(ResourceType.RELEASE, "release:\"Our Glorious 5 Year Plan\"", 0, 10);
+        Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -91,7 +117,7 @@ public class FindReleaseTest extends TestCase {
     }
 
     public void testFindReleaseByDefault() throws Exception {
-        Results res = ss.search(ResourceType.RELEASE, "\"Our Glorious 5 Year Plan\"", 0, 10);
+        Results res = ss.search("\"Our Glorious 5 Year Plan\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -117,7 +143,7 @@ public class FindReleaseTest extends TestCase {
     }
 
     public void testFindReleaseByArtistName() throws Exception {
-        Results res = ss.search(ResourceType.RELEASE, "artist:\"Farming Incident\"", 0, 10);
+        Results res = ss.search("artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -149,14 +175,14 @@ public class FindReleaseTest extends TestCase {
      */
     public void testOutputAsXml() throws Exception {
 
-        Results res = ss.search(ResourceType.RELEASE, "release:\"Our Glorious 5 Year Plan\"", 0, 1);
+        Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
         ResultsWriter writer = new ReleaseXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        //System.out.println("Xml is" + output);
+        System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
