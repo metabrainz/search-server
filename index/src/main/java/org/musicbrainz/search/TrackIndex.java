@@ -80,17 +80,17 @@ public class TrackIndex extends Index {
         addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("album_gid"));
         addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("album_name"));
         addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("tracks"));
-
-
-        Integer[] attributes = (Integer[]) rs.getArray("attributes").getArray();
+        
+        Object[] attributes = (Object[]) rs.getArray("attributes").getArray();
         for(int i=1;i<attributes.length;i++)
         {
-            if(i >=TYPE_MIN_VALUE && i<=TYPE_MAX_VALUE)
-            {
-                addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseType.values()[i - TYPE_OFFSET].getName());
+            int nextVal = (Integer) attributes[i];
+            if (nextVal >= TYPE_MIN_VALUE && nextVal <= TYPE_MAX_VALUE) {
+                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[nextVal - TYPE_OFFSET].getName());
                 break;
             }
         }
+
    
         addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("length")));
         addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("length") / QUANTIZED_DURATION));

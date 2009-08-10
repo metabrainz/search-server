@@ -4,9 +4,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.ArtistIndex;
-import org.musicbrainz.search.ArtistIndexField;
-import org.musicbrainz.search.AbstractIndexTest;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.sql.Connection;
@@ -87,7 +84,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -117,7 +114,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -134,7 +131,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -155,7 +152,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -189,7 +186,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -210,7 +207,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -231,7 +228,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -253,7 +250,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -274,7 +271,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -295,7 +292,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -322,7 +319,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);

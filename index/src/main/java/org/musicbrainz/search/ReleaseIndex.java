@@ -19,16 +19,22 @@
 
 package org.musicbrainz.search;
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
 
-import java.sql.*;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReleaseIndex extends Index {
     private static final int STATUS_OFFSET = 100;
@@ -44,7 +50,7 @@ public class ReleaseIndex extends Index {
     public ReleaseIndex(Connection dbConnection) {
         super(dbConnection);
 
-        stripBarcodeOfLeadingZeroes=Pattern.compile("^0+");
+        stripBarcodeOfLeadingZeroes = Pattern.compile("^0+");
     }
 
     public String getName() {
@@ -117,27 +123,25 @@ public class ReleaseIndex extends Index {
         addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, rs.getString("tracks"));
         addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
 
-        Integer[] attributes = (Integer[]) rs.getArray("attributes").getArray();
+        Object[] attributes = (Object[]) rs.getArray("attributes").getArray();
         for(int i=1;i<attributes.length;i++)
         {
-            if(i >=TYPE_MIN_VALUE && i<=TYPE_MAX_VALUE)
-            {
-                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[i - TYPE_OFFSET].getName());
+            int nextVal = (Integer) attributes[i];
+            if (nextVal >= TYPE_MIN_VALUE && nextVal <= TYPE_MAX_VALUE) {
+                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[nextVal - TYPE_OFFSET].getName());
                 break;
             }
         }
 
-        for(int i=0;i<attributes.length;i++)
+        for(int i=1;i<attributes.length;i++)
         {
-            if(i >=STATUS_MIN_VALUE && i<=STATUS_MAX_VALUE)
-            {
-                addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.values()[i - STATUS_OFFSET].getName());
+            int nextVal = (Integer) attributes[i];
+            if (nextVal >= STATUS_MIN_VALUE && nextVal <= STATUS_MAX_VALUE) {
+                addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.values()[nextVal - STATUS_OFFSET].getName());
                 break;
             }
         }
 
-
-        
         String asin = rs.getString("asin");
         if (asin != null && !asin.isEmpty()) {
             addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, asin);
@@ -182,7 +186,7 @@ public class ReleaseIndex extends Index {
                 if (str == null || str.isEmpty()) {
                     str = "-";
                 }
-                Matcher m    = stripBarcodeOfLeadingZeroes.matcher(str);
+                Matcher m = stripBarcodeOfLeadingZeroes.matcher(str);
                 addFieldToDocument(doc, ReleaseIndexField.BARCODE, m.replaceFirst(""));
             }
         }

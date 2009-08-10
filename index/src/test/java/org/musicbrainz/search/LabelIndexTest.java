@@ -4,9 +4,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.LabelIndex;
-import org.musicbrainz.search.LabelIndexField;
-import org.musicbrainz.search.AbstractIndexTest;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.sql.Connection;
@@ -17,7 +14,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
 
     public void setUp() throws Exception {
-       super.setup();
+        super.setup();
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
@@ -102,7 +99,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -118,7 +115,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -136,7 +133,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -151,7 +148,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -168,7 +165,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -184,7 +181,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -200,7 +197,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -221,7 +218,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -241,7 +238,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -263,7 +260,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -283,7 +280,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -304,7 +301,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -320,7 +317,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
@@ -341,7 +338,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
