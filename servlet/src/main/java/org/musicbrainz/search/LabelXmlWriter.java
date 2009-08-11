@@ -53,11 +53,7 @@ public class LabelXmlWriter extends XmlWriter {
             label.setId(doc.get(LabelIndexField.LABEL_ID));
             label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
 
-            label.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
-            //mb server May release, dont chnage for now
-            //label.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
-
+            label.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {

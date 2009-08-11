@@ -42,6 +42,8 @@ import java.math.BigInteger;
 
 public class ArtistXmlWriter extends XmlWriter {
 
+
+
     public Metadata write(Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
 
@@ -59,10 +61,7 @@ public class ArtistXmlWriter extends XmlWriter {
                 artist.setType(StringUtils.capitalize(artype));
             }
 
-            artist.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
-            //mb server May release, dont chnage for now
-            //artist.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
+            artist.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             String name = doc.get(ArtistIndexField.ARTIST);
             if (name != null) {

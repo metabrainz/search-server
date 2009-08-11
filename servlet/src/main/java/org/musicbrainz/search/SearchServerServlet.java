@@ -149,7 +149,7 @@ public class SearchServerServlet extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
             response.setContentType(writer.getMimeType());
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")));
-            writer.writeFragment(out, results);
+            writer.write(out, results);
             out.close();
         }
         catch (ParseException pe) {

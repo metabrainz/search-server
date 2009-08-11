@@ -57,10 +57,7 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
             ReleaseGroup releaseGroup = of.createReleaseGroup();
             releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
 
-            releaseGroup.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
-            //mb server May release, dont chnage for now
-            //releaseGroup.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
+            releaseGroup.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
             if (name != null) {

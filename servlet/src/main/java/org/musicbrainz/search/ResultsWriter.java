@@ -37,15 +37,4 @@ public abstract class ResultsWriter {
 
     public abstract void write(PrintWriter out, Results results) throws IOException;
 
-    /**
-     * Write Fragement
-     *
-     * This is only requited for XMLWriters retuting information to mbserver
-     * @param out
-     * @param results
-     * @throws IOException
-     */
-    public void writeFragment(PrintWriter out, Results results) throws IOException {
-        write(out,results);
-    }
 }

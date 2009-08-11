@@ -60,12 +60,20 @@ public class ReleaseXmlWriter extends XmlWriter {
             MbDocument doc = result.doc;
             Release release = of.createRelease();
             release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
-            release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.TYPE)));
-            release.getType().add(StringUtils.capitalize(doc.get(ReleaseIndexField.STATUS)));
-            release.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
-            //mb server May release, dont chnage for now
-            //release.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
+
+            String type = doc.get(ReleaseIndexField.TYPE);
+            String status = doc.get(ReleaseIndexField.STATUS);
+            if (type != null || status != null) {
+                if (type != null) {
+                    release.getType().add(StringUtils.capitalize(type));
+                }
+
+                if (status != null) {
+                    release.getType().add(StringUtils.capitalize(status));
+                }
+            }
+
+            release.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             String name = doc.get(ReleaseIndexField.RELEASE);
             if (name != null) {

@@ -33,8 +33,8 @@ import com.jthink.brainz.mmd.Metadata;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.io.Writer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -44,6 +44,30 @@ public abstract class XmlWriter extends ResultsWriter {
 
     public String getMimeType() {
         return "application/xml; charset=UTF-8";
+    }
+
+    /**
+    TODO temporsary until mbserver can be modified
+    If this is set to true the search servlet does not return full xml because it is added
+    by mbserver
+     */
+    protected boolean isMbServerCompliant = false;
+
+    /**
+     * TODO temporary until mbserver can be modified
+     *
+     * @return
+     */
+    protected QName getScore()
+    {
+        if(isMbServerCompliant)
+        {
+            return new QName("ext:score");
+        }
+        else
+        {
+            return new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext");
+        }
     }
 
     private static JAXBContext initContext() {
@@ -70,45 +94,39 @@ public abstract class XmlWriter extends ResultsWriter {
     /**
      * Write the results to provider writer
      *
+     * TODO, temporary until mbserver is updated so that it does not add xml around returned xml
+     * 
      * @param out
      * @param results
      * @throws IOException
      */
     public void write(PrintWriter out, Results results) throws IOException {
-        try {
-            Metadata metadata = write(results);
-            Marshaller m = context.createMarshaller();
-            m.marshal(metadata, out);
+
+        if(isMbServerCompliant)
+        {
+            try {
+                StringWriter tmpOut = new StringWriter();
+                Metadata metadata = write(results);
+                Marshaller m = context.createMarshaller();
+                m.marshal(metadata, tmpOut);
+                out.append(tmpOut.toString().replace("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\">","")
+                        .replace("</metadata>",""));
+            }
+            catch (JAXBException je) {
+                throw new IOException(je);
+            }
         }
-        catch (JAXBException je) {
-            throw new IOException(je);
+        else
+        {
+            try {
+                Metadata metadata = write(results);
+                Marshaller m = context.createMarshaller();
+                m.marshal(metadata, out);
+            }
+            catch (JAXBException je) {
+                throw new IOException(je);
+            }
+
         }
     }
-
-
-    /**
-     * Write partial xml to outputstream
-     * <p/>
-     * This is for backwards compatability with mb server that wraps the xml header and metadata tags
-     * around the xml results.
-     *
-     * @param out
-     * @param results
-     * @throws IOException
-     */
-    public void writeFragment(PrintWriter out, Results results) throws IOException {
-        try {
-            StringWriter tmpOut = new StringWriter();
-            Metadata metadata = write(results);
-            Marshaller m = context.createMarshaller();
-            m.marshal(metadata, tmpOut);
-            out.append(tmpOut.toString().replace("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\">","")
-                    .replace("</metadata>",""));
-        }
-        catch (JAXBException je) {
-            throw new IOException(je);
-        }
-
-    }
-
 }

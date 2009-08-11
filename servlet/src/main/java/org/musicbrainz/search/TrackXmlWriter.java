@@ -55,13 +55,13 @@ public class TrackXmlWriter extends XmlWriter {
         for (Result result : results.results) {
             MbDocument doc = result.doc;
             Track track = of.createTrack();
+
             track.setId(doc.get(TrackIndexField.TRACK_ID));
-            track.getOtherAttributes().put(new QName("ext:score"), String.valueOf((int) (result.score * 100)));
-            //TODO this is correct way to do it but as we are stripping header and footer to maintain comptaiblity with
-            //mb server May release, dont chnage for now
-            //track.getOtherAttributes().put(new QName("http://musicbrainz.org/ns/ext#-1.0","score","ext"), String.valueOf((int) (result.score * 100)));
+            
+            track.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             String name = doc.get(TrackIndexField.TRACK);
+
             if (name != null) {
                 track.setTitle(name);
             }
