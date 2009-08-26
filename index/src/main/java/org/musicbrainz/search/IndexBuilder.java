@@ -151,8 +151,9 @@ public class IndexBuilder
 
 		// FreeDB data indexing
 		FreeDBIndex index = new FreeDBIndex();
-		if (options.buildIndex(index.getName())) {
-			File dumpFile = new File(options.getFreeDBDump());
+        File dumpFile = new File(options.getFreeDBDump());
+        if (dumpFile!=null&dumpFile.isFile()) {
+
 			index.setDumpFile(dumpFile);
 			
 			IndexWriter indexWriter;
