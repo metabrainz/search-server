@@ -1,6 +1,6 @@
 /*
  * MusicBrainz Search Server
- * Copyright (C) 2009  Auréien Mino
+ * Copyright (C) 2009  Aurélien Mino
 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,27 +21,48 @@ package org.musicbrainz.search;
 
 public enum ReleaseGroupType {
 
-	NONALBUMTRACKS("nat"),
-	ALBUM("album"),
-	SINGLE("single"),
-	EP("ep"),
-	COMPILATION("compilation"),
-	SOUNDTRACK("soundtrack"),
-	SPOKENWORD("spokenword"),
-	INTERVIEW("interview"),
-	AUDIOBOOK("audiobook"),
-	LIVE("live"),
-	REMIX("remix"),
-	OTHER("other"),;
+    NONALBUMTRACKS(0, "nat"),
+    ALBUM(1, "album"),
+    SINGLE(2, "single"),
+    EP(3, "ep"),
+    COMPILATION(4, "compilation"),
+    SOUNDTRACK(5, "soundtrack"),
+    SPOKENWORD(6, "spokenword"),
+    INTERVIEW(7, "interview"),
+    AUDIOBOOK(8, "audiobook"),
+    LIVE(9, "live"),
+    REMIX(10, "remix"),
+    OTHER(11, "other"),;
 
-	private String name;
+    private Integer dbId;
+    private String name;
 
-	ReleaseGroupType(String name) {
-		this.name = name;
-	}
+    ReleaseGroupType(Integer dbId, String name) {
+        this.dbId = dbId;
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Integer getDbId() {
+        return dbId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
+    public static ReleaseGroupType getByDbId(int id) {
+        return ReleaseGroupType.values()[id];
+    }
+
+
+    public static int getMinDbId() {
+        return NONALBUMTRACKS.getDbId();
+    }
+
+    public static int getMaxDbId() {
+        return OTHER.getDbId();
+    }
+
 
 }

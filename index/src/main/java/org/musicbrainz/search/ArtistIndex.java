@@ -81,7 +81,7 @@ public class ArtistIndex extends Index {
         addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, rs.getString("gid"));
         addFieldToDocument(doc, ArtistIndexField.ARTIST, rs.getString("name"));
         addFieldToDocument(doc, ArtistIndexField.SORTNAME, rs.getString("sortname"));
-        addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.values()[rs.getInt("type")].getName());
+        addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.getByDbId(rs.getInt("type")).getName());
 
         String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {

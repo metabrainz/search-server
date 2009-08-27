@@ -30,11 +30,7 @@ import java.sql.*;
 public class TrackIndex extends Index {
 
     private final static int QUANTIZED_DURATION = 2000;
-    private static final int TYPE_OFFSET = 1;
-
-    private static final int TYPE_MIN_VALUE = 1;
-    private static final int TYPE_MAX_VALUE = 11;
-
+   
     public TrackIndex(Connection dbConnection) {
         super(dbConnection);
     }
@@ -52,7 +48,7 @@ public class TrackIndex extends Index {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT artist.gid as artist_gid, artist.name as artist_name, " +
+                "SELECT artist.gid as artist_gid, artist.name as artist_name, resolution, " +
                         "track.gid, track.name, " +
                         "album.gid as album_gid, album.attributes, album.name as album_name, track.length, albumjoin.sequence, albummeta.tracks " +
                         "FROM track " +
@@ -80,17 +76,16 @@ public class TrackIndex extends Index {
         addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("album_gid"));
         addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("album_name"));
         addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("tracks"));
-        
+                
         Object[] attributes = (Object[]) rs.getArray("attributes").getArray();
         for(int i=1;i<attributes.length;i++)
         {
             int nextVal = (Integer) attributes[i];
-            if (nextVal >= TYPE_MIN_VALUE && nextVal <= TYPE_MAX_VALUE) {
-                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[nextVal - TYPE_OFFSET].getName());
+            if (nextVal >= ReleaseType.getMinDbId() && nextVal <= ReleaseType.getMaxDbId()) {
+                addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseType.getByDbId(nextVal).getName());
                 break;
             }
         }
-
    
         addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("length")));
         addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("length") / QUANTIZED_DURATION));

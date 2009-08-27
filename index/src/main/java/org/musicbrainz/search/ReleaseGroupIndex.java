@@ -90,7 +90,7 @@ public class ReleaseGroupIndex extends Index {
 		addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
 		addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, rs.getString("artist_gid"));
 		addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, rs.getString("artist_name"));
-        addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.values()[rs.getInt("type")].getName());
+        addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.getByDbId(rs.getInt("type")).getName());
 
 		if (releases.containsKey(rgId)) {
 			for (String release : releases.get(rgId)) {

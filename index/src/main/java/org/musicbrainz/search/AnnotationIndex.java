@@ -46,7 +46,7 @@ public class AnnotationIndex extends Index {
 				"JOIN " + entityTable + " as e ON (ann.rowid = e.id) " +
 				"WHERE ann.type = ? AND ann.id BETWEEN ? AND ?");
 		st.setString(1, type.getName());
-		st.setInt(2, type.getId());
+		st.setInt(2, type.getDbId());
 		st.setInt(3, min);
 		st.setInt(4, max);
 		ResultSet rs = st.executeQuery();

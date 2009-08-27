@@ -21,19 +21,65 @@ package org.musicbrainz.search;
 
 public enum ReleaseStatus {
 
-    OFFICIAL("official"),
-	PROMOTION("promotion"),
-	BOOTLEG("bootleg"),
-	PSEUDO_RELEASE("pseudo-release"),
-	;
+    OFFICIAL(1,100, "official"),
+    PROMOTION(2,101, "promotion"),
+    BOOTLEG(3,102, "bootleg"),
+    PSEUDO_RELEASE(4,103, "pseudo-release"),;
+
+    private Integer dbId;
+    private Integer searchId;
 
     private String name;
 
-	ReleaseStatus(String name) {
-		this.name = name;
-	}
+    ReleaseStatus(Integer searchId,Integer dbId, String name) {
+        this.dbId = dbId;
+        this.searchId = searchId;
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Integer getDbId() {
+        return dbId;
+    }
+
+    public Integer getSearchId() {
+        return searchId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static ReleaseStatus getByDbId(int id) {
+        for (ReleaseStatus status : ReleaseStatus.values()) {
+            if (status.getDbId() == id) {
+                return status;
+            }
+        }
+        return null;
+    }
+
+    public static ReleaseStatus getBySearchId(int id) {
+        for (ReleaseStatus status : ReleaseStatus.values()) {
+            if (status.getSearchId() == id) {
+                return status;
+            }
+        }
+        return null;
+    }
+
+    public static int getMinDbId() {
+        return OFFICIAL.getDbId();
+    }
+
+    public static int getMaxDbId() {
+        return PSEUDO_RELEASE.getDbId();
+    }
+
+    public static int getMinSearchId() {
+        return OFFICIAL.getSearchId();
+    }
+
+    public static int getMaxSearchId() {
+        return PSEUDO_RELEASE.getSearchId();
+    }
 }

@@ -37,13 +37,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReleaseIndex extends Index {
-    private static final int STATUS_OFFSET = 100;
-    private static final int STATUS_MIN_VALUE = 100;
-    private static final int STATUS_MAX_VALUE = 103;
-
-    private static final int TYPE_OFFSET = 1;
-    private static final int TYPE_MIN_VALUE = 1;
-    private static final int TYPE_MAX_VALUE = 11;
 
     private Pattern stripBarcodeOfLeadingZeroes;
 
@@ -127,8 +120,8 @@ public class ReleaseIndex extends Index {
         for(int i=1;i<attributes.length;i++)
         {
             int nextVal = (Integer) attributes[i];
-            if (nextVal >= TYPE_MIN_VALUE && nextVal <= TYPE_MAX_VALUE) {
-                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.values()[nextVal - TYPE_OFFSET].getName());
+            if (nextVal >= ReleaseType.getMinDbId() && nextVal <= ReleaseType.getMaxDbId()) {
+                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.getByDbId(nextVal).getName());
                 break;
             }
         }
@@ -136,8 +129,8 @@ public class ReleaseIndex extends Index {
         for(int i=1;i<attributes.length;i++)
         {
             int nextVal = (Integer) attributes[i];
-            if (nextVal >= STATUS_MIN_VALUE && nextVal <= STATUS_MAX_VALUE) {
-                addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.values()[nextVal - STATUS_OFFSET].getName());
+            if (nextVal >= ReleaseStatus.getMinDbId() && nextVal <= ReleaseStatus.getMaxDbId()) {
+                addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.getByDbId(nextVal).getName());
                 break;
             }
         }

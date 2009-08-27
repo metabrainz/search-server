@@ -21,26 +21,51 @@ package org.musicbrainz.search;
 
 public enum ReleaseType {
 
-	ALBUM("album"),
-	SINGLE("single"),
-	EP("ep"),
-	COMPILATION("compilation"),
-	SOUNDTRACK("soundtrack"),
-	SPOKENWORD("spokenword"),
-	INTERVIEW("interview"),
-	AUDIOBOOK("audiobook"),
-	LIVE("live"),
-	REMIX("remix"),
-	OTHER("other"),;
+    ALBUM(1, "album"),
+    SINGLE(2, "single"),
+    EP(3, "ep"),
+    COMPILATION(4, "compilation"),
+    SOUNDTRACK(5, "soundtrack"),
+    SPOKENWORD(6, "spokenword"),
+    INTERVIEW(7, "interview"),
+    AUDIOBOOK(8, "audiobook"),
+    LIVE(9, "live"),
+    REMIX(10, "remix"),
+    OTHER(11, "other"),;
 
-	private String name;
+    private Integer dbId;
+    private String name;
 
-	ReleaseType(String name) {
-		this.name = name;
-	}
+    ReleaseType(Integer dbId, String name) {
+        this.dbId = dbId;
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Integer getDbId() {
+        return dbId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+
+    public static ReleaseType getByDbId(int id) {
+        for (ReleaseType type : ReleaseType.values()) {
+            if (type.getDbId() == id) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    public static int getMinDbId() {
+        return ALBUM.getDbId();
+    }
+
+    public static int getMaxDbId() {
+        return OTHER.getDbId();
+    }
+
 }
 

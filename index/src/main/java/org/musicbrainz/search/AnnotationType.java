@@ -21,24 +21,38 @@ package org.musicbrainz.search;
 
 public enum AnnotationType {
 
-	ARTIST	(1, "artist"),
-	RELEASE	(2, "release"),
-	LABEL	(3, "label"),
-	TRACK	(4, "track"),;
+    ARTIST(1, "artist"),
+    RELEASE(2, "release"),
+    LABEL(3, "label"),
+    TRACK(4, "track"),;
 
-	private Integer id;
-	private String name;
+    private Integer dbId;
+    private String name;
 
-	AnnotationType(Integer id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    AnnotationType(Integer dbId, String name) {
+        this.dbId = dbId;
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Integer getDbId() {
+        return dbId;
+    }
 
-	public Integer getId() {
-		return id;
-	}
+    public String getName() {
+        return name;
+    }
+
+
+    public static AnnotationType getByDbId(int id) {
+        return AnnotationType.values()[id];
+    }
+
+
+    public static int getMinDbId() {
+        return ARTIST.getDbId();
+    }
+
+    public static int getMaxDbId() {
+        return TRACK.getDbId();
+    }
 }
