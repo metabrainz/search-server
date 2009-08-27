@@ -190,10 +190,8 @@ public class TrackIndexTest extends AbstractIndexTest {
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(TrackIndexField.ARTIST_ID.getName()).stringValue());
             assertEquals("2", doc.getField(TrackIndexField.NUM_TRACKS.getName()).stringValue());
             assertEquals("00000000000001", doc.getField(TrackIndexField.TRACKNUM.getName()).stringValue());
-            assertEquals("single", doc.getField(TrackIndexField.RELEASE_TYPE.getName()).stringValue());
             assertEquals("00000000005gj6", doc.getField(TrackIndexField.DURATION.getName()).stringValue());
             assertEquals("0000000000003j", doc.getField(TrackIndexField.QUANTIZED_DURATION.getName()).stringValue());
-            assertEquals("single", doc.getField(TrackIndexField.RELEASE_TYPE.getName()).stringValue());
         }
         ir.close();
 
