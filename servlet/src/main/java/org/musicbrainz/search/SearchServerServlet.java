@@ -99,9 +99,7 @@ public class SearchServerServlet extends HttpServlet {
 
         // Extract parameters from request
         request.setCharacterEncoding(CHARSET);        
-        System.out.println("TEST:"+"신현모양처");
         String query = request.getParameter("query");
-        System.out.println("Query is"+query);
         if (query == null || query.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST,ErrorMessage.NO_QUERY_PARAMETER.getMsg());
             return;
