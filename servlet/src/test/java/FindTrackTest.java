@@ -4,16 +4,8 @@ import org.apache.lucene.document.NumberTools;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.Index;
-import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.ReleaseType;
-import org.musicbrainz.search.Result;
-import org.musicbrainz.search.Results;
-import org.musicbrainz.search.ResultsWriter;
-import org.musicbrainz.search.SearchServer;
-import org.musicbrainz.search.TrackIndexField;
-import org.musicbrainz.search.TrackSearch;
-import org.musicbrainz.search.TrackXmlWriter;
+import org.apache.velocity.app.Velocity;
+import org.musicbrainz.search.*;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.io.PrintWriter;
@@ -36,6 +28,8 @@ public class FindTrackTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        SearchServerServlet.setUpVelocity();
+        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
 
