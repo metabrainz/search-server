@@ -51,7 +51,9 @@ public class SearchServerServlet extends HttpServlet {
     final static String RESPONSE_XML = "xml";
     final static String RESPONSE_HTML = "html";
 
-    private boolean isVelocityInitialized = false;
+    final static String CHARSET = "UTF-8";
+
+    private boolean isServletInitialized = false;
 
     @Override
     public void init() {
@@ -65,10 +67,10 @@ public class SearchServerServlet extends HttpServlet {
         try {
             Velocity.init();
             SearchServerFactory.init(indexDir);
-            isVelocityInitialized = true;
+            isServletInitialized = true;
         } catch (Exception e1) {
-            e1.printStackTrace();
-            isVelocityInitialized = false;
+            e1.printStackTrace(System.err);
+            isServletInitialized = false;
         }
 
     }
@@ -77,8 +79,7 @@ public class SearchServerServlet extends HttpServlet {
         Velocity.setProperty("resource.loader", "class");
         Velocity.setProperty("class.resource.loader.class", org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader.class.getName());
         Velocity.setProperty("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
-        //TODO: remove this DummyLogChute hack and add log4j logging
-        Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM, new DummyLogChute());
+        Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM, new VelocityLogChute());
     }
 
     @Override
@@ -90,29 +91,36 @@ public class SearchServerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Check if velocity is initialized
-        if (!isVelocityInitialized) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "error during Velocity/SearchServer initialization");
+        // Check if servlet is initialized ok
+        if (!isServletInitialized) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.SERVLET_INIT_FAILED.getMsg());
             return;
         }
 
         // Extract parameters from request
-        request.setCharacterEncoding("UTF-8");
-
+        request.setCharacterEncoding(CHARSET);        
+        System.out.println("TEST:"+"신현모양처");
         String query = request.getParameter("query");
+        System.out.println("Query is"+query);
         if (query == null || query.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No query.");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,ErrorMessage.NO_QUERY_PARAMETER.getMsg());
             return;
         }
 
         String type = request.getParameter("type");
         if (type == null || type.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No type.");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,ErrorMessage.NO_TYPE_PARAMETER.getMsg());
             return;
         }
         ResourceType resourceType = ResourceType.getValue(type);
         if (resourceType == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unknown resource type");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
+            return;
+        }
+
+        String responseFormat = request.getParameter("fmt");
+        if (responseFormat == null || responseFormat.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_FORMAT_PARAMETER.getMsg());
             return;
         }
 
@@ -128,11 +136,6 @@ public class SearchServerServlet extends HttpServlet {
             limit = new Integer(strLimit);
         }
 
-        String responseFormat = request.getParameter("fmt");
-        if (responseFormat == null || responseFormat.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No format supplied");
-            return;
-        }
 
         // Make the search
         try {
@@ -142,18 +145,17 @@ public class SearchServerServlet extends HttpServlet {
             ResultsWriter writer = searchServer.getWriter(responseFormat);
 
             if (writer == null) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "No handler for resource type " + resourceType + " and format " + responseFormat);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType,responseFormat));
                 return;
             }
-            response.setCharacterEncoding("UTF-8");
+            response.setCharacterEncoding(CHARSET);
             response.setContentType(writer.getMimeType());
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8")));
+            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
             writer.write(out, results);
             out.close();
         }
         catch (ParseException pe) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to parse search:" + query);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
             return;
 
         }
