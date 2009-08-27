@@ -51,7 +51,7 @@ public abstract class XmlWriter extends ResultsWriter {
     If this is set to true the search servlet does not return full xml because it is added
     by mbserver
      */
-    protected boolean isMbServerCompliant = false;
+    protected boolean isMbServerCompliant = true;
 
     /**
      * TODO temporary until mbserver can be modified

@@ -13,7 +13,7 @@ public class ReleaseSearch extends SearchServer {
     public ReleaseSearch() throws Exception {
 
         xmlWriter = new ReleaseXmlWriter();
-        htmlWriter = null;
+        htmlWriter = new ReleaseHtmlWriter();
         queryMangler = new ReleaseMangler();
         defaultFields = new ArrayList<String>();
         defaultFields.add(ReleaseIndexField.RELEASE.getName());

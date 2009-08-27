@@ -13,11 +13,15 @@
     #set( $doc = $result.doc )
     #set( $score = $result.score * 100 )
     #set( $score = $Math.round($score) )
-    #set( $oddeven = $i % 2)
-        <tr class="searchresults$oddeven">
+    #if ( $i % 2 == 0)
+      #set( $oddeven = "even" )
+    #else
+      #set( $oddeven = "odd" )
+    #end  
+        <tr class="searchresults${oddeven}">
             <td>$score</td>
             <td>
-                <span class="linkartist-icon"><a href="/artist/${doc.get($ArtistIndexField.ARTIST_ID)}.html">$doc.get($ArtistIndexField.ARTIST)</a></span>
+                <a href="/artist/${doc.get($ArtistIndexField.ARTIST_ID)}.html">$doc.get($ArtistIndexField.ARTIST)</a>
                 #if( $doc.get($ArtistIndexField.COMMENT) )
                     ($doc.get($ArtistIndexField.COMMENT))
                 #end

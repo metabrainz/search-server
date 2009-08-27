@@ -17,7 +17,8 @@ public enum TrackIndexField implements IndexField {
     DURATION			("dur",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
     QUANTIZED_DURATION	("qdur",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     TRACKNUM			("tnum",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    RELEASE_TYPE        ("type",        Field.Store.NO,     Field.Index.NOT_ANALYZED);
+    RELEASE_TYPE        ("type",        Field.Store.NO,     Field.Index.NOT_ANALYZED),
+    ARTIST_COMMENT      ("comment",		Field.Store.YES,    Field.Index.ANALYZED),;
 
     private String name;
 	private Field.Store store;

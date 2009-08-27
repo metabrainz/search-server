@@ -73,6 +73,10 @@ public class TrackIndex extends Index {
         addFieldToDocument(doc, TrackIndexField.TRACK, rs.getString("name"));
         addFieldToDocument(doc, TrackIndexField.ARTIST_ID, rs.getString("artist_gid"));
         addFieldToDocument(doc, TrackIndexField.ARTIST, rs.getString("artist_name"));
+        String comment = rs.getString("resolution");
+        if (comment != null && !comment.isEmpty()) {
+        	addFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, comment);
+        }
         addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("album_gid"));
         addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("album_name"));
         addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("tracks"));

@@ -273,7 +273,7 @@ public class FindArtistTest extends TestCase {
         pr.close();
 
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        //System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("type=\"Group\""));
@@ -297,7 +297,7 @@ public class FindArtistTest extends TestCase {
         String output = sw.toString();
         assertTrue(output.contains("group"));
         assertTrue(output.contains("Echo &amp; The Bunnymen"));
-        System.out.println(output);
+        //System.out.println(output);
     }
 
     public void testXmlWritingPerformance() throws Exception {

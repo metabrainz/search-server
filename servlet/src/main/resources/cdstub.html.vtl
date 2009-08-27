@@ -1,0 +1,28 @@
+<div>
+    <table class="searchresults">
+        <tr class="searchresultsheader">
+            <td>Score</td>
+            <td>CD</td>
+            <td>Artist</td>
+            <td>Tracks</td>
+        </tr>
+#set( $i = 0 )
+#foreach( $result in $results )
+    #set( $doc = $result.doc )
+    #set( $score = $result.score * 100 )
+    #set( $score = $Math.round($score) )
+    #if ( $i % 2 == 0)
+      #set( $oddeven = "even" )
+    #else
+      #set( $oddeven = "odd" )
+    #end
+        <tr class="searchresults$oddeven">
+            <td>$score</td>
+            <td><a href="/show/cdstub/index.html?discid=${doc.get($CDStubIndexField.DISCID)}">$doc.get($CDStubIndexField.TITLE)</a></td>
+            <td>$doc.get($CDStubIndexField.ARTIST)</td>
+            <td>$doc.get($CDStubIndexField.NUM_TRACKS)</td>
+        </tr>
+    #set( $i = $i + 1 )
+#end
+    </table>
+</div>

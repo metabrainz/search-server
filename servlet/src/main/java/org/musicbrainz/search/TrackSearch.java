@@ -14,7 +14,7 @@ public class TrackSearch extends SearchServer {
 
 
         xmlWriter = new TrackXmlWriter();
-        htmlWriter = null;
+        htmlWriter = new TrackHtmlWriter();
         queryMangler = new TrackMangler();
         defaultFields = new ArrayList<String>();
         defaultFields.add(TrackIndexField.TRACK.getName());

@@ -23,6 +23,7 @@ public enum ReleaseIndexField implements IndexField {
     LANGUAGE		("language",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
     TYPE		    ("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     STATUS		    ("status",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED);
     ;
 
     private String name;

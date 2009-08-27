@@ -46,6 +46,8 @@ public class FindTrackTest extends TestCase {
         Index.addFieldToDocument(doc, TrackIndexField.RELEASE, "Our Glorious 5 Year Plan");
         Index.addFieldToDocument(doc, TrackIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
         Index.addFieldToDocument(doc, TrackIndexField.ARTIST, "Farming Incident");
+        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, "Leeds band");
+
         Index.addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(234000));
         Index.addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(234000 / 2000));
         Index.addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, String.valueOf(10));
@@ -249,7 +251,7 @@ public class FindTrackTest extends TestCase {
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        //System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("<track id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));

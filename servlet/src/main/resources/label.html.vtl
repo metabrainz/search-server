@@ -1,0 +1,39 @@
+<div>
+    <table class="searchresults">
+        <tr class="searchresultsheader">
+            <td>Score</td>
+            <td>Label</td>
+            <td>Sortname</td>
+            <td>Type</td>
+            <td>Code</td>
+            <td>Begin</td>
+            <td>End</td>
+        </tr>
+#set( $i = 0 )
+#foreach( $result in $results )
+    #set( $doc = $result.doc )
+    #set( $score = $result.score * 100 )
+    #set( $score = $Math.round($score) )
+    #if ( $i % 2 == 0)
+      #set( $oddeven = "even" )
+    #else
+      #set( $oddeven = "odd" )
+    #end
+        <tr class="searchresults$oddeven">
+            <td>$score</td>
+            <td>
+                <a href="/label/${doc.get($LabelIndexField.LABEL_ID)}.html">$doc.get($LabelIndexField.LABEL)</a>
+                #if( $doc.get($LabelIndexField.COMMENT) )
+                    ($doc.get($LabelIndexField.COMMENT))
+                #end
+            </td>
+            <td>$doc.get($LabelIndexField.SORTNAME)</td>
+            <td>$doc.get($LabelIndexField.TYPE)</td>
+            <td>$!doc.get($LabelIndexField.CODE)</td>
+            <td>$!doc.get($LabelIndexField.BEGIN)</td>
+            <td>$!doc.get($LabelIndexField.END)</td>
+        </tr>
+    #set( $i = $i + 1 )
+#end
+    </table>
+</div>

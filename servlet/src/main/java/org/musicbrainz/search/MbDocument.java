@@ -30,6 +30,9 @@ package org.musicbrainz.search;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumberTools;
+
+import java.math.BigInteger;
 
 public class MbDocument {
 
@@ -40,10 +43,24 @@ public class MbDocument {
 	}
 	
 	public String get(IndexField indexField) {
-		return doc.get(indexField.getName());
+         return doc.get(indexField.getName());
 	}
 
-	public String[] getValues(IndexField indexField) {
+    /** This is required to retrieve numeric data that has been encoded so that it works correctly in
+     * duration ranges
+     *
+     * @param indexField
+     * @return
+     */
+    public String getAsText(IndexField indexField) {
+         return String.valueOf(NumberTools.stringToLong(doc.get(indexField.getName())));
+	}
+
+    public Long getAsNumber(IndexField indexField) {
+            return NumberTools.stringToLong(doc.get(indexField.getName()));
+       }
+
+    public String[] getValues(IndexField indexField) {
 		return doc.getValues(indexField.getName());
 	}
 

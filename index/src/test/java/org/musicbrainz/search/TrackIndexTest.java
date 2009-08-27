@@ -40,7 +40,7 @@ public class TrackIndexTest extends AbstractIndexTest {
 
 
         stmt.addBatch("INSERT INTO artist(id,name, gid, modpending, sortname, page, resolution, begindate,enddate,type,quality,modpending_qual)" +
-                "    VALUES (16153, 'Echo & The Bunnymen', 'ccd4879c-5e88-4385-b131-bf65296bf245',0, 'Echo & The Bunnymen', 205832224,'a comment', '1978-00-00','1995-00-00', 2, -1, 0)");
+                "    VALUES (16153, 'Echo & The Bunnymen', 'ccd4879c-5e88-4385-b131-bf65296bf245',0, 'Echo & The Bunnymen', 205832224,null, '1978-00-00','1995-00-00', 2, -1, 0)");
 
 
         stmt.addBatch("INSERT INTO album(" +
@@ -217,6 +217,56 @@ public class TrackIndexTest extends AbstractIndexTest {
             assertEquals(0, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
         }
         ir.close();
+        
 
     }
+
+     /**
+     *
+     * @throws Exception
+     */
+    public void testNoArtistComment() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(TrackIndexField.TRACK.getName()).length);
+            assertEquals(0, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
+            assertEquals(0, doc.getFields(TrackIndexField.ARTIST_COMMENT.getName()).length);
+        }
+        ir.close();
+
+
+    }
+
+     /**
+     *
+     * @throws Exception
+     */
+    public void testArtistComment() throws Exception {
+
+        addTrackTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(TrackIndexField.TRACK.getName()).length);
+            assertEquals(0, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
+            assertEquals(1, doc.getFields(TrackIndexField.ARTIST_COMMENT.getName()).length);
+            assertEquals("a comment", doc.getField(TrackIndexField.ARTIST_COMMENT.getName()).stringValue());
+
+        }
+        ir.close();
+
+
+    }
+
 }

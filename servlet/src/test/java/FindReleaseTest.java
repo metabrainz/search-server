@@ -182,7 +182,7 @@ public class FindReleaseTest extends TestCase {
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        //System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));

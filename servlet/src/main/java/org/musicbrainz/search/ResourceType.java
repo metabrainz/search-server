@@ -10,7 +10,10 @@ public enum ResourceType {
     RELEASE("release"),
     RELEASE_GROUP("release-group"),
     TRACK("track"), 
-    FREEDB("freedb");
+    CDSTUB("cdstub"),
+    FREEDB("freedb"),
+    ANNOTATION("annotation"),
+    ;
 
     private String name;
 

@@ -88,7 +88,7 @@ public class ReleaseIndex extends Index {
         st.close();
         st = dbConnection.prepareStatement(
                 "SELECT album.id, album.gid, album.name, " +
-                        "artist.gid as artist_gid, artist.name as artist_name, " +
+                        "artist.gid as artist_gid, artist.name as artist_name,resolution, " +
                         "attributes, tracks, discids, asin, " +
                         "language.isocode_3t as language, script.isocode as script " +
                         "FROM album " +
@@ -113,6 +113,10 @@ public class ReleaseIndex extends Index {
         addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
         addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, rs.getString("artist_gid"));
         addFieldToDocument(doc, ReleaseIndexField.ARTIST, rs.getString("artist_name"));
+        String comment = rs.getString("resolution");
+        if (comment != null && !comment.isEmpty()) {
+        	addFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, comment);
+        }
         addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, rs.getString("tracks"));
         addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
 

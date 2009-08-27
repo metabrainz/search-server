@@ -14,7 +14,11 @@
     #set( $doc = $result.doc )
     #set( $score = $result.score * 100 )
     #set( $score = $Math.round($score) )
-    #set( $oddeven = $i % 2)
+    #if ( $i % 2 == 0)
+      #set( $oddeven = "even" )
+    #else
+      #set( $oddeven = "odd" )
+    #end
         <tr class="searchresults$oddeven">
             <td>$score</td>
             <td>$doc.get($FreeDBIndexField.TITLE)</td>

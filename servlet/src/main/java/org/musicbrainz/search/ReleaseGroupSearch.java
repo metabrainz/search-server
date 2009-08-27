@@ -13,7 +13,7 @@ public class ReleaseGroupSearch extends SearchServer{
     public ReleaseGroupSearch() throws Exception
     {
         xmlWriter           = new ReleaseGroupXmlWriter();
-        htmlWriter          = null;
+        htmlWriter          = new ReleaseGroupHtmlWriter();
         queryMangler        = new ReleaseGroupMangler();
         defaultFields       = new ArrayList<String>();
         defaultFields.add(ReleaseGroupIndexField.RELEASEGROUP.getName());

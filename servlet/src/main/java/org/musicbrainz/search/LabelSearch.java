@@ -13,7 +13,7 @@ public class LabelSearch extends SearchServer {
     public LabelSearch() throws Exception {
 
         xmlWriter = new LabelXmlWriter();
-        htmlWriter = null;
+        htmlWriter = new LabelHtmlWriter();
         queryMangler = new LabelMangler();
         defaultFields = new ArrayList<String>();
         defaultFields.add(LabelIndexField.LABEL.getName());
