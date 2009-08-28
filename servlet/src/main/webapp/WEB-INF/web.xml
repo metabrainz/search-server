@@ -20,7 +20,7 @@
 <servlet-class>org.musicbrainz.search.SearchServerServlet</servlet-class>
   <init-param>
      <param-name>index_dir</param-name>
-     <param-value>/Users/paul/code/musicbrainz/data</param-value>
+     <param-value>/home/search/indexdata</param-value>
   </init-param>
 </servlet>
 <servlet-mapping>
