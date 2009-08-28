@@ -46,7 +46,9 @@ public class SearchServerServlet extends HttpServlet {
     final Logger log = Logger.getLogger(SearchServerServlet.class.getName());
 
     final static int DEFAULT_OFFSET = 0;
-    final static int DEFAULT_LIMIT = 100;
+    final static int DEFAULT_MATCHES_LIMIT = 25;
+    final static int MAX_MATCHES_LIMIT = 100;
+
 
     final static String RESPONSE_XML = "xml";
     final static String RESPONSE_HTML = "html";
@@ -130,19 +132,42 @@ public class SearchServerServlet extends HttpServlet {
             offset = new Integer(strOffset);
         }
 
-        Integer limit = DEFAULT_LIMIT;
+        Integer limit = DEFAULT_MATCHES_LIMIT;
         String strLimit = request.getParameter("limit");
+        String strMax   = request.getParameter("max");
+        //used by webservice
         if (strLimit != null && !strLimit.isEmpty()) {
             limit = new Integer(strLimit);
+            if(limit > MAX_MATCHES_LIMIT) {
+                limit= MAX_MATCHES_LIMIT;
+            }
+        }
+        //used by web search (although entered as limit on website then converted to max !)
+        //TODO perhaps could be simplified
+        else if (strMax != null && !strMax.isEmpty()) {
+            limit = new Integer(strMax);
+            if(limit > MAX_MATCHES_LIMIT) {
+                limit= MAX_MATCHES_LIMIT;
+            }
         }
 
-        /* TODO
-          maxHits = int(args.getvalue('max', 0))
-          tport = int(args.getvalue('tport', 0))
-          dur = int(args.getvalue('dur', 0))
-          mbt = int(args.getvalue('mbt', 0))
-          rel = int(args.getvalue('rel', 0))
-        */
+        //TODO, use these variables
+        //Tagger port and duration if tagger port set
+        String tport    = request.getParameter("tport");
+        String duration = null;
+        if(tport!=null)
+        {
+            duration = request.getParameter("dur");
+        }
+
+        //Use old style tagger links
+        String mbt      = request.getParameter("mbt");
+
+        //Show exra relationships column
+        String rel      = request.getParameter("rel");
+
+
+
 
         // Make the search
         try {
