@@ -23,7 +23,7 @@ import java.text.MessageFormat;
 
 public enum ErrorMessage {
 
-    SERVLET_INIT_FAILED("Error during servlet initialization"),
+    SERVLET_INIT_FAILED("Error during servlet initialization {0}"),
     NO_QUERY_PARAMETER("No Query parameter supplied"),
     NO_TYPE_PARAMETER("No Type parameter supplied"),
     NO_FORMAT_PARAMETER("No Format parameter supplied"),

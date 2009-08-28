@@ -24,7 +24,7 @@ public class ErrorMessageTest extends TestCase {
 
 
     public void testWriteErrorMessageNoArgs() throws Exception {
-        assertEquals("Error during servlet initialization", ErrorMessage.SERVLET_INIT_FAILED.getMsg());
+        assertEquals("No Query parameter supplied", ErrorMessage.NO_QUERY_PARAMETER.getMsg());
     }
 
     public void testWriteErrorMessageWithArgs() throws Exception {

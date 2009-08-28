@@ -55,6 +55,7 @@ public class SearchServerServlet extends HttpServlet {
 
     private boolean isServletInitialized = false;
 
+    private String initMessage = null;
     @Override
     public void init() {
 
@@ -69,7 +70,8 @@ public class SearchServerServlet extends HttpServlet {
             SearchServerFactory.init(indexDir);
             isServletInitialized = true;
         } catch (Exception e1) {
-            e1.printStackTrace(System.err);
+            initMessage=e1.getMessage();
+            e1.printStackTrace(System.out);
             isServletInitialized = false;
         }
 
@@ -93,7 +95,7 @@ public class SearchServerServlet extends HttpServlet {
 
         // Check if servlet is initialized ok
         if (!isServletInitialized) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.SERVLET_INIT_FAILED.getMsg());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.SERVLET_INIT_FAILED.getMsg(initMessage));
             return;
         }
 
@@ -134,6 +136,13 @@ public class SearchServerServlet extends HttpServlet {
             limit = new Integer(strLimit);
         }
 
+        /* TODO
+          maxHits = int(args.getvalue('max', 0))
+          tport = int(args.getvalue('tport', 0))
+          dur = int(args.getvalue('dur', 0))
+          mbt = int(args.getvalue('mbt', 0))
+          rel = int(args.getvalue('rel', 0))
+        */
 
         // Make the search
         try {
