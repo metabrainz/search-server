@@ -16,6 +16,13 @@ redirect=$redirect
             <td>Artist</td>
             <td>Album</td>
             <td>Tracks</td>
+#if ( $tport )
+            <td>Tagger</td>
+#elseif ( $oldstylelink )
+            <td>Rel</td>
+#elseif ( $relationships )
+            <td>Rel</td>
+#end
         </tr>
 #set( $i = 0 )
 #foreach( $result in $results )
@@ -53,8 +60,25 @@ redirect=$redirect
                 <a href="/release/${doc.get($TrackIndexField.RELEASE_ID)}.html">$doc.get($TrackIndexField.RELEASE)</a>
             </td>
             <td align="center">$doc.get($TrackIndexField.NUM_TRACKS)</td>
+            #if ( $tport )
+              <td style="white-space: nowrap">
+                <a href="http://127.0.0.1:${tport}/openalbum?id=${doc.get($TrackIndexField.TRACK_ID)}&amp;t=$time"
+                   target="hiddeniframe" title="Open in Tagger" border="0"><img
+                   src="/images/mblookup-tagger.png" border="0" alt="Open in tagger"></a>
+              </td>
+            #elseif ( $oldstylelink )
+                <td style="white-space: nowrap">
+                <a href="tag:${doc.get($TrackIndexField.TRACK_ID)}:${doc.get($TrackIndexField.RELEASE_ID)}">
+    	        <img src="/images/mblookup-tag.gif" alt="Tag" title="Tag the current track"
+   	            height="13" width="28" align="middle" border="0">
+   	            </td>
+            #elseif ( $relationships )
+              <td><a href="/show/track/relationships.html?trackid=${doc.get($TrackIndexField.TRACK_ID)}&amp;addrel=1">rel</a></td>
+            #end
+
         </tr>
     #set( $i = $i + 1 )
 #end
     </table>
 </div>
+<p class="lastupdated" align="right">updated 2009-08-28 00:51 UTC</p>

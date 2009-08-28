@@ -30,6 +30,9 @@ package org.musicbrainz.search;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
+import java.util.EnumMap;
+import java.util.Date;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.FieldMethodizer;
@@ -43,7 +46,7 @@ public class ReleaseHtmlWriter extends HtmlWriter {
 	}
 
 	@Override
-	public void write(PrintWriter out, Results results) throws IOException {
+	public void write(PrintWriter out, Results results, EnumMap<RequestParameter,String> extraInfoMap) throws IOException {
 
 		VelocityContext context = new VelocityContext();
 		context.put("offset", results.offset);
@@ -53,11 +56,20 @@ public class ReleaseHtmlWriter extends HtmlWriter {
 		context.put("Math", Math.class);
         context.put("ReleaseIndexField", new FieldMethodizer( "org.musicbrainz.search.ReleaseIndexField" ));
 
-        if(results.results.size()==1)
-        {
+        if(results.results.size()==1) {
             context.put("redirect",results.results.get(0).getDoc().get(ReleaseIndexField.RELEASE_ID));
         }
-		template.merge(context, out);
+        if(extraInfoMap.get(RequestParameter.TAGGER_PORT)!=null) {
+            context.put("tport",extraInfoMap.get(RequestParameter.TAGGER_PORT));
+            context.put("time",new Date().getTime());
+        }
+        else if(extraInfoMap.get(RequestParameter.RELATIONSHIPS)!=null) {
+            context.put("relationships","1");
+        }
+        if(extraInfoMap.get(RequestParameter.RELATIONSHIPS)!=null) {
+            context.put("relationships","1");
+        }
+        template.merge(context, out);
 	}
 
 }

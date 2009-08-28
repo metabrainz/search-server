@@ -40,6 +40,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Collections;
+import java.util.EnumMap;
 
 public class SearchServerServlet extends HttpServlet {
 
@@ -58,6 +62,7 @@ public class SearchServerServlet extends HttpServlet {
     private boolean isServletInitialized = false;
 
     private String initMessage = null;
+
     @Override
     public void init() {
 
@@ -72,7 +77,7 @@ public class SearchServerServlet extends HttpServlet {
             SearchServerFactory.init(indexDir);
             isServletInitialized = true;
         } catch (Exception e1) {
-            initMessage=e1.getMessage();
+            initMessage = e1.getMessage();
             e1.printStackTrace(System.out);
             isServletInitialized = false;
         }
@@ -102,16 +107,16 @@ public class SearchServerServlet extends HttpServlet {
         }
 
         // Extract parameters from request
-        request.setCharacterEncoding(CHARSET);        
-        String query = request.getParameter("query");
+        request.setCharacterEncoding(CHARSET);
+        String query = request.getParameter(RequestParameter.QUERY.getName());
         if (query == null || query.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,ErrorMessage.NO_QUERY_PARAMETER.getMsg());
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_QUERY_PARAMETER.getMsg());
             return;
         }
 
-        String type = request.getParameter("type");
+        String type = request.getParameter(RequestParameter.TYPE.getName());
         if (type == null || type.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,ErrorMessage.NO_TYPE_PARAMETER.getMsg());
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_TYPE_PARAMETER.getMsg());
             return;
         }
         ResourceType resourceType = ResourceType.getValue(type);
@@ -120,54 +125,81 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
 
-        String responseFormat = request.getParameter("fmt");
+        String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
         if (responseFormat == null || responseFormat.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_FORMAT_PARAMETER.getMsg());
             return;
         }
 
         Integer offset = DEFAULT_OFFSET;
-        String strOffset = request.getParameter("offset");
+        String strOffset = request.getParameter(RequestParameter.OFFSET.getName());
         if (strOffset != null && !strOffset.isEmpty()) {
             offset = new Integer(strOffset);
         }
 
         Integer limit = DEFAULT_MATCHES_LIMIT;
-        String strLimit = request.getParameter("limit");
-        String strMax   = request.getParameter("max");
+        String strLimit = request.getParameter(RequestParameter.LIMIT.getName());
+        String strMax = request.getParameter(RequestParameter.MAX.getName());
         //used by webservice
         if (strLimit != null && !strLimit.isEmpty()) {
             limit = new Integer(strLimit);
-            if(limit > MAX_MATCHES_LIMIT) {
-                limit= MAX_MATCHES_LIMIT;
+            if (limit > MAX_MATCHES_LIMIT) {
+                limit = MAX_MATCHES_LIMIT;
             }
         }
         //used by web search (although entered as limit on website then converted to max !)
         //TODO perhaps could be simplified
         else if (strMax != null && !strMax.isEmpty()) {
             limit = new Integer(strMax);
-            if(limit > MAX_MATCHES_LIMIT) {
-                limit= MAX_MATCHES_LIMIT;
+            if (limit > MAX_MATCHES_LIMIT) {
+                limit = MAX_MATCHES_LIMIT;
             }
         }
 
-        //TODO, use these variables
-        //Tagger port and duration if tagger port set
-        String tport    = request.getParameter("tport");
-        String duration = null;
-        if(tport!=null)
-        {
-            duration = request.getParameter("dur");
+        EnumMap<RequestParameter, String> extraInfoMap = new EnumMap<RequestParameter, String>(RequestParameter.class);
+        switch (resourceType) {
+            case RELEASE: {
+                String tport = request.getParameter(RequestParameter.TAGGER_PORT.getName());
+                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
+                if (tport != null) {
+                    extraInfoMap.put(RequestParameter.TAGGER_PORT, tport);
+                    String duration = request.getParameter(RequestParameter.DURATION.getName());
+                    if (duration != null) {
+                        extraInfoMap.put(RequestParameter.DURATION, duration);
+                    }
+                } else if (rel != null) {
+                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
+                }
+            }
+            break;
+
+            case TRACK: {
+                String tport = request.getParameter(RequestParameter.TAGGER_PORT.getName());
+                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
+                String oldLink = request.getParameter(RequestParameter.OLD_STYLE_LINK.getName());
+
+                if (tport != null) {
+                    extraInfoMap.put(RequestParameter.TAGGER_PORT, tport);
+                    String duration = request.getParameter(RequestParameter.DURATION.getName());
+                    if (duration != null) {
+                        extraInfoMap.put(RequestParameter.DURATION, duration);
+                    }
+                } else if (oldLink != null) {
+                    extraInfoMap.put(RequestParameter.OLD_STYLE_LINK, oldLink);
+                } else if (rel != null) {
+                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
+                }
+            }
+            break;
+
+            case ARTIST: {
+                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
+                if (rel != null) {
+                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
+                }
+            }
+            break;
         }
-
-        //Use old style tagger links
-        String mbt      = request.getParameter("mbt");
-
-        //Show exra relationships column
-        String rel      = request.getParameter("rel");
-
-
-
 
         // Make the search
         try {
@@ -177,13 +209,13 @@ public class SearchServerServlet extends HttpServlet {
             ResultsWriter writer = searchServer.getWriter(responseFormat);
 
             if (writer == null) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType,responseFormat));
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));
                 return;
             }
             response.setCharacterEncoding(CHARSET);
             response.setContentType(writer.getMimeType());
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-            writer.write(out, results);
+            writer.write(out, results, extraInfoMap);
             out.close();
         }
         catch (ParseException pe) {

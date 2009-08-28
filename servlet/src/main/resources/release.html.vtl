@@ -16,6 +16,12 @@ redirect=$redirect
             <td>Date</td>
             <td>Type</td>
             <td style="white-space: nowrap">Lang/script</td>
+#if ( $tport )
+            <td>Tagger</td>
+#elseif ( $relationships )
+            <td>Rel</td>
+#end
+
         </tr>
 #set( $i = 0 )
 #foreach( $result in $results )
@@ -50,9 +56,19 @@ redirect=$redirect
             #else
             <td></td>
             #end
+            #if ( $tport )
+              <td style="white-space: nowrap">
+                <a href="http://127.0.0.1:${tport}/openalbum?id=${doc.get($ReleaseIndexField.RELEASE_ID)}&amp;t=$time"
+                 target="hiddeniframe" title="Open in Tagger" border="0"><img
+                 src="/images/mblookup-tagger.png" border="0" alt="Open in tagger"></a>
+              </td>  
+            #elseif ( $relationships )
+              <td><a href="/show/release/relationships.html?releaseid=${doc.get($ReleaseIndexField.RELEASE_ID)}&amp;addrel=1">rel</a></td>
+            #end
 
         </tr>
     #set( $i = $i + 1 )
 #end
     </table>
 </div>
+<p class="lastupdated" align="right">updated 2009-08-28 00:51 UTC</p>

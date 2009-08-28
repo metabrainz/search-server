@@ -30,6 +30,8 @@ package org.musicbrainz.search;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
+import java.util.EnumMap;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.FieldMethodizer;
@@ -43,7 +45,7 @@ public class LabelHtmlWriter extends HtmlWriter {
 	}
 
 	@Override
-	public void write(PrintWriter out, Results results) throws IOException {
+	public void write(PrintWriter out, Results results, EnumMap<RequestParameter,String> extraInfoMap) throws IOException {
 		
 		VelocityContext context = new VelocityContext();
 		context.put("offset", results.offset);

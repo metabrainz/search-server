@@ -1,4 +1,4 @@
-/* Copyright (c) 2009 Lukas Lalinsky
+/* Copyright (c) 2009 Paul Taylor
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,21 +28,33 @@
 
 package org.musicbrainz.search;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
+public enum RequestParameter {
+    QUERY("query"),
+    TYPE("type"),
+    FORMAT("fmt"),
+    LIMIT("limit"),
+    MAX("max"),
+    OFFSET("offset"),
+    TAGGER_PORT("tport"),
+    DURATION("dur"),
+    RELATIONSHIPS("rel"),
+    OLD_STYLE_LINK("mbt"),
 
-public abstract class ResultsWriter {
+            ;
+    private String name;
 
-    public abstract String getMimeType();
-
-    public void write(PrintWriter out, Results results) throws IOException {
-        write(out,results,new EnumMap<RequestParameter,String>(RequestParameter.class) );
+    RequestParameter(String name) {
+        this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
 
-    public abstract void write(PrintWriter out, Results results,EnumMap<RequestParameter,String> extraInfoMap) throws IOException;
-
+    public static RequestParameter getValue(String value) {
+        for ( RequestParameter candidateEnum : RequestParameter.values() ) {
+            if(candidateEnum.getName().equals(value)) return candidateEnum;
+        }
+        return null;
+    }
 }

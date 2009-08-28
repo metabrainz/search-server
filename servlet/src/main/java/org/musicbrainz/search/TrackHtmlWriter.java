@@ -30,6 +30,9 @@ package org.musicbrainz.search;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
+import java.util.EnumMap;
+import java.util.Date;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.FieldMethodizer;
@@ -43,7 +46,7 @@ public class TrackHtmlWriter extends HtmlWriter {
 	}
 
 	@Override
-	public void write(PrintWriter out, Results results) throws IOException {
+	public void write(PrintWriter out, Results results, EnumMap<RequestParameter,String> extraInfoMap) throws IOException {
 		
 		VelocityContext context = new VelocityContext();
 		context.put("offset", results.offset);
@@ -54,9 +57,19 @@ public class TrackHtmlWriter extends HtmlWriter {
 		// Make IndexField enum available in template context
 		context.put("TrackIndexField", new FieldMethodizer( "org.musicbrainz.search.TrackIndexField" ));
 
-        if(results.results.size()==1)
-        {
+        if(results.results.size()==1) {
             context.put("redirect",results.results.get(0).getDoc().get(TrackIndexField.TRACK_ID));
+        }
+
+        if(extraInfoMap.get(RequestParameter.TAGGER_PORT)!=null) {
+            context.put("tport",extraInfoMap.get(RequestParameter.TAGGER_PORT));
+            context.put("time",new Date().getTime());
+        }
+        else if(extraInfoMap.get(RequestParameter.OLD_STYLE_LINK)!=null) {
+            context.put("oldstylelink","1");
+        }
+        else if(extraInfoMap.get(RequestParameter.RELATIONSHIPS)!=null) {
+            context.put("relationships","1");
         }
         template.merge(context, out);
 	}

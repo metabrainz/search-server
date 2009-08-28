@@ -37,6 +37,8 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
+import java.util.EnumMap;
 
 public abstract class XmlWriter extends ResultsWriter {
 
@@ -100,7 +102,7 @@ public abstract class XmlWriter extends ResultsWriter {
      * @param results
      * @throws IOException
      */
-    public void write(PrintWriter out, Results results) throws IOException {
+    public void write(PrintWriter out, Results results, EnumMap<RequestParameter,String> extraInfoMap) throws IOException {
 
         if(isMbServerCompliant)
         {
