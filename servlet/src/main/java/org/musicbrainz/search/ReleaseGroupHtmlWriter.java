@@ -53,7 +53,10 @@ public class ReleaseGroupHtmlWriter extends HtmlWriter {
 		context.put("Math", Math.class);
 
 		context.put("ReleaseGroupIndexField", new FieldMethodizer( "org.musicbrainz.search.ReleaseGroupIndexField" ));
-
+        if(results.results.size()==1)
+        {
+            context.put("redirect",results.results.get(0).getDoc().get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        }
 		template.merge(context, out);
 	}
 

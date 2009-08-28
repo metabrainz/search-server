@@ -53,8 +53,12 @@ public class TrackHtmlWriter extends HtmlWriter {
 		context.put("Math", Math.class);
 		// Make IndexField enum available in template context
 		context.put("TrackIndexField", new FieldMethodizer( "org.musicbrainz.search.TrackIndexField" ));
-		
-		template.merge(context, out);
+
+        if(results.results.size()==1)
+        {
+            context.put("redirect",results.results.get(0).getDoc().get(TrackIndexField.TRACK_ID));
+        }
+        template.merge(context, out);
 	}
 	
 }

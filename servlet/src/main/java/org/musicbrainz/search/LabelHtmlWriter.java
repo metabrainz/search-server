@@ -53,8 +53,14 @@ public class LabelHtmlWriter extends HtmlWriter {
 		context.put("Math", Math.class);
 		// Make IndexField enum available in template context
 		context.put("LabelIndexField", new FieldMethodizer( "org.musicbrainz.search.LabelIndexField" ));
-		
-		template.merge(context, out);
+
+
+        //So that if only one match gets redirected to detail view of that entity
+        if(results.results.size()==1)
+        {
+            context.put("redirect",results.results.get(0).getDoc().get(LabelIndexField.LABEL_ID));
+        }
+        template.merge(context, out);
 	}
 	
 }
