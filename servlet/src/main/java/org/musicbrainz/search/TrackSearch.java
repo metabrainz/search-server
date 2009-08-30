@@ -24,6 +24,7 @@ public class TrackSearch extends SearchServer {
 
         this();
         indexSearcher = createIndexSearcherFromFileIndex(indexDir,"track_index");
+        this.setLastServerUpdatedDate();
     }
 
 

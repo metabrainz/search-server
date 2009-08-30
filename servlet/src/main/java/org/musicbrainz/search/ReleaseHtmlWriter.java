@@ -52,8 +52,10 @@ public class ReleaseHtmlWriter extends HtmlWriter {
 		context.put("offset", results.offset);
 		context.put("totalHits", results.totalHits);
 		context.put("results", results.results);
+        context.put("updated",lastUpdated);
 
-		context.put("Math", Math.class);
+
+        context.put("Math", Math.class);
         context.put("ReleaseIndexField", new FieldMethodizer( "org.musicbrainz.search.ReleaseIndexField" ));
 
         if(results.results.size()==1) {

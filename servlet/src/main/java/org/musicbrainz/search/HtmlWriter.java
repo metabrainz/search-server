@@ -33,7 +33,9 @@ import org.apache.velocity.app.Velocity;
 
 public abstract class HtmlWriter extends ResultsWriter {
 
-	@Override
+    protected String lastUpdated;
+
+    @Override
 	public String getMimeType() {
 		return "text/html; charset=UTF-8";
 	}
@@ -43,4 +45,9 @@ public abstract class HtmlWriter extends ResultsWriter {
 	public HtmlWriter(String templateResourceName) throws Exception {
 		template = Velocity.getTemplate(templateResourceName);
 	}
+
+    public void setLastUpdated(String lastUpdated)
+    {
+        this.lastUpdated=lastUpdated;
+    }
 }

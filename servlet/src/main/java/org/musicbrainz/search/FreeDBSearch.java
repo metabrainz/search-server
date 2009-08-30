@@ -24,6 +24,7 @@ public class FreeDBSearch extends SearchServer {
 
         this();
         indexSearcher = createIndexSearcherFromFileIndex(indexDir,"freedb_index");
+        this.setLastServerUpdatedDate();
     }
 
 

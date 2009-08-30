@@ -26,6 +26,7 @@ public class LabelSearch extends SearchServer {
 
         this();
         indexSearcher = createIndexSearcherFromFileIndex(indexDir,"label_index");
+        this.setLastServerUpdatedDate();
     }
 
 

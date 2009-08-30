@@ -1,10 +1,7 @@
 package org.musicbrainz.search;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.NIOFSDirectory;
 
-import java.io.File;
 import java.util.ArrayList;
 
 
@@ -24,6 +21,7 @@ public class ArtistSearch extends SearchServer {
 
         this();
         indexSearcher = createIndexSearcherFromFileIndex(indexDir,"artist_index");
+        this.setLastServerUpdatedDate();
     }
 
 

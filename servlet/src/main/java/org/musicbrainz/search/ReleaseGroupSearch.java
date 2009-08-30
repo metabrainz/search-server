@@ -23,6 +23,7 @@ public class ReleaseGroupSearch extends SearchServer{
 
         this();
         indexSearcher = createIndexSearcherFromFileIndex(indexDir,"releasegroup_index");
+        this.setLastServerUpdatedDate();
     }
 
 

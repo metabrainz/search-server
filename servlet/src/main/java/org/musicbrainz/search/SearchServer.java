@@ -38,12 +38,17 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.List;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
 
 public abstract class SearchServer {
 
@@ -53,6 +58,9 @@ public abstract class SearchServer {
     protected QueryMangler queryMangler;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
+    protected Date          serverLastUpdatedDate;
+    protected String        htmlLastUpdated;
+    protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz",Locale.US);
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
@@ -64,6 +72,30 @@ public abstract class SearchServer {
     protected IndexSearcher createIndexSearcherFromFileIndex(String indexDir,String indexName) throws Exception
     {
         return new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + '/' + indexName + '/'), null), true));
+
+    }
+
+    /**
+     * Set the last updated date by getting the value from the index
+     *
+     * Set the last updated date by getting the value from the index (where it is always stored as the last document), then
+     * for efficiency convert to a format suitable for use in output html
+     *
+     * @throws IOException
+     */
+    protected void setLastServerUpdatedDate() {
+
+        //Is not a disaster if missing so just log and carry on
+        try
+        {
+            serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(indexSearcher.getIndexReader().document(indexSearcher.getIndexReader().maxDoc()-1)
+                    .getField(MetaIndexField.META.getName()).stringValue()));
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            htmlWriter.setLastUpdated(dateFormat.format(serverLastUpdatedDate));
+        }
+        catch(Exception e) {
+            System.out.println(e);
+        }
 
     }
 

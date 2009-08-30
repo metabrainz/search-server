@@ -52,8 +52,10 @@ public class TrackHtmlWriter extends HtmlWriter {
 		context.put("offset", results.offset);
 		context.put("totalHits", results.totalHits);
 		context.put("results", results.results);
-		
-		context.put("Math", Math.class);
+        context.put("updated",lastUpdated);
+
+
+        context.put("Math", Math.class);
 		// Make IndexField enum available in template context
 		context.put("TrackIndexField", new FieldMethodizer( "org.musicbrainz.search.TrackIndexField" ));
 

@@ -51,8 +51,10 @@ public class ReleaseGroupHtmlWriter extends HtmlWriter {
 		context.put("offset", results.offset);
 		context.put("totalHits", results.totalHits);
 		context.put("results", results.results);
+        context.put("updated",lastUpdated);
 
-		context.put("Math", Math.class);
+
+        context.put("Math", Math.class);
 
 		context.put("ReleaseGroupIndexField", new FieldMethodizer( "org.musicbrainz.search.ReleaseGroupIndexField" ));
         if(results.results.size()==1)

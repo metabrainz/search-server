@@ -21,6 +21,7 @@ public class CDStubSearch extends SearchServer {
 
         this();
         indexSearcher = createIndexSearcherFromFileIndex(indexDir, "cdstub_index");
+        this.setLastServerUpdatedDate();
     }
 
 

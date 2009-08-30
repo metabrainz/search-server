@@ -28,15 +28,16 @@
 
 package org.musicbrainz.search;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Properties;
+import java.util.*;
 import java.sql.*;
 import java.io.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.util.NumericUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -140,7 +141,9 @@ public class IndexBuilder
 				index.indexData(indexWriter, j, j + IDS_PER_CHUNK);
 				j += IDS_PER_CHUNK;
 			}
-			System.out.println("\n  Optimizing");
+
+            addMetaFieldsToIndex(indexWriter);
+            System.out.println("\n  Optimizing");
 			indexWriter.optimize();
 			indexWriter.close();
 			
@@ -166,14 +169,30 @@ public class IndexBuilder
 			clock.start();
 			
 			index.indexData(indexWriter);
-			
-			System.out.println("  Optimizing");
+            addMetaFieldsToIndex(indexWriter);
+
+            System.out.println("  Optimizing");
 			indexWriter.optimize();
 			indexWriter.close();
 			
 			clock.stop();
 			System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
 		}
+    }
+
+    /**
+     * Add document containing additional information about the index as the last document in the index
+     * 
+     * @param indexWriter
+     * @throws IOException
+     */
+    private static void addMetaFieldsToIndex(IndexWriter indexWriter)
+            throws IOException
+    {
+        Document doc = new Document();
+        doc.add(new Field(MetaIndexField.META.getName(),NumericUtils.longToPrefixCoded(new java.util.Date().getTime()),
+            MetaIndexField.META.getStore(), MetaIndexField.META.getIndex()));
+        indexWriter.addDocument(doc);
     }
     
 }

@@ -20,6 +20,7 @@ public class AnnotationSearch extends SearchServer {
 
         this();
         indexSearcher = createIndexSearcherFromFileIndex(indexDir, "annotation_index");
+        this.setLastServerUpdatedDate();
     }
 
 
