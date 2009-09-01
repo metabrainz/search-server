@@ -81,7 +81,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.musicbrainz.search.IndexBuilder</mainClass>
+              <mainClass>org.musicbrainz.search.index.IndexBuilder</mainClass>
               <packageName>org.musicbrainz.search</packageName>
               <addClasspath>true</addClasspath>
             </manifest>
