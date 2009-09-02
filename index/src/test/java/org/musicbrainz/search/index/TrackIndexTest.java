@@ -238,7 +238,7 @@ public class TrackIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(TrackIndexField.TRACK.getName()).length);
-            assertEquals(0, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
+            assertEquals(1, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
             assertEquals(0, doc.getFields(TrackIndexField.ARTIST_COMMENT.getName()).length);
         }
         ir.close();
