@@ -69,9 +69,6 @@ public class ReleaseHtmlWriter extends HtmlWriter {
         else if(extraInfoMap.get(RequestParameter.RELATIONSHIPS)!=null) {
             context.put("relationships","1");
         }
-        if(extraInfoMap.get(RequestParameter.RELATIONSHIPS)!=null) {
-            context.put("relationships","1");
-        }
         template.merge(context, out);
 	}
 
