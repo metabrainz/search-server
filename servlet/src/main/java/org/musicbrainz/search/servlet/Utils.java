@@ -54,4 +54,20 @@ public class Utils {
         }
     }
 
+    /**
+     * Convert milliseconds to mm:ss display format
+     *
+     * Note we don't break into hours, 3900000 ms would display as 65:00 , and we dont put a zero
+     * before single digit minutes
+     *
+     * @param ms
+     * @return
+     */
+    public static String convertMsToMinutesAndSeconds(long ms)
+    {
+        int seconds = (int)((ms /1000) % 60);
+        int minutes = (int)(ms / 60000) ;
+        String secondsStr = (seconds<10 ? "0" : "")+ seconds;
+        return new String(minutes + ":" + secondsStr );
+    }
 }

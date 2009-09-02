@@ -30,7 +30,6 @@ package org.musicbrainz.search.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 import java.util.EnumMap;
 import java.util.Date;
 
@@ -41,8 +40,8 @@ import org.musicbrainz.search.index.TrackIndexField;
 public class TrackHtmlWriter extends HtmlWriter {
 
 	protected static final String TEMPLATE_RESOURCE_NAME = "track.html.vtl";
-	
-	public TrackHtmlWriter() throws Exception {
+
+    public TrackHtmlWriter() throws Exception {
 		super(TEMPLATE_RESOURCE_NAME);
 	}
 
@@ -55,7 +54,7 @@ public class TrackHtmlWriter extends HtmlWriter {
 		context.put("results", results.results);
         context.put("updated",lastUpdated);
 
-
+        context.put("Utils",Utils.class);
         context.put("Math", Math.class);
 		// Make IndexField enum available in template context
 		context.put("TrackIndexField", new FieldMethodizer( "org.musicbrainz.search.index.TrackIndexField" ));

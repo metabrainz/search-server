@@ -42,12 +42,9 @@ redirect=$redirect
             </td>
             ## TODO: add tlen css class based on the duration of a found match if searched by duration and tagger set           
             #if( $doc.get($TrackIndexField.DURATION) && $doc.getAsNumber($TrackIndexField.DURATION) > 0 )
-               #set( $dur_mins = ${doc.getAsNumber($TrackIndexField.DURATION)} / 60000)
-               #set( $dur_msecs= ${doc.getAsNumber($TrackIndexField.DURATION)} % 60000)
-               #set( $dur_secs = ${dur_msecs} / 1000)
-               <td class="tlen" align="center" class="tlen">${dur_mins}:${dur_secs}</td>
+               <td class="tlen" align="center" class="tlen">$Utils.convertMsToMinutesAndSeconds($doc.getAsNumber($TrackIndexField.DURATION))</td>
             #else
-               <td></td>
+               <td class="tlen" align="center" class="tlen">&nbsp;</td>
             #end
             <td>$!doc.get($TrackIndexField.RELEASE_TYPE)</td>
             <td>
