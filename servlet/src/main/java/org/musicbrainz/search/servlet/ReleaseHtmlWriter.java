@@ -57,7 +57,7 @@ public class ReleaseHtmlWriter extends HtmlWriter {
 
 
         context.put("Math", Math.class);
-        context.put("ReleaseIndexField", new FieldMethodizer( "org.musicbrainz.search.index.index.ReleaseIndexField" ));
+        context.put("ReleaseIndexField", new FieldMethodizer( "org.musicbrainz.search.index.ReleaseIndexField" ));
 
         if(results.results.size()==1) {
             context.put("redirect",results.results.get(0).getDoc().get(ReleaseIndexField.RELEASE_ID));
