@@ -31,6 +31,9 @@ package org.musicbrainz.search.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/** Html helper methods for the html output
+ *
+ */
 public class Utils {
 
     public static void escapeXml(PrintWriter writer, String str) throws IOException {
@@ -63,11 +66,20 @@ public class Utils {
      * @param ms
      * @return
      */
-    public static String convertMsToMinutesAndSeconds(long ms)
-    {
+    public static String convertMsToMinutesAndSeconds(long ms) {
         int seconds = (int)((ms /1000) % 60);
         int minutes = (int)(ms / 60000) ;
         String secondsStr = (seconds<10 ? "0" : "")+ seconds;
         return new String(minutes + ":" + secondsStr );
+    }
+
+    /** Calculate tlen class to use when comparing tracks to a specific track in track.html
+     *
+     */
+    public static String getTlenClassForDuration(long dur,long trackDur) {
+        long diff = Math.abs(dur - trackDur);
+        if( diff < 5000) return "tlen good";
+        if( diff < 15000) return "tlen ok";
+        return "tlen bad";
     }
 }

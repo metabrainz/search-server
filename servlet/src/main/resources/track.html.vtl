@@ -40,11 +40,14 @@ redirect=$redirect
             <td>
                 <a href="/track/${doc.get($TrackIndexField.TRACK_ID)}.html">$doc.get($TrackIndexField.TRACK)</a>
             </td>
-            ## TODO: add tlen css class based on the duration of a found match if searched by duration and tagger set           
             #if( $doc.get($TrackIndexField.DURATION) && $doc.getAsNumber($TrackIndexField.DURATION) > 0 )
-               <td class="tlen" align="center" class="tlen">$Utils.convertMsToMinutesAndSeconds($doc.getAsNumber($TrackIndexField.DURATION))</td>
+               #if ($dur)
+                 <td class="$Utils.getTlenClassForDuration($doc.getAsNumber($TrackIndexField.DURATION),$dur)" align="center">$Utils.convertMsToMinutesAndSeconds($doc.getAsNumber($TrackIndexField.DURATION))</td>
+               #else
+                 <td class="tlen" align="center">$Utils.convertMsToMinutesAndSeconds($doc.getAsNumber($TrackIndexField.DURATION))</td>
+               #end
             #else
-               <td class="tlen" align="center" class="tlen">&nbsp;</td>
+               <td class="tlen" align="center">&nbsp;</td>
             #end
             <td>$!doc.get($TrackIndexField.RELEASE_TYPE)</td>
             <td>

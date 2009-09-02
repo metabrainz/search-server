@@ -63,9 +63,10 @@ public class TrackHtmlWriter extends HtmlWriter {
             context.put("redirect",results.results.get(0).getDoc().get(TrackIndexField.TRACK_ID));
         }
 
-        if(extraInfoMap.get(RequestParameter.TAGGER_PORT)!=null) {
+        if(extraInfoMap.get(RequestParameter.TAGGER_PORT)!=null) {                
             context.put("tport",extraInfoMap.get(RequestParameter.TAGGER_PORT));
             context.put("time",new Date().getTime());
+            context.put("dur",Long.parseLong(extraInfoMap.get(RequestParameter.DURATION)));
         }
         else if(extraInfoMap.get(RequestParameter.OLD_STYLE_LINK)!=null) {
             context.put("oldstylelink","1");
