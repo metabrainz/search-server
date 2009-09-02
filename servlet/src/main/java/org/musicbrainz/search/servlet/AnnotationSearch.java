@@ -13,8 +13,7 @@ public class AnnotationSearch extends SearchServer {
         htmlWriter = new AnnotationHtmlWriter();
         queryMangler = null;
         defaultFields = new ArrayList<String>();
-        defaultFields.add(AnnotationIndexField.NAME.getName());
-        defaultFields.add(AnnotationIndexField.TYPE.getName());
+        defaultFields.add(AnnotationIndexField.TEXT.getName());
     }
 
     public AnnotationSearch(String indexDir) throws Exception {
