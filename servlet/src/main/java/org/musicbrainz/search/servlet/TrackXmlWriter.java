@@ -36,6 +36,7 @@ import com.jthink.brainz.mmd.ReleaseList;
 import com.jthink.brainz.mmd.Track;
 import com.jthink.brainz.mmd.TrackList;
 import org.apache.lucene.document.NumberTools;
+import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.index.TrackIndexField;
 
@@ -83,11 +84,17 @@ public class TrackXmlWriter extends XmlWriter {
                 track.setArtist(artist);
             }
 
+            
             String releaseName = doc.get(TrackIndexField.RELEASE);
             if (releaseName != null) {
                 Release release = of.createRelease();
                 release.setId(doc.get(TrackIndexField.RELEASE_ID));
                 release.setTitle(releaseName);
+
+                String type = doc.get(TrackIndexField.RELEASE_TYPE);
+                if (type != null) {
+                    release.getType().add(StringUtils.capitalize(type));
+                }
 
                 String trackNo = doc.get(TrackIndexField.TRACKNUM);
                 String tracks = doc.get(TrackIndexField.NUM_TRACKS);

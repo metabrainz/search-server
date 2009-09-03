@@ -262,7 +262,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("<duration>234000</duration>"));
         assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
-        assertTrue(output.contains("release id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("release type=\"Album\" id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("offset=\"5\""));
         assertTrue(output.contains("count=\"10\""));
