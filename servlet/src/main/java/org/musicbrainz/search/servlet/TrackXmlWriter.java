@@ -100,7 +100,7 @@ public class TrackXmlWriter extends XmlWriter {
                 String tracks = doc.get(TrackIndexField.NUM_TRACKS);
                 if (trackNo != null) {
                     TrackList releaseTrackList = of.createTrackList();
-                    releaseTrackList.setOffset(BigInteger.valueOf(NumberTools.stringToLong(trackNo)));
+                    releaseTrackList.setOffset(BigInteger.valueOf(NumberTools.stringToLong(trackNo) - 1));
                     if (tracks != null) {
                         releaseTrackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
                     }
