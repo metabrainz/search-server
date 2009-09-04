@@ -206,6 +206,13 @@ public class SearchServerServlet extends HttpServlet {
 
             SearchServer searchServer = SearchServerFactory.getSearchServer(resourceType);
             Results results = searchServer.search(query, offset, limit);
+
+            //TODO Doesnt seem right to throw this exception, but it is currently expected by mb_server when have no results
+            if (results.results.size() == 0) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, ErrorMessage.NO_MATCHES.getMsg(query));
+                return;
+            }
+
             ResultsWriter writer = searchServer.getWriter(responseFormat);
 
             if (writer == null) {

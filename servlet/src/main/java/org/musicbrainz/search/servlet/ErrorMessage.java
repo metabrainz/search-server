@@ -30,6 +30,7 @@ public enum ErrorMessage {
     UNKNOWN_RESOURCE_TYPE("Unknown resource type {0}"),
     NO_HANDLER_FOR_TYPE_AND_FORMAT("No handler for resource type {0} and format {1}"),
     UNABLE_TO_PARSE_SEARCH("Unable to parse search:{0}"),
+    NO_MATCHES("zero search hits"),    //Formatting as is because depended on by mb_server
     ;
 
     String msg;
