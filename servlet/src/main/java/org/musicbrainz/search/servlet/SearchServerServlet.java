@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.lang.management.ManagementFactory;
 
 public class SearchServerServlet extends HttpServlet {
 
@@ -68,7 +69,7 @@ public class SearchServerServlet extends HttpServlet {
 
         String indexDir = getServletConfig().getInitParameter("index_dir");
         log.info("Index dir = " + indexDir);
-
+        log.info("Max Heap = "+ ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         // Setup Velocity and Search server
         setUpVelocity();
 
