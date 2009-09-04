@@ -164,7 +164,7 @@ public class ReleaseXmlWriter extends XmlWriter {
 
             releaseList.getRelease().add(release);
         }
-        releaseList.setCount(BigInteger.valueOf(results.results.size()));
+        releaseList.setCount(BigInteger.valueOf(results.totalHits));
         releaseList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setReleaseList(releaseList);
         return metadata;

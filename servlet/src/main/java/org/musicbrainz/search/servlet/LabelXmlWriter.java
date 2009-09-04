@@ -92,7 +92,7 @@ public class LabelXmlWriter extends XmlWriter {
             labelList.getLabel().add(label);
 
         }
-        labelList.setCount(BigInteger.valueOf(results.results.size()));
+        labelList.setCount(BigInteger.valueOf(results.totalHits));
         labelList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setLabelList(labelList);
         return metadata;

@@ -100,7 +100,7 @@ public class ArtistXmlWriter extends XmlWriter {
             artistList.getArtist().add(artist);
 
         }
-        artistList.setCount(BigInteger.valueOf(results.results.size()));
+        artistList.setCount(BigInteger.valueOf(results.totalHits));
         artistList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setArtistList(artistList);
         return metadata;

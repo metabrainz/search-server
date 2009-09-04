@@ -84,7 +84,7 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
 
             releaseGroupList.getReleaseGroup().add(releaseGroup);
         }
-        releaseGroupList.setCount(BigInteger.valueOf(results.results.size()));
+        releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));
         releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setReleaseGroupList(releaseGroupList);
         return metadata;

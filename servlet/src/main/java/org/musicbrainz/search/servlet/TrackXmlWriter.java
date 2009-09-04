@@ -113,7 +113,7 @@ public class TrackXmlWriter extends XmlWriter {
             }
             trackList.getTrack().add(track);
         }
-        trackList.setCount(BigInteger.valueOf(results.results.size()));
+        trackList.setCount(BigInteger.valueOf(results.totalHits));
         trackList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setTrackList(trackList);
         return metadata;
