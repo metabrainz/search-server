@@ -19,6 +19,7 @@ import org.musicbrainz.search.servlet.TrackXmlWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.EnumMap;
 
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
@@ -266,7 +267,169 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
+    }
+
+      public void testOutputAsHtml() throws Exception {
+
+        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
+        ResultsWriter writer = new TrackHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+
+        String output = sw.toString();
+        //System.out.println("Html is" + output);
+        assertTrue(output.contains("hits=1"));
+        assertTrue(output.contains("offset=0"));
+        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
+        assertTrue(output.contains("searchresultseven"));
+        assertTrue(output.contains("Gravitational Lenz"));
+        assertTrue(output.contains("Farming Incident"));
+        assertTrue(output.contains("Our Glorious 5 Year Plan"));
+        assertTrue(output.contains("3:54"));
+        assertFalse(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertFalse(output.contains("tlen good"));
+    }
 
 
+      public void testOutputAndTportAsHtml() throws Exception {
+
+        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
+        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
+
+        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
+        ResultsWriter writer = new TrackHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res,extraInfoMap);
+        pr.close();
+
+        String output = sw.toString();
+        //System.out.println("Html is" + output);
+        assertTrue(output.contains("hits=1"));
+        assertTrue(output.contains("offset=0"));
+        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
+        assertTrue(output.contains("searchresultseven"));
+        assertTrue(output.contains("Gravitational Lenz"));
+        assertTrue(output.contains("Farming Incident"));
+        assertTrue(output.contains("Our Glorious 5 Year Plan"));
+        assertTrue(output.contains("3:54"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertFalse(output.contains("tlen good"));
+    }
+
+    public void testOutputAndTportDurGoodMatchAsHtml() throws Exception {
+
+        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
+        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
+        extraInfoMap.put(RequestParameter.DURATION, "234000");
+
+
+
+        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
+        ResultsWriter writer = new TrackHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res,extraInfoMap);
+        pr.close();
+
+        String output = sw.toString();
+        //System.out.println("Html is" + output);
+        assertTrue(output.contains("hits=1"));
+        assertTrue(output.contains("offset=0"));
+        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
+        assertTrue(output.contains("searchresultseven"));
+        assertTrue(output.contains("Gravitational Lenz"));
+        assertTrue(output.contains("Farming Incident"));
+        assertTrue(output.contains("Our Glorious 5 Year Plan"));
+        assertTrue(output.contains("3:54"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertTrue(output.contains("tlen good"));
+    }
+
+    public void testOutputAndTportDurOkMatchAsHtml() throws Exception {
+
+        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
+        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
+        extraInfoMap.put(RequestParameter.DURATION, "240000");
+
+
+
+        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
+        ResultsWriter writer = new TrackHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res,extraInfoMap);
+        pr.close();
+
+        String output = sw.toString();
+        //System.out.println("Html is" + output);
+        assertTrue(output.contains("hits=1"));
+        assertTrue(output.contains("offset=0"));
+        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
+        assertTrue(output.contains("searchresultseven"));
+        assertTrue(output.contains("Gravitational Lenz"));
+        assertTrue(output.contains("Farming Incident"));
+        assertTrue(output.contains("Our Glorious 5 Year Plan"));
+        assertTrue(output.contains("3:54"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertTrue(output.contains("tlen ok"));
+    }
+
+    public void testOutputAndTportDurPoorMatchAsHtml() throws Exception {
+
+        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
+        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
+        extraInfoMap.put(RequestParameter.DURATION, "240");
+
+
+
+        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
+        ResultsWriter writer = new TrackHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res,extraInfoMap);
+        pr.close();
+
+        String output = sw.toString();
+        //System.out.println("Html is" + output);
+        assertTrue(output.contains("hits=1"));
+        assertTrue(output.contains("offset=0"));
+        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
+        assertTrue(output.contains("searchresultseven"));
+        assertTrue(output.contains("Gravitational Lenz"));
+        assertTrue(output.contains("Farming Incident"));
+        assertTrue(output.contains("Our Glorious 5 Year Plan"));
+        assertTrue(output.contains("3:54"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertTrue(output.contains("tlen bad"));
+    }
+
+    public void testOutputOldStyleLinkAsHtml() throws Exception {
+
+        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
+        extraInfoMap.put(RequestParameter.OLD_STYLE_LINK, "1");
+
+
+
+        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
+        ResultsWriter writer = new TrackHtmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res,extraInfoMap);
+        pr.close();
+
+        String output = sw.toString();
+        //System.out.println("Html is" + output);
+        assertTrue(output.contains("hits=1"));
+        assertTrue(output.contains("offset=0"));
+        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
+        assertTrue(output.contains("searchresultseven"));
+        assertTrue(output.contains("Gravitational Lenz"));
+        assertTrue(output.contains("Farming Incident"));
+        assertTrue(output.contains("Our Glorious 5 Year Plan"));
+        assertTrue(output.contains("3:54"));
+        assertTrue(output.contains("<a href=\"tag:7ca7782b-a602-448b-b108-bb881a7be2d6:1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\">"));
     }
 }
