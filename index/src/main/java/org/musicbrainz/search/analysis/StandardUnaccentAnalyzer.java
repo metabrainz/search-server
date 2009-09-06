@@ -31,7 +31,6 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
 
     public TokenStream tokenStream(String fieldName, Reader reader) {
         StandardTokenizer tokenStream = new StandardTokenizer(reader);
-        TokenStream result = new StandardFilter(tokenStream);
+        TokenStream result = new StandardFilterAndRemoveAllApostrophes(tokenStream);
         result = new AccentFilter(result);
         result = new LowerCaseFilter(result);
         return result;
@@ -62,7 +61,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
             streams.tokenStream = new StandardTokenizer(reader);
-            streams.filteredTokenStream = new StandardFilter(streams.tokenStream);
+            streams.filteredTokenStream = new StandardFilterAndRemoveAllApostrophes(streams.tokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowerCaseFilter(streams.filteredTokenStream);
         }
