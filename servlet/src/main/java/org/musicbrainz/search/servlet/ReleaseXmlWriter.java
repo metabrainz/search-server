@@ -109,7 +109,8 @@ public class ReleaseXmlWriter extends XmlWriter {
                 String[] labels = doc.getValues(ReleaseIndexField.LABEL);
                 String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
                 String[] barcodes = doc.getValues(ReleaseIndexField.BARCODE);
-
+                String[] formats = doc.getValues(ReleaseIndexField.FORMAT);
+                
                 for (int i = 0; i < countries.length; i++) {
                     Event event = of.createEvent();
                     if (!countries[i].equals("-")) {
@@ -133,6 +134,11 @@ public class ReleaseXmlWriter extends XmlWriter {
                     if (!barcodes[i].equals("-")) {
                         event.setBarcode(barcodes[i]);
                     }
+
+                    if (!formats[i].equals("-")) {
+                      event.setFormat(formats[i]);
+                    }
+
 
                     eventList.getEvent().add(event);
                 }

@@ -60,11 +60,13 @@ public class FindReleaseTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, "WRATHCD25");
         Index.addFieldToDocument(doc, ReleaseIndexField.DATE, "2005");
         Index.addFieldToDocument(doc, ReleaseIndexField.BARCODE, "-");
+        Index.addFieldToDocument(doc, ReleaseIndexField.FORMAT, "Vinyl");
+
 
         writer.addDocument(doc);
         writer.close();
         Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
-        searchers.put(ResourceType.RELEASE, new IndexSearcher(ramDir));
+        searchers.put(ResourceType.RELEASE, new IndexSearcher(ramDir,true));
         ss = new ReleaseSearch(new IndexSearcher(ramDir,true));
     }
 
@@ -91,6 +93,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
         assertEquals("official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
+
 
     }
 
@@ -117,6 +121,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
         assertEquals("official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
 
     }
 
@@ -143,6 +148,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
         assertEquals("official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
 
     }
 
@@ -169,7 +175,86 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
         assertEquals("official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
     }
+
+    public void testFindReleaseByFormat() throws Exception {
+        Results res = ss.search("format:Vinyl", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+        assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
+    }
+
+    public void testFindReleaseByCatNo() throws Exception {
+        Results res = ss.search("catno:WRATHCD25", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+        assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
+    }
+
+    public void testFindReleaseByDate() throws Exception {
+            Results res = ss.search("date:2005", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+            assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+            assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+            assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+            assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+            assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+            assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+            assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+            assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+            assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+            assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+            assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+            assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+            assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+            assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+            assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
+        }
 
     /**
      * Tests get same results as
@@ -186,7 +271,7 @@ public class FindReleaseTest extends TestCase {
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        //System.out.println("Xml is" + output);
+        System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
@@ -200,11 +285,12 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<track-list count=\"10\""));
         assertTrue(output.contains("date=\"2005\""));
         assertTrue(output.contains("country=\"GB\""));
+        assertTrue(output.contains("format=\"Vinyl\""));
 
-//      assertTrue(output.contains("label=\"Wrath Records\"")); #5225 this is what current service returns but invalid for MMD
         assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
-//      assertTrue(output.contains("barcode=\"-\""));       Code doesnt show if '-' but looks like should looking at main server
-        assertTrue(output.contains("catalog-number=\"WRATHCD25\""));   // #5225 but current service breaks MMD and returns as catno
+//TODO check if there is a good reason for this
+//assertTrue(output.contains("barcode=\"-\""));       Code doesnt show if '-' but looks like should looking at main server
+        assertTrue(output.contains("catalog-number=\"WRATHCD25\""));
 
     }
 }

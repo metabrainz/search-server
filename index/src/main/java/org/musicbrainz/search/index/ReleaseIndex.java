@@ -60,7 +60,7 @@ public class ReleaseIndex extends Index {
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<List<String>>> events = new HashMap<Integer, List<List<String>>>();
         PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT album, lower(isocode) as country, releasedate, label.name as label, catno, barcode " +
+                "SELECT album, lower(isocode) as country, releasedate, label.name as label, catno, barcode, format " +
                         "FROM release " +
                         "LEFT JOIN country ON release.country=country.id " +
                         "LEFT JOIN label ON release.label=label.id " +
@@ -83,6 +83,7 @@ public class ReleaseIndex extends Index {
             entry.add(rs.getString("label"));
             entry.add(rs.getString("catno"));
             entry.add(rs.getString("barcode"));
+            entry.add(rs.getString("format"));
             list.add(entry);
         }
         st.close();
@@ -185,6 +186,16 @@ public class ReleaseIndex extends Index {
                 }
                 Matcher m = stripBarcodeOfLeadingZeroes.matcher(str);
                 addFieldToDocument(doc, ReleaseIndexField.BARCODE, m.replaceFirst(""));
+
+                str = entry.get(5);
+                if (str == null || str.isEmpty()) {
+                    str = "-";
+                }
+                else {
+                    str = ReleaseFormat.getByDbId(Integer.parseInt(str)).getName();
+                }
+                addFieldToDocument(doc, ReleaseIndexField.FORMAT,str);
+
             }
         }
         return doc;

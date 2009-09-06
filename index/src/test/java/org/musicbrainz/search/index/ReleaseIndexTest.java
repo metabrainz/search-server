@@ -375,6 +375,127 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception
      */
+    public void testIndexReleaseNoFormat() throws Exception {
+
+        addReleaseTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
+        }
+        ir.close();
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexReleaseNoBarcode() throws Exception {
+
+        addReleaseTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
+        }
+        ir.close();
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexReleaseNoLabel() throws Exception {
+
+        addReleaseTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
+        }
+        ir.close();
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexReleaseNoCatalogNo() throws Exception {
+
+        addReleaseTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
+        }
+        ir.close();
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexReleaseNoCountry() throws Exception {
+
+        addReleaseTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
+        }
+        ir.close();
+
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexReleaseNoDate() throws Exception {
+
+        addReleaseTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.DATE.getName()).length);
+        }
+        ir.close();
+
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testIndexReleaseNoStatus() throws Exception {
 
         addReleaseThree();
@@ -484,7 +605,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("1970-01-01", doc.getField(ReleaseIndexField.DATE.getName()).stringValue());
             assertEquals("ECHO1", doc.getField(ReleaseIndexField.CATALOG_NO.getName()).stringValue());
             assertEquals("4AD", doc.getField(ReleaseIndexField.LABEL.getName()).stringValue());
-
+            assertEquals("Cassette",doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
 
         }
         ir.close();
@@ -516,8 +637,35 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("1970-01-01", doc.getField(ReleaseIndexField.DATE.getName()).stringValue());
             assertEquals("-", doc.getField(ReleaseIndexField.CATALOG_NO.getName()).stringValue());
             assertEquals("-", doc.getField(ReleaseIndexField.LABEL.getName()).stringValue());
+            assertEquals("-",doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
 
 
+        }
+        ir.close();
+
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexNoReleaseEvent() throws Exception {
+
+        addReleaseTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.DATE.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
+            assertEquals(0, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
         }
         ir.close();
 
