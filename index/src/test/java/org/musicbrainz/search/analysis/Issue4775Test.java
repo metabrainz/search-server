@@ -81,7 +81,7 @@ public class Issue4775Test extends TestCase {
 
         {
             Query q = new QueryParser("name", analyzer).parse("R.E.S");
-            assertEquals(0, searcher.search(q,10).totalHits);
+            assertEquals(1, searcher.search(q,10).totalHits);
         }
 
     }
