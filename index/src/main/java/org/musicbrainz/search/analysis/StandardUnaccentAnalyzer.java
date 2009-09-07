@@ -44,7 +44,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
 
     public TokenStream tokenStream(String fieldName, Reader reader) {
         StandardTokenizer tokenStream = new StandardTokenizer(reader);
-        TokenStream result = new StandardFilterAndRemoveAllApostrophes(tokenStream);
+        TokenStream result = new StandardFilter(tokenStream);
         result = new AccentFilter(result);
         result = new LowerCaseFilter(result);
         return result;
@@ -61,7 +61,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
             streams.tokenStream = new StandardTokenizer(reader);
-            streams.filteredTokenStream = new StandardFilterAndRemoveAllApostrophes(streams.tokenStream);
+            streams.filteredTokenStream = new StandardFilter(streams.tokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowerCaseFilter(streams.filteredTokenStream);
         }

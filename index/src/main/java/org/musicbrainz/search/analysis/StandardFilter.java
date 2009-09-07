@@ -16,11 +16,11 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
  * Whereas StandardFilter usually leaves apostrophes unless word ends with 's whereby the 's is removed.
  */
 
-public class StandardFilterAndRemoveAllApostrophes extends TokenFilter {
+public class StandardFilter extends TokenFilter {
     /**
      * Construct filtering <i>in</i>.
      */
-    public StandardFilterAndRemoveAllApostrophes(TokenStream in) {
+    public StandardFilter(TokenStream in) {
         super(in);
         termAtt = (TermAttribute) addAttribute(TermAttribute.class);
         typeAtt = (TypeAttribute) addAttribute(TypeAttribute.class);
