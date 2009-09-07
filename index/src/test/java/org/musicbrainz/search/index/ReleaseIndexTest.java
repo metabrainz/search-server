@@ -299,7 +299,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ReleaseIndexField.TYPE.getName()).length);
             assertEquals("single", doc.getField(ReleaseIndexField.TYPE.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseIndexField.STATUS.getName()).length);
-            assertEquals("official", doc.getField(ReleaseIndexField.STATUS.getName()).stringValue());
+            assertEquals("Official", doc.getField(ReleaseIndexField.STATUS.getName()).stringValue());
             assertEquals(0, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.SCRIPT.getName()).length);
 

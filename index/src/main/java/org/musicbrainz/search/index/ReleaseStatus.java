@@ -21,10 +21,10 @@ package org.musicbrainz.search.index;
 
 public enum ReleaseStatus {
 
-    OFFICIAL(1,100, "official"),
-    PROMOTION(2,101, "promotion"),
-    BOOTLEG(3,102, "bootleg"),
-    PSEUDO_RELEASE(4,103, "pseudo-release"),;
+    OFFICIAL(1,100, "Official"),
+    PROMOTION(2,101, "Promotion"),
+    BOOTLEG(3,102, "Bootleg"),
+    PSEUDO_RELEASE(4,103, "PseudoRelease"),;
 
     private Integer dbId;
     private Integer searchId;

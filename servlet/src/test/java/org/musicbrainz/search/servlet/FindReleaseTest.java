@@ -51,7 +51,7 @@ public class FindReleaseTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST, "Farming Incident");
         Index.addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, "10");
         Index.addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, "1");
-        Index.addFieldToDocument(doc, ReleaseIndexField.STATUS, "official");
+        Index.addFieldToDocument(doc, ReleaseIndexField.STATUS, "Official");
         Index.addFieldToDocument(doc, ReleaseIndexField.TYPE, "album");
 
         //Per Event
@@ -91,7 +91,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
 
@@ -119,7 +119,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
 
@@ -146,7 +146,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
 
@@ -173,7 +173,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
     }
@@ -199,7 +199,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
     }
@@ -225,7 +225,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
-        assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
         assertEquals("album", doc.get(ReleaseIndexField.TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
     }
@@ -251,7 +251,7 @@ public class FindReleaseTest extends TestCase {
             assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
             assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
             assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
-            assertEquals("official", doc.get(ReleaseIndexField.STATUS));
+            assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
             assertEquals("album", doc.get(ReleaseIndexField.TYPE));
             assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
         }

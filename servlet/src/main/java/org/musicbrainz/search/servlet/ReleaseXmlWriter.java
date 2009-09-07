@@ -70,7 +70,7 @@ public class ReleaseXmlWriter extends XmlWriter {
                 }
 
                 if (status != null) {
-                    release.getType().add(StringUtils.capitalize(status));
+                    release.getType().add(status);
                 }
             }
 

@@ -41,9 +41,9 @@ public class QueryManglerTest extends TestCase {
         assertEquals("name:fred OR type:single", qm.mangleQuery("name:fred OR type:2"));
         assertEquals("type:album", qm.mangleQuery("type:album"));
         assertEquals("type:audiobook", qm.mangleQuery("type:8"));
-        assertEquals("status:official", qm.mangleQuery("status:1"));
+        assertEquals("status:Official", qm.mangleQuery("status:1"));
         assertEquals("status:0", qm.mangleQuery("status:0"));
-        assertEquals("status:official OR status:promotion", qm.mangleQuery("status:1 OR status:2"));
+        assertEquals("status:Official OR status:PseudoRelease", qm.mangleQuery("status:1 OR status:4"));
         assertEquals("barcode:88847474", qm.mangleQuery("barcode:088847474"));
 
 

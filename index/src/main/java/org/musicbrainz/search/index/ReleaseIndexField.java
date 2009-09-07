@@ -22,7 +22,7 @@ public enum ReleaseIndexField implements IndexField {
     SCRIPT			("script",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     LANGUAGE		("language",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
     TYPE		    ("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    STATUS		    ("status",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    STATUS		    ("status",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
     FORMAT  		("format",		Field.Store.YES,	Field.Index.ANALYZED),
     ;
