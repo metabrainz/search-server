@@ -46,7 +46,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
 
     public TokenStream tokenStream(String fieldName, Reader reader) {
         StandardTokenizer tokenStream = new StandardTokenizer(reader);
-        TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("Katakana-Hiragana"));
+        TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         result = new StandardFilter(result);
         result = new AccentFilter(result);
         result = new LowerCaseFilter(result);
@@ -64,7 +64,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
             streams.tokenStream = new StandardTokenizer(reader);
-            streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("Katakana-Hiragana"));
+            streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
             streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowerCaseFilter(streams.filteredTokenStream);
@@ -74,5 +74,4 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         }
         return streams.filteredTokenStream;
     }
-
 }
