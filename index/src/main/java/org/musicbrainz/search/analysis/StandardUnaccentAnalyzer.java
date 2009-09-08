@@ -36,15 +36,18 @@ import org.apache.lucene.analysis.TokenStream;
 import java.io.IOException;
 import java.io.Reader;
 
+import com.ibm.icu.text.Transliterator;
+
 /**
- * Filters StandardTokenizer with StandardFilter, AccentFilter, LowerCaseFilter
+ * Filters StandardTokenizer with StandardFilter, ICUTransformFilter, AccentFilter, LowerCaseFilter
  * and no stop words.
  */
 public class StandardUnaccentAnalyzer extends Analyzer {
 
     public TokenStream tokenStream(String fieldName, Reader reader) {
         StandardTokenizer tokenStream = new StandardTokenizer(reader);
-        TokenStream result = new StandardFilter(tokenStream);
+        TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("Katakana-Hiragana"));
+        result = new StandardFilter(result);
         result = new AccentFilter(result);
         result = new LowerCaseFilter(result);
         return result;
@@ -61,7 +64,8 @@ public class StandardUnaccentAnalyzer extends Analyzer {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
             streams.tokenStream = new StandardTokenizer(reader);
-            streams.filteredTokenStream = new StandardFilter(streams.tokenStream);
+            streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("Katakana-Hiragana"));
+            streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowerCaseFilter(streams.filteredTokenStream);
         }

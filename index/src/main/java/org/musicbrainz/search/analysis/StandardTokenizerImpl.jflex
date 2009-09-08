@@ -113,8 +113,8 @@ ALPHA      = ({LETTER})+
 // From the JFlex manual: "the expression that matches everything of <a> not matched by <b> is !(!<a>|<b>)"
 LETTER     = !(![:letter:]|{CJ})
 
-// Chinese and Japanese (but NOT Korean, which is included in [:letter:])
-CJ         = [\u3100-\u312f\u3040-\u309F\u30A0-\u30FF\u31F0-\u31FF\u3300-\u337f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff65-\uff9f]
+// Chinese  (but NOT Korean or Japanese, which is included in [:letter:])
+CJ         = [\u3100-\u312f\u3300-\u337f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]
 
 WHITESPACE = \r\n | [ \r\n\t\f]
 
