@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.text.SimpleDateFormat;
 
@@ -62,6 +63,7 @@ public abstract class SearchServer {
     protected Date          serverLastUpdatedDate;
     protected String        htmlLastUpdated;
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz",Locale.US);
+    protected AtomicInteger    searchCount = new AtomicInteger();
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
@@ -167,8 +169,17 @@ public abstract class SearchServer {
         QueryParser parser = getParser();
         TopScoreDocCollector collector = TopScoreDocCollector.create(offset + limit, true);
         searcher.search(parser.parse(query), collector);
+        searchCount.incrementAndGet();
         return processResults(searcher, collector, offset);
+    }
 
+    /**
+     *
+     * @return count of searches done on this index since servlet started
+     */
+    public String getCount()
+    {
+        return searchCount.toString();
     }
 
     /**

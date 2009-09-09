@@ -40,9 +40,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.lang.management.ManagementFactory;
 
@@ -97,6 +94,7 @@ public class SearchServerServlet extends HttpServlet {
         SearchServerFactory.close();
     }
 
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -106,15 +104,28 @@ public class SearchServerServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.SERVLET_INIT_FAILED.getMsg(initMessage));
             return;
         }
-
-        // Extract parameters from request
+        //Ensure encoding set to UTF8
         request.setCharacterEncoding(CHARSET);
-        String query = request.getParameter(RequestParameter.QUERY.getName());
-        if (query == null || query.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_QUERY_PARAMETER.getMsg());
+
+        //If we receive Count Parameter then we just return a count imediately, the options are the same as for the type
+        //parameter
+        String count = request.getParameter(RequestParameter.COUNT.getName());
+        if(count!=null) {
+            ResourceType resourceType = ResourceType.getValue(count);
+            if(resourceType==null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
+                return;
+            }
+
+            SearchServer searchServerCount = SearchServerFactory.getSearchServer(resourceType);
+            response.setCharacterEncoding(CHARSET);
+            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+            response.getOutputStream().println(searchServerCount.getCount());
+            response.getOutputStream().close();
             return;
         }
 
+        //Resource Type always required
         String type = request.getParameter(RequestParameter.TYPE.getName());
         if (type == null || type.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_TYPE_PARAMETER.getMsg());
@@ -125,6 +136,14 @@ public class SearchServerServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
             return;
         }
+
+        String query = request.getParameter(RequestParameter.QUERY.getName());
+        if (query == null || query.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_QUERY_PARAMETER.getMsg());
+            return;
+        }
+
+
 
         String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
         if (responseFormat == null || responseFormat.isEmpty()) {

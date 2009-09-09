@@ -39,6 +39,7 @@ public enum RequestParameter {
     DURATION("dur"),
     RELATIONSHIPS("rel"),
     OLD_STYLE_LINK("mbt"),
+    COUNT("count"),
 
             ;
     private String name;
