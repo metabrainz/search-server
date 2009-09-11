@@ -332,4 +332,9 @@ public class ArtistIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
+
+
+    public void testGetTypeByDbId () throws Exception {        
+        assertEquals(ArtistType.PERSON,ArtistType.getByDbId(1));
+    }
 }

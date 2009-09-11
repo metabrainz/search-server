@@ -605,7 +605,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("1970-01-01", doc.getField(ReleaseIndexField.DATE.getName()).stringValue());
             assertEquals("ECHO1", doc.getField(ReleaseIndexField.CATALOG_NO.getName()).stringValue());
             assertEquals("4AD", doc.getField(ReleaseIndexField.LABEL.getName()).stringValue());
-            assertEquals("Cassette",doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
+            assertEquals("Vinyl",doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
 
         }
         ir.close();
@@ -669,5 +669,21 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         }
         ir.close();
 
+    }
+
+
+    public void testGetTypeByDbId () throws Exception {
+        assertNull(ReleaseType.getByDbId(0));
+        assertEquals(ReleaseType.ALBUM,ReleaseType.getByDbId(1));
+    }
+
+    public void testGetFormatByDbId () throws Exception {
+        assertNull(ReleaseFormat.getByDbId(0));
+        assertEquals(ReleaseFormat.CD,ReleaseFormat.getByDbId(1));
+    }
+
+    public void testGetStatusByDbId () throws Exception {
+        assertNull(ReleaseStatus.getByDbId(0));
+        assertEquals(ReleaseStatus.OFFICIAL,ReleaseStatus.getByDbId(100));
     }
 }

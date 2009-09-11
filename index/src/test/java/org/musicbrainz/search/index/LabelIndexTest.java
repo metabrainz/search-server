@@ -350,5 +350,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    public void testGetTypeByDbId () throws Exception {        
+        assertEquals(LabelType.DISTRIBUTOR,LabelType.getByDbId(1));
+    }
 
 }

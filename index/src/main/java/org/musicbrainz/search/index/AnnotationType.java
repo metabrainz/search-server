@@ -42,9 +42,13 @@ public enum AnnotationType {
         return name;
     }
 
-
     public static AnnotationType getByDbId(int id) {
-        return AnnotationType.values()[id];
+        for (AnnotationType type : AnnotationType.values()) {
+            if (type.getDbId() == id) {
+                return type;
+            }
+        }
+        return null;
     }
 
 
@@ -55,4 +59,6 @@ public enum AnnotationType {
     public static int getMaxDbId() {
         return TRACK.getDbId();
     }
+
+
 }

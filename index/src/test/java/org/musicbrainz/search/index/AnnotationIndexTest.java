@@ -80,7 +80,11 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         }
         ir.close();
+    }
 
+    public void testGetTypeByDbId () throws Exception {
+        assertNull(AnnotationType.getByDbId(0));
+        assertEquals(AnnotationType.ARTIST,AnnotationType.getByDbId(1));
     }
 }
 

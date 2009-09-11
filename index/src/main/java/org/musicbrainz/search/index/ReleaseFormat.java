@@ -20,23 +20,22 @@ package org.musicbrainz.search.index;
 
 
 public enum ReleaseFormat {
-    CD(1,"CD"),
-    DVD(2,"DVD"),
-    SACD(3,"SACD"),
-    DUALDISC(4,"DualDisc"),
-    LASERDISC(5,"LaserDisc"),
-    MINIDISC(6,"MiniDisc"),
-    VINYL(7,"Vinyl"),
-    CASSETTE(8,"Cassette"),
-    CARTRIDGE(9,"Cartridge"),
-    REEL_TO_REEL(10,"ReelToReel"),
-    DAT(11,"DAT"),
-    DIGITAL(12,"Digital"),
-    OTHER (13,"Other"),
-    WAX_CYLINDER (14,"WaxCylinder"),
-    PIANO_ROLL(15,"PianoRoll"),
-    DCC(16,"DCC"),
-    ;
+    CD(1, "CD"),
+    DVD(2, "DVD"),
+    SACD(3, "SACD"),
+    DUALDISC(4, "DualDisc"),
+    LASERDISC(5, "LaserDisc"),
+    MINIDISC(6, "MiniDisc"),
+    VINYL(7, "Vinyl"),
+    CASSETTE(8, "Cassette"),
+    CARTRIDGE(9, "Cartridge"),
+    REEL_TO_REEL(10, "ReelToReel"),
+    DAT(11, "DAT"),
+    DIGITAL(12, "Digital"),
+    OTHER(13, "Other"),
+    WAX_CYLINDER(14, "WaxCylinder"),
+    PIANO_ROLL(15, "PianoRoll"),
+    DCC(16, "DCC"),;
 
 
     private Integer dbId;
@@ -57,9 +56,13 @@ public enum ReleaseFormat {
 
 
     public static ReleaseFormat getByDbId(int id) {
-        return ReleaseFormat.values()[id];
+        for (ReleaseFormat format : ReleaseFormat.values()) {
+            if (format.getDbId() == id) {
+                return format;
+            }
+        }
+        return null;
     }
-
 
     public static int getMinDbId() {
         return CD.getDbId();

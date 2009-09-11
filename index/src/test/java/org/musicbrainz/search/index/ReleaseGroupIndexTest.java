@@ -220,4 +220,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    public void testGetTypeByDbId () throws Exception {        
+        assertEquals(ReleaseGroupType.ALBUM,ReleaseGroupType.getByDbId(1));
+    }
+
 }
