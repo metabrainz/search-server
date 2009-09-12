@@ -31,6 +31,9 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.CharFilter;
+import org.apache.lucene.analysis.MappingCharFilter;
+import org.apache.lucene.analysis.NormalizeCharMap;
 
 
 import java.io.IOException;
@@ -44,33 +47,45 @@ import com.ibm.icu.text.Transliterator;
  */
 public class StandardUnaccentAnalyzer extends Analyzer {
 
+    private NormalizeCharMap charConvertMap;
+
+    private void setCharConvertMap() {
+        charConvertMap = new NormalizeCharMap();
+        charConvertMap.add("&","and");
+    }
+
+    public StandardUnaccentAnalyzer() {
+        setCharConvertMap();
+    }
+
     public TokenStream tokenStream(String fieldName, Reader reader) {
-        StandardTokenizer tokenStream = new StandardTokenizer(reader);
+        CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap,reader);
+        StandardTokenizer tokenStream = new StandardTokenizer(mappingCharFilter);
         TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         result = new StandardFilter(result);
         result = new AccentFilter(result);
         result = new LowerCaseFilter(result);
         return result;
     }
-    
+
     private static final class SavedStreams {
         StandardTokenizer tokenStream;
         TokenStream filteredTokenStream;
     }
-    
+
     public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
         SavedStreams streams = (SavedStreams)getPreviousTokenStream();
         if (streams == null) {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
-            streams.tokenStream = new StandardTokenizer(reader);
+            streams.tokenStream = new StandardTokenizer(new MappingCharFilter(charConvertMap,reader));
             streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
             streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowerCaseFilter(streams.filteredTokenStream);
         }
         else {
-            streams.tokenStream.reset(reader);
+            streams.tokenStream.reset(new MappingCharFilter(charConvertMap,reader));
         }
         return streams.filteredTokenStream;
     }
