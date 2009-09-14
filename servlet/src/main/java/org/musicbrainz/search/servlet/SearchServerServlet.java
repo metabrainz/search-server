@@ -131,6 +131,12 @@ public class SearchServerServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_TYPE_PARAMETER.getMsg());
             return;
         }
+
+        //TEMPORARY FIX mb_server uses release_group instead of release-group
+        if (type.equals("release_group"))
+        {
+            type=ResourceType.RELEASE_GROUP.getName();
+        }
         ResourceType resourceType = ResourceType.getValue(type);
         if (resourceType == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
@@ -145,10 +151,10 @@ public class SearchServerServlet extends HttpServlet {
 
 
 
+        //Default to html if not provided
         String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
         if (responseFormat == null || responseFormat.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_FORMAT_PARAMETER.getMsg());
-            return;
+            responseFormat = RESPONSE_HTML;
         }
 
         Integer offset = DEFAULT_OFFSET;
