@@ -46,5 +46,11 @@ public abstract class Index {
 	public static void addFieldToDocument(Document doc, IndexField field, String value) {
 		doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
 	}
+	
+	public static void addNonEmptyFieldToDocument(Document doc, IndexField field, String value) {
+        if (value != null && !value.isEmpty()) {
+        	doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
+        }
+	}
 
 }

@@ -36,8 +36,6 @@ public class LabelIndex extends Index {
     public LabelIndex(Connection dbConnection) {
         super(dbConnection);
         stripLabelCodeOfLeadingZeroes = Pattern.compile("^0+");
-
-
     }
 
     public String getName() {
@@ -52,8 +50,13 @@ public class LabelIndex extends Index {
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+    	// Get labels aliases
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = dbConnection.prepareStatement("SELECT ref as label, name as alias FROM labelalias WHERE ref BETWEEN ? AND ?");
+        PreparedStatement st = dbConnection.prepareStatement(
+        		"SELECT label_alias.label as label, n.name as alias " +
+        		"FROM label_alias " +
+        		" JOIN label_name n ON (label_alias.name = n.id) " +
+        		"WHERE label BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -70,15 +73,24 @@ public class LabelIndex extends Index {
             list.add(rs.getString("alias"));
         }
         st.close();
+        
+        // Get labels
         st = dbConnection.prepareStatement(
-                "SELECT label.id, gid, label.name, sortname, type, begindate, enddate, resolution, labelcode, lower(isocode) as country " +
-                        "FROM label LEFT JOIN country ON label.country=country.id WHERE label.id BETWEEN ? AND ?");
+                "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
+                "	label_type.name as type, begindate_year as begindate, enddate_year as enddate, " +
+                "	comment, labelcode, lower(isocode) as country " +
+                "FROM label " +
+                " LEFT JOIN label_name n0 ON label.name = n0.id " +
+                " LEFT JOIN label_name n1 ON label.sortname = n1.id " +
+                " LEFT JOIN label_type ON label.type = label_type.id " +
+                " LEFT JOIN country ON label.country = country.id " +
+                "WHERE label.id BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
+        
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, aliases));
-
         }
         st.close();
     }
@@ -87,11 +99,13 @@ public class LabelIndex extends Index {
 
         Document doc = new Document();
         int labelId = rs.getInt("id");
-        addFieldToDocument(doc, LabelIndexField.LABEL_ID, rs.getString("gid"));
+        addFieldToDocument(doc, LabelIndexField.LABEL_GID, rs.getString("gid"));
         addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
         addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
-        addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.getByDbId(rs.getInt("type")).getName());
-
+        addNonEmptyFieldToDocument(doc, LabelIndexField.TYPE, rs.getString("type"));
+        addNonEmptyFieldToDocument(doc, LabelIndexField.COMMENT, rs.getString("comment"));
+        addNonEmptyFieldToDocument(doc, LabelIndexField.COUNTRY, rs.getString("country"));
+        
         String begin = rs.getString("begindate");
         if (begin != null && !begin.isEmpty()) {
             addFieldToDocument(doc, LabelIndexField.BEGIN, normalizeDate(begin));
@@ -102,20 +116,10 @@ public class LabelIndex extends Index {
             addFieldToDocument(doc, LabelIndexField.END, normalizeDate(end));
         }
 
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.COMMENT, comment);
-        }
-
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
             Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
             addFieldToDocument(doc, LabelIndexField.CODE, m.replaceFirst(""));
-        }
-
-        String country = rs.getString("country");
-        if (country != null && !country.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.COUNTRY, country);
         }
 
         if (aliases.containsKey(labelId)) {

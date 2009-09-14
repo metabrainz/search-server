@@ -7,6 +7,7 @@ import org.apache.lucene.document.Field;
  */
 public enum LabelIndexField implements IndexField {
 
+    LABEL_GID	("lagid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     LABEL_ID	("laid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED),
     COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),
