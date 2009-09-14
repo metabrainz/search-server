@@ -54,7 +54,9 @@ public class IndexBuilder
 	// Lucene parameters
 	private static final int MAX_BUFFERED_DOCS = 10000;
 	private static final int MERGE_FACTOR = 3000;
-	
+
+	// PostgreSQL schema that holds MB data
+	protected static final String DB_SCHEMA = "musicbrainz";
 	
     public static void main(String[] args) throws SQLException, IOException
     {
@@ -92,6 +94,7 @@ public class IndexBuilder
 		props.setProperty("user", options.getMainDatabaseUser());
 		props.setProperty("password", options.getMainDatabasePassword());
 		Connection mainDbConn = DriverManager.getConnection(url, props);
+		prepareDbConnection(mainDbConn);
 		
 		// Connect to raw database
 		url = "jdbc:postgresql://" + options.getRawDatabaseHost() + "/" + options.getRawDatabaseName();
@@ -99,6 +102,7 @@ public class IndexBuilder
 		props.setProperty("user", options.getRawDatabaseUser());
 		props.setProperty("password", options.getRawDatabasePassword());
 		Connection rawDbConn = DriverManager.getConnection(url, props);
+		prepareDbConnection(rawDbConn);
 		
 		StopWatch clock = new StopWatch();
 		
@@ -193,6 +197,18 @@ public class IndexBuilder
         doc.add(new Field(MetaIndexField.META.getName(),NumericUtils.longToPrefixCoded(new java.util.Date().getTime()),
             MetaIndexField.META.getStore(), MetaIndexField.META.getIndex()));
         indexWriter.addDocument(doc);
+    }
+    
+    /**
+     * Prepare a database connection, and set its default Postgres schema
+     * 
+     * @param connection
+     * @throws SQLException 
+     */
+    private static void prepareDbConnection(Connection connection) throws SQLException
+    {
+		Statement st = connection.createStatement();
+		st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
     }
     
 }
