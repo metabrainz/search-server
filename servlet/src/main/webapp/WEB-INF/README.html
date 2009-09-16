@@ -1,0 +1,139 @@
+<html>
+
+<body>
+<h2>Search Server Build and Deploy Instructions</h2>
+<p>
+This server, can be run  on linux/osx/windows, instructions assume linux, and that you have created a new user <i>search</i> to run it.
+You also need to have the postgres database setup correctly and populated, see <a href="http://musicbrainz.org/doc/Database_Setup">Database Setup</a>, the search server only depends on the database itself, mb_server itself
+is not required. There are seperate sections for the building the indexes and search indexes, but assume that you will do both on the same computer to keep the
+    instructions simpler.
+</p>
+
+
+<h2>Build Server Code</h2>
+<ol>
+<li>
+<p>Ensure default Java installation is at least 1.6, and that you have the JDK installed not just the JRE
+</p>
+<code>$java -version
+</code>
+<p>
+if not can get official version from <a href="http://java.sun.com/javase/downloads">http://java.sun.com/javase/downloads</a>
+and then Install
+</p>
+<p>Setup Java Home directory in your profile </p>
+<code>i.e export JAVA_HOME="/usr/bin/java"</code>
+</li>
+<li>
+<p>To build you need to install <a href="http://maven.apache.org/download.html">Maven</a> if you havent already got it.</p>
+</li>
+<li><p>Download <a href="http://bugs.musicbrainz.org/browser/search_server/branches/lucene-java">Source Code</a> into /home/search/search_server</p>
+</li>
+<li>
+<p>Build Code</p>
+<code>$ cd /home/search/searchserver; mvn package; cd index; mvn assembly:assembly</code>
+</li>
+<li><p>Copy the Index Builder Server Code</p>
+<code>cp /home/search/searchserver/index/target/index-1.0-SNAPSHOT-jar-with-dependencies.jar /home/search</code>
+</li>
+<li><p>Copy the Search Server Code, renaming to ROOT.jar</p>
+<code>cp /home/search/searchserver/servlet/target/searchserver.war /home/search/ROOT.jar</code>
+</li>
+</ol>
+
+<h2>Build Indexes</h2>
+<ol>
+<li>
+<p>If you didn't build the code make sure that default Java installation is at least 1.6 for running as well,if not install as per instructions above
+</p>
+</li>
+<li>
+<p>Download freedb Dump file from <a href="http://www.freedb.org/en/download__database.10.html">http://www.freedb.org/en/download__database.10.html</a>
+    and put it into /home/search</p>
+</li>
+<li>
+<p>Build Search Indexes. This will take at least few hours </p>
+<p>The following command build all the search indexes in /home/search/indexdata from the database and the latest freedbdump file , but this assumes that your
+    database connection details match the default which is unlikely, so use -? to view the options.</p>
+<code>cd /home/search; java -jar index-1.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata --freedb-dump /home/search/freedb-complete-20090801.tar.bz2</code>
+</li>
+</ol>
+
+
+<h2>Deploy and run Search Server</h2>
+<ol>
+<li>
+<p>If you didn't build the code make sure that default Java installation is at least 1.6 for running as well,if not install as per instructions above
+</p>
+</li>
+<li>
+<p>Download <a href="http://tomcat.apache.org/download-60.cgi">Tomcat 6.0</a></p>
+</li>
+<li>Just unzip to install
+<code>$ cd /home/search; unzip apache-tomcat-6.0.20.zip
+</code>
+</li>
+<li>
+<p>
+Now configure Tomcat with the max heap memory you want to use for Search Server, this is very important because by default it will only use a maximum of 32MB, adding
+the following to your profile sets up Tomcat with 512MB. Then configure Tomcat to run with file encoding UTF-8, otherwise it will use the default which will vary
+from platform to platform
+</p>
+<code>export JAVA_OPTS="-Xms512M -Xmx512M -Dfile.encoding=UTF-8"</code>
+</li>
+<li><p>Remove Default Applications</p>
+<code>rm /home/search/apache-tomcat-6.0.20/webapps/ROOT.war</code>
+</li>
+<li><p>Replace with our application, renaming it so it uses the Default Context</p>
+<code>cp /home/search/ROOT.war /home/search/apache-tomcat-6.0.20/webapps/ROOT.war</code>
+<li>
+<p>Unjar so we modify configuration to suit environment</p>
+<code>cd /home/search/apache-tomcat-6.0.20/webapps/; jar -xvf ROOT.war .</code>
+</li>
+<li><p>Edit /home/search/apache-tomcat-6.0.20/webapps/ROOT/WEB-INF/web.xml so that the index dir is correct</p>
+<code>param-value>/home/search/indexdata</param-value</code>
+</li>
+<li>
+<p>
+Specify that Tomcat expects URIEncodings in UTF-8 format so they are decoded correctly
+</p>
+    <code>vi /opt/apache-tomcat-6.0.20/conf/server.xml</code>
+    <p>Add the URIEncoding parameter to this line</p>
+    <code>Connector port="8080" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443" </code>
+    <p>so it nows looks like</p>
+    <code>Connector port="8080" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443" URIEncoding="UTF-8"</code>
+</li>
+<li><p>Start Tomcat</p>
+<code>/home/search/apache-tomcat-6.0.20/bin/startup.sh</code>
+<p>You can now lookup search for resources with a url like</p>
+<code>http://localhost:8080/ws/1/artist/?query=%22fred%22&fmt=html</code>
+<p></p>or the alternative</p>
+<code>http://localhost:8080/?type=artist&query=%22fred%22&fmt=html</code>
+<p></p>for html</p>
+<p>Or</p>
+<code>http://localhost:8080/ws/1/artist/?query=%22fred%22&fmt=xml</code>
+<p>or the alternative</p>
+<code>http://localhost:8080/?type=artist&query=%22fred%22&fmt=xml</code>
+<p>for xml.
+<p><b>TODO the xml output is only a fragment in order to be
+    compatible with mb_server which adds a header and footer. There is a build time flag that can be set to enable proper xml but that makes it incompatible with mb_server, perhaps
+    should make this a runtime parameter to servlet instead</b>
+</p>
+</li>
+<li>
+<p>
+<b>TODO:At this point the confg is using port 8080, to use port 80 instead there are a couple of options.</b>
+
+    <p>We can easily configure Tomcat to use Port 80.</p>
+    <code>vi /opt/apache-tomcat-6.0.20/conf/server.xml</code>
+    <p>Modify 8080 to 80 in the following section</p>
+    <code>Connector port="8080" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443"</code>
+
+<p>But in UNIX then you either have  to run tomcat as root (and set roots profile with JAVA_OPTS,JAVAH_HOME ectera) , or compile and use the jvcs program that
+comes with Tomcat that you run as root, but its acts as search user. Alternatively you can do the transaltion in Linuz itself using somthing like iptables,
+this is one for the System Administrator.</b>
+</p>
+</li>
+</ol>
+</body>
+</html>
