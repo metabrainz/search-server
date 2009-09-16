@@ -24,12 +24,11 @@ public class LabelIndexTest extends AbstractIndexTest {
         LabelIndex li = new LabelIndex(createConnection());
         li.indexData(writer, 0, Integer.MAX_VALUE);
         writer.close();
-
     }
 
 
     /**
-     * Some fields populated has alias,but no country
+     * Some fields populated has alias, but no country
      *
      * @throws Exception
      */
@@ -39,10 +38,15 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO labelalias(id, ref, name, timesused, modpending, lastused)" +
-                " VALUES (1327, 563, '4AD US', 0, 0, '1970-01-01 01:00:00')");
-        stmt.addBatch("INSERT INTO label(id,name, gid, modpending, labelcode,sortname,country, page, resolution, begindate,enddate,type)" +
-                "    VALUES (563, '4AD', 'a539bb1e-f2e1-4b45-9db8-8053841e7503',0,5807,'4AD',null,2260992,null, '1979-00-00', null,4)");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+		stmt.addBatch("INSERT INTO label_type (id, name) VALUES (4, 'Original Production')");
+		
+        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
+					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, null, null, " +
+					"	1979, null, null, null, null, null)");
+        stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (1, 2)");
 
         stmt.executeBatch();
         stmt.close();
@@ -51,7 +55,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
 
     /**
-     * Most field populated, but no alias
+     * Most fields populated, but no alias
      *
      * @throws Exception
      */
@@ -60,11 +64,16 @@ public class LabelIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO country(id, isocode, name)" +
-                " VALUES (38, 'CA','Canada')");
-        stmt.addBatch("INSERT INTO label(id,name, gid, modpending, labelcode,sortname,country, page, resolution, begindate,enddate,type)" +
-                "    VALUES (35269, 'MusicBrainz Data Testing Label', 'd8caa692-704d-412b-a410-4fbcf5b9c796',0,0099998,'Data Testing Label, MusicBrainz'," +
-                "38,170559541,'DO NOT EDIT THIS LABEL', '2009-01-01', '2009-04-00',7)");
+		
+		stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (38, 'CA','Canada')");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
+		stmt.addBatch("INSERT INTO label_type (id, name) VALUES (7, 'Publisher')");
+		
+        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
+					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+					"VALUES (2, 'd8caa692-704d-412b-a410-4fbcf5b9c796', 3, 4, 1, 0099998, 38, 'DO NOT EDIT THIS LABEL', " +
+					"	2009, 1, 1, 2009, 4, null)");
 
         stmt.executeBatch();
         stmt.close();
@@ -81,13 +90,16 @@ public class LabelIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO country(id, isocode, name)" +
-                " VALUES (1, 'AF','Afghanistan')");
-
-        stmt.addBatch("INSERT INTO labelalias(id, ref, name, timesused, modpending, lastused)" +
-                " VALUES (1327, 563, '4AD US', 0, 0, '1970-01-01 01:00:00')");
-        stmt.addBatch("INSERT INTO label(id,name, gid, modpending, labelcode,sortname,country, page, resolution, begindate,enddate,type)" +
-                "    VALUES (563, '4AD', 'a539bb1e-f2e1-4b45-9db8-8053841e7503',0,null,'4AD',1,2260992,null, null, null,null)");
+		
+		stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (1, 'AF','Afghanistan')");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+		
+        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
+					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, null, 1, null, " +
+					"	null, null, null, null, null, null)");
+        stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (3, 2)");
 
         stmt.executeBatch();
         stmt.close();
@@ -324,34 +336,30 @@ public class LabelIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
-            assertEquals("orig. prod.", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
+            assertEquals("Original Production", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
 
-    /**
-     * Checks record with type = null is set to unknown
-     *
-     * @throws Exception
-     */
-    public void testIndexLabelWithNoType() throws Exception {
-
-        addLabelThree();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
-            assertEquals("unknown", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
-        }
-        ir.close();
-    }
-
-    public void testGetTypeByDbId () throws Exception {        
-        assertEquals(LabelType.DISTRIBUTOR,LabelType.getByDbId(1));
-    }
+//    /**
+//     * Checks record with type = null is set to unknown
+//     *
+//     * @throws Exception
+//     */
+//    public void testIndexLabelWithNoType() throws Exception {
+//
+//        addLabelThree();
+//        RAMDirectory ramDir = new RAMDirectory();
+//        createIndex(ramDir);
+//
+//        IndexReader ir = IndexReader.open(ramDir, true);
+//        assertEquals(1, ir.numDocs());
+//        {
+//            Document doc = ir.document(0);
+//            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
+//            assertEquals("unknown", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
+//        }
+//        ir.close();
+//    }
 
 }

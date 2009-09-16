@@ -77,7 +77,8 @@ public class LabelIndex extends Index {
         // Get labels
         st = dbConnection.prepareStatement(
                 "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
-                "	label_type.name as type, begindate_year as begindate, enddate_year as enddate, " +
+                "	label_type.name as type, begindate_year, begindate_month, begindate_day, " +
+                "	enddate_year, enddate_month, enddate_day, " +
                 "	comment, labelcode, lower(isocode) as country " +
                 "FROM label " +
                 " LEFT JOIN label_name n0 ON label.name = n0.id " +
@@ -106,16 +107,12 @@ public class LabelIndex extends Index {
         addNonEmptyFieldToDocument(doc, LabelIndexField.COMMENT, rs.getString("comment"));
         addNonEmptyFieldToDocument(doc, LabelIndexField.COUNTRY, rs.getString("country"));
         
-        String begin = rs.getString("begindate");
-        if (begin != null && !begin.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.BEGIN, normalizeDate(begin));
-        }
+        addNonEmptyFieldToDocument(doc, LabelIndexField.BEGIN, 
+        	Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
 
-        String end = rs.getString("enddate");
-        if (end != null && !end.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.END, normalizeDate(end));
-        }
-
+        addNonEmptyFieldToDocument(doc, LabelIndexField.END, 
+            Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
+        
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
             Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
