@@ -1,0 +1,7 @@
+Lucene Search Server Authors
+----------------------------
+
+The original search server based on PyLucene was written by Robert Kaye.
+
+This java based version of the search server was started by Lukas Lalinsky and
+then finished by Aurélien Mino and Paul Taylor.
