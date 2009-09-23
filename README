@@ -52,10 +52,11 @@ Check out and build server code
 
 If you haven't already done so, check out the server source code using Subversion via:
 
-    svn co http://svn.musicbrainz.org/search_server/trunk
+    svn co http://svn.musicbrainz.org/search_server/trunk search_server
 
 Then build the indexer and the search application with this command:
 
+    cd search_server
     mvn package
 
 This step will download any required java components and then compile and test
@@ -65,8 +66,12 @@ the whole server.
 Copy the Index Builder Server Code
 ----------------------------------
 
-The search server home will be at: /home/search and the indexes will live in /home/search/indexdata .
-Copy the index builder jar into /home/search:
+By default the search server home will be at: /home/search and the indexes will live in /home/search/indexdata . These
+locations can be overridden by editing ... /webapps/ROOT/WEB-INF/web.xml so that the index dir is correct:
+
+    <param-value>/home/search/indexdata</param-value>
+
+But, it is suggested that you use the default location. Then, copy the index builder jar into /home/search:
 
     cp /home/search/searchserver/index/target/index-1.0-SNAPSHOT-jar-with-dependencies.jar /home/search
 
@@ -80,11 +85,6 @@ On Ubuntu this will work:
     rm -rf ROOT/* 
     cd ROOT
     jar -xf <your lucene java src dir>/servlet/target/searchserver.war
-
-If you are not using the default index directory, edit .../webapps/ROOT/WEB-INF/web.xml so that the 
-index dir is correct:
-
-    <param-value>/home/search/indexdata</param-value>
 
 Now you can start tomcat again.
 
@@ -100,16 +100,27 @@ This will build all of the indexes (but freedb) using the all of the defaults fo
 to the database servers. If your database isn't on the same server and named according to the 
 defaults you will need to give the command line more options. To see the options execute this:
 
-    java -jar index-1.0-SNAPSHOT-jar-with-dependencies.jar -help
+    java -jar index-1.0-SNAPSHOT-jar-with-dependencies.jar --help
 
-To also build the freedb indexes, download the latest freedb dump from
+To also build the freedb indexes, download the latest freedb dump (in tar.bz2 format) from:
 
     http://www.freedb.org/en/download__database.10.html
 
-and place the downloaded file into /home/search. Then you can add the following command line arguments
+The file you download should be a complete dump and should look like this:
+
+    freedb-complete-20090901.tar.bz2 
+
+Place the downloaded file into /home/search. Then you can add the following command line arguments
 in order to automatically build the freedb index as well:
 
-    --freedb-dump /home/search/<freedb dump file>
+    --freedb-dump /home/search/<freedb tar.bz2 file>
+
+It is worth noting that if you want to build _just_ the freedb_index, you can specify
+
+      --indexes ""
+
+but if you do that you'll still need to specify all the database connection details, even though they 
+won't be used (this might be a bug -- we're looking into this).
 
 Building the search indexes will take some time -- even on a fast machine it will still take an hour.
 Once indexes are built, ensure that your tomcat instance has the permissions to access your data. 
@@ -123,7 +134,7 @@ Tuning Tomcat
 
 In test deployments we've found that Tomcat causes trouble when the Java security manager
 is enabled. Since its common to dedicate a whole server as a search server, it should be
-safe to turn this off. For Ubuntu, set TOMCAT6_SECURITY in /etc/init.d/tomcat6 to no:
+safe to turn this off. For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat6 to no:
 
     # Use the Java security manager? (yes/no)
     TOMCAT6_SECURITY=no
@@ -138,7 +149,7 @@ will vary from platform to platform. To accomplish both, set the JAVA_OPTS like 
 
     export JAVA_OPTS="-Xms512M -Xmx512M -Dfile.encoding=UTF-8"
 
-In Ubuntu, you can change JAVA_OPTS in /etc/init.d/tomcat6 -- you do not need to set an environment var.
+In Ubuntu, you can change JAVA_OPTS in /etc/default/tomcat6 -- you do not need to set an environment var.
 
 Next, specify that Tomcat expects URIEncodings in UTF-8 format so they are decoded correctly.
 In server.xml (in ubuntu thats in /etc/tomcat6/server.xml) add the URIEncoding parameter to this 
