@@ -288,7 +288,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("Farming Incident"));
         assertTrue(output.contains("Our Glorious 5 Year Plan"));
         assertTrue(output.contains("3:54"));
-        assertFalse(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertFalse(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
         assertFalse(output.contains("tlen good"));
     }
 
@@ -315,7 +315,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("Farming Incident"));
         assertTrue(output.contains("Our Glorious 5 Year Plan"));
         assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
         assertFalse(output.contains("tlen good"));
     }
 
@@ -344,7 +344,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("Farming Incident"));
         assertTrue(output.contains("Our Glorious 5 Year Plan"));
         assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
         assertTrue(output.contains("tlen good"));
     }
 
@@ -373,7 +373,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("Farming Incident"));
         assertTrue(output.contains("Our Glorious 5 Year Plan"));
         assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
         assertTrue(output.contains("tlen ok"));
     }
 
@@ -402,7 +402,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("Farming Incident"));
         assertTrue(output.contains("Our Glorious 5 Year Plan"));
         assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=7ca7782b-a602-448b-b108-bb881a"));
+        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
         assertTrue(output.contains("tlen bad"));
     }
 
