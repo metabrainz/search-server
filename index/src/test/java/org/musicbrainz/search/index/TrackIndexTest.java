@@ -89,10 +89,10 @@ public class TrackIndexTest extends AbstractIndexTest {
                 "            id, album, country, releasedate, modpending, label, catno, barcode,format)" +
                 "    VALUES (1, 491240, 221, '1970-01-01', null, null,null,null,null)");
 
-        stmt.addBatch("INSERT INTO labelalias(id, ref, name, timesused, modpending, lastused)" +
-                " VALUES (1327, 563, '4AD US', 0, 0, '1970-01-01')");
-        stmt.addBatch("INSERT INTO label(id,name, gid, modpending, labelcode,sortname,country, page, resolution, begindate,enddate,type)" +
-                "    VALUES (563, '4AD', 'a539bb1e-f2e1-4b45-9db8-8053841e7503',0,null,'4AD',1,2260992,null, null, null,null)");
+        stmt.addBatch("INSERT INTO label_alias(id, label, name, editpending)" +
+                        " VALUES (1327, 563, 1, 0)");
+        stmt.addBatch("INSERT INTO label(id,name, gid, editpending, labelcode,sortname,country, begindate_year,enddate_year,type)" +
+                        "    VALUES (563, 1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503',0,1,1,1,null, null,null)");
         stmt.executeBatch();
         stmt.close();
         conn.close();
@@ -158,10 +158,10 @@ public class TrackIndexTest extends AbstractIndexTest {
                 "            id, album, country, releasedate, modpending, label, catno, barcode,format)" +
                 "    VALUES (1, 491240, 221, '1970-01-01', null, null,null,null,null)");
 
-        stmt.addBatch("INSERT INTO labelalias(id, ref, name, timesused, modpending, lastused)" +
-                " VALUES (1327, 563, '4AD US', 0, 0, '1970-01-01')");
-        stmt.addBatch("INSERT INTO label(id,name, gid, modpending, labelcode,sortname,country, page, resolution, begindate,enddate,type)" +
-                "    VALUES (563, '4AD', 'a539bb1e-f2e1-4b45-9db8-8053841e7503',0,null,'4AD',1,2260992,null, null, null,null)");
+        stmt.addBatch("INSERT INTO label_alias(id, label, name, editpending)" +
+                        " VALUES (1327, 563, 1, 0)");
+        stmt.addBatch("INSERT INTO label(id,name, gid, editpending, labelcode,sortname,country, begindate_year,enddate_year,type)" +
+                        "    VALUES (563, 1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503',0,1,1,1,null, null,null)");
         stmt.executeBatch();
         stmt.close();
         conn.close();
