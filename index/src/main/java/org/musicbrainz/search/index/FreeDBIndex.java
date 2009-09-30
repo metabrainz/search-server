@@ -42,6 +42,9 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 public class FreeDBIndex {
 
@@ -58,7 +61,12 @@ public class FreeDBIndex {
 		this.dumpFile = dumpFile;
 	}
 
-	public String getName() {
+    public Analyzer getAnalyzer()
+    {
+        return new FreeDBAnalyzer();
+    }
+    
+    public String getName() {
 		return "freedb";
 	}
 	

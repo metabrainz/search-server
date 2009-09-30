@@ -24,6 +24,9 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.sql.*;
 
@@ -37,7 +40,12 @@ public class ReleaseGroupIndex extends Index {
 		return "releasegroup";
 	}
 
-	public int getMaxId() throws SQLException {
+    public Analyzer getAnalyzer()
+    {
+        return new ReleaseGroupAnalyzer();
+    }
+
+    public int getMaxId() throws SQLException {
 		Statement st = dbConnection.createStatement();
 		ResultSet rs = st.executeQuery("SELECT MAX(id) FROM release_group");
 		rs.next();

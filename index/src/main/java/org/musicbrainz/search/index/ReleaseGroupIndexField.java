@@ -30,7 +30,7 @@ public enum ReleaseGroupIndexField implements IndexField {
 	ARTIST			("artist",			Field.Store.YES,	Field.Index.ANALYZED),
 	RELEASEGROUP_ID	("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
 	RELEASEGROUP	("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED),
-	TYPE			("type",			Field.Store.YES,	Field.Index.ANALYZED),
+	TYPE			("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
 	RELEASES		("releases",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),;
 

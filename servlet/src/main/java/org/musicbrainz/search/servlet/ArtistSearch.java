@@ -2,6 +2,8 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.ReleaseAnalyzer;
+import org.musicbrainz.search.index.ArtistAnalyzer;
 
 import java.util.ArrayList;
 
@@ -16,7 +18,9 @@ public class ArtistSearch extends SearchServer {
         defaultFields.add(ArtistIndexField.ARTIST.getName());
         defaultFields.add(ArtistIndexField.ALIAS.getName());
         defaultFields.add(ArtistIndexField.SORTNAME.getName());
+        analyzer = new ArtistAnalyzer();
     }
+
 
     public ArtistSearch(String indexDir) throws Exception {
 

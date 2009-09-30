@@ -2,6 +2,8 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.index.CDStubIndexField;
+import org.musicbrainz.search.index.ReleaseAnalyzer;
+import org.musicbrainz.search.index.CDStubAnalyzer;
 
 import java.util.ArrayList;
 
@@ -15,7 +17,7 @@ public class CDStubSearch extends SearchServer {
         defaultFields = new ArrayList<String>();
         defaultFields.add(CDStubIndexField.ARTIST.getName());
         defaultFields.add(CDStubIndexField.TITLE.getName());
-
+        analyzer = new CDStubAnalyzer();
     }
 
     public CDStubSearch(String indexDir) throws Exception {

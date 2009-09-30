@@ -4,6 +4,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.ReleaseAnalyzer;
+import org.musicbrainz.search.index.LabelAnalyzer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ public class LabelSearch extends SearchServer {
         defaultFields.add(LabelIndexField.LABEL.getName());
         defaultFields.add(LabelIndexField.ALIAS.getName());
         defaultFields.add(LabelIndexField.SORTNAME.getName());
+        analyzer = new LabelAnalyzer();
 
     }
 

@@ -26,6 +26,11 @@ import java.util.regex.Matcher;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 
 import java.sql.*;
 
@@ -40,6 +45,11 @@ public class LabelIndex extends Index {
 
     public String getName() {
         return "label";
+    }
+
+    public Analyzer getAnalyzer()
+    {
+        return new LabelAnalyzer();
     }
 
     public int getMaxId() throws SQLException {

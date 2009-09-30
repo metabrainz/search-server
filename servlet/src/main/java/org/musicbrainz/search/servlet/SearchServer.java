@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -54,7 +55,7 @@ import java.text.SimpleDateFormat;
 
 public abstract class SearchServer {
 
-    private Analyzer analyzer;
+    protected PerFieldAnalyzerWrapper analyzer;
     protected XmlWriter xmlWriter;
     protected HtmlWriter htmlWriter;
     protected QueryMangler queryMangler;
@@ -69,7 +70,7 @@ public abstract class SearchServer {
 
 
     protected SearchServer() {
-        analyzer = new StandardUnaccentAnalyzer();
+
     }
 
     protected IndexSearcher createIndexSearcherFromFileIndex(String indexDir,String indexName) throws Exception

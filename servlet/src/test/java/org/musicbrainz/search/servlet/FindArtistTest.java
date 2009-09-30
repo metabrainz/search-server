@@ -4,11 +4,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
 import org.musicbrainz.search.index.Index;
+import org.musicbrainz.search.index.ArtistAnalyzer;
 import org.musicbrainz.search.servlet.ArtistHtmlWriter;
 import org.musicbrainz.search.servlet.ArtistSearch;
 import org.musicbrainz.search.servlet.ArtistXmlWriter;
@@ -40,7 +42,8 @@ public class FindArtistTest extends TestCase {
         SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        PerFieldAnalyzerWrapper analyzer = new ArtistAnalyzer();
+        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         //General Purpose Artist
         {

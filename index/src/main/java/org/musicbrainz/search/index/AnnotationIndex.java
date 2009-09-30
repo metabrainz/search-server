@@ -9,6 +9,9 @@ import java.sql.Statement;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 public class AnnotationIndex extends Index {
 
@@ -20,7 +23,12 @@ public class AnnotationIndex extends Index {
 		return "annotation";
 	}
 
-	public int getMaxId() throws SQLException {
+    public Analyzer getAnalyzer()
+    {
+        return new AnnotationAnalyzer();
+    }
+    
+    public int getMaxId() throws SQLException {
 		Statement st = this.dbConnection.createStatement();
 		ResultSet rs = st.executeQuery("SELECT MAX(id) FROM annotation");
 		rs.next();

@@ -34,6 +34,7 @@ import java.sql.*;
 import java.io.*;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
@@ -123,7 +124,7 @@ public class IndexBuilder
         }
     
         StopWatch clock = new StopWatch();
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+
 
         // MusicBrainz data indexing
         Index[] indexes = {
@@ -145,7 +146,7 @@ public class IndexBuilder
             }
 
             clock.start();
-            buildDatabaseIndex(index, analyzer, options);
+            buildDatabaseIndex(index, options);
             clock.stop();
             System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
             clock.reset();
@@ -157,7 +158,7 @@ public class IndexBuilder
             File dumpFile = new File(options.getFreeDBDump());
             if (dumpFile != null && dumpFile.isFile()) {
                 clock.start();
-                buildFreeDBIndex(dumpFile, analyzer, options);
+                buildFreeDBIndex(dumpFile, options);
                 clock.stop();
                 System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
             } else {
@@ -169,17 +170,16 @@ public class IndexBuilder
     /**
      * Build an index from database
      * 
-     * @param dumpFile FreeDB dump file
      * @param options
      * @throws IOException 
      * @throws SQLException 
      */
-    private static void buildDatabaseIndex(Index index, Analyzer analyzer, IndexBuilderOptions options) throws IOException, SQLException
+    private static void buildDatabaseIndex(Index index, IndexBuilderOptions options) throws IOException, SQLException
     {
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getName() + "_index";
         System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.getDirectory(path), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
@@ -206,7 +206,7 @@ public class IndexBuilder
      * @param options
      * @throws IOException 
      */
-    private static void buildFreeDBIndex(File dumpFile, Analyzer analyzer, IndexBuilderOptions options) throws IOException
+    private static void buildFreeDBIndex(File dumpFile, IndexBuilderOptions options) throws IOException
     {
         FreeDBIndex index = new FreeDBIndex();
         index.setDumpFile(dumpFile);
@@ -214,7 +214,7 @@ public class IndexBuilder
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getName() + "_index";
         System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.getDirectory(path), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer() , true, IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
 

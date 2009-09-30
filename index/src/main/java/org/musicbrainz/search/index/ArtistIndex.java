@@ -24,6 +24,9 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.sql.*;
 
@@ -35,6 +38,11 @@ public class ArtistIndex extends Index {
 
 	public String getName() {
         return "artist";
+    }
+
+    public Analyzer getAnalyzer()
+    {
+        return new ArtistAnalyzer();
     }
 
     public int getMaxId() throws SQLException {

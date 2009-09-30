@@ -4,6 +4,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.ArtistIndex;
 import org.musicbrainz.search.index.ArtistIndexField;
@@ -20,7 +21,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new StandardUnaccentAnalyzer());
+        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ArtistIndex ai = new ArtistIndex(createConnection());
         ai.indexData(writer, 0, Integer.MAX_VALUE);
         writer.close();

@@ -21,6 +21,11 @@ package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -44,6 +49,11 @@ public class ReleaseIndex extends Index {
         super(dbConnection);
 
         stripBarcodeOfLeadingZeroes = Pattern.compile("^0+");
+    }
+
+    public Analyzer getAnalyzer()
+    {
+        return new ReleaseAnalyzer();
     }
 
     public String getName() {

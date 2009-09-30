@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.analysis.Analyzer;
 
 public abstract class Index {
 
@@ -37,7 +38,8 @@ public abstract class Index {
 	
 	public abstract int getMaxId() throws SQLException;
     public abstract String getName();
-	public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
+    public abstract Analyzer getAnalyzer();
+    public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
 
 	protected static String normalizeDate(String date) {
 		return date.replace("-00", "");

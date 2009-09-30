@@ -4,6 +4,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.*;
@@ -37,7 +38,8 @@ public class FindReleaseGroupTest extends TestCase {
          SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        PerFieldAnalyzerWrapper analyzer = new ReleaseGroupAnalyzer();
+        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         Document doc = new Document();
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
