@@ -49,6 +49,7 @@ public class FindReleaseGroupTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, "The Wedding Present");
+        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_V1, "The Wedding Present");
         writer.addDocument(doc);
         writer.close();
         ss = new ReleaseGroupSearch(new IndexSearcher(ramDir,true));

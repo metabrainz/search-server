@@ -72,7 +72,7 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
             }
 
 
-            String artistName = doc.get(ReleaseGroupIndexField.ARTIST);
+            String artistName = doc.get(ReleaseGroupIndexField.ARTIST_V1);
             if (artistName != null) {
 
                 Artist artist = of.createArtist();
