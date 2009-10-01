@@ -39,15 +39,26 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE label_name");
                 stmt.addBatch("DROP TABLE label_type");
 
-                stmt.addBatch("DROP TABLE release_group");
-                stmt.addBatch("DROP TABLE annotation");
-                stmt.addBatch("DROP TABLE album");
-                stmt.addBatch("DROP TABLE track");
                 stmt.addBatch("DROP TABLE release");
-                stmt.addBatch("DROP TABLE albummeta");
+                stmt.addBatch("DROP TABLE release_name");
+                stmt.addBatch("DROP TABLE release_status");
+                stmt.addBatch("DROP TABLE release_packaging");
+                stmt.addBatch("DROP TABLE release_label");
+                stmt.addBatch("DROP TABLE medium");
+                stmt.addBatch("DROP TABLE medium_format");
+                stmt.addBatch("DROP TABLE release_meta");
+                                
+
+                stmt.addBatch("DROP TABLE release_group");
+                stmt.addBatch("DROP TABLE release_group_type");
+
+                stmt.addBatch("DROP TABLE annotation");
+
+                stmt.addBatch("DROP TABLE track");
+
                 stmt.addBatch("DROP TABLE language");
                 stmt.addBatch("DROP TABLE script");
-                stmt.addBatch("DROP TABLE albumjoin");
+                
                 stmt.executeBatch();
                 stmt.close();
             }
@@ -68,35 +79,8 @@ public abstract class AbstractIndexTest extends TestCase {
 
             setupArtistTables(stmt);
             setupLabelTables(stmt); 
-
-
-            stmt.addBatch("CREATE TABLE album" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  artist integer NOT NULL," +
-                    "  name character varying(255) NOT NULL," +
-                    "  gid character(36) NOT NULL," +
-                    "  modpending integer DEFAULT 0," +
-                    "  attributes array," +
-                    "  page integer NOT NULL," +
-                    "  language integer," +
-                    "  script integer," +
-                    "  modpending_lang integer," +
-                    "  quality smallint ," +
-                    "  modpending_qual integer DEFAULT 0," +
-                    "  release_group integer NOT NULL" +
-                    ")");
-
-            stmt.addBatch("CREATE TABLE release_group" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  gid character(36)," +
-                    "  name character varying(255)," +
-                    "  page integer NOT NULL," +
-                    "  artist integer NOT NULL," +
-                    "  type integer," +
-                    "  modpending integer DEFAULT 0" +
-                    ")");
+            setupReleaseTables(stmt);
+            setupReleaseGroupTables(stmt);
 
             stmt.addBatch("CREATE TABLE annotation" +
                     "(" +
@@ -123,33 +107,7 @@ public abstract class AbstractIndexTest extends TestCase {
                     "  modpending integer DEFAULT 0" +
                     ")");
 
-            stmt.addBatch("CREATE TABLE release" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  album integer NOT NULL," +
-                    "  country integer NOT NULL," +
-                    "  releasedate character(10) NOT NULL," +
-                    "  modpending integer DEFAULT 0," +
-                    "  label integer," +
-                    "  catno character varying(255)," +
-                    "  barcode character varying(255)," +
-                    "  format smallint" +
-                    ")");
 
-            stmt.addBatch("CREATE TABLE albummeta" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  tracks integer DEFAULT 0," +
-                    "  discids integer DEFAULT 0," +
-                    "  puids integer DEFAULT 0," +
-                    "  firstreleasedate character(10)," +
-                    "  asin character(10)," +
-                    "  coverarturl character varying(255)," +
-                    "  lastupdate timestamp, " +
-                    "  rating real," +
-                    "  rating_count integer," +
-                    "  dateadded timestamp" +
-                    ")");
 
             stmt.addBatch("CREATE TABLE language" +
                     "(" +
@@ -171,15 +129,7 @@ public abstract class AbstractIndexTest extends TestCase {
                     "  frequency integer NOT NULL DEFAULT 0" +
                     ")");
 
-            stmt.addBatch("CREATE TABLE albumjoin" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  album integer NOT NULL," +
-                    "  track integer NOT NULL," +
-                    "  sequence integer NOT NULL," +
-                    "  modpending integer DEFAULT 0" +
-                    ")");
-
+            
 
             stmt.executeBatch();
             stmt.close();
@@ -286,5 +236,97 @@ public abstract class AbstractIndexTest extends TestCase {
                     "  name character varying(255) NOT NULL" +
                     ")");
     }
+
+    protected void setupReleaseTables(Statement stmt) throws Exception {
+
+        stmt.addBatch("CREATE TABLE release (" +
+                "  id serial NOT NULL," +
+                "  gid character(36)," +
+                "  name integer NOT NULL," +
+                "  artist_credit integer NOT NULL," +
+                "  release_group integer NOT NULL," +
+                "  status integer," +
+                "  packaging integer," +
+                "  country integer," +
+                "  language integer," +
+                "  script integer," +
+                "  date_year integer," +
+                "  date_month integer," +
+                "  date_day integer," +
+                "  barcode character varying(255)," +
+                "  comment character varying(255)," +
+                "  editpending integer DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_name (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL," +
+                "  refcount integer DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_status (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_packaging (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_label (" +
+                "  id serial NOT NULL," +
+                "  release integer NOT NULL," +
+                "  label integer," +
+                "  catno character varying(255)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE medium (" +
+                "  id serial NOT NULL," +
+                "  tracklist integer NOT NULL," +
+                "  release integer NOT NULL," +
+                "  position integer NOT NULL," +
+                "  format integer," +
+                "  name character varying(255)," +
+                "  editpending integer DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE medium_format (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL," +
+                "  year integer" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_meta" +
+                "(" +
+                "  id integer NOT NULL," +
+                "  lastupdate timestamp," +
+                "  dateadded timestamp," +
+                "  coverarturl character varying(255)," +
+                "  infourl character varying(255)," +
+                "  amazonasin character varying(10)," +
+                "  amazonstore character varying(20)" +
+                ")");
+    }
+
+    protected void setupReleaseGroupTables(Statement stmt) throws Exception {
+
+        stmt.addBatch("CREATE TABLE release_group" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  gid uuid NOT NULL," +
+                "  name integer NOT NULL," +
+                "  artist_credit integer NOT NULL," +
+                "  type integer," +
+                "  comment character varying(255)," +
+                "  editpending integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_group_type" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
+   }
 
 }

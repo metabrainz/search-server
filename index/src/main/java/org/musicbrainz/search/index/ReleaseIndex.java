@@ -70,12 +70,12 @@ public class ReleaseIndex extends Index {
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<List<String>>> events = new HashMap<Integer, List<List<String>>>();
         PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT album, lower(isocode) as country, releasedate, n0.name as label, catno, barcode, format " +
+                "SELECT release.id as id, lower(isocode) as country, releasedate, n0.name as label, catno, barcode, format " +
                         "FROM release " +
                         "LEFT JOIN country ON release.country=country.id " +
                         "LEFT JOIN label ON release.label=label.id " +
                         "LEFT JOIN label_name n0 ON label.name = n0.id " +
-                        "WHERE album BETWEEN ? AND ?");
+                        "WHERE release.id BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();

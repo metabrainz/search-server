@@ -54,16 +54,26 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
                    " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
 
-        stmt.addBatch("INSERT INTO album(" +
-                "            id, artist, name, gid, modpending, page, language," +
-                "            script, modpending_lang, quality, modpending_qual, release_group)" +
-                "    VALUES (491240, 16153, 'Crocodiles (bonus disc)', 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 0, 154669573, 120, " +
-                "            28, null, -1, 0, 491240)");
+        stmt.addBatch("INSERT INTO artist_credit( " +
+                      " id, artistcount, refcount) " +
+                      " VALUES (1, 1, 1)");
 
-        stmt.addBatch("INSERT INTO release_group(" +
-                "            id, gid, name, page, artist, type, modpending)" +
-                "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 154669573, 16153, 2, 0)");
+        stmt.addBatch("INSERT INTO artist_credit_name(" +
+                "    artist_credit, position, artist,name, joinphrase)" +
+                "    VALUES (1, 0, 16153, 1, null)");
 
+        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (1, 'Crocodiles', 0)");
+        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (2, 'Crocodiles (bonus disc)', 0)");
+        stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
+                  "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0)");
+
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (1,'Non Album Tracks')");
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (2,'Album')");
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (3,'Single')");
+
+        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
+                "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
+            "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
 
         stmt.executeBatch();
         stmt.close();
@@ -96,16 +106,27 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
                  " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
 
+        stmt.addBatch("INSERT INTO artist_credit( " +
+                      " id, artistcount, refcount) " +
+                      " VALUES (1, 1, 1)");
 
-        stmt.addBatch("INSERT INTO album(" +
-                "            id, artist, name, gid, modpending,  page, language," +
-                "            script, modpending_lang, quality, modpending_qual, release_group)" +
-                "    VALUES (491240, 16153, 'Crocodiles (bonus disc)', 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 0, 154669573, 120, " +
-                "            28, null, -1, 0, 491240)");
+        stmt.addBatch("INSERT INTO artist_credit_name(" +
+                "    artist_credit, position, artist,name, joinphrase)" +
+                "    VALUES (1, 0, 16153, 1, null)");
 
-        stmt.addBatch("INSERT INTO release_group(" +
-                "            id, gid, name, page, artist, type, modpending)" +
-                "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 154669573, 16153, 0, 0)");
+        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (1, 'Crocodiles', 0)");
+        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (2, 'Crocodiles (bonus disc)', 0)");
+
+        stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
+                        "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, null, null, 0);");
+
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (1,'Non Album Tracks')");
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (2,'Album')");
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (3,'Single')");
+
+        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
+                        "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
+                    "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
 
         stmt.executeBatch();
         stmt.close();
@@ -139,21 +160,25 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
                        " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
         
 
-        stmt.addBatch("INSERT INTO album(" +
-                "            id, artist, name, gid, modpending,page, language," +
-                "            script, modpending_lang, quality, modpending_qual, release_group)" +
-                "    VALUES (491240, 16153, 'Crocodiles (bonus disc)', 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 0, 154669573, 120, " +
-                "            28, null, -1, 0, 491240)");
-        stmt.addBatch("INSERT INTO album(" +
-                "            id, artist, name, gid, modpending,page, language," +
-                "            script, modpending_lang, quality, modpending_qual, release_group)" +
-                "    VALUES (491241, 16153, 'Crocodiles (Special disc)', 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 0, 154669573, 120, " +
-                "            28, null, -1, 0, 491240)");
+        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (1, 'Crocodiles', 0)");
+        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (2, 'Crocodiles (Bonus disc)', 0)");
+        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (3, 'Crocodiles (Special disc)', 0)");
 
 
-        stmt.addBatch("INSERT INTO release_group(" +
-                "            id, gid, name, page, artist, type, modpending)" +
-                "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 154669573, 16153, 2, 0)");
+        stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
+                        "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0);");
+
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (1,'Non Album Tracks')");
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (2,'Album')");
+        stmt.addBatch("INSERT INTO release_group_type(id,name) VALUES (3,'Single')");
+        
+        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
+                        "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
+                    "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
+
+        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
+                                "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
+                            "  VALUES (491241,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 3, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
 
         stmt.executeBatch();
         stmt.close();
@@ -168,7 +193,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      */
     public void testIndexReleaseGroupFields() throws Exception {
 
-        addReleaseGroupOne();
+        addReleaseGroupTwo();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
@@ -181,7 +206,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()).stringValue());
             assertEquals("Echo & The Bunnymen", doc.getField(ReleaseGroupIndexField.ARTIST.getName()).stringValue());
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(ReleaseGroupIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("single", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
+            assertEquals("nat", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASES.getName()).length);
             assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseGroupIndexField.RELEASES.getName()).stringValue());
 
@@ -202,7 +227,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
-            assertEquals("single", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
+            assertEquals("album", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
 
@@ -249,7 +274,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals(2, doc.getFields(ReleaseGroupIndexField.RELEASES.getName()).length);
             String val1 = doc.getFields(ReleaseGroupIndexField.RELEASES.getName())[0].stringValue();
             String val2 = doc.getFields(ReleaseGroupIndexField.RELEASES.getName())[1].stringValue();
-            assertTrue("Crocodiles (bonus disc)".equals(val1) || "Crocodiles (bonus disc)".equals(val2));
+
+            assertTrue("Crocodiles (Bonus disc)".equals(val1) || "Crocodiles (Bonus disc)".equals(val2));
             assertTrue("Crocodiles (Special disc)".equals(val1) || "Crocodiles (Special disc)".equals(val2));
         }
         ir.close();

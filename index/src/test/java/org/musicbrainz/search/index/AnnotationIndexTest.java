@@ -44,12 +44,12 @@ public class AnnotationIndexTest extends AbstractIndexTest {
                 "            id, moderator, type, rowid, text, changelog, created, moderation,modpending)" +
                 "    VALUES (1, 51298, 2, 66, 'Formed in Oxford, UK.', 'test',null, 176097, 0)");
 
-        stmt.addBatch("INSERT INTO album(" +
+     /*   stmt.addBatch("INSERT INTO album(" +
                 "            id, artist, name, gid, modpending, page, language," +
                 "            script, modpending_lang, quality, modpending_qual, release_group)" +
                 "    VALUES (66, 16153, 'Crocodiles (bonus disc)', 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 0, 154669573, 120, " +
                 "            28, null, -1, 0, 491240)");
-
+       */
 
         stmt.executeBatch();
         stmt.close();
@@ -62,6 +62,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    /*
     public void testIndexAnnotationFields() throws Exception {
         addAnnotationOne();
         RAMDirectory ramDir = new RAMDirectory();
@@ -83,7 +84,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
-
+    */
+    
     public void testGetTypeByDbId () throws Exception {
         assertNull(AnnotationType.getByDbId(0));
         assertEquals(AnnotationType.ARTIST,AnnotationType.getByDbId(1));
