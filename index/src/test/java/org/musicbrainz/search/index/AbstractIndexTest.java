@@ -25,12 +25,20 @@ public abstract class AbstractIndexTest extends TestCase {
             try {
                 Statement stmt = conn.createStatement();
                 stmt.addBatch("DROP TABLE country");
+
                 stmt.addBatch("DROP TABLE artist");
-                stmt.addBatch("DROP TABLE artistalias");
+                stmt.addBatch("DROP TABLE artist_alias");
+                stmt.addBatch("DROP TABLE artist_name");
+                stmt.addBatch("DROP TABLE artist_type");
+                stmt.addBatch("DROP TABLE artist_credit");
+                stmt.addBatch("DROP TABLE artist_credit_name");
+                stmt.addBatch("DROP TABLE gender");
+
                 stmt.addBatch("DROP TABLE label");
                 stmt.addBatch("DROP TABLE label_alias");
                 stmt.addBatch("DROP TABLE label_name");
                 stmt.addBatch("DROP TABLE label_type");
+
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE annotation");
                 stmt.addBatch("DROP TABLE album");
@@ -58,64 +66,9 @@ public abstract class AbstractIndexTest extends TestCase {
                     "  name character varying(100) NOT NULL" +
                     ")");
 
-            stmt.addBatch("CREATE TABLE artistalias (" +
-                    "  id serial NOT NULL," +
-                    "  ref integer NOT NULL," +
-                    "  name character varying(255) NOT NULL," +
-                    "  timesused integer DEFAULT 0," +
-                    "  modpending integer DEFAULT 0," +
-                    "  lastused timestamp" +
-                    ")");
-            stmt.addBatch("CREATE TABLE artist (" +
-                    "  id serial NOT NULL," +
-                    "  name character varying(255) NOT NULL," +
-                    "  gid character(36) NOT NULL," +
-                    "  modpending integer DEFAULT 0," +
-                    "  sortname character varying(255) NOT NULL," +
-                    "  page integer NOT NULL," +
-                    "  resolution character varying(64)," +
-                    "  begindate character(10)," +
-                    "  enddate character(10)," +
-                    "  type smallint," +
-                    "  quality smallint DEFAULT -1," +
-                    "  modpending_qual integer DEFAULT 0" +
-                    ")");
+            setupArtistTables(stmt);
+            setupLabelTables(stmt); 
 
-             stmt.addBatch("CREATE TABLE label (" +
-                "  id serial NOT NULL," +
-                "  gid character(36) NOT NULL," +
-                "  name integer NOT NULL," +
-                "  sortname integer NOT NULL," +
-                "  begindate_year integer," +
-                "  begindate_month integer," +
-                "  begindate_day integer," +
-                "  enddate_year integer," +
-                "  enddate_month integer," +
-                "  enddate_day integer," +
-                "  labelcode integer," +
-                "  type integer," +
-                "  country integer," +
-                "  comment character varying(255)," +
-                "  editpending integer DEFAULT 0" +
-                ")");
-
-        stmt.addBatch("CREATE TABLE label_alias (" +
-                "  id serial NOT NULL," +
-                "  label integer NOT NULL," +
-                "  name integer NOT NULL," +
-                "  editpending integer NOT NULL DEFAULT 0" +
-                ")");
-
-        stmt.addBatch("CREATE TABLE label_name (" +
-                "  id serial NOT NULL," +
-                "  name character varying(255) NOT NULL," +
-                "  refcount integer DEFAULT 0" +
-                ")");
-
-        stmt.addBatch("CREATE TABLE label_type (" +
-                "  id serial NOT NULL," +
-                "  name character varying(255) NOT NULL" +
-                ")");
 
             stmt.addBatch("CREATE TABLE album" +
                     "(" +
@@ -228,7 +181,6 @@ public abstract class AbstractIndexTest extends TestCase {
                     ")");
 
 
-
             stmt.executeBatch();
             stmt.close();
         }
@@ -237,6 +189,102 @@ public abstract class AbstractIndexTest extends TestCase {
             throw e;
         }
 
+    }
+
+    protected void setupArtistTables(Statement stmt) throws Exception {
+
+        stmt.addBatch("CREATE TABLE artist (" +
+                "  id serial NOT NULL," +
+                "  gid character(36) NOT NULL," +
+                "  name integer NOT NULL," +
+                "  sortname integer NOT NULL," +
+                "  begindate_year integer," +
+                "  begindate_month integer," +
+                "  begindate_day integer," +
+                "  enddate_year integer," +
+                "  enddate_month integer," +
+                "  enddate_day integer," +
+                "  type integer," +
+                "  country integer," +
+                "  gender integer," +
+                "  comment character varying(255)," +
+                "  editpending integer DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE artist_credit (" +
+                "  id serial NOT NULL," +
+                "  artistcount integer NOT NULL," +
+                "  refcount integer DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE artist_credit_name (" +
+                "  artist_credit integer NOT NULL," +
+                "  position integer NOT NULL," +
+                "  artist integer NOT NULL," +
+                "  name integer NOT NULL," +
+                "  joinphrase character varying(32)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE artist_alias (" +
+                "  id serial NOT NULL," +
+                "  artist integer NOT NULL," +
+                "  name integer NOT NULL," +
+                "  editpending integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE artist_name (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL," +
+                "  refcount integer DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE artist_type (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE gender (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
+    }
+
+    protected void setupLabelTables(Statement stmt) throws Exception {
+         stmt.addBatch("CREATE TABLE label (" +
+                    "  id serial NOT NULL," +
+                    "  gid character(36) NOT NULL," +
+                    "  name integer NOT NULL," +
+                    "  sortname integer NOT NULL," +
+                    "  begindate_year integer," +
+                    "  begindate_month integer," +
+                    "  begindate_day integer," +
+                    "  enddate_year integer," +
+                    "  enddate_month integer," +
+                    "  enddate_day integer," +
+                    "  labelcode integer," +
+                    "  type integer," +
+                    "  country integer," +
+                    "  comment character varying(255)," +
+                    "  editpending integer DEFAULT 0" +
+                    ")");
+
+            stmt.addBatch("CREATE TABLE label_alias (" +
+                    "  id serial NOT NULL," +
+                    "  label integer NOT NULL," +
+                    "  name integer NOT NULL," +
+                    "  editpending integer NOT NULL DEFAULT 0" +
+                    ")");
+
+            stmt.addBatch("CREATE TABLE label_name (" +
+                    "  id serial NOT NULL," +
+                    "  name character varying(255) NOT NULL," +
+                    "  refcount integer DEFAULT 0" +
+                    ")");
+
+            stmt.addBatch("CREATE TABLE label_type (" +
+                    "  id serial NOT NULL," +
+                    "  name character varying(255) NOT NULL" +
+                    ")");
     }
 
 }

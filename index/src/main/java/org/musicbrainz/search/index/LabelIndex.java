@@ -113,7 +113,15 @@ public class LabelIndex extends Index {
         addFieldToDocument(doc, LabelIndexField.LABEL_GID, rs.getString("gid"));
         addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
         addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
-        addNonEmptyFieldToDocument(doc, LabelIndexField.TYPE, rs.getString("type"));
+
+        //Search V1 allows you to search for unknown labels,
+        String type=rs.getString("type");
+        if(type!=null) {
+            addFieldToDocument(doc, LabelIndexField.TYPE, type);
+        } else {
+            addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.UNKNOWN.getName());
+        }
+
         addNonEmptyFieldToDocument(doc, LabelIndexField.COMMENT, rs.getString("comment"));
         addNonEmptyFieldToDocument(doc, LabelIndexField.COUNTRY, rs.getString("country"));
         

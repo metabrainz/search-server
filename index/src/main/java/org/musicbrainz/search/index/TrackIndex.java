@@ -56,11 +56,12 @@ public class TrackIndex extends Index {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT artist.gid as artist_gid, artist.name as artist_name, resolution, " +
+                "SELECT artist.gid as artist_gid,n0.name as artist_name, comment, " +
                         "track.gid, track.name, " +
                         "album.gid as album_gid, album.attributes, album.name as album_name, track.length, albumjoin.sequence, albummeta.tracks " +
                         "FROM track " +
                         "JOIN artist ON track.artist=artist.id " +
+                        "LEFT JOIN artist_name n0 ON artist.name = n0.id " +
                         "JOIN albumjoin ON track.id=albumjoin.track " +
                         "JOIN album ON album.id=albumjoin.album " +
                         "JOIN albummeta ON album.id=albummeta.id " +
@@ -81,10 +82,7 @@ public class TrackIndex extends Index {
         addFieldToDocument(doc, TrackIndexField.TRACK, rs.getString("name"));
         addFieldToDocument(doc, TrackIndexField.ARTIST_ID, rs.getString("artist_gid"));
         addFieldToDocument(doc, TrackIndexField.ARTIST, rs.getString("artist_name"));
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-        	addFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, comment);
-        }
+        addNonEmptyFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, rs.getString("comment"));
         addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("album_gid"));
         addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("album_name"));
         addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("tracks"));

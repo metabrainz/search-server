@@ -77,10 +77,11 @@ public class ReleaseGroupIndex extends Index {
 
 		st = dbConnection.prepareStatement(
 				"SELECT rg.id, rg.gid, rg.name, rg.type, " +
-					"artist.gid as artist_gid, artist.name as artist_name, resolution " +
+					"artist.gid as artist_gid, n0.name as artist_name, comment " +
 					"FROM release_group AS rg " +
 					"JOIN artist ON rg.artist=artist.id " +
-					"WHERE rg.id BETWEEN ? AND ?");
+                    "LEFT JOIN artist_name n0 ON artist.name = n0.id " +    
+                    "WHERE rg.id BETWEEN ? AND ?");
 		st.setInt(1, min);
 		st.setInt(2, max);
 		rs = st.executeQuery();
@@ -98,10 +99,7 @@ public class ReleaseGroupIndex extends Index {
 		addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
 		addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, rs.getString("artist_gid"));
 		addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, rs.getString("artist_name"));
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-        	addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, comment);
-        }
+        addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT,rs.getString("comment"));
         addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.getByDbId(rs.getInt("type")).getName());
 
 		if (releases.containsKey(rgId)) {

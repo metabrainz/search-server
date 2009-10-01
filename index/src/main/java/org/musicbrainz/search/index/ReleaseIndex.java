@@ -70,10 +70,11 @@ public class ReleaseIndex extends Index {
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<List<String>>> events = new HashMap<Integer, List<List<String>>>();
         PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT album, lower(isocode) as country, releasedate, label.name as label, catno, barcode, format " +
+                "SELECT album, lower(isocode) as country, releasedate, n0.name as label, catno, barcode, format " +
                         "FROM release " +
                         "LEFT JOIN country ON release.country=country.id " +
                         "LEFT JOIN label ON release.label=label.id " +
+                        "LEFT JOIN label_name n0 ON label.name = n0.id " +
                         "WHERE album BETWEEN ? AND ?");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -99,12 +100,13 @@ public class ReleaseIndex extends Index {
         st.close();
         st = dbConnection.prepareStatement(
                 "SELECT album.id, album.gid, album.name, " +
-                        "artist.gid as artist_gid, artist.name as artist_name,resolution, " +
+                        "artist.gid as artist_gid, n0.name as artist_name,comment, " +
                         "attributes, tracks, discids, asin, " +
                         "language.isocode_3t as language, script.isocode as script " +
                         "FROM album " +
                         "JOIN albummeta ON album.id=albummeta.id " +
                         "JOIN artist ON album.artist=artist.id " +
+                        "LEFT JOIN artist_name n0 ON artist.name = n0.id " +
                         "LEFT JOIN language ON album.language=language.id " +
                         "LEFT JOIN script ON album.script=script.id " +
                         "WHERE album.id BETWEEN ? AND ?");
@@ -124,10 +126,7 @@ public class ReleaseIndex extends Index {
         addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
         addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, rs.getString("artist_gid"));
         addFieldToDocument(doc, ReleaseIndexField.ARTIST, rs.getString("artist_name"));
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-        	addFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, comment);
-        }
+        addNonEmptyFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, rs.getString("comment"));
         addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, rs.getString("tracks"));
         addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
 
