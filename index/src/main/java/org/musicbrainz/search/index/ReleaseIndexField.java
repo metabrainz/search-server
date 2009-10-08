@@ -25,6 +25,7 @@ public enum ReleaseIndexField implements IndexField {
     STATUS		    ("status",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
     FORMAT  		("format",		Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_V1   	("artistv1",	Field.Store.YES,	Field.Index.ANALYZED),
     ;
 
     private String name;

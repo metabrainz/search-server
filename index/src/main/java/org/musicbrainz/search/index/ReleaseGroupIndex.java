@@ -185,62 +185,6 @@ public class
         return doc;
     }
 
-    static class ArtistWrapper {
-        private String artistId;
-        private String artistName;
-        private String artistCreditName;
-        private String comment;
-        private int artistPos;
-        private String joinPhrase;
-
-        public String getArtistId() {
-            return artistId;
-        }
-
-        public void setArtistId(String artistId) {
-            this.artistId = artistId;
-        }
-
-        public String getArtistName() {
-            return artistName;
-        }
-
-        public void setArtistName(String artistName) {
-            this.artistName = artistName;
-        }
-
-        public String getArtistCreditName() {
-            return artistCreditName;
-        }
-
-        public void setArtistCreditName(String artistCreditName) {
-            this.artistCreditName = artistCreditName;
-        }
-
-        public String getComment() {
-            return comment;
-        }
-
-        public void setComment(String comment) {
-            this.comment = comment;
-        }
-
-        public int getArtistPos() {
-            return artistPos;
-        }
-
-        public void setArtistPos(int artistPos) {
-            this.artistPos = artistPos;
-        }
-
-        public String getJoinPhrase() {
-            return joinPhrase;
-        }
-
-        public void setJoinPhrase(String joinPhrase) {
-            this.joinPhrase = joinPhrase;
-        }
-    }
 }
 
 

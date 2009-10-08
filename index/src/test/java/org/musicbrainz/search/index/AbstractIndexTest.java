@@ -46,8 +46,10 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE release_label");
                 stmt.addBatch("DROP TABLE medium");
                 stmt.addBatch("DROP TABLE medium_format");
+                stmt.addBatch("DROP TABLE medium_cdtoc");
                 stmt.addBatch("DROP TABLE release_meta");
-                                
+                stmt.addBatch("DROP TABLE tracklist");
+
 
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE release_group_type");
@@ -306,6 +308,22 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  infourl character varying(255)," +
                 "  amazonasin character varying(10)," +
                 "  amazonstore character varying(20)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE medium_cdtoc" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  medium integer NOT NULL," +
+                "  cdtoc integer NOT NULL," +
+                "  editpending integer NOT NULL DEFAULT 0," +
+                "  CONSTRAINT medium_cdtoc_pkey PRIMARY KEY (id)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE tracklist" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  trackcount integer NOT NULL DEFAULT 0," +
+                "  CONSTRAINT tracklist_pkey PRIMARY KEY (id)" +
                 ")");
     }
 
