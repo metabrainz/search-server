@@ -59,6 +59,13 @@ public class LabelIndex extends Index {
         return rs.getInt(1);
     }
 
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM label WHERE id<="+maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
     	// Get labels aliases
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();

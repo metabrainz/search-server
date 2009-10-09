@@ -37,6 +37,7 @@ public abstract class Index {
 	}
 	
 	public abstract int getMaxId() throws SQLException;
+    public abstract int getNoOfRows(int maxId) throws SQLException ;
     public abstract String getName();
     public abstract Analyzer getAnalyzer();
     public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;

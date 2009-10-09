@@ -37,6 +37,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Document;
@@ -197,6 +198,14 @@ public class IndexBuilder
         System.out.println("\n  Optimizing");
         indexWriter.optimize();
         indexWriter.close();
+
+        //For debugging to check sql is not creating too few/many rows
+        if(true) {
+            int dbRows = index.getNoOfRows(maxId);
+            IndexReader reader = IndexReader.open(FSDirectory.open(new File(path)),true);
+            System.out.println("  Indexed "+dbRows+" rows, creating "+(reader.maxDoc() - 1)+" lucene documents");
+            reader.close();
+        }
     }
     
     /**
@@ -250,7 +259,7 @@ public class IndexBuilder
     private static void prepareDbConnection(Connection connection) throws SQLException
     {
 		Statement st = connection.createStatement();
-		//st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
+		st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
     }
     
 }

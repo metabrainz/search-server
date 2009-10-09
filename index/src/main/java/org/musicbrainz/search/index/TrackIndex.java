@@ -58,6 +58,13 @@ public class TrackIndex extends Index {
         return rs.getInt(1);
     }
 
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM recording WHERE id<="+maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
          //Artists
@@ -101,6 +108,9 @@ public class TrackIndex extends Index {
         st.close();
 
         //Tracks
+        //TODO currently when recording is on two albums we generate two seperate documents, but should we having just one document
+        //with the tracklist/release info added as multiple fields to docs.
+        //If we do MMD v1 allows multiple releases for a track, but code might not expect it.
         st = dbConnection.prepareStatement(
                 "SELECT re.id as recordingId,re.gid as trackid,re.length as duration,tn.name as trackname,t.position,tl.trackcount, " +
                 "re.comment,r.gid as releaseid,rn.name as releasename,rgt.name as type " +

@@ -52,6 +52,13 @@ public class ArtistIndex extends Index {
         return rs.getInt(1);
     }
 
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM artist WHERE id<="+maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
         PreparedStatement st = dbConnection.prepareStatement

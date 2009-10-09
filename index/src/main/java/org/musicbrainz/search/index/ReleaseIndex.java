@@ -62,6 +62,13 @@ public class ReleaseIndex extends Index {
         return rs.getInt(1);
     }
 
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM release WHERE id<="+maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         //A particular release can have multiple catalognos, labels when released as an imprint, typically used
