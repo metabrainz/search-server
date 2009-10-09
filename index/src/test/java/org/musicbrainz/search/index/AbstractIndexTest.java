@@ -68,6 +68,10 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE release_group_annotation");
                 stmt.addBatch("DROP TABLE work_annotation");
 
+                stmt.addBatch("DROP TABLE release_raw");
+                stmt.addBatch("DROP TABLE cdtoc_raw");
+                stmt.addBatch("DROP TABLE track_raw");
+
                 stmt.executeBatch();
                 stmt.close();
             }
@@ -86,6 +90,7 @@ public abstract class AbstractIndexTest extends TestCase {
             setupReleaseGroupTables(stmt);
             setupRecordingTables(stmt);
             setupAnnotationTables(stmt);
+            setupCDStubTables(stmt);
             stmt.executeBatch();
             stmt.close();
         }
@@ -418,8 +423,39 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  annotation integer NOT NULL," +
                 "  CONSTRAINT work_annotation_pkey PRIMARY KEY (work, annotation)" +
                 ")");
-                                        
+    }
 
+    protected void setupCDStubTables(Statement stmt) throws Exception {
+        stmt.addBatch("CREATE TABLE release_raw" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  title character varying(255) NOT NULL," +
+                "  artist character varying(255)," +
+                "  added timestamp DEFAULT now()," +
+                "  lastmodified timestamp DEFAULT now()," +
+                "  lookupcount integer DEFAULT 0," +
+                "  modifycount integer DEFAULT 0," +
+                "  source integer DEFAULT 0," +
+                "  barcode character varying(255)," +
+                "  comment character varying(255)" +
+                ")");
+        stmt.addBatch("CREATE TABLE track_raw" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  release integer NOT NULL," +
+                "  title character varying(255) NOT NULL," +
+                "  artist character varying(255)," +
+                "  sequence integer NOT NULL" +
+                ")");
+        stmt.addBatch("CREATE TABLE cdtoc_raw" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  release integer NOT NULL," +
+                "  discid character(28) NOT NULL," +
+                "  trackcount integer NOT NULL," +
+                "  leadoutoffset integer NOT NULL," +
+               // "  trackoffset integer[] NOT NULL" +   //NOt need for our purposes hsql doesnt like syntax
+                ")");            
     }
 
 
