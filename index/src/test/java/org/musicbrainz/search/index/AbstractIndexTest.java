@@ -61,6 +61,12 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE recording");
 
                 stmt.addBatch("DROP TABLE annotation");
+                stmt.addBatch("DROP TABLE artist_annotation");
+                stmt.addBatch("DROP TABLE label_annotation");
+                stmt.addBatch("DROP TABLE recording_annotation");
+                stmt.addBatch("DROP TABLE release_annotation");
+                stmt.addBatch("DROP TABLE release_group_annotation");
+                stmt.addBatch("DROP TABLE work_annotation");
 
                 stmt.executeBatch();
                 stmt.close();
@@ -360,18 +366,59 @@ public abstract class AbstractIndexTest extends TestCase {
     }
 
     protected void setupAnnotationTables(Statement stmt) throws Exception {
-        stmt.addBatch("CREATE TABLE annotation" +
+        stmt.addBatch(
+                "CREATE TABLE annotation" +
                 "(" +
-                "  id serial NOT NULL," +
-                "  moderator integer NOT NULL," +
-                "  type smallint NOT NULL," +
-                "  rowid integer NOT NULL," +
-                "  text varchar(1000)," +
-                "  changelog character varying(255)," +
+                "  id serial NOT NULL, " +
+                "  editor integer NOT NULL," +
+                "  text text," +
+                "  changelog character varying(255), " +
                 "  created timestamp," +
-                "  moderation integer NOT NULL DEFAULT 0," +
-                "  modpending integer NOT NULL DEFAULT 0" +
+                "  CONSTRAINT annotation_pkey PRIMARY KEY (id))" );
+
+
+        stmt.addBatch("CREATE TABLE artist_annotation" +
+                "(" +
+                "  artist integer NOT NULL," +
+                "  annotation integer NOT NULL," +
+                "  CONSTRAINT artist_annotation_pkey PRIMARY KEY (artist, annotation)" +
                 ")");
+        
+        stmt.addBatch("CREATE TABLE label_annotation" +
+                "(" +
+                "  label integer NOT NULL," +
+                "  annotation integer NOT NULL," +
+                "  CONSTRAINT label_annotation_pkey PRIMARY KEY (label, annotation)" +
+                ")");
+        
+        stmt.addBatch("CREATE TABLE recording_annotation" +
+                "(" +
+                "  recording integer NOT NULL," +
+                "  annotation integer NOT NULL," +
+                "  CONSTRAINT recording_annotation_pkey PRIMARY KEY (recording, annotation)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_annotation" +
+                        "(" +
+                        "  release integer NOT NULL," +
+                        "  annotation integer NOT NULL," +
+                        "  CONSTRAINT release_annotation_pkey PRIMARY KEY (release, annotation)" +
+                        ")");
+
+        stmt.addBatch("CREATE TABLE release_group_annotation" +
+                "(" +
+                "  release_group integer NOT NULL," +
+                "  annotation integer NOT NULL," +
+                "  CONSTRAINT release_group_annotation_pkey PRIMARY KEY (release_group, annotation)" +
+                ")");
+        
+        stmt.addBatch("CREATE TABLE work_annotation" +
+                "(" +
+                "  work integer NOT NULL," +
+                "  annotation integer NOT NULL," +
+                "  CONSTRAINT work_annotation_pkey PRIMARY KEY (work, annotation)" +
+                ")");
+                                        
 
     }
 
