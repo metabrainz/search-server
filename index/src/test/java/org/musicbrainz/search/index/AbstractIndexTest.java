@@ -25,6 +25,8 @@ public abstract class AbstractIndexTest extends TestCase {
             try {
                 Statement stmt = conn.createStatement();
                 stmt.addBatch("DROP TABLE country");
+                stmt.addBatch("DROP TABLE language");
+                stmt.addBatch("DROP TABLE script");
 
                 stmt.addBatch("DROP TABLE artist");
                 stmt.addBatch("DROP TABLE artist_alias");
@@ -54,13 +56,12 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE release_group_type");
 
+                stmt.addBatch("DROP TABLE track_name");
+                stmt.addBatch("DROP TABLE track");
+                stmt.addBatch("DROP TABLE recording");
+
                 stmt.addBatch("DROP TABLE annotation");
 
-                stmt.addBatch("DROP TABLE track");
-
-                stmt.addBatch("DROP TABLE language");
-                stmt.addBatch("DROP TABLE script");
-                
                 stmt.executeBatch();
                 stmt.close();
             }
@@ -72,67 +73,13 @@ public abstract class AbstractIndexTest extends TestCase {
             //Create tables and data for Artist Index
             Statement stmt = conn.createStatement();
 
-            stmt.addBatch("CREATE TABLE country" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  isocode character varying(2) NOT NULL," +
-                    "  name character varying(100) NOT NULL" +
-                    ")");
-
+            setupCommonTables(stmt);
             setupArtistTables(stmt);
-            setupLabelTables(stmt); 
+            setupLabelTables(stmt);
             setupReleaseTables(stmt);
             setupReleaseGroupTables(stmt);
-
-            stmt.addBatch("CREATE TABLE annotation" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  moderator integer NOT NULL," +
-                    "  type smallint NOT NULL," +
-                    "  rowid integer NOT NULL," +
-                    "  text varchar(1000)," +
-                    "  changelog character varying(255)," +
-                    "  created timestamp," +
-                    "  moderation integer NOT NULL DEFAULT 0," +
-                    "  modpending integer NOT NULL DEFAULT 0" +
-                    ")");
-
-
-            stmt.addBatch("CREATE TABLE track" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  artist integer NOT NULL," +
-                    "  name varchar(1000) NOT NULL," +
-                    "  gid character(36) NOT NULL," +
-                    "  length integer DEFAULT 0," +
-                    "  year integer DEFAULT 0," +
-                    "  modpending integer DEFAULT 0" +
-                    ")");
-
-
-
-            stmt.addBatch("CREATE TABLE language" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  isocode_3t character(3) NOT NULL," +
-                    "  isocode_3b character(3) NOT NULL," +
-                    "  isocode_2 character(2)," +
-                    "  name character varying(100) NOT NULL," +
-                    "  frequency integer NOT NULL DEFAULT 0," +
-                    "  CONSTRAINT language_pkey PRIMARY KEY (id)" +
-                    ")");
-
-            stmt.addBatch("CREATE TABLE script" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  isocode character(4) NOT NULL," +
-                    "  isonumber character(3) NOT NULL," +
-                    "  name character varying(100) NOT NULL," +
-                    "  frequency integer NOT NULL DEFAULT 0" +
-                    ")");
-
-            
-
+            setupRecordingTables(stmt);
+            setupAnnotationTables(stmt);
             stmt.executeBatch();
             stmt.close();
         }
@@ -141,6 +88,35 @@ public abstract class AbstractIndexTest extends TestCase {
             throw e;
         }
 
+    }
+
+    protected void setupCommonTables(Statement stmt) throws Exception {
+        stmt.addBatch("CREATE TABLE country" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  isocode character varying(2) NOT NULL," +
+                "  name character varying(100) NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE language" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  isocode_3t character(3) NOT NULL," +
+                "  isocode_3b character(3) NOT NULL," +
+                "  isocode_2 character(2)," +
+                "  name character varying(100) NOT NULL," +
+                "  frequency integer NOT NULL DEFAULT 0," +
+                "  CONSTRAINT language_pkey PRIMARY KEY (id)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE script" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  isocode character(4) NOT NULL," +
+                "  isonumber character(3) NOT NULL," +
+                "  name character varying(100) NOT NULL," +
+                "  frequency integer NOT NULL DEFAULT 0" +
+                ")");
     }
 
     protected void setupArtistTables(Statement stmt) throws Exception {
@@ -202,41 +178,41 @@ public abstract class AbstractIndexTest extends TestCase {
     }
 
     protected void setupLabelTables(Statement stmt) throws Exception {
-         stmt.addBatch("CREATE TABLE label (" +
-                    "  id serial NOT NULL," +
-                    "  gid character(36) NOT NULL," +
-                    "  name integer NOT NULL," +
-                    "  sortname integer NOT NULL," +
-                    "  begindate_year integer," +
-                    "  begindate_month integer," +
-                    "  begindate_day integer," +
-                    "  enddate_year integer," +
-                    "  enddate_month integer," +
-                    "  enddate_day integer," +
-                    "  labelcode integer," +
-                    "  type integer," +
-                    "  country integer," +
-                    "  comment character varying(255)," +
-                    "  editpending integer DEFAULT 0" +
-                    ")");
+        stmt.addBatch("CREATE TABLE label (" +
+                "  id serial NOT NULL," +
+                "  gid character(36) NOT NULL," +
+                "  name integer NOT NULL," +
+                "  sortname integer NOT NULL," +
+                "  begindate_year integer," +
+                "  begindate_month integer," +
+                "  begindate_day integer," +
+                "  enddate_year integer," +
+                "  enddate_month integer," +
+                "  enddate_day integer," +
+                "  labelcode integer," +
+                "  type integer," +
+                "  country integer," +
+                "  comment character varying(255)," +
+                "  editpending integer DEFAULT 0" +
+                ")");
 
-            stmt.addBatch("CREATE TABLE label_alias (" +
-                    "  id serial NOT NULL," +
-                    "  label integer NOT NULL," +
-                    "  name integer NOT NULL," +
-                    "  editpending integer NOT NULL DEFAULT 0" +
-                    ")");
+        stmt.addBatch("CREATE TABLE label_alias (" +
+                "  id serial NOT NULL," +
+                "  label integer NOT NULL," +
+                "  name integer NOT NULL," +
+                "  editpending integer NOT NULL DEFAULT 0" +
+                ")");
 
-            stmt.addBatch("CREATE TABLE label_name (" +
-                    "  id serial NOT NULL," +
-                    "  name character varying(255) NOT NULL," +
-                    "  refcount integer DEFAULT 0" +
-                    ")");
+        stmt.addBatch("CREATE TABLE label_name (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL," +
+                "  refcount integer DEFAULT 0" +
+                ")");
 
-            stmt.addBatch("CREATE TABLE label_type (" +
-                    "  id serial NOT NULL," +
-                    "  name character varying(255) NOT NULL" +
-                    ")");
+        stmt.addBatch("CREATE TABLE label_type (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
     }
 
     protected void setupReleaseTables(Statement stmt) throws Exception {
@@ -345,6 +321,59 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL" +
                 ")");
-   }
+    }
+
+    protected void setupRecordingTables(Statement stmt) throws Exception {
+
+        stmt.addBatch("CREATE TABLE track_name" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  name character varying NOT NULL," +
+                "  refcount integer DEFAULT 0," +
+                "  CONSTRAINT track_name_pkey PRIMARY KEY (id)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE track" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  recording integer NOT NULL," +
+                "  tracklist integer NOT NULL," +
+                "  position integer NOT NULL," +
+                "  name integer NOT NULL," +
+                "  artist_credit integer NOT NULL," +
+                "  length integer," +
+                "  editpending integer NOT NULL DEFAULT 0," +
+                "  CONSTRAINT track_pkey PRIMARY KEY (id)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE recording" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  gid uuid NOT NULL," +
+                "  name integer NOT NULL," +
+                "  artist_credit integer NOT NULL," +
+                "  length integer," +
+                "  comment character varying(255)," +
+                "  editpending integer NOT NULL DEFAULT 0," +
+                "  CONSTRAINT recording_pkey PRIMARY KEY (id)" +
+                ")");
+    }
+
+    protected void setupAnnotationTables(Statement stmt) throws Exception {
+        stmt.addBatch("CREATE TABLE annotation" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  moderator integer NOT NULL," +
+                "  type smallint NOT NULL," +
+                "  rowid integer NOT NULL," +
+                "  text varchar(1000)," +
+                "  changelog character varying(255)," +
+                "  created timestamp," +
+                "  moderation integer NOT NULL DEFAULT 0," +
+                "  modpending integer NOT NULL DEFAULT 0" +
+                ")");
+
+    }
+
 
 }

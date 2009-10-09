@@ -29,6 +29,10 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.sql.*;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class TrackIndex extends Index {
 
@@ -49,57 +53,129 @@ public class TrackIndex extends Index {
 
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM track");
+        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM recording");
         rs.next();
         return rs.getInt(1);
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+
+         //Artists
+        Map<Integer, List<ArtistWrapper>> artists = new HashMap<Integer, List<ArtistWrapper>>();
         PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT artist.gid as artist_gid,n0.name as artist_name, comment, " +
-                        "track.gid, track.name, " +
-                        "album.gid as album_gid, album.attributes, album.name as album_name, track.length, albumjoin.sequence, albummeta.tracks " +
-                        "FROM track " +
-                        "JOIN artist ON track.artist=artist.id " +
-                        "LEFT JOIN artist_name n0 ON artist.name = n0.id " +
-                        "JOIN albumjoin ON track.id=albumjoin.track " +
-                        "JOIN album ON album.id=albumjoin.album " +
-                        "JOIN albummeta ON album.id=albummeta.id " +
-                        "WHERE track.id BETWEEN ? AND ?");
+                "SELECT re.id as recordingId, " +
+                "acn.position as pos, " +
+                "acn.joinphrase as joinphrase, " +
+                "a.gid as artistId,  " +
+                "a.comment as comment, " +
+                "an.name as artistName, " +
+                "an2.name as artistCreditName " +
+                "FROM recording AS re " +
+                "INNER JOIN artist_credit_name acn ON re.artist_credit=acn.artist_credit " +
+                "INNER JOIN artist a ON a.id=acn.artist " +
+                "INNER JOIN artist_name an on a.name=an.id " +
+                "INNER JOIN artist_name an2 on acn.name=an2.id " +
+                "WHERE re.id BETWEEN ? AND ?  " +
+                "order by re.id,acn.position ");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs));
+            int recordingId = rs.getInt("recordingId");
+            List<ArtistWrapper> list;
+            if (!artists.containsKey(recordingId)) {
+                list = new LinkedList<ArtistWrapper>();
+                artists.put(recordingId, list);
+            } else {
+                list = artists.get(recordingId);
+            }
+            ArtistWrapper aw = new ArtistWrapper();
+            aw.setArtistId(rs.getString("artistId"));
+            aw.setArtistName(rs.getString("artistName"));
+            aw.setArtistCreditName(rs.getString("artistCreditName"));
+            aw.setArtistPos(rs.getInt("pos"));
+            aw.setComment(rs.getString("comment"));
+            aw.setJoinPhrase(rs.getString("joinphrase"));
+            list.add(aw);
         }
         st.close();
+
+        //Tracks
+        st = dbConnection.prepareStatement(
+                "SELECT re.id as recordingId,re.gid as trackid,re.length as duration,tn.name as trackname,t.position,tl.trackcount, " +
+                "re.comment,r.gid as releaseid,rn.name as releasename,rgt.name as type " +
+                "FROM recording re " +
+                "INNER JOIN track_name tn " +
+                "ON re.name=tn.id " +
+                "INNER JOIN track t " +
+                "ON re.id=t.recording " +
+                "INNER JOIN tracklist tl " +
+                "ON t.tracklist=tl.id " +
+                "INNER JOIN medium m " +
+                "ON m.tracklist=tl.id " +
+                "INNER JOIN release r " +
+                "ON m.release=r.id " +
+                "INNER JOIN release_group rg " +
+                "ON rg.id = r.release_group " +
+                "LEFT JOIN release_group_type rgt " +
+                "ON rg.type = rgt.id " +
+                "INNER JOIN release_name rn " +
+                "ON r.name=rn.id " +
+                "WHERE re.id BETWEEN ? AND ?");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs,artists));
+        }
+        st.close();
+
+
     }
 
-    public Document documentFromResultSet(ResultSet rs) throws SQLException {
-        Document doc = new Document();
+    public Document documentFromResultSet(ResultSet rs,Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
 
-        addFieldToDocument(doc, TrackIndexField.TRACK_ID, rs.getString("gid"));
-        addFieldToDocument(doc, TrackIndexField.TRACK, rs.getString("name"));
-        addFieldToDocument(doc, TrackIndexField.ARTIST_ID, rs.getString("artist_gid"));
-        addFieldToDocument(doc, TrackIndexField.ARTIST, rs.getString("artist_name"));
-        addNonEmptyFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, rs.getString("comment"));
-        addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("album_gid"));
-        addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("album_name"));
-        addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("tracks"));
-                
-        Object[] attributes = (Object[]) rs.getArray("attributes").getArray();
-        for(int i=1;i<attributes.length;i++)
-        {
-            int nextVal = (Integer) attributes[i];
-            if (nextVal >= ReleaseType.getMinDbId() && nextVal <= ReleaseType.getMaxDbId()) {
-                addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseType.getByDbId(nextVal).getName());
-                break;
+        int recordingId = rs.getInt("recordingId");
+
+        Document doc = new Document();
+        addFieldToDocument(doc, TrackIndexField.TRACK_ID, rs.getString("trackid"));
+        addNonEmptyFieldToDocument(doc, TrackIndexField.TRACK, rs.getString("trackname"));
+        addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("releaseid"));
+        addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("releasename"));
+        addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("trackcount"));
+        addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("duration")));
+        addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("duration") / QUANTIZED_DURATION));
+        addFieldToDocument(doc, TrackIndexField.TRACKNUM, NumberTools.longToString(rs.getLong("position")));
+
+        addNonEmptyFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, rs.getString("type"));
+
+        if (artists.containsKey(recordingId)) {
+            //For each credit artist for this release
+            for (ArtistWrapper artist : artists.get(recordingId)) {
+                addFieldToDocument(doc,TrackIndexField.ARTIST_ID, artist.getArtistId());
+                addFieldToDocument(doc, TrackIndexField.ARTIST, artist.getArtistName());
+                //Only add if different
+                if (!artist.getArtistName().equals(artist.getArtistCreditName())) {
+                    addFieldToDocument(doc, TrackIndexField.ARTIST, artist.getArtistCreditName());
+                }
+                addNonEmptyFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, artist.getComment());
             }
+
+            //Construct a single string comprising all credits, this will be need for V1 because just has single
+            //field for artist
+            //TODO optimize, if only have single artist we don't need extra field
+           /*
+            StringBuffer sb = new StringBuffer();
+            for (ArtistWrapper artist : artists.get(recordingId)) {
+                sb.append(artist.getArtistCreditName());
+                if (artist.getJoinPhrase() != null) {
+                    sb.append(' ' + artist.getJoinPhrase() + ' ');
+                }
+            }
+            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_V1, sb.toString());
+            //System.out.println(rgId+":"+sb.toString());
+            */
         }
-   
-        addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("length")));
-        addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("length") / QUANTIZED_DURATION));
-        addFieldToDocument(doc, TrackIndexField.TRACKNUM, NumberTools.longToString(rs.getLong("sequence")));
         return doc;
     }
 

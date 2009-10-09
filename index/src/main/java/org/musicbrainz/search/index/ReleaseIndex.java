@@ -226,7 +226,7 @@ public class ReleaseIndex extends Index {
         int releaseId = rs.getInt("id");
         addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
         addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
-        addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.TYPE, rs.getString("type"));
+        addNonEmptyFieldToDocument(doc, ReleaseIndexField.TYPE, rs.getString("type"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.STATUS, rs.getString("status"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.COUNTRY, rs.getString("country"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.DATE,
@@ -235,6 +235,7 @@ public class ReleaseIndex extends Index {
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, rs.getString("amazonasin"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.LANGUAGE, rs.getString("language"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.SCRIPT, rs.getString("script"));
+
 
 
         if (events.containsKey(releaseId)) {
