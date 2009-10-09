@@ -21,7 +21,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new StandardUnaccentAnalyzer());
+        PerFieldAnalyzerWrapper analyzer = new ReleaseAnalyzer();
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseIndex li = new ReleaseIndex(createConnection());
         li.indexData(writer, 0, Integer.MAX_VALUE);

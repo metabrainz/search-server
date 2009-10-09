@@ -22,7 +22,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new StandardUnaccentAnalyzer());
+        PerFieldAnalyzerWrapper analyzer = new ReleaseGroupAnalyzer();
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseGroupIndex li = new ReleaseGroupIndex(createConnection());
         li.indexData(writer, 0, Integer.MAX_VALUE);
