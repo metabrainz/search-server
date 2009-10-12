@@ -48,10 +48,10 @@ import org.apache.commons.lang.time.StopWatch;
 public class IndexBuilder
 {
     // Number of rows to process for each database 'chunk'
-    private static final int IDS_PER_CHUNK = 10000;
+    private static final int IDS_PER_CHUNK = 50000;
 
     // Number of rows to process in 'test' mode
-    private static final int MAX_TEST_ID = 50000;
+    private static final int MAX_TEST_ID = 100000;
 
     // Lucene parameters
     private static final int MAX_BUFFERED_DOCS = 10000;
