@@ -71,6 +71,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE label_type");
                 
                 stmt.addBatch("DROP TABLE release_group");
+                stmt.addBatch("DROP TABLE release_group_meta");
                 stmt.addBatch("DROP TABLE release_group_type");
 
                 stmt.addBatch("DROP TABLE release");
@@ -284,6 +285,17 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  editpending integer DEFAULT 0" +
                 ")");
 
+        stmt.addBatch("CREATE TABLE release_group_meta (" +
+                "  id serial NOT NULL," +
+                "  lastupdate timestamp," +
+                "  releasecount integer NOT NULL," +
+                "  firstreleasedate_year smallint," +
+                "  firstreleasedate_month smallint," +
+                "  firstreleasedate_day smallint," +
+                "  rating smallint," +
+                "  ratingcount integer" +
+                ")");
+        
         stmt.addBatch("CREATE TABLE release_group_type (" +
                 "  id serial NOT NULL," +                    
                 "  name character varying(255) NOT NULL" +

@@ -26,34 +26,41 @@ import org.apache.lucene.document.Field;
  */
 public enum ReleaseGroupIndexField implements IndexField {
 
-	ARTIST_ID		("arid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
-	ARTIST			("artist",			Field.Store.YES,	Field.Index.ANALYZED),
-	RELEASEGROUP_ID	("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
-	RELEASEGROUP	("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED),
-	TYPE			("type",			Field.Store.YES,	Field.Index.ANALYZED),
-	RELEASES		("releases",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),;
+    ENTITY_TYPE        ("_type",        Field.Store.YES,    Field.Index.NOT_ANALYZED),
+    ENTITY_GID         ("_gid",         Field.Store.YES,    Field.Index.NOT_ANALYZED),
+    ARTIST    	       ("artist",    	Field.Store.NO,     Field.Index.ANALYZED),
+    RELEASEGROUP       ("releasegroup",	Field.Store.NO,     Field.Index.ANALYZED),
+    RELEASES           ("releases",     Field.Store.NO,     Field.Index.ANALYZED),
+    FIRST_RELEASE_DATE ("date",         Field.Store.NO,     Field.Index.NOT_ANALYZED),    
+    TYPE               ("type",         Field.Store.NO,     Field.Index.ANALYZED),
+    COMMENT            ("comment",      Field.Store.NO,     Field.Index.ANALYZED),
+    ;
 
-	private String name;
-	private Field.Store store;
-	private Field.Index index;
+    private String name;
+    private Field.Store store;
+    private Field.Index index;
 
-	private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index) {
-		this.name = name;
-		this.store = store;
-		this.index = index;
-	}
+    private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index) {
+        this.name = name;
+        this.store = store;
+        this.index = index;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Field.Store getStore() {
-		return store;
-	}
+    public Field.Store getStore() {
+        return store;
+    }
 
-	public Field.Index getIndex() {
-		return index;
-	}
+    public Field.Index getIndex() {
+        return index;
+    }
+    
+    @Override
+    public String toString() {
+        return name;
+    }
 
 }
