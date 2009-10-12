@@ -6,6 +6,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.BatchUpdateException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 
 public abstract class AbstractIndexTest extends TestCase {
@@ -15,6 +25,21 @@ public abstract class AbstractIndexTest extends TestCase {
         return DriverManager.getConnection("jdbc:h2:mem");
     }
 
+    protected List<Document> search(RAMDirectory ramDir, String query, int offset, int limit) throws Exception {
+        IndexSearcher searcher = new IndexSearcher(ramDir, true);
+        QueryParser parser = new QueryParser(null, new StandardUnaccentAnalyzer());
+        TopScoreDocCollector collector = TopScoreDocCollector.create(offset + limit, true);
+        searcher.search(parser.parse(query), collector);
+
+        ArrayList<Document> results = new ArrayList<Document>();
+        ScoreDoc docs[] = collector.topDocs().scoreDocs;
+        for (int i = offset; i < docs.length; i++) {
+            Document doc = searcher.doc(docs[i].doc);
+            results.add(doc);
+        }
+        return results;
+    }
+	
     public void setup() throws Exception {
         try {
             Connection conn = createConnection();
@@ -56,14 +81,14 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE medium");
                 stmt.addBatch("DROP TABLE medium_format");
                 stmt.addBatch("DROP TABLE tracklist");
+                stmt.addBatch("DROP TABLE language");
+                stmt.addBatch("DROP TABLE script");                
                 
                 stmt.addBatch("DROP TABLE recording");
                 stmt.addBatch("DROP TABLE isrc");
                 stmt.addBatch("DROP TABLE track");
                 stmt.addBatch("DROP TABLE track_name");
 
-                stmt.addBatch("DROP TABLE language");
-                stmt.addBatch("DROP TABLE script");
                 stmt.addBatch("DROP TABLE country");
                 
                 stmt.addBatch("DROP TABLE work");
@@ -81,14 +106,6 @@ public abstract class AbstractIndexTest extends TestCase {
 
             Statement stmt = conn.createStatement();
 
-            setupAnnotationTables(stmt);
-            setupArtistTables(stmt);
-            setupLabelTables(stmt);
-            setupReleaseGroupTables(stmt);
-            setupReleaseTables(stmt);
-            setupRecordingTables(stmt);
-            setupWorkTables(stmt);
-            
             stmt.addBatch("CREATE TABLE country" +
                     "(" +
                     "  id serial NOT NULL," +
@@ -96,23 +113,15 @@ public abstract class AbstractIndexTest extends TestCase {
                     "  name character varying(255) NOT NULL" +
                     ")");
             
-            stmt.addBatch("CREATE TABLE language (" +
-                    "  id serial NOT NULL," +
-                    "  isocode_3t character(3) NOT NULL," +
-                    "  isocode_3b character(3) NOT NULL," +
-                    "  isocode_2 character(2)," +
-                    "  name character varying(100) NOT NULL," +
-                    "  frequency integer NOT NULL DEFAULT 0" +
-                    ")");
+            setupAnnotationTables(stmt);
+            setupArtistTables(stmt);
+            setupLabelTables(stmt);
+            setupReleaseGroupTables(stmt);
+            setupReleaseTables(stmt);
+            setupRecordingTables(stmt);
+            setupWorkTables(stmt);
 
-            stmt.addBatch("CREATE TABLE script (" +
-                    "  id serial NOT NULL," +
-                    "  isocode character(4) NOT NULL," +
-                    "  isonumber character(3) NOT NULL," +
-                    "  name character varying(100) NOT NULL," +
-                    "  frequency integer NOT NULL DEFAULT 0" +
-                    ")");
-
+            insertReferenceData(stmt);
 
             stmt.executeBatch();
             stmt.close();
@@ -340,6 +349,23 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name character varying(255) NOT NULL," +
                 "  year integer" +
                 ")");
+        
+        stmt.addBatch("CREATE TABLE language (" +
+                "  id serial NOT NULL," +
+                "  isocode_3t character(3) NOT NULL," +
+                "  isocode_3b character(3) NOT NULL," +
+                "  isocode_2 character(2)," +
+                "  name character varying(100) NOT NULL," +
+                "  frequency integer NOT NULL DEFAULT 0" +
+                ")");
+        
+        stmt.addBatch("CREATE TABLE script (" +
+                "  id serial NOT NULL," +
+                "  isocode character(4) NOT NULL," +
+                "  isonumber character(3) NOT NULL," +
+                "  name character varying(100) NOT NULL," +
+                "  frequency integer NOT NULL DEFAULT 0" +
+                ")");
     }
 
     protected void setupRecordingTables(Statement stmt) throws Exception {
@@ -403,7 +429,79 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name character varying(255) NOT NULL," +                    
                 "  refcount integer DEFAULT 0" +
                 ")");
-        
+    }
+	
+    protected void insertReferenceData(Statement stmt) throws Exception {
+
+        stmt.addBatch("INSERT INTO gender (id, name) VALUES " + 
+                "(1, 'Male'), " +
+                "(2, 'Female') "
+        );
+
+        stmt.addBatch("INSERT INTO artist_type (id, name) VALUES " + 
+                "(1, 'Person'), " +
+                "(2, 'Group') "
+        );
+
+        stmt.addBatch("INSERT INTO label_type (id, name) VALUES " + 
+                "(1, 'Distributor'), " +
+                "(2, 'Holding'), " +
+                "(3, 'Production'), " +
+                "(4, 'Bootleg Production'), " +
+                "(5, 'Reissue Production'), " +
+                "(6, 'Reissue Production'), " +
+                "(7, 'Publisher') "
+        );
+
+        stmt.addBatch("INSERT INTO release_status (id, name) VALUES " + 
+                "(1, 'Official'), " +
+                "(2, 'Promotion'), " +
+                "(3, 'Bootleg'), " +
+                "(4, 'Pseudo-Release') "
+        );
+
+        stmt.addBatch("INSERT INTO release_packaging (id, name) VALUES " + 
+                "(1, 'Jewel Case'), " +
+                "(2, 'Slim Jewel Case'), " +
+                "(3, 'Digipak'), " +
+                "(4, 'Paper Sleeve'), " +
+                "(5, 'Other') "
+        );
+
+        stmt.addBatch("INSERT INTO release_group_type (id, name) VALUES " + 
+                "(1, 'Non-Album Tracks'), " +
+                "(2, 'Album'), " +
+                "(3, 'Single'), " +
+                "(4, 'EP'), " +
+                "(5, 'Compilation'), " +
+                "(6, 'Soundtrack'), " +
+                "(7, 'Spokenword'), " +
+                "(8, 'Interview'), " +
+                "(9, 'Audiobook'), " +
+                "(10, 'Live'), " +
+                "(11, 'Remix'), " +
+                "(12, 'Other') "
+        );
+
+        stmt.addBatch("INSERT INTO medium_format (id, name, year) VALUES " + 
+                "(1, 'CD', 1982), " +
+                "(2, 'DVD', 1995), " +
+                "(3, 'SACD', 1999), " +
+                "(4, 'DualDisc', 2004), " +
+                "(5, 'LaserDisc', 1978), " +
+                "(6, 'MiniDisc', 1992), " +
+                "(7, 'Vinyl', 1895), " +
+                "(8, 'Cassette', 1964), " +
+                "(9, 'Cartridge', 1962), " +
+                "(10, 'Reel-to-reel', 1935), " +
+                "(11, 'DAT', 1976), " +
+                "(12, 'Digital Media', NULL), " +
+                "(13, 'Other', NULL), " +
+                "(14, 'Wax Cylinder', 1877), " +
+                "(15, 'Piano Roll', 1883), " +
+                "(16, 'DCC', 1992) "
+        );
+
     }
     
 }

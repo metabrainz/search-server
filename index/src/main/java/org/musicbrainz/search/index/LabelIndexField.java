@@ -17,7 +17,9 @@ public enum LabelIndexField implements IndexField {
     BEGIN	("begin",     Field.Store.NO,       Field.Index.NOT_ANALYZED),
     END		("end",       Field.Store.NO,       Field.Index.NOT_ANALYZED),
     COMMENT	("comment",   Field.Store.NO,       Field.Index.ANALYZED),
-    TYPE	("type",      Field.Store.NO,       Field.Index.NOT_ANALYZED),;
+    // TODO: Check if this field should really be analyzed 
+    TYPE	("type",      Field.Store.NO,       Field.Index.ANALYZED),
+    ;
 
     private String name;
     private Field.Store store;

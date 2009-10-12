@@ -10,11 +10,16 @@ import org.musicbrainz.search.index.LabelIndexField;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.List;
 
 
 public class LabelIndexTest extends AbstractIndexTest {
 
-
+    private static String LABEL_ONE_GID = "a539bb1e-f2e1-4b45-9db8-8053841e7503";
+    private static String LABEL_TWO_GID = "d8caa692-704d-412b-a410-4fbcf5b9c796";
+    private static String LABEL_THREE_GID = "d8caa692-704d-412b-a410-4fbcf5b9c796";
+    private static String ENTITY_TYPE = "label";
+    
     public void setUp() throws Exception {
         super.setup();
     }
@@ -22,13 +27,14 @@ public class LabelIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
         LabelIndex li = new LabelIndex(createConnection());
+        li.init();
         li.indexData(writer, 0, Integer.MAX_VALUE);
+        li.destroy();
         writer.close();
     }
 
-
     /**
-     * Some fields populated has alias, but no country
+     * Some fields populated, has alias, but no country
      *
      * @throws Exception
      */
@@ -38,21 +44,20 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
-		stmt.addBatch("INSERT INTO label_type (id, name) VALUES (4, 'Original Production')");
-		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
-					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
-					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, null, null, " +
-					"	1979, null, null, null, null, null)");
+        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+
+        stmt.addBatch("INSERT INTO label (id, gid, name, sortname, type, labelcode, country, comment, " + 
+                "	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+                "VALUES (1, '" + LABEL_ONE_GID + "', 1, 1, 4, 5807, null, null, " +
+                "	1979, null, null, null, null, null)"
+        );
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (1, 2)");
 
         stmt.executeBatch();
         stmt.close();
         conn.close();
     }
-
 
     /**
      * Most fields populated, but no alias
@@ -64,16 +69,16 @@ public class LabelIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-		
-		stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (38, 'CA','Canada')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
-		stmt.addBatch("INSERT INTO label_type (id, name) VALUES (7, 'Publisher')");
-		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
-					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
-					"VALUES (2, 'd8caa692-704d-412b-a410-4fbcf5b9c796', 3, 4, 1, 0099998, 38, 'DO NOT EDIT THIS LABEL', " +
-					"	2009, 1, 1, 2009, 4, null)");
+
+        stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (38, 'CA','Canada')");
+        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
+        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
+
+        stmt.addBatch("INSERT INTO label (id, gid, name, sortname, type, labelcode, country, comment, " + 
+                "	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+                "VALUES (2, '" + LABEL_TWO_GID + "', 3, 4, 1, 0099998, 38, 'DO NOT EDIT THIS LABEL', " +
+                "	2009, 1, 1, 2009, 4, null)"
+        );
 
         stmt.executeBatch();
         stmt.close();
@@ -90,15 +95,16 @@ public class LabelIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-		
-		stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (1, 'AF','Afghanistan')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
-		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
-					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
-					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, null, 1, null, " +
-					"	null, null, null, null, null, null)");
+
+        stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (1, 'AF','Afghanistan')");
+        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+
+        stmt.addBatch("INSERT INTO label (id, gid, name, sortname, type, labelcode, country, comment, " + 
+                "	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+                "VALUES (3, '" + LABEL_THREE_GID + "', 1, 1, null, null, 1, null, " +
+                "	null, null, null, null, null, null)"
+        );
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (3, 2)");
 
         stmt.executeBatch();
@@ -106,19 +112,15 @@ public class LabelIndexTest extends AbstractIndexTest {
         conn.close();
     }
 
-
     public void testIndexLabelWithNoCountry() throws Exception {
 
         addLabelOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
+        // Check if something has been indexed
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-        }
         ir.close();
 
     }
@@ -129,31 +131,21 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
+        // Check if something has been indexed
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-            assertEquals("af", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
-        }
         ir.close();
 
-    }
-
-
-    public void testIndexLabelWithNoComment() throws Exception {
-
-        addLabelOne();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        // Try to search using this piece of information
+        String query = LabelIndexField.COUNTRY + ":af";
+        List<Document> results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
         {
-            Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(LabelIndexField.COMMENT.getName()).length);
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_THREE_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
         }
-        ir.close();
     }
 
     public void testIndexLabelWithComment() throws Exception {
@@ -162,16 +154,38 @@ public class LabelIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
+        // Check if something has been indexed
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.COMMENT.getName()).length);
-            assertEquals("DO NOT EDIT THIS LABEL", doc.getField(LabelIndexField.COMMENT.getName()).stringValue());
-        }
-        ir.close();
-    }
+        ir.close();     
 
+        // Try to search using this piece of information
+        String query; 
+        List<Document> results;
+        query = LabelIndexField.COMMENT + ":\"DO NOT EDIT THIS LABEL\"";
+        results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
+        {
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_TWO_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
+        }
+        
+        // Search again in an altered form
+        query = LabelIndexField.COMMENT + ":\"NOT eDiT THIS label\"";
+        results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
+        {
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_TWO_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
+        }
+        
+    }
 
     public void testIndexLabelWithNoLabelCode() throws Exception {
 
@@ -181,13 +195,8 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(LabelIndexField.CODE.getName()).length);
-        }
         ir.close();
     }
-
 
     public void testIndexLabelWithLabelCode() throws Exception {
 
@@ -196,13 +205,19 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals("5807", doc.getField(LabelIndexField.CODE.getName()).stringValue());
-        }
         ir.close();
+        
+        // Try to search using this piece of information
+        String query = LabelIndexField.CODE + ":5807";
+        List<Document> results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
+        {
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_ONE_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
+        }
     }
 
     public void testIndexLabelWithLabelCodeWithZeroes() throws Exception {
@@ -212,17 +227,23 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals("99998", doc.getField(LabelIndexField.CODE.getName()).stringValue());
-        }
         ir.close();
+        
+        // Try to search using this piece of information
+        String query = LabelIndexField.CODE + ":99998";
+        List<Document> results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
+        {
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_TWO_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
+        }
     }
 
     /**
-     * Checks fields are indexed correctly for label with alias (the aliases are not stored)
+     * Checks fields are indexed correctly for label with alias
      *
      * @throws Exception
      */
@@ -233,12 +254,19 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(LabelIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
-        }
         ir.close();
+        
+        // Try to search using this piece of information
+        String query = LabelIndexField.ALIAS + ":\"4AD US\"";
+        List<Document> results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
+        {
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_ONE_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
+        }
     }
 
     /**
@@ -253,16 +281,21 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.BEGIN.getName()).length);
-            assertEquals("1979", doc.getField(LabelIndexField.BEGIN.getName()).stringValue());
-        }
         ir.close();
+        
+        // Try to search using this piece of information
+        String query = LabelIndexField.BEGIN + ":\"1979\"";
+        List<Document> results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
+        {
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_ONE_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
+        }
     }
-
-
+    
     /**
      * Checks record with begin date = null is not indexed
      *
@@ -276,10 +309,6 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(LabelIndexField.BEGIN.getName()).length);
-        }
         ir.close();
     }
 
@@ -296,34 +325,20 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.END.getName()).length);
-            assertEquals("2009-04", doc.getField(LabelIndexField.END.getName()).stringValue());
-        }
         ir.close();
-    }
-
-    /**
-     * Checks record with end date = null is not indexed
-     *
-     * @throws Exception
-     */
-    public void testIndexLabelWithNoEndDate() throws Exception {
-
-        addLabelThree();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        
+        // Try to search using this piece of information
+        String query = LabelIndexField.END + ":\"2009-04\"";
+        List<Document> results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
         {
-            Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(LabelIndexField.END.getName()).length);
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_TWO_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
         }
-        ir.close();
     }
-
 
     public void testIndexLabelWithType() throws Exception {
 
@@ -333,33 +348,35 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
-            assertEquals("Original Production", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
-        }
         ir.close();
+        
+        // Try to search using this piece of information
+        String query = LabelIndexField.TYPE + ":\"bootleg production\"";
+        List<Document> results = search(ramDir, query, 0, 10);
+        assertEquals(1, results.size());
+        {
+            Document doc = results.get(0);
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_GID.getName()).length);
+            assertEquals(LABEL_ONE_GID, doc.getField(LabelIndexField.ENTITY_GID.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.ENTITY_TYPE.getName()).length);
+            assertEquals(ENTITY_TYPE, doc.getField(LabelIndexField.ENTITY_TYPE.getName()).stringValue());
+        }
     }
 
-//    /**
-//     * Checks record with type = null is set to unknown
-//     *
-//     * @throws Exception
-//     */
-//    public void testIndexLabelWithNoType() throws Exception {
-//
-//        addLabelThree();
-//        RAMDirectory ramDir = new RAMDirectory();
-//        createIndex(ramDir);
-//
-//        IndexReader ir = IndexReader.open(ramDir, true);
-//        assertEquals(1, ir.numDocs());
-//        {
-//            Document doc = ir.document(0);
-//            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
-//            assertEquals("unknown", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
-//        }
-//        ir.close();
-//    }
+    /**
+     * Checks record with no type is indexed
+     *
+     * @throws Exception
+     */
+    public void testIndexLabelWithNoType() throws Exception {
+
+        addLabelThree();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        ir.close();
+    }
 
 }

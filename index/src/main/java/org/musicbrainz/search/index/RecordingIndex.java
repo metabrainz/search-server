@@ -47,26 +47,30 @@ public class RecordingIndex extends DatabaseIndex {
     @Override
     public void init() throws SQLException {
         addPreparedStatement("ARTIST_NAMES",
-                "SELECT DISTINCT recording.id AS recording, n.name " +
-                "  FROM artist_name n " +
-                "    JOIN artist_credit_name ON artist_credit_name.name = n.id " +
-                "    JOIN artist_credit ON artist_credit.id = artist_credit_name.artist_credit " +
-                "    JOIN recording ON recording.artist_credit = artist_credit.id " +
-                "  WHERE recording.id BETWEEN ? AND ? " +
-                "UNION " +
-                "SELECT DISTINCT track.recording AS recording, n.name " +
-                "  FROM artist_name n " +
-                "    JOIN artist_credit_name ON artist_credit_name.name = n.id " +
-                "    JOIN artist_credit ON artist_credit.id = artist_credit_name.artist_credit " +
-                "    JOIN track ON track.artist_credit = artist_credit.id " +
-                "  WHERE track.recording BETWEEN ? AND ? "
+                "SELECT t.recording, n0.name as credit_name, joinphrase, n1.name as artist_name " +
+                "  FROM artist_name n0 " +
+                "    JOIN artist_credit_name ON artist_credit_name.name = n0.id " +
+                "    JOIN artist ON artist.id = artist_credit_name.artist " +
+                "    JOIN artist_name n1 ON n1.id = artist.name " +
+                "    JOIN ( " +
+                "       SELECT recording.id AS recording, artist_credit " +
+                "          FROM recording " +
+                "          WHERE recording.id BETWEEN ? AND ? " +
+                "       UNION " +
+                "       SELECT DISTINCT recording, artist_credit " +
+                "          FROM track " +
+                "          WHERE track.recording BETWEEN ? AND ? " +
+                "       ) t ON t.artist_credit = artist_credit_name.artist_credit "
         );
-        
+
         addPreparedStatement("TRACK_NAMES",
-                "SELECT DISTINCT track.recording AS recording, n.name " +
+                "SELECT t.recording, n.name " +
                 "  FROM track_name n " +
-                "    JOIN track ON track.name = n.id " +
-                "  WHERE track.recording BETWEEN ? AND ? "
+                "    JOIN (" +
+                "       SELECT DISTINCT recording, name " +
+                "       FROM track " +
+                "       WHERE track.recording BETWEEN ? AND ?" +
+                "    ) t ON t.name = n.id  "
         );
         
         addPreparedStatement("RECORDINGS",
@@ -106,7 +110,13 @@ public class RecordingIndex extends DatabaseIndex {
             } else {
                 list = artistNames.get(recordingId);
             }
-            list.add(rs.getString("name"));
+            String creditName = rs.getString("credit_name");
+            list.add(creditName);
+            
+            String joinphrase = rs.getString("joinphrase");
+            if (joinphrase != null && !joinphrase.isEmpty()) { list.add(joinphrase); }
+            
+            if (!creditName.equals(rs.getString("artist_name"))) list.add(rs.getString("artist_name"));
         }
         
         // Get tracks names
@@ -133,6 +143,7 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
+        
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, artistNames, trackNames));
         }
