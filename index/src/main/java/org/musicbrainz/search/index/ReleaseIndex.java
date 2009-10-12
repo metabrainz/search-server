@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReleaseIndex extends Index {
+public class ReleaseIndex extends DatabaseIndex {
 
     private Pattern stripBarcodeOfLeadingZeroes;
 

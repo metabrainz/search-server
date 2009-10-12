@@ -57,8 +57,8 @@ public class IndexBuilder
     private static final int MAX_BUFFERED_DOCS = 10000;
     private static final int MERGE_FACTOR = 3000;
 
-	// PostgreSQL schema that holds MB data
-	protected static final String DB_SCHEMA = "musicbrainz";
+    // PostgreSQL schema that holds MB data
+    protected static final String DB_SCHEMA = "musicbrainz";
 
     public static void main(String[] args) throws SQLException, IOException
     {
@@ -79,20 +79,20 @@ public class IndexBuilder
             parser.printUsage(System.out);
             System.exit(1);
         }
-        
+
         if (options.isTest()) { System.out.println("Running in test mode."); }
 
         // At least one index should have been selected 
         ArrayList<String> selectedIndexes = options.selectedIndexes();
         if (selectedIndexes.size() == 0 
-              || (selectedIndexes.size() == 1 && selectedIndexes.contains(""))) { 
+                || (selectedIndexes.size() == 1 && selectedIndexes.contains(""))) { 
             System.out.println("No indexes selected. Exiting.");
             System.exit(1);
         }
 
         Connection mainDbConn = null;
         Connection rawDbConn = null; 
-        
+
         // Check that FreeDB is not the only index requested for build
         if (options.selectedIndexes().size() > 1 || !options.buildIndex("freedb")) {
 
@@ -121,22 +121,30 @@ public class IndexBuilder
             rawDbConn = DriverManager.getConnection(url, props);
             prepareDbConnection(rawDbConn);
         }
-    
+
         StopWatch clock = new StopWatch();
         Analyzer analyzer = new StandardUnaccentAnalyzer();
 
         // MusicBrainz data indexing
-        Index[] indexes = {
+        DatabaseIndex[] indexes = {
                 new ArtistIndex(mainDbConn),
                 new ReleaseIndex(mainDbConn),
                 new ReleaseGroupIndex(mainDbConn),
+                new RecordingIndex(mainDbConn),
                 new TrackIndex(mainDbConn),
                 new LabelIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
                 new CDStubIndex(rawDbConn),
         };
 
-        for (Index index : indexes) {
+        IndexWriter indexWriter;
+        String path = options.getIndexesDir() + "unified" + "_index";
+
+        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
+        indexWriter.setMergeFactor(MERGE_FACTOR);
+        
+        for (DatabaseIndex index : indexes) {
 
             // Check if this index should be built
             if (!options.buildIndex(index.getName())) {
@@ -145,12 +153,16 @@ public class IndexBuilder
             }
 
             clock.start();
-            buildDatabaseIndex(index, analyzer, options);
+            buildDatabaseIndex(indexWriter, index, analyzer, options);
             clock.stop();
             System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
             clock.reset();
         }
 
+        System.out.println("\n  Optimizing");
+        indexWriter.optimize();
+        indexWriter.close();
+        
         // FreeDB data indexing
         if(options.buildIndex("freedb")) {
 
@@ -174,14 +186,10 @@ public class IndexBuilder
      * @throws IOException 
      * @throws SQLException 
      */
-    private static void buildDatabaseIndex(Index index, Analyzer analyzer, IndexBuilderOptions options) throws IOException, SQLException
+    private static void buildDatabaseIndex(IndexWriter indexWriter, DatabaseIndex index, Analyzer analyzer, IndexBuilderOptions options) throws IOException, SQLException
     {
-        IndexWriter indexWriter;
-        String path = options.getIndexesDir() + index.getName() + "_index";
-        System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.getDirectory(path), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
-        indexWriter.setMergeFactor(MERGE_FACTOR);
+        System.out.println("Building index: " + index.getName());
+        index.init();
 
         int maxId = index.getMaxId();
         if (options.isTest() && MAX_TEST_ID < maxId)
@@ -193,12 +201,10 @@ public class IndexBuilder
             j += IDS_PER_CHUNK;
         }
 
+        index.destroy();
         addMetaFieldsToIndex(indexWriter);
-        System.out.println("\n  Optimizing");
-        indexWriter.optimize();
-        indexWriter.close();
     }
-    
+
     /**
      * Build a FreeDB index from a FreeDB dump
      * 
@@ -214,7 +220,7 @@ public class IndexBuilder
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getName() + "_index";
         System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.getDirectory(path), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
@@ -240,7 +246,7 @@ public class IndexBuilder
                 MetaIndexField.META.getStore(), MetaIndexField.META.getIndex()));
         indexWriter.addDocument(doc);
     }    
-    
+
     /**
      * Prepare a database connection, and set its default Postgres schema
      * 
@@ -249,10 +255,10 @@ public class IndexBuilder
      */
     private static void prepareDbConnection(Connection connection) throws SQLException
     {
-		Statement st = connection.createStatement();
-		st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
+        Statement st = connection.createStatement();
+        st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
     }
-    
+
 }
 
 class IndexBuilderOptions {

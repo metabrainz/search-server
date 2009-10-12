@@ -29,7 +29,7 @@ import org.apache.lucene.document.Document;
 
 import java.sql.*;
 
-public class LabelIndex extends Index {
+public class LabelIndex extends DatabaseIndex {
 
     private Pattern stripLabelCodeOfLeadingZeroes;
 
@@ -38,25 +38,47 @@ public class LabelIndex extends Index {
         stripLabelCodeOfLeadingZeroes = Pattern.compile("^0+");
     }
 
+    @Override
     public String getName() {
         return "label";
     }
-
+    
+    @Override
+    public void init() throws SQLException {
+        addPreparedStatement("ALIASES",
+                "SELECT label_alias.label as label, n.name as alias " +
+                "FROM label_alias " +
+                " JOIN label_name n ON (label_alias.name = n.id) " +
+                "WHERE label BETWEEN ? AND ?"
+        );
+        
+        addPreparedStatement("LABELS",
+                "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
+                "       label_type.name as type, begindate_year, begindate_month, begindate_day, " +
+                "       enddate_year, enddate_month, enddate_day, " +
+                "       comment, labelcode, lower(isocode) as country " +
+                "FROM label " +
+                " LEFT JOIN label_name n0 ON label.name = n0.id " +
+                " LEFT JOIN label_name n1 ON label.sortname = n1.id " +
+                " LEFT JOIN label_type ON label.type = label_type.id " +
+                " LEFT JOIN country ON label.country = country.id " +
+                "WHERE label.id BETWEEN ? AND ?"
+        );
+    }
+    
+    @Override
     public int getMaxId() throws SQLException {
-        Statement st = dbConnection.createStatement();
+        Statement st = getDbConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM label");
         rs.next();
         return rs.getInt(1);
     }
 
+    @Override
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
     	// Get labels aliases
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = dbConnection.prepareStatement(
-        		"SELECT label_alias.label as label, n.name as alias " +
-        		"FROM label_alias " +
-        		" JOIN label_name n ON (label_alias.name = n.id) " +
-        		"WHERE label BETWEEN ? AND ?");
+        PreparedStatement st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -72,20 +94,9 @@ public class LabelIndex extends Index {
             }
             list.add(rs.getString("alias"));
         }
-        st.close();
         
         // Get labels
-        st = dbConnection.prepareStatement(
-                "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
-                "	label_type.name as type, begindate_year, begindate_month, begindate_day, " +
-                "	enddate_year, enddate_month, enddate_day, " +
-                "	comment, labelcode, lower(isocode) as country " +
-                "FROM label " +
-                " LEFT JOIN label_name n0 ON label.name = n0.id " +
-                " LEFT JOIN label_name n1 ON label.sortname = n1.id " +
-                " LEFT JOIN label_type ON label.type = label_type.id " +
-                " LEFT JOIN country ON label.country = country.id " +
-                "WHERE label.id BETWEEN ? AND ?");
+        st = getPreparedStatement("LABELS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
@@ -93,14 +104,14 @@ public class LabelIndex extends Index {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, aliases));
         }
-        st.close();
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
+    protected Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
 
         Document doc = new Document();
         int labelId = rs.getInt("id");
-        addFieldToDocument(doc, LabelIndexField.LABEL_GID, rs.getString("gid"));
+        addFieldToDocument(doc, LabelIndexField.ENTITY_TYPE, this.getName());
+        addFieldToDocument(doc, LabelIndexField.ENTITY_GID, rs.getString("gid"));
         addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
         addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
         addNonEmptyFieldToDocument(doc, LabelIndexField.TYPE, rs.getString("type"));

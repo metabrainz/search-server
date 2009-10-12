@@ -10,7 +10,7 @@ import java.sql.Statement;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 
-public class AnnotationIndex extends Index {
+public class AnnotationIndex extends DatabaseIndex {
 
 	public AnnotationIndex(Connection dbConnection) {
 		super(dbConnection);

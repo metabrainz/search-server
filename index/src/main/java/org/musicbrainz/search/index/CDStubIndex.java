@@ -26,7 +26,7 @@ import org.apache.lucene.document.Document;
 
 import java.sql.*;
 
-public class CDStubIndex extends Index {
+public class CDStubIndex extends DatabaseIndex {
 
     public CDStubIndex(Connection dbConnection) {
         super(dbConnection);

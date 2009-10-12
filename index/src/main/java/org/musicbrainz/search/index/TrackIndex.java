@@ -27,7 +27,7 @@ import org.apache.lucene.document.NumberTools;
 
 import java.sql.*;
 
-public class TrackIndex extends Index {
+public class TrackIndex extends DatabaseIndex {
 
     private final static int QUANTIZED_DURATION = 2000;
    

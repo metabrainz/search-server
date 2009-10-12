@@ -19,38 +19,30 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
 
 public abstract class Index {
 
-	protected Connection dbConnection;
-	
-	public Index(Connection dbConnection) {
-		this.dbConnection = dbConnection;
-	}
-	
-	public abstract int getMaxId() throws SQLException;
     public abstract String getName();
-	public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
 
-	protected static String normalizeDate(String date) {
-		return date.replace("-00", "");
-	}
-	
-	public static void addFieldToDocument(Document doc, IndexField field, String value) {
-		doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
-	}
-	
-	public static void addNonEmptyFieldToDocument(Document doc, IndexField field, String value) {
+    public void init() throws SQLException {};
+    public void destroy() throws SQLException {};
+    
+    protected static String normalizeDate(String date) {
+        return date.replace("-00", "");
+    }
+
+    public static void addFieldToDocument(Document doc, IndexField field, String value) {
+        doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
+    }
+
+    public static void addNonEmptyFieldToDocument(Document doc, IndexField field, String value) {
         if (value != null && !value.isEmpty()) {
-        	doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
+            doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
         }
-	}
+    }
 
 }

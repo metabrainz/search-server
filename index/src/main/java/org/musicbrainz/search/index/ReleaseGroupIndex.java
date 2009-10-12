@@ -27,7 +27,7 @@ import org.apache.lucene.document.Document;
 
 import java.sql.*;
 
-public class ReleaseGroupIndex extends Index {
+public class ReleaseGroupIndex extends DatabaseIndex {
 
 	public ReleaseGroupIndex(Connection dbConnection) {
 		super(dbConnection);
