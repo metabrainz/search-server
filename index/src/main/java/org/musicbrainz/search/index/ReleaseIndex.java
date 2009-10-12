@@ -19,32 +19,19 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.analysis.Analyzer;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.sql.*;
+import java.util.*;
 
 public class ReleaseIndex extends Index {
 
-    private Pattern stripBarcodeOfLeadingZeroes;
 
     public ReleaseIndex(Connection dbConnection) {
         super(dbConnection);
-
-        //TODO move to analyzer
-        stripBarcodeOfLeadingZeroes = Pattern.compile("^0+");
     }
 
     public Analyzer getAnalyzer() {
@@ -198,7 +185,6 @@ public class ReleaseIndex extends Index {
             list.add(aw);
         }
         st.close();
-
 
         st = dbConnection.prepareStatement(
                 "SELECT rl.id, rl.gid, rn.name as name, " +

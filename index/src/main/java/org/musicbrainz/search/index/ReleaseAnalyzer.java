@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.BarcodeAnalyzer;
 
 
 public class ReleaseAnalyzer extends PerFieldAnalyzerWrapper {
@@ -19,7 +20,7 @@ public class ReleaseAnalyzer extends PerFieldAnalyzerWrapper {
         addAnalyzer(ReleaseIndexField.LANGUAGE.getName(),new CaseInsensitiveKeywordAnalyzer());
         addAnalyzer(ReleaseIndexField.CATALOG_NO.getName(),new CaseInsensitiveKeywordAnalyzer());
         addAnalyzer(ReleaseIndexField.TYPE.getName(),new KeywordAnalyzer());
-
+        addAnalyzer(ReleaseIndexField.BARCODE.getName(),new BarcodeAnalyzer());
     }
 
 }
