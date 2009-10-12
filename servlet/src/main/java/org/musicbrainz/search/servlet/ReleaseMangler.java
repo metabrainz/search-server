@@ -33,30 +33,13 @@ public class ReleaseMangler implements QueryMangler {
 
     private Pattern matchTypeOrdinals;
     private Pattern matchStatusOrdinals;
-    private Pattern matchBarcodeWithLeadingZeroes;
 
     public ReleaseMangler() {
         matchTypeOrdinals = Pattern.compile("(" + ReleaseIndexField.TYPE.getName() + ":)(\\d+)");
         matchStatusOrdinals = Pattern.compile("(" + ReleaseIndexField.STATUS.getName() + ":)(\\d)");
-        matchBarcodeWithLeadingZeroes = Pattern.compile(ReleaseIndexField.BARCODE.getName() + ":0+");
-
     }
 
-    /**
-     * Handles query parameters containing
-     * barcode:barcode:075596085625
-     * <p/>
-     * Lucene expects
-     * barcode:75596085625
-     *
-     * @param query
-     * @return
-     */
-    private String convertBarcodesWithLeadingZeroes(String query) {
-        Matcher m = matchBarcodeWithLeadingZeroes.matcher(query);
-        return m.replaceAll(ReleaseIndexField.BARCODE.getName() + ":");
 
-    }
 
 
     /**
@@ -117,7 +100,7 @@ public class ReleaseMangler implements QueryMangler {
     }
 
     public String mangleQuery(String originalQuery) {
-        return convertBarcodesWithLeadingZeroes(convertStatusByOrdinal(convertTypeByOrdinal(originalQuery)));
+        return convertStatusByOrdinal(convertTypeByOrdinal(originalQuery));
 
     }
 }

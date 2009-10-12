@@ -44,8 +44,7 @@ public class QueryManglerTest extends TestCase {
         assertEquals("status:Official", qm.mangleQuery("status:1"));
         assertEquals("status:0", qm.mangleQuery("status:0"));
         assertEquals("status:Official OR status:PseudoRelease", qm.mangleQuery("status:1 OR status:4"));
-        assertEquals("barcode:88847474", qm.mangleQuery("barcode:088847474"));
-
+ 
 
     }
 
