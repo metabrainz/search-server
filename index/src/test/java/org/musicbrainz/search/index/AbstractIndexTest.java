@@ -276,7 +276,7 @@ public abstract class AbstractIndexTest extends TestCase {
     	
         stmt.addBatch("CREATE TABLE release_group (" +
                 "  id serial NOT NULL," +
-                "  gid character(36)," +
+                "  gid character(36) NOT NULL," +
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  type integer," +
@@ -294,7 +294,7 @@ public abstract class AbstractIndexTest extends TestCase {
     
         stmt.addBatch("CREATE TABLE release (" +
                 "  id serial NOT NULL," +
-                "  gid character(36)," +
+                "  gid character(36) NOT NULL," +
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  release_group integer NOT NULL," +
@@ -410,7 +410,7 @@ public abstract class AbstractIndexTest extends TestCase {
     	
         stmt.addBatch("CREATE TABLE work (" +
                 "  id serial NOT NULL," +
-                "  gid character(36)," +
+                "  gid character(36) NOT NULL," +
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  type integer," +
