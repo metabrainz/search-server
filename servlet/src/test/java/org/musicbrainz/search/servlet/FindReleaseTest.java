@@ -59,13 +59,14 @@ public class FindReleaseTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseIndexField.TYPE, "album");
         Index.addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, "B00004Y6O9");
 
-        //Per Event
         Index.addFieldToDocument(doc, ReleaseIndexField.COUNTRY, "gb");
-        Index.addFieldToDocument(doc, ReleaseIndexField.LABEL, "Wrath Records");
-        Index.addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, "WRATHCD25");
-        Index.addFieldToDocument(doc, ReleaseIndexField.DATE, "2005");
-        Index.addFieldToDocument(doc, ReleaseIndexField.BARCODE, "-");
         Index.addFieldToDocument(doc, ReleaseIndexField.FORMAT, "Vinyl");
+        Index.addFieldToDocument(doc, ReleaseIndexField.DATE, "2005");
+
+        //Per Event
+        Index.addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, "WRATHCD25");
+        Index.addFieldToDocument(doc, ReleaseIndexField.LABEL, "Wrath Records");
+
 
 
         writer.addDocument(doc);
@@ -86,8 +87,6 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -115,8 +114,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -143,8 +142,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -171,8 +170,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -199,8 +198,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -227,8 +226,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -255,8 +254,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+         assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -282,8 +281,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+         assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -313,8 +312,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -344,8 +343,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -375,8 +374,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+         assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -406,8 +405,8 @@ public class FindReleaseTest extends TestCase {
         assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
         assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-        assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -436,8 +435,8 @@ public class FindReleaseTest extends TestCase {
          assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
          assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
          assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-         assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-         assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
          assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
          assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
          assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -467,8 +466,8 @@ public class FindReleaseTest extends TestCase {
          assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
          assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
          assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-         assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-         assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+         assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+
          assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
          assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
          assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
@@ -495,8 +494,8 @@ public class FindReleaseTest extends TestCase {
             assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
             assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
             assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
-            assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
-            assertEquals("-", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE).length);
+                    
             assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
             assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
             assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);

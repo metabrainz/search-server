@@ -102,24 +102,20 @@ public class ReleaseXmlWriter extends XmlWriter {
                 release.setTextRepresentation(tr);
             }
 
-            String[] countries = doc.getValues(ReleaseIndexField.COUNTRY);
-            if (countries.length > 0) {
-                ReleaseEventList eventList = of.createReleaseEventList();
-                String[] dates = doc.getValues(ReleaseIndexField.DATE);
-                String[] labels = doc.getValues(ReleaseIndexField.LABEL);
-                String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
-                String[] barcodes = doc.getValues(ReleaseIndexField.BARCODE);
-                String[] formats = doc.getValues(ReleaseIndexField.FORMAT);
-                
-                for (int i = 0; i < countries.length; i++) {
-                    Event event = of.createEvent();
-                    if (!countries[i].equals("-")) {
-                        event.setCountry(StringUtils.upperCase(countries[i]));
-                    }
+            String country = doc.get(ReleaseIndexField.COUNTRY);
+            String date = doc.get(ReleaseIndexField.DATE);
+            String barcode = doc.get(ReleaseIndexField.BARCODE);
+            String format = doc.get(ReleaseIndexField.FORMAT);
 
-                    if (!dates[i].equals("-")) {
-                        event.setDate(dates[i]);
-                    }
+            String[] labels = doc.getValues(ReleaseIndexField.LABEL);
+            //Now releases can only have multiple labe;/catno combinations but MMDv1
+            //expects country,date,barcode and format to also be part of each release event.
+            if (labels.length > 0) {
+                ReleaseEventList eventList = of.createReleaseEventList();
+                String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
+
+                for (int i = 0; i < labels.length; i++) {
+                    Event event = of.createEvent();
 
                     if (!labels[i].equals("-")) {
                         Label label = of.createLabel();
@@ -131,18 +127,46 @@ public class ReleaseXmlWriter extends XmlWriter {
                         event.setCatalogNumber(catnos[i]);
                     }
 
-                    if (!barcodes[i].equals("-")) {
-                        event.setBarcode(barcodes[i]);
+                    if (country != null) {
+                        event.setCountry(StringUtils.upperCase(country));
                     }
 
-                    if (!formats[i].equals("-")) {
-                      event.setFormat(formats[i]);
+                    if (event != null) {
+                        event.setDate(date);
                     }
 
+                    if (barcode != null) {
+                        event.setBarcode(barcode);
+                    }
 
+                    if (format != null) {
+                        event.setFormat(format);
+                    }
                     eventList.getEvent().add(event);
                 }
                 release.setReleaseEventList(eventList);
+            }
+            else {
+                ReleaseEventList eventList = of.createReleaseEventList();
+                Event event = of.createEvent();
+
+                if (country != null) {
+                    event.setCountry(StringUtils.upperCase(country));
+                }
+
+                if (event != null) {
+                    event.setDate(date);
+                }
+
+                if (barcode != null) {
+                    event.setBarcode(barcode);
+                }
+
+                if (format != null) {
+                    event.setFormat(format);
+                }
+                eventList.getEvent().add(event);
+                release.setReleaseEventList(eventList);                    
             }
 
             String artistName = doc.get(ReleaseIndexField.ARTIST);
