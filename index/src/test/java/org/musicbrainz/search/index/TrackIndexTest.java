@@ -5,6 +5,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.TrackIndex;
 import org.musicbrainz.search.index.TrackIndexField;
@@ -189,10 +190,10 @@ public class TrackIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(TrackIndexField.RELEASE_ID.getName()).stringValue());
             assertEquals("Echo & The Bunnymen", doc.getField(TrackIndexField.ARTIST.getName()).stringValue());
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(TrackIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("2", doc.getField(TrackIndexField.NUM_TRACKS.getName()).stringValue());
-            assertEquals("00000000000004", doc.getField(TrackIndexField.TRACKNUM.getName()).stringValue());
-            assertEquals("00000000000pgo", doc.getField(TrackIndexField.DURATION.getName()).stringValue());
-            assertEquals("0000000000000g", doc.getField(TrackIndexField.QUANTIZED_DURATION.getName()).stringValue());
+            assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(TrackIndexField.NUM_TRACKS.getName()).stringValue()));
+            assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(TrackIndexField.TRACKNUM.getName()).stringValue()));
+            assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(TrackIndexField.DURATION.getName()).stringValue()));
+            assertEquals(16, NumericUtils.prefixCodedToInt(doc.getField(TrackIndexField.QUANTIZED_DURATION.getName()).stringValue()));
         }
         ir.close();
     }

@@ -192,7 +192,7 @@ public abstract class SearchServer {
         if (getSearchFields().size() > 1) {
             return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
         } else {
-            return new QueryParser(defaultFields.get(0), analyzer);
+            return new MusicbrainzQueryParser(defaultFields.get(0), analyzer);
 
         }
     }

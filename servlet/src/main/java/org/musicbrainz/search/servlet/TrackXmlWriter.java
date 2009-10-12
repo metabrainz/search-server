@@ -36,6 +36,7 @@ import com.jthink.brainz.mmd.ReleaseList;
 import com.jthink.brainz.mmd.Track;
 import com.jthink.brainz.mmd.TrackList;
 import org.apache.lucene.document.NumberTools;
+import org.apache.lucene.util.NumericUtils;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.index.TrackIndexField;
@@ -71,7 +72,7 @@ public class TrackXmlWriter extends XmlWriter {
 
             String duration = doc.get(TrackIndexField.DURATION);
             if (duration != null) {
-                track.setDuration(BigInteger.valueOf(NumberTools.stringToLong(duration)));
+                track.setDuration(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
             }
 
 
@@ -100,9 +101,9 @@ public class TrackXmlWriter extends XmlWriter {
                 String tracks = doc.get(TrackIndexField.NUM_TRACKS);
                 if (trackNo != null) {
                     TrackList releaseTrackList = of.createTrackList();
-                    releaseTrackList.setOffset(BigInteger.valueOf(NumberTools.stringToLong(trackNo) - 1));
+                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNo) - 1));
                     if (tracks != null) {
-                        releaseTrackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
+                        releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(tracks)));
                     }
                     release.setTrackList(releaseTrackList);
 

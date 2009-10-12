@@ -152,12 +152,11 @@ public class TrackIndex extends Index {
         addNonEmptyFieldToDocument(doc, TrackIndexField.TRACK, rs.getString("trackname"));
         addFieldToDocument(doc, TrackIndexField.RELEASE_ID, rs.getString("releaseid"));
         addFieldToDocument(doc, TrackIndexField.RELEASE, rs.getString("releasename"));
-        addFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getString("trackcount"));
-        addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("duration")));
-        addFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, NumberTools.longToString(rs.getLong("duration") / QUANTIZED_DURATION));
-        addFieldToDocument(doc, TrackIndexField.TRACKNUM, NumberTools.longToString(rs.getLong("position")));
-
-        addNonEmptyFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, rs.getString("type"));
+        addNumericFieldToDocument(doc, TrackIndexField.NUM_TRACKS, rs.getInt("trackcount"));
+        addNumericFieldToDocument(doc, TrackIndexField.DURATION, rs.getInt("duration"));
+        addNumericFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+        addNumericFieldToDocument(doc, TrackIndexField.TRACKNUM, rs.getInt("position"));
+        addNonEmptyFieldToDocument(doc,TrackIndexField.RELEASE_TYPE, rs.getString("type"));
 
         if (artists.containsKey(recordingId)) {
             //For each credit artist for this release

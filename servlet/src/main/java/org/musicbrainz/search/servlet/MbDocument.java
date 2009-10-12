@@ -31,6 +31,7 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumberTools;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.IndexField;
 
 import java.math.BigInteger;
@@ -54,11 +55,11 @@ public class MbDocument {
      * @return
      */
     public String getAsText(IndexField indexField) {
-         return String.valueOf(NumberTools.stringToLong(doc.get(indexField.getName())));
+         return String.valueOf(NumericUtils.prefixCodedToInt(doc.get(indexField.getName())));
 	}
 
-    public Long getAsNumber(IndexField indexField) {
-            return NumberTools.stringToLong(doc.get(indexField.getName()));
+    public Integer getAsNumber(IndexField indexField) {
+            return NumericUtils.prefixCodedToInt(doc.get(indexField.getName()));
        }
 
     public String[] getValues(IndexField indexField) {

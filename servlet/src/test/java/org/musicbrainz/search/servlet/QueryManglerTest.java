@@ -68,11 +68,5 @@ public class QueryManglerTest extends TestCase {
         assertEquals("name:fred OR type:single", qm.mangleQuery("name:fred OR type:2"));
         assertEquals("type:album", qm.mangleQuery("type:album"));
         assertEquals("type:audiobook", qm.mangleQuery("type:8"));
-        assertEquals("qdur:00000000000039", qm.mangleQuery("qdur:117"));
-        assertEquals("qdur:[0000000000002p TO 00000000000039]", qm.mangleQuery("qdur:[97 TO 117]"));
-        assertEquals("dur:000000000050k0", qm.mangleQuery("dur:234000"));
-        assertEquals("dur:[000000000050k0 TO 000000000051bs]", qm.mangleQuery("dur:[234000 TO 235000]"));
-
-
     }
 }

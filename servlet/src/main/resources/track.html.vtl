@@ -59,7 +59,7 @@ redirect=$redirect
             <td>
                 <a href="/release/${doc.get($TrackIndexField.RELEASE_ID)}.html">$doc.get($TrackIndexField.RELEASE)</a>
             </td>
-            <td align="center">$doc.get($TrackIndexField.NUM_TRACKS)</td>
+            <td align="center">$doc.getAsNumber($TrackIndexField.NUM_TRACKS)</td>
             #if ( $tport )
               <td style="white-space: nowrap">
                 <a href="http://127.0.0.1:${tport}/openalbum?id=${doc.get($TrackIndexField.RELEASE_ID)}&amp;t=$time"
