@@ -46,8 +46,9 @@ public class RecordingIndex extends DatabaseIndex {
 
     @Override
     public void init() throws SQLException {
-        addPreparedStatement("ARTIST_NAMES",
-                "SELECT t.recording, n0.name as credit_name, joinphrase, n1.name as artist_name " +
+        addPreparedStatement("ARTIST_CREDITS",
+                "SELECT t.recording, t.artist_credit, " +
+                "    n0.name as credit_name, joinphrase, artist.id as artist_id, n1.name as artist_name " +
                 "  FROM artist_name n0 " +
                 "    JOIN artist_credit_name ON artist_credit_name.name = n0.id " +
                 "    JOIN artist ON artist.id = artist_credit_name.artist " +
@@ -60,7 +61,8 @@ public class RecordingIndex extends DatabaseIndex {
                 "       SELECT DISTINCT recording, artist_credit " +
                 "          FROM track " +
                 "          WHERE track.recording BETWEEN ? AND ? " +
-                "       ) t ON t.artist_credit = artist_credit_name.artist_credit "
+                "       ) t ON t.artist_credit = artist_credit_name.artist_credit " +
+                "  ORDER BY t.recording, t.artist_credit, artist_credit_name.position"
         );
 
         addPreparedStatement("TRACK_NAMES",
@@ -92,9 +94,9 @@ public class RecordingIndex extends DatabaseIndex {
     @Override
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         
-        // Get artists names
-        Map<Integer, List<String>> artistNames = new HashMap<Integer, List<String>>();
-        PreparedStatement st = getPreparedStatement("ARTIST_NAMES");
+        // Get artists credits
+        Map<Integer, Map<Integer, ArtistCredit>> artistCredits = new HashMap<Integer, Map<Integer, ArtistCredit>>();
+        PreparedStatement st = getPreparedStatement("ARTIST_CREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
         st.setInt(3, min);
@@ -102,21 +104,31 @@ public class RecordingIndex extends DatabaseIndex {
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int recordingId = rs.getInt("recording");
+            int artistCreditId = rs.getInt("artist_credit");
 
-            List<String> list;
-            if (!artistNames.containsKey(recordingId)) {
-                list = new LinkedList<String>();
-                artistNames.put(recordingId, list);
+            Map<Integer, ArtistCredit> rgArtistCredits;
+            if (!artistCredits.containsKey(recordingId)) {
+                rgArtistCredits = new HashMap<Integer, ArtistCredit>();
+                artistCredits.put(recordingId, rgArtistCredits);
             } else {
-                list = artistNames.get(recordingId);
+                rgArtistCredits = artistCredits.get(recordingId);
             }
-            String creditName = rs.getString("credit_name");
-            list.add(creditName);
-            
-            String joinphrase = rs.getString("joinphrase");
-            if (joinphrase != null && !joinphrase.isEmpty()) { list.add(joinphrase); }
-            
-            if (!creditName.equals(rs.getString("artist_name"))) list.add(rs.getString("artist_name"));
+
+            ArtistCredit ac;
+            if (!rgArtistCredits.containsKey(artistCreditId)) {
+                ac = new ArtistCredit();
+                rgArtistCredits.put(artistCreditId, ac);
+            } else {
+                ac = rgArtistCredits.get(artistCreditId);
+            }
+            ArtistCreditName acn = new ArtistCreditName(
+                    rs.getString("credit_name"), 
+                    rs.getString("joinphrase"),
+                    rs.getInt("artist_id"), 
+                    rs.getString("artist_name")
+            );
+            ac.appendArtistCreditName(acn);
+ 
         }
         
         // Get tracks names
@@ -145,11 +157,11 @@ public class RecordingIndex extends DatabaseIndex {
         rs = st.executeQuery();
         
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, artistNames, trackNames));
+            indexWriter.addDocument(documentFromResultSet(rs, artistCredits, trackNames));
         }
     }
 
-    protected Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> artistNames, Map<Integer, List<String>> trackNames)
+    protected Document documentFromResultSet(ResultSet rs, Map<Integer, Map<Integer, ArtistCredit>> artistCredits, Map<Integer, List<String>> trackNames)
     throws SQLException {
         Document doc = new Document();
 
@@ -161,9 +173,14 @@ public class RecordingIndex extends DatabaseIndex {
         addFieldToDocument(doc, RecordingIndexField.DURATION, NumericUtils.longToPrefixCoded(rs.getLong("length")));
         addFieldToDocument(doc, RecordingIndexField.QUANTIZED_DURATION, NumericUtils.longToPrefixCoded(rs.getLong("length") / QUANTIZED_DURATION));
         
-        if (artistNames.containsKey(recordingId)) {
-            for (String name : artistNames.get(recordingId)) {
-                addFieldToDocument(doc, RecordingIndexField.ARTIST, name);
+        if (artistCredits.containsKey(recordingId)) {
+            for (ArtistCredit ac : artistCredits.get(recordingId).values()) {
+                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, ac.getArtistCreditString());
+                for (ArtistCreditName acn : ac) {
+                    if (!acn.getName().equals(acn.getArtistName())) {
+                        addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, acn.getArtistName());
+                    }
+                }
             }
         }
         
