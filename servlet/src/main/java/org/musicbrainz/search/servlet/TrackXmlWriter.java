@@ -81,7 +81,8 @@ public class TrackXmlWriter extends XmlWriter {
 
                 Artist artist = of.createArtist();
                 artist.setName(artistName);
-                artist.setId(doc.get(ReleaseIndexField.ARTIST_ID));
+                artist.setId(doc.get(TrackIndexField.ARTIST_ID));
+                artist.setSortName(doc.get(TrackIndexField.ARTIST_SORTNAME));
                 track.setArtist(artist);
             }
 

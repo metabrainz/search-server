@@ -55,6 +55,7 @@ public class FindTrackTest extends TestCase {
         Index.addFieldToDocument(doc, TrackIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
         Index.addFieldToDocument(doc, TrackIndexField.ARTIST, "Farming Incident");
         Index.addFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, "Leeds band");
+        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, "Incident, Farming");
 
         Index.addNumericFieldToDocument(doc, TrackIndexField.DURATION, 234000);
         Index.addNumericFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, (234000 / 2000));
@@ -116,6 +117,38 @@ public class FindTrackTest extends TestCase {
 
     public void testFindTrackByArtistId() throws Exception {
         Results res = ss.searchLucene("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
+        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
+        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+    }
+
+     public void testFindTrackByArtistName() throws Exception {
+        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
+        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
+        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+    }
+
+     public void testFindTrackByArtistSortname() throws Exception {
+        Results res = ss.searchLucene("sortname:\"Incident, Farming\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -275,7 +308,7 @@ public class FindTrackTest extends TestCase {
         writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        //System.out.println("Xml is" + output);
+        System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("<track id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
@@ -283,6 +316,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("<duration>234000</duration>"));
         assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
+        assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("release type=\"Album\" id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("offset=\"4\""));

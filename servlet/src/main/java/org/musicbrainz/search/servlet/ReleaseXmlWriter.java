@@ -41,6 +41,7 @@ import com.jthink.brainz.mmd.TextRepresentation;
 import com.jthink.brainz.mmd.TrackList;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.index.ReleaseIndexField;
+import org.musicbrainz.search.index.TrackIndexField;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -175,6 +176,7 @@ public class ReleaseXmlWriter extends XmlWriter {
                 Artist artist = of.createArtist();
                 artist.setName(artistName);
                 artist.setId(doc.get(ReleaseIndexField.ARTIST_ID));
+                artist.setSortName(doc.get(ReleaseIndexField.ARTIST_SORTNAME));
                 release.setArtist(artist);
             }
 

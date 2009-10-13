@@ -153,12 +153,14 @@ public class ReleaseIndex extends Index {
                 "a.gid as artistId,  " +
                 "a.comment as comment, " +
                 "an.name as artistName, " +
-                "an2.name as artistCreditName " +
+                "an2.name as artistCreditName, " +
+                "an3.name as artistSortName " +
                 "FROM release AS r " +
                 "INNER JOIN artist_credit_name acn ON r.artist_credit=acn.artist_credit " +
                 "INNER JOIN artist a ON a.id=acn.artist " +
                 "INNER JOIN artist_name an on a.name=an.id " +
                 "INNER JOIN artist_name an2 on acn.name=an2.id " +
+                "INNER JOIN artist_name an3 on a.sortname=an3.id " +
                 "WHERE r.id BETWEEN ? AND ?  " +
                 "order by r.id,acn.position ");
         st.setInt(1, min);
@@ -179,6 +181,7 @@ public class ReleaseIndex extends Index {
             aw.setArtistId(rs.getString("artistId"));
             aw.setArtistName(rs.getString("artistName"));
             aw.setArtistCreditName(rs.getString("artistCreditName"));
+            aw.setArtistSortName(rs.getString("artistSortName"));
             aw.setArtistPos(rs.getInt("pos"));
             aw.setComment(rs.getString("comment"));
             aw.setJoinPhrase(rs.getString("joinphrase"));
@@ -275,6 +278,7 @@ public class ReleaseIndex extends Index {
             for (ArtistWrapper artist : artists.get(releaseId)) {
                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, artist.getArtistId());
                 addFieldToDocument(doc, ReleaseIndexField.ARTIST, artist.getArtistName());
+                addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
                 //Only add if different
                 if (!artist.getArtistName().equals(artist.getArtistCreditName())) {
                     addFieldToDocument(doc, ReleaseIndexField.ARTIST, artist.getArtistCreditName());

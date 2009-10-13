@@ -7,6 +7,7 @@ class ArtistWrapper {
     private String artistId;
     private String artistName;
     private String artistCreditName;
+    private String artistSortName;
     private String comment;
     private int artistPos;
     private String joinPhrase;
@@ -57,5 +58,13 @@ class ArtistWrapper {
 
     public void setJoinPhrase(String joinPhrase) {
         this.joinPhrase = joinPhrase;
+    }
+
+    public String getArtistSortName() {
+        return artistSortName;
+    }
+
+    public void setArtistSortName(String artistSortName) {
+        this.artistSortName = artistSortName;
     }
 }

@@ -35,6 +35,7 @@ import com.jthink.brainz.mmd.ReleaseGroup;
 import com.jthink.brainz.mmd.ReleaseGroupList;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.TrackIndexField;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -78,6 +79,7 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
                 Artist artist = of.createArtist();
                 artist.setName(artistName);
                 artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
+                artist.setSortName(doc.get(ReleaseGroupIndexField.ARTIST_SORTNAME));
                 releaseGroup.setArtist(artist);
             }
 

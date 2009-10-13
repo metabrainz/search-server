@@ -53,6 +53,7 @@ public class FindReleaseTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, "eng");
         Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
         Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST, "Farming Incident");
+        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, "Incident, Farming");
         Index.addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, "10");
         Index.addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, "1");
         Index.addFieldToDocument(doc, ReleaseIndexField.STATUS, "Official");
@@ -187,6 +188,36 @@ public class FindReleaseTest extends TestCase {
         assertEquals("B00004Y6O9", doc.get(ReleaseIndexField.AMAZON_ID));
 
     }
+
+
+    public void testFindReleaseByArtistSortname() throws Exception {
+        Results res = ss.search("sortname:\"Incident, Farming\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("10", doc.get(ReleaseIndexField.NUM_TRACKS));
+        assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+        assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+        assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+
+        assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
+        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
+        assertEquals("2005", doc.get(ReleaseIndexField.DATE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS).length);
+        assertEquals("1", doc.get(ReleaseIndexField.NUM_DISC_IDS));
+        assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
+        assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
+        assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
+        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
+        assertEquals("B00004Y6O9", doc.get(ReleaseIndexField.AMAZON_ID));
+
+    }
+
 
     public void testFindReleaseByFormat() throws Exception {
         Results res = ss.search("format:Vinyl", 0, 10);
@@ -624,6 +655,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("type=\"Album Official\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
+        assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<disc-list count=\"1\""));
         assertTrue(output.contains("<track-list count=\"10\""));

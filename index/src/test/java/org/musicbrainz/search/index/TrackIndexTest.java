@@ -56,7 +56,7 @@ public class TrackIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(3,16153,4,0);");
 
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,null, 1978,null, 1995, 2, 0)");
+                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',2,null, 1978,null, 1995, 2, 0)");
         stmt.addBatch("INSERT INTO artist_credit( " +
                 " id, artistcount, refcount) " +
                 " VALUES (1, 1, 1)");
@@ -189,6 +189,7 @@ public class TrackIndexTest extends AbstractIndexTest {
             assertEquals("Crocodiles (bonus disc)", doc.getField(TrackIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(TrackIndexField.RELEASE_ID.getName()).stringValue());
             assertEquals("Echo & The Bunnymen", doc.getField(TrackIndexField.ARTIST.getName()).stringValue());
+            assertEquals("Echo and The Bunnymen", doc.getField(TrackIndexField.ARTIST_SORTNAME.getName()).stringValue());
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(TrackIndexField.ARTIST_ID.getName()).stringValue());
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(TrackIndexField.NUM_TRACKS.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(TrackIndexField.TRACKNUM.getName()).stringValue()));
@@ -216,6 +217,29 @@ public class TrackIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(TrackIndexField.TRACK.getName()).length);
             assertEquals(1, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
             assertEquals("Non Album Tracks", doc.getField(TrackIndexField.RELEASE_TYPE.getName()).stringValue());
+
+        }
+        ir.close();
+    }
+
+     /**
+     * Basic test of all fields
+     *
+     * @throws Exception
+     */
+    public void testArtistSortname() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(TrackIndexField.TRACK.getName()).length);
+            assertEquals(1, doc.getFields(TrackIndexField.ARTIST_SORTNAME.getName()).length);
+            assertEquals("Echo and The Bunnymen", doc.getField(TrackIndexField.ARTIST_SORTNAME.getName()).stringValue());
 
         }
         ir.close();

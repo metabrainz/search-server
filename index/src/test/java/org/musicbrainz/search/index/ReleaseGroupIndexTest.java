@@ -52,7 +52,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(3,16153,4,0);");
 
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                   " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
+                   " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',2,'a comment', 1978,null, 1995, 2, 0)");
 
         stmt.addBatch("INSERT INTO artist_credit( " +
                       " id, artistcount, refcount) " +
@@ -232,6 +232,26 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
 
     }
+
+    public void testIndexReleaseGroupSortname() throws Exception {
+
+           addReleaseGroupOne();
+           RAMDirectory ramDir = new RAMDirectory();
+           createIndex(ramDir);
+
+           IndexReader ir = IndexReader.open(ramDir, true);
+           assertEquals(1, ir.numDocs());
+           {
+               Document doc = ir.document(0);
+               assertEquals(1, doc.getFields(ReleaseGroupIndexField.ARTIST_SORTNAME.getName()).length);
+               assertEquals("Echo and The Bunnymen", doc.getField(ReleaseGroupIndexField.ARTIST_SORTNAME.getName()).stringValue());
+           }
+           ir.close();
+
+
+       }
+
+
 
     /**
      * Checks record with type = null is set to unknown

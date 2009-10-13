@@ -50,6 +50,7 @@ public class FindReleaseGroupTest extends TestCase {
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, "The Wedding Present");
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_V1, "The Wedding Present");
+        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, "Wedding Present, The");
         writer.addDocument(doc);
         writer.close();
         ss = new ReleaseGroupSearch(new IndexSearcher(ramDir,true));
@@ -105,6 +106,18 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+
+    public void testFindReleaseGroupBySortArtist() throws Exception {
+        Results res = ss.searchLucene("sortname:\"Wedding Present, The\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID));
+        assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST));
+        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
 
     public void testFindReleaseGroupByType() throws Exception {
         Results res = ss.searchLucene("type:\"single\"", 0, 10);
@@ -167,6 +180,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\""));
         assertTrue(output.contains("<title>Nobody's Twisting Your Arm</title>"));
         assertTrue(output.contains("<name>The Wedding Present</name>"));
+        assertTrue(output.contains("<sort-name>Wedding Present, The</sort-name>"));
         assertTrue(output.contains("artist id=\"707622da-475f-48e1-905d-248718df6521\""));
         assertTrue(output.contains("type=\"Single\""));
 
