@@ -51,8 +51,8 @@ public class ReleaseGroupMangler implements QueryMangler {
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
             int index = Integer.parseInt(m.group(2));
-            if (index >= ReleaseGroupType.getMinDbId() && index <= ReleaseGroupType.getMaxDbId()) {
-                m.appendReplacement(sb, m.group(1) + ReleaseGroupType.getByDbId(index).getName());
+            if (index >= ReleaseGroupType.getMinSearchId() && index <= ReleaseGroupType.getMaxSearchId()) {
+                m.appendReplacement(sb, m.group(1) + ReleaseGroupType.getBySearchId(index).getName());
             } else {
                 //Can't map, so leave as is.
                 m.appendReplacement(sb, m.group(1) + m.group(2));
