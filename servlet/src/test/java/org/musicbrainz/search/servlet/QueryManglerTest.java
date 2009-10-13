@@ -35,7 +35,7 @@ public class QueryManglerTest extends TestCase {
 
     public void testReleaseMangler() {
         QueryMangler qm = new ReleaseMangler();
-        assertEquals("type:other", qm.mangleQuery("type:0"));
+        assertEquals("type:nat", qm.mangleQuery("type:0"));
         assertEquals("type:album", qm.mangleQuery("type:1"));
         assertEquals("type:album OR type:single", qm.mangleQuery("type:1 OR type:2"));
         assertEquals("name:fred OR type:single", qm.mangleQuery("name:fred OR type:2"));
@@ -61,7 +61,7 @@ public class QueryManglerTest extends TestCase {
 
     public void testTrackMangler() {
         QueryMangler qm = new TrackMangler();
-        assertEquals("type:other", qm.mangleQuery("type:0"));
+        assertEquals("type:nat", qm.mangleQuery("type:0"));
         assertEquals("type:album", qm.mangleQuery("type:1"));
         assertEquals("type:album OR type:single", qm.mangleQuery("type:1 OR type:2"));
         assertEquals("name:fred OR type:single", qm.mangleQuery("name:fred OR type:2"));

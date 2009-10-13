@@ -876,19 +876,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
     }
 
-    public void testGetTypeByDbId() throws Exception {
-        assertNull(ReleaseType.getByDbId(0));
-        assertEquals(ReleaseType.ALBUM, ReleaseType.getByDbId(1));
-    }
 
-    public void testGetFormatByDbId() throws Exception {
-        assertNull(ReleaseFormat.getByDbId(0));
-        assertEquals(ReleaseFormat.CD, ReleaseFormat.getByDbId(1));
-    }
-
-    public void testGetStatusByDbId() throws Exception {
-        assertNull(ReleaseStatus.getByDbId(0));
-        assertEquals(ReleaseStatus.OFFICIAL, ReleaseStatus.getByDbId(100));
-    }
 
 }

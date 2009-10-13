@@ -20,12 +20,12 @@
 
 package org.musicbrainz.search.servlet;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
+import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.index.ReleaseStatus;
-import org.musicbrainz.search.index.ReleaseType;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ReleaseMangler implements QueryMangler {
@@ -58,11 +58,8 @@ public class ReleaseMangler implements QueryMangler {
         StringBuffer sb = new StringBuffer();
         while (m.find()) {
             int index = Integer.parseInt(m.group(2));
-            //Matches behaviour on mb server, if user enters type:0 gets mapped to other
-            if (index == 0) {
-                m.appendReplacement(sb, m.group(1) + ReleaseType.OTHER.getName());
-            } else if (index >= ReleaseType.getMinDbId() && index <= ReleaseType.getMaxDbId()) {
-                m.appendReplacement(sb, m.group(1) + ReleaseType.getByDbId(index).getName());
+            if (index >= ReleaseGroupType.getMinSearchId() && index <= ReleaseGroupType.getMaxSearchId()) {
+                m.appendReplacement(sb, m.group(1) + ReleaseGroupType.getBySearchId(index).getName());
             } else {
                 //Can't map, so leave as is.
                 m.appendReplacement(sb, m.group(1) + m.group(2));

@@ -60,7 +60,7 @@ public class FindTrackTest extends TestCase {
         Index.addNumericFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, (234000 / 2000));
         Index.addNumericFieldToDocument(doc, TrackIndexField.NUM_TRACKS,10);
         Index.addNumericFieldToDocument(doc, TrackIndexField.TRACKNUM, 5);
-        Index.addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseType.ALBUM.getName());
+        Index.addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
         writer.addDocument(doc);
         writer.close();
         ss = new TrackSearch(new IndexSearcher(ramDir,true));

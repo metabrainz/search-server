@@ -147,14 +147,7 @@ public class
         int rgId = rs.getInt("id");
         addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
         addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
-
-        //Search V1 allows you to search for unknown artists,
-        String type = rs.getString("type");
-        if (type != null) {
-            addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, type);
-        } else {
-            addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.NONALBUMTRACKS.getName());
-        }
+        addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.TYPE, rs.getString("type"));
 
         if (releases.containsKey(rgId)) {
             for (String release : releases.get(rgId)) {

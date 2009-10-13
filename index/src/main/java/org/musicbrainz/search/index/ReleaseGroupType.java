@@ -19,6 +19,9 @@
 
 package org.musicbrainz.search.index;
 
+/**
+ * Required when searching releases or release groups using the old release(group)id
+ */
 public enum ReleaseGroupType {
 
     NONALBUMTRACKS(0, "nat"),
@@ -34,35 +37,39 @@ public enum ReleaseGroupType {
     REMIX(10, "remix"),
     OTHER(11, "other"),;
 
-    private Integer dbId;
     private String name;
+    private Integer searchId;
 
-    ReleaseGroupType(Integer dbId, String name) {
-        this.dbId = dbId;
+    ReleaseGroupType(Integer searchId,String name) {
+        this.searchId=searchId;
         this.name = name;
-    }
-
-    public Integer getDbId() {
-        return dbId;
     }
 
     public String getName() {
         return name;
     }
 
+    public static ReleaseGroupType getBySearchId(int id) {
+        for (ReleaseGroupType type : ReleaseGroupType.values()) {
+            if (type.getSearchId() == id) {
+                return type;
+            }
+        }
+        return null;
+    }
 
-    public static ReleaseGroupType getByDbId(int id) {
-        return ReleaseGroupType.values()[id];
+    public Integer getSearchId() {
+        return searchId;
     }
 
 
-    public static int getMinDbId() {
-        return NONALBUMTRACKS.getDbId();
+
+    public static int getMinSearchId() {
+        return NONALBUMTRACKS.getSearchId();
     }
 
-    public static int getMaxDbId() {
-        return OTHER.getDbId();
+    public static int getMaxSearchId() {
+        return OTHER.getSearchId();
     }
-
 
 }

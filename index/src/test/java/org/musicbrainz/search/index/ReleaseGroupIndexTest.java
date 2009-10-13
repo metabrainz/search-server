@@ -206,7 +206,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()).stringValue());
             assertEquals("Echo & The Bunnymen", doc.getField(ReleaseGroupIndexField.ARTIST.getName()).stringValue());
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(ReleaseGroupIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("nat", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASES.getName()).length);
             assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseGroupIndexField.RELEASES.getName()).stringValue());
 
@@ -239,6 +238,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    /*
+    //TODO what do we want to do in this situation, in NGS now returns no record
     public void testIndexReleaseGroupWithNoType() throws Exception {
 
         addReleaseGroupTwo();
@@ -254,7 +255,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
-
+    */
 
     /**
      * Checks record with multiple releases
@@ -281,8 +282,5 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-    public void testGetTypeByDbId () throws Exception {        
-        assertEquals(ReleaseGroupType.ALBUM,ReleaseGroupType.getByDbId(1));
-    }
 
 }
