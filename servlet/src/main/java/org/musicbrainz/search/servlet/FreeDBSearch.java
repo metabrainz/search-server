@@ -1,13 +1,11 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.musicbrainz.search.index.FreeDBIndexField;
-import org.musicbrainz.search.index.ReleaseAnalyzer;
 import org.musicbrainz.search.index.FreeDBAnalyzer;
 
-import java.io.File;
 import java.util.ArrayList;
 
 
@@ -16,7 +14,6 @@ public class FreeDBSearch extends SearchServer {
     private FreeDBSearch() throws Exception {
         xmlWriter = null;
         htmlWriter = new FreeDBHtmlWriter();
-        queryMangler = null;
         defaultFields = new ArrayList<String>();
         defaultFields.add(FreeDBIndexField.ARTIST.getName());
         defaultFields.add(FreeDBIndexField.TITLE.getName());
@@ -38,4 +35,8 @@ public class FreeDBSearch extends SearchServer {
     }
 
 
+    @Override
+    protected QueryParser getParser() {
+     return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
+  }
 }

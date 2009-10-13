@@ -8,14 +8,16 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.TrackIndexField;
+import org.musicbrainz.search.index.ReleaseGroupType;
 
 
 /**
- * Subclasses QueryParser to handle numeric fields that we might want wish to do range queries for.
+ * Subclasses QueryParser to handle numeric fields that we might want wish to do range queries for and handle type
+ * searches specified using integers.
  */
-public class MusicbrainzQueryParser extends QueryParser {
+public class TrackQueryParser extends QueryParser {
 
-    public MusicbrainzQueryParser(String field, Analyzer a) {
+    public TrackQueryParser(String field, Analyzer a) {
         super(field, a);
     }
 
@@ -26,8 +28,32 @@ public class MusicbrainzQueryParser extends QueryParser {
                         (term.field() == TrackIndexField.TRACKNUM.getName()) ||
                         (term.field() == TrackIndexField.NUM_TRACKS.getName())
                 ) {
-            TermQuery tq = new TermQuery(new Term(term.field(), NumericUtils.intToPrefixCoded(Integer.parseInt(term.text()))));
-            return tq;
+            try
+            {
+                int number = Integer.parseInt(term.text());
+                TermQuery tq = new TermQuery(new Term(term.field(), NumericUtils.intToPrefixCoded(number)));
+                return tq;
+            }
+            catch (NumberFormatException nfe) {
+                //If not provided numeric argument just leave as is, won't give matches 
+                return super.newTermQuery(term);
+            }
+
+        } else if( term.field() == TrackIndexField.RELEASE_TYPE.getName()) {
+            try {
+                int typeId = Integer.parseInt(term.text());
+                if (typeId >= ReleaseGroupType.getMinSearchId() && typeId <= ReleaseGroupType.getMaxSearchId()) {
+                    TermQuery tq = new TermQuery(new Term(term.field(),ReleaseGroupType.getBySearchId(typeId).getName()));
+                    return tq;
+                }
+                else {
+                    return super.newTermQuery(term);    
+                }
+            }
+            catch(NumberFormatException nfe) {
+                return super.newTermQuery(term);
+
+            }
         } else {
             return super.newTermQuery(term);
         }

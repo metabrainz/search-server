@@ -1,13 +1,10 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.TrackIndexField;
-import org.musicbrainz.search.index.ReleaseAnalyzer;
 import org.musicbrainz.search.index.TrackAnalyzer;
 
-import java.io.File;
 import java.util.ArrayList;
 
 
@@ -18,7 +15,6 @@ public class TrackSearch extends SearchServer {
 
         xmlWriter = new TrackXmlWriter();
         htmlWriter = new TrackHtmlWriter();
-        queryMangler = new TrackMangler();
         defaultFields = new ArrayList<String>();
         defaultFields.add(TrackIndexField.TRACK.getName());
         analyzer = new TrackAnalyzer();
@@ -37,5 +33,11 @@ public class TrackSearch extends SearchServer {
         this();
         indexSearcher = searcher;
     }
+
+    @Override
+    protected QueryParser getParser() {
+       return new TrackQueryParser(defaultFields.get(0), analyzer);
+    }
+
 
 }

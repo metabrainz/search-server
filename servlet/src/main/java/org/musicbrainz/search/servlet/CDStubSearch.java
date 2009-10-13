@@ -1,8 +1,9 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.musicbrainz.search.index.CDStubIndexField;
-import org.musicbrainz.search.index.ReleaseAnalyzer;
 import org.musicbrainz.search.index.CDStubAnalyzer;
 
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ public class CDStubSearch extends SearchServer {
     private CDStubSearch() throws Exception {
         xmlWriter = null;
         htmlWriter = new CDStubHtmlWriter();
-        queryMangler = null;
         defaultFields = new ArrayList<String>();
         defaultFields.add(CDStubIndexField.ARTIST.getName());
         defaultFields.add(CDStubIndexField.TITLE.getName());
@@ -34,5 +34,9 @@ public class CDStubSearch extends SearchServer {
         indexSearcher = searcher;
     }
 
+     @Override
+    protected QueryParser getParser() {
+     return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
+  }
 
 }

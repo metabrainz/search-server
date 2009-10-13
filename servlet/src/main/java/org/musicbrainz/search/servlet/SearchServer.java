@@ -28,7 +28,6 @@
 
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
@@ -40,7 +39,6 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.MetaIndexField;
 
 import java.io.IOException;
@@ -58,7 +56,6 @@ public abstract class SearchServer {
     protected PerFieldAnalyzerWrapper analyzer;
     protected XmlWriter xmlWriter;
     protected HtmlWriter htmlWriter;
-    protected QueryMangler queryMangler;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
     protected Date          serverLastUpdatedDate;
@@ -108,10 +105,6 @@ public abstract class SearchServer {
     }
 
 
-    public QueryMangler getQueryMangler() {
-        return queryMangler;
-    }
-
     public XmlWriter getXmlWriter() {
         return xmlWriter;
     }
@@ -149,9 +142,6 @@ public abstract class SearchServer {
      */
     public Results search(String query, int offset, int limit) throws IOException, ParseException {
 
-        if (getQueryMangler() != null) {
-            query = getQueryMangler().mangleQuery(query);
-        }
         return searchLucene(query, offset, limit);
     }
 
@@ -184,18 +174,12 @@ public abstract class SearchServer {
     }
 
     /**
-     * Get Query Parser for parsing queries for this resourcetype
+     * Get Query Parser for parsing queries for this resourcetype , QueryParser  is not thread safe so always
+     * get a new instance;
      *
      * @return
      */
-    private QueryParser getParser() {
-        if (getSearchFields().size() > 1) {
-            return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
-        } else {
-            return new MusicbrainzQueryParser(defaultFields.get(0), analyzer);
-
-        }
-    }
+    protected abstract QueryParser getParser();
 
     /**
      * Process results of search

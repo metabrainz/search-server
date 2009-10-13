@@ -21,25 +21,21 @@ package org.musicbrainz.search.index;
 
 public enum ReleaseStatus {
 
-    OFFICIAL(1,100, "Official"),
-    PROMOTION(2,101, "Promotion"),
-    BOOTLEG(3,102, "Bootleg"),
-    PSEUDO_RELEASE(4,103, "PseudoRelease"),;
+    OFFICIAL(1, "official"),
+    PROMOTION(2, "promotion"),
+    BOOTLEG(3, "bootleg"),
+    PSEUDO_RELEASE(4, "pseudoRelease"),;
 
-    private Integer dbId;
     private Integer searchId;
 
     private String name;
 
-    ReleaseStatus(Integer searchId,Integer dbId, String name) {
-        this.dbId = dbId;
+    ReleaseStatus(Integer searchId,String name) {
         this.searchId = searchId;
         this.name = name;
     }
 
-    public Integer getDbId() {
-        return dbId;
-    }
+
 
     public Integer getSearchId() {
         return searchId;
@@ -49,14 +45,7 @@ public enum ReleaseStatus {
         return name;
     }
 
-    public static ReleaseStatus getByDbId(int id) {
-        for (ReleaseStatus status : ReleaseStatus.values()) {
-            if (status.getDbId() == id) {
-                return status;
-            }
-        }
-        return null;
-    }
+
 
     public static ReleaseStatus getBySearchId(int id) {
         for (ReleaseStatus status : ReleaseStatus.values()) {
@@ -67,13 +56,6 @@ public enum ReleaseStatus {
         return null;
     }
 
-    public static int getMinDbId() {
-        return OFFICIAL.getDbId();
-    }
-
-    public static int getMaxDbId() {
-        return PSEUDO_RELEASE.getDbId();
-    }
 
     public static int getMinSearchId() {
         return OFFICIAL.getSearchId();

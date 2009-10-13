@@ -343,6 +343,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+
 //    /**
 //     * Checks record with type = null is set to unknown
 //     *

@@ -1,13 +1,10 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.LabelIndexField;
-import org.musicbrainz.search.index.ReleaseAnalyzer;
 import org.musicbrainz.search.index.LabelAnalyzer;
 
-import java.io.File;
 import java.util.ArrayList;
 
 
@@ -17,7 +14,6 @@ public class LabelSearch extends SearchServer {
 
         xmlWriter = new LabelXmlWriter();
         htmlWriter = new LabelHtmlWriter();
-        queryMangler = new LabelMangler();
         defaultFields = new ArrayList<String>();
         defaultFields.add(LabelIndexField.LABEL.getName());
         defaultFields.add(LabelIndexField.ALIAS.getName());
@@ -40,5 +36,9 @@ public class LabelSearch extends SearchServer {
         indexSearcher = searcher;
     }
 
+       @Override
+    protected QueryParser getParser() {
+       return new LabelQueryParser(defaultFields.toArray(new String[0]), analyzer);
+    }
 
 }

@@ -10,9 +10,9 @@ import java.io.Reader;
 /**
  * For analyzing barcodes treat those with leading zero and those without the same
  */
-public class BarcodeAnalyzer extends Analyzer {
+public class StripLeadingZeroAnalyzer extends Analyzer {
 
-    public BarcodeAnalyzer() {
+    public StripLeadingZeroAnalyzer() {
 
     }
 

@@ -535,6 +535,71 @@ public class FindReleaseTest extends TestCase {
             assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
         }
 
+     public void testFindReleaseByTypeLowercase() throws Exception {
+        Results res = ss.searchLucene("type:\"album\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseByTypeTitleCase() throws Exception {
+        Results res = ss.searchLucene("type:\"Album\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseByNumericType() throws Exception {
+           Results res = ss.searchLucene("type:1", 0, 10);
+           assertEquals(1, res.totalHits);
+           Result result = res.results.get(0);
+           MbDocument doc = result.doc;
+           assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+           assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+           assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+           assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+       }
+
+     public void testFindReleaseByStatusLowercase() throws Exception {
+        Results res = ss.searchLucene("status:\"official\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseByStatusTitleCase() throws Exception {
+        Results res = ss.searchLucene("status:\"Official\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+    public void testFindReleaseByNumericstatus() throws Exception {
+           Results res = ss.searchLucene("status:1", 0, 10);
+           assertEquals(1, res.totalHits);
+           Result result = res.results.get(0);
+           MbDocument doc = result.doc;
+           assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+           assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST));
+           assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+           assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+       }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release/?type=xml&query=%22Our%20Glorious%205%20Year%20Plan%22

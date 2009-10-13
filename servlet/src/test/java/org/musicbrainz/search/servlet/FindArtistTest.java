@@ -137,6 +137,22 @@ public class FindArtistTest extends TestCase {
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
+    public void testFindArtistByNumericType() throws Exception {
+        Results res = ss.searchLucene("type:2", 0, 10);
+        assertEquals(2, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
+        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
+        assertNull(doc.get(ArtistIndexField.END));
+        assertNull(doc.get(ArtistIndexField.ALIAS));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("group", doc.get(ArtistIndexField.TYPE));
+    }
+
+
     public void testFindArtistByBeginDate() throws Exception {
         Results res = ss.searchLucene("begin:\"1999-04\"", 0, 10);
         assertEquals(1, res.totalHits);

@@ -165,6 +165,24 @@ public class FindLabelTest extends TestCase {
         assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
+    public void testFindLabelByNumericType() throws Exception {
+            Results res = ss.searchLucene("type:3", 0, 10);
+            assertEquals(2, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+
+            //(This will always come first because searcher sots by score and then docno, and this doc added first)
+            assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+            assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
+            assertEquals("2004", doc.get(LabelIndexField.END));
+            assertNull(doc.get(LabelIndexField.ALIAS));
+            assertNull(doc.get(LabelIndexField.COMMENT));
+            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
+            assertEquals("production", doc.get(LabelIndexField.TYPE));
+        }
+
+
     public void testFindLabelBySortname() throws Exception {
         Results res = ss.searchLucene("sortname:\"Slut, Jockey\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -210,6 +228,20 @@ public class FindLabelTest extends TestCase {
         assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
+    public void testFindLabelByZeroedCode() throws Exception {
+        Results res = ss.searchLucene("code:\"05807\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("4AD", doc.get(LabelIndexField.LABEL));
+        assertEquals("1979", doc.get(LabelIndexField.BEGIN));
+        assertNull(doc.get(LabelIndexField.END));
+        assertNull(doc.get(LabelIndexField.ALIAS));
+        assertNull(doc.get(LabelIndexField.COMMENT));
+        assertEquals("5807", doc.get(LabelIndexField.CODE));
+        assertEquals("production", doc.get(LabelIndexField.TYPE));
+    }
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/label/?type=xml&query=%22Jockey%20Slut%22

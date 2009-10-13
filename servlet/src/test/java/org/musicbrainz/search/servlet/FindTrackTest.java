@@ -146,6 +146,21 @@ public class FindTrackTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
     }
 
+    public void testFindTrackByReleaseTypeNumeric() throws Exception {
+        Results res = ss.searchLucene("type:\"1\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
+        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+    }
     public void testFindTrackByNumberOfTracksOnRelease() throws Exception {
         Results res = ss.searchLucene("tracks:10", 0, 10);
         assertEquals(1, res.totalHits);
@@ -175,6 +190,12 @@ public class FindTrackTest extends TestCase {
         assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
         assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+    }
+
+
+    public void testFindTrackByNonNumericDuration() throws Exception {
+        Results res = ss.searchLucene("dur:fred", 0, 10);
+        assertEquals(0, res.totalHits);
     }
 
     public void testFindTrackByDurationRange() throws Exception {

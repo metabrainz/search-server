@@ -5,7 +5,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.ArtistIndex;
 import org.musicbrainz.search.index.ArtistIndexField;
 
@@ -348,6 +347,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
 
 
     public void testGetTypeByDbId () throws Exception {        
-        assertEquals(ArtistType.PERSON,ArtistType.getByDbId(1));
+        assertEquals(ArtistType.PERSON,ArtistType.getBySearchId(1));
     }
 }

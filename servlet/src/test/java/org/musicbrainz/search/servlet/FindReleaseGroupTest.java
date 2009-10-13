@@ -118,6 +118,19 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    public void testFindReleaseGroupByNumericType() throws Exception {
+           Results res = ss.searchLucene("type:2", 0, 10);
+           assertEquals(1, res.totalHits);
+           Result result = res.results.get(0);
+           MbDocument doc = result.doc;
+           assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+           assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+           assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID));
+           assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST));
+           assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+       }
+
+
     public void testFindReleaseGroupByDefault() throws Exception {
         Results res = ss.searchLucene("\"secret\"", 0, 10);
         assertEquals(0, res.totalHits);
