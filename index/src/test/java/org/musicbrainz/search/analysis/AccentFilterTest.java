@@ -23,21 +23,32 @@ public class AccentFilterTest extends TestCase {
         Document doc = new Document();
         doc.add(new Field("name", "test", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
+        doc = new Document();
+        doc.add(new Field("name", "ŃåᴊıÃšņ", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+
         doc = new Document();
         doc.add(new Field("name", "tést", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
         doc = new Document();
         doc.add(new Field("name", "ábcáef", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
         doc = new Document();
         doc.add(new Field("name", "qwe 1", Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("name", "qwe 2", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
         doc = new Document();
         doc.add(new Field("name", "qwee 2", Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
+
+        //
         writer.close();
     }
 
@@ -46,8 +57,9 @@ public class AccentFilterTest extends TestCase {
         Query q = new QueryParser("name", analyzer).parse("test");
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
-        assertEquals("test", searcher.doc(0).getField("name").stringValue());
-        assertEquals("tést", searcher.doc(1).getField("name").stringValue());
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals("test", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("tést", searcher.doc(scoredocs[1].doc).getField("name").stringValue());
     }
 
     public void testSearchAccented() throws Exception {
@@ -68,6 +80,24 @@ public class AccentFilterTest extends TestCase {
         assertEquals(1, docs.totalHits);
         assertEquals("ábcáef", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
+                /*
+    public void testSearchAccented3() throws Exception {
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser("name", analyzer).parse("NaJiAsn");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("ŃåᴊıÃšņ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+
+        searcher = new IndexSearcher(dir,true);
+        q = new QueryParser("name", analyzer).parse("ŃåᴊıÃšņ");
+        docs = searcher.search(q,10);
+        scoredocs = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("ŃåᴊıÃšņ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+    }             */
+
 
     /**
      * Only one doc matches (even though two terms within doc that match)

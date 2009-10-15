@@ -31,7 +31,7 @@ public class Issue1006Test extends TestCase {
             Token t;
             while((t =tokenizer.next())!=null)
             {
-                System.out.println(t.toString());
+                //System.out.println(t.toString());
                 assertEquals("(ゲーム,0,3,type=<ALPHANUM>)",t.toString());
             }
         }
@@ -41,7 +41,7 @@ public class Issue1006Test extends TestCase {
             Token t;
             while((t =tokenizer.next())!=null)
             {
-                System.out.println(t.toString());
+                //System.out.println(t.toString());
                 assertEquals("(ゲエム,0,3,type=<ALPHANUM>)",t.toString());
             }
         }
@@ -51,7 +51,7 @@ public class Issue1006Test extends TestCase {
             Token t;
             while((t =tokenizer.next())!=null)
             {
-                System.out.println(t.toString());
+                //System.out.println(t.toString());
                 assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
             }
         }
@@ -69,7 +69,7 @@ public class Issue1006Test extends TestCase {
             Token t;
             while((t =result.next())!=null)
             {
-                System.out.println(t.toString());
+                //System.out.println(t.toString());
                 assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
             }
         }
@@ -80,7 +80,7 @@ public class Issue1006Test extends TestCase {
             Token t;
             while((t =result.next())!=null)
             {
-                System.out.println(t.toString());
+                //System.out.println(t.toString());
                 assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
             }
         }
@@ -91,7 +91,7 @@ public class Issue1006Test extends TestCase {
             Token t;
             while((t =result.next())!=null)
             {
-                System.out.println(t.toString());
+                //System.out.println(t.toString());
                 assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
             }
         }
@@ -125,19 +125,19 @@ public class Issue1006Test extends TestCase {
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
             Query q = new QueryParser("name", analyzer).parse("ゲーム");
-            System.out.println(q);
+            //System.out.println(q);
             assertEquals(3, searcher.search(q,10).totalHits);
         }
 
         {
             Query q = new QueryParser("name", analyzer).parse("ゲエム");
-            System.out.println(q);
+            //System.out.println(q);
             assertEquals(3, searcher.search(q,10).totalHits);
         }
 
         {
             Query q = new QueryParser("name", analyzer).parse("げえむ");
-            System.out.println(q);
+            //System.out.println(q);
             assertEquals(3, searcher.search(q,10).totalHits);
         }
 

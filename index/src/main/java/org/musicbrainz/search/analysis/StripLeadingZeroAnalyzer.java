@@ -8,8 +8,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * For analyzing barcodes treat those with leading zero and those without the same
+ * For analyzing barcodes and labelcodes treat those with leading zero and those without the same
  */
+//TODO currently strips first zero, is there any requirement to strip multiple zeroes.
 public class StripLeadingZeroAnalyzer extends Analyzer {
 
     public StripLeadingZeroAnalyzer() {

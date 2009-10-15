@@ -279,7 +279,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        System.out.println("NumDocs:"+ir.numDocs());
         //assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
