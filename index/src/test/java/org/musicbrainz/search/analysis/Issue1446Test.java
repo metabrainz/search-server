@@ -21,26 +21,75 @@ public class Issue1446Test extends TestCase {
         super(testName);
     }
 
-	@Override
-    protected void setUp() throws Exception {
+    public void testUppercaseKanatakaMatchesLowercaseKanataka() throws Exception {
+
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+
+        Document doc = new Document();
+        doc.add(new Field("name", "ァ", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser("name", analyzer).parse("ア");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("ァ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+    }
+	
+
+    public void testLowercaseKanatakaMatchesUppercaseKanataka() throws Exception {
+
+        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+
+        Document doc = new Document();
+        doc.add(new Field("name", "ヨ", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser("name", analyzer).parse("ョ");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("ヨ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+    }
+
+    public void testUppercaseHiruganaMatchesLowercaseHirugana() throws Exception {
+
+        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+
         Document doc = new Document();
         doc.add(new Field("name", "ぇ", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
         writer.close();
-    }
 
-    public void testUppercaseKanaMatchesLowercaseKana() throws Exception {
-        if(true)
-        return;
         IndexSearcher searcher = new IndexSearcher(dir,true);
         Query q = new QueryParser("name", analyzer).parse("え");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
         assertEquals("ぇ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
-        //ここにいるぜえ
-        //ここにいるぜぇ
+    }
+
+
+    public void testLowercaseHiruganaMatchesUppercaseHirugana() throws Exception {
+
+        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+
+        Document doc = new Document();
+        doc.add(new Field("name", "つ", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser("name", analyzer).parse("っ");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("つ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
 
 }
+
