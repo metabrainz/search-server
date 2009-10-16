@@ -40,5 +40,5 @@ public enum LabelIndexField implements IndexField {
 	public Field.Index getIndex() {
 		return index;
 	}
-
 }
+

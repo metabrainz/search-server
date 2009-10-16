@@ -15,6 +15,7 @@ import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
+import org.musicbrainz.search.servlet.mmd2.LabelXmlWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -247,7 +248,7 @@ public class FindLabelTest extends TestCase {
      *
      * @throws Exception
      */
-    public void testOutputAsXml() throws Exception {
+    public void testOutputAsMmd1Xml() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
         ResultsWriter writer = new LabelMmd1XmlWriter();
@@ -265,5 +266,31 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("<sort-name>Slut, Jockey</sort-name>"));
         assertTrue(output.contains("begin=\"1993\""));
         assertTrue(output.contains("end=\"2004\""));
+    }
+
+     /**
+     * Tests get same results as
+     * http://musicbrainz.org/ws/1/label/?type=xml&query=%22Jockey%20Slut%22
+     *
+     * @throws Exception
+     */
+    public void testOutputAsXml() throws Exception {
+
+        Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
+        ResultsWriter writer = new LabelXmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
+        assertTrue(output.contains("type=\"Production\""));
+        assertTrue(output.contains("<name>Jockey Slut</name>"));
+        assertTrue(output.contains("<sort-name>Slut, Jockey</sort-name>"));
+        assertTrue(output.contains("<begin>1993</begin"));
+        assertTrue(output.contains("<end>2004</end>"));
     }
 }
