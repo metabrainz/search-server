@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module relativePaths="true" MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="Web">
+      <configuration>
+        <descriptors>
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/servlet/src/main/webapp/WEB-INF/web.xml" optional="false" version="2.5" />
+        </descriptors>
+        <webroots>
+          <root url="file://$MODULE_DIR$/servlet/src/main/webapp" relative="/" />
+        </webroots>
+        <building>
+          <setting name="EXPLODED_URL" value="file://" />
+          <setting name="EXPLODED_ENABLED" value="false" />
+          <setting name="JAR_URL" value="file://$MODULE_DIR$/servlet/target/searchserver.war" />
+          <setting name="JAR_ENABLED" value="true" />
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false" />
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false" />
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="true" />
+          <setting name="RUN_JASPER_VALIDATION" value="false" />
+          <setting name="BUILD_ONLY_WEB_RESOURCES" value="false" />
+        </building>
+        <packaging>
+          <containerElement type="library" name="org.apache.lucene:lucene-core:2.9-SNAPSHOT" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/lucene-core-2.9-20090914.021953-1.jar" />
+          </containerElement>
+          <containerElement type="library" name="commons-lang:commons-lang:2.4" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-lang-2.4.jar" />
+          </containerElement>
+          <containerElement type="library" name="com.jthink.brainz:mmd:1.4.0" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/mmd-1.4.0.jar" />
+          </containerElement>
+          <containerElement type="module" name="index">
+            <attribute name="method" value="5" />
+            <attribute name="URI" value="/WEB-INF/lib/index-1.0-SNAPSHOT.jar" />
+          </containerElement>
+          <containerElement type="library" name="postgresql:postgresql:8.3-603.jdbc4" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/postgresql-8.3-603.jdbc4.jar" />
+          </containerElement>
+          <containerElement type="library" name="args4j:args4j:2.0.14" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/args4j-2.0.14.jar" />
+          </containerElement>
+          <containerElement type="library" name="org.apache.commons:commons-compress:1.0" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-compress-1.0.jar" />
+          </containerElement>
+          <containerElement type="library" name="com.ibm.icu:icu4j:4.0.1" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/icu4j-4.0.1.jar" />
+          </containerElement>
+          <containerElement type="library" name="org.apache.velocity:velocity:1.6.2" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/velocity-1.6.2.jar" />
+          </containerElement>
+          <containerElement type="library" name="commons-collections:commons-collections:3.2.1" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/commons-collections-3.2.1.jar" />
+          </containerElement>
+          <containerElement type="library" name="oro:oro:2.0.8" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/oro-2.0.8.jar" />
+          </containerElement>
+          <containerElement type="library" name="org.tuckey:urlrewritefilter:3.1.0" level="module">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/lib/urlrewritefilter-3.1.0.jar" />
+          </containerElement>
+          <containerElement type="module" name="servlet">
+            <attribute name="method" value="1" />
+            <attribute name="URI" value="/WEB-INF/classes" />
+          </containerElement>
+        </packaging>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/servlet/target/classes" />
+    <exclude-output />
+    <output-test url="file://$MODULE_DIR$/servlet/target/test-classes" />
+    <content url="file://$MODULE_DIR$/servlet">
+      <sourceFolder url="file://$MODULE_DIR$/servlet/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/servlet/src/main/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/servlet/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/servlet/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/servlet/target/searchserver" />
+      <excludeFolder url="file://$MODULE_DIR$/servlet/target/surefire-reports" />
+      <excludeFolder url="file://$MODULE_DIR$/servlet/target/war" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="junit:junit:3.8.1">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.apache.lucene:lucene-core:2.9-SNAPSHOT">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/lucene/lucene-core/2.9-SNAPSHOT/lucene-core-2.9-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/lucene/lucene-core/2.9-SNAPSHOT/lucene-core-2.9-SNAPSHOT-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/lucene/lucene-core/2.9-SNAPSHOT/lucene-core-2.9-SNAPSHOT-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="javax.servlet:servlet-api:2.5">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="commons-lang:commons-lang:2.4">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.4/commons-lang-2.4.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.4/commons-lang-2.4-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="com.jthink.brainz:mmd:1.4.0">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/jthink/brainz/mmd/1.4.0/mmd-1.4.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/jthink/brainz/mmd/1.4.0/mmd-1.4.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/jthink/brainz/mmd/1.4.0/mmd-1.4.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="com.sun.xml.bind:jaxb-impl:2.0.5">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/xml/bind/jaxb-impl/2.0.5/jaxb-impl-2.0.5.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/xml/bind/jaxb-impl/2.0.5/jaxb-impl-2.0.5-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/sun/xml/bind/jaxb-impl/2.0.5/jaxb-impl-2.0.5-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="javax.xml.bind:jaxb-api:2.0">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.0/jaxb-api-2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.0/jaxb-api-2.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.0/jaxb-api-2.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="javax.xml.bind:jsr173_api:1.0">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/xml/bind/jsr173_api/1.0/jsr173_api-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/xml/bind/jsr173_api/1.0/jsr173_api-1.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/xml/bind/jsr173_api/1.0/jsr173_api-1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="javax.activation:activation:1.1">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/javax/activation/activation/1.1/activation-1.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="index" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library name="postgresql:postgresql:8.3-603.jdbc4">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.3-603.jdbc4/postgresql-8.3-603.jdbc4.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.3-603.jdbc4/postgresql-8.3-603.jdbc4-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/postgresql/postgresql/8.3-603.jdbc4/postgresql-8.3-603.jdbc4-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="args4j:args4j:2.0.14">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/args4j/args4j/2.0.14/args4j-2.0.14.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/args4j/args4j/2.0.14/args4j-2.0.14-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/args4j/args4j/2.0.14/args4j-2.0.14-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.apache.commons:commons-compress:1.0">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-compress/1.0/commons-compress-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-compress/1.0/commons-compress-1.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-compress/1.0/commons-compress-1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="com.ibm.icu:icu4j:4.0.1">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/4.0.1/icu4j-4.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/4.0.1/icu4j-4.0.1-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/ibm/icu/icu4j/4.0.1/icu4j-4.0.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.apache.velocity:velocity:1.6.2">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/velocity/velocity/1.6.2/velocity-1.6.2.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/velocity/velocity/1.6.2/velocity-1.6.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/apache/velocity/velocity/1.6.2/velocity-1.6.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="commons-collections:commons-collections:3.2.1">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="oro:oro:2.0.8">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="org.tuckey:urlrewritefilter:3.1.0">
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/tuckey/urlrewritefilter/3.1.0/urlrewritefilter-3.1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MAVEN_REPOSITORY$/org/tuckey/urlrewritefilter/3.1.0/urlrewritefilter-3.1.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/tuckey/urlrewritefilter/3.1.0/urlrewritefilter-3.1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntryProperties />
+  </component>
+</module>
+
