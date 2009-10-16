@@ -26,9 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.musicbrainz.search.servlet;
+package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.Metadata;
+import org.musicbrainz.search.servlet.RequestParameter;
+import org.musicbrainz.search.servlet.Results;
+import org.musicbrainz.search.servlet.ResultsWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -39,7 +42,7 @@ import java.io.PrintWriter;
 
 import java.util.EnumMap;
 
-public abstract class XmlWriter extends ResultsWriter {
+public abstract class Mmd1XmlWriter extends ResultsWriter {
 
     static final JAXBContext context = initContext();
 

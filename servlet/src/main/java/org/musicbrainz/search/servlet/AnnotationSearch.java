@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class AnnotationSearch extends SearchServer {
 
     private AnnotationSearch() throws Exception {
-        xmlWriter = null;
+        mmd1XmlWriter = null;
         htmlWriter = new AnnotationHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(AnnotationIndexField.TEXT.getName());

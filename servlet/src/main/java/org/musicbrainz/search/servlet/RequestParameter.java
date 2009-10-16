@@ -40,7 +40,7 @@ public enum RequestParameter {
     RELATIONSHIPS("rel"),
     OLD_STYLE_LINK("mbt"),
     COUNT("count"),
-
+    VERSION("version"),
             ;
     private String name;
 

@@ -6,21 +6,20 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
 import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.ArtistAnalyzer;
 import org.musicbrainz.search.servlet.ArtistHtmlWriter;
 import org.musicbrainz.search.servlet.ArtistSearch;
-import org.musicbrainz.search.servlet.ArtistXmlWriter;
+import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
-import org.musicbrainz.search.servlet.XmlWriter;
+import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -235,10 +234,10 @@ public class FindArtistTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        XmlWriter writer = new ArtistXmlWriter();
+        Mmd1XmlWriter v1Writer = new ArtistMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
+        v1Writer.write(pr, res);
         pr.close();
 
         String output = sw.toString();
@@ -286,10 +285,10 @@ public class FindArtistTest extends TestCase {
     public void testOutputAsXmlSpecialCharacters() throws Exception {
 
         Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 1);
-        XmlWriter writer = new ArtistXmlWriter();
+        Mmd1XmlWriter v1Writer = new ArtistMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
+        v1Writer.write(pr, res);
         pr.close();
 
         String output = sw.toString();
@@ -325,7 +324,7 @@ public class FindArtistTest extends TestCase {
         assertEquals(1, res.totalHits);
 
         Date start = new Date();
-        ResultsWriter writer = new ArtistXmlWriter();
+        ResultsWriter writer = new ArtistMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         for (int i = 0; i < 1000; i++) {
@@ -363,7 +362,7 @@ public class FindArtistTest extends TestCase {
     public void testOutputAsXmlFragment() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        XmlWriter writer = new ArtistXmlWriter();
+        Mmd1XmlWriter writer = new ArtistMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);

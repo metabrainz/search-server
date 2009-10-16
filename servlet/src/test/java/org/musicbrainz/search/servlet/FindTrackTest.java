@@ -1,15 +1,12 @@
 package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.NumberTools;
-import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
@@ -18,7 +15,7 @@ import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
 import org.musicbrainz.search.servlet.TrackSearch;
-import org.musicbrainz.search.servlet.TrackXmlWriter;
+import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -302,7 +299,7 @@ public class FindTrackTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = new TrackXmlWriter();
+        ResultsWriter writer = new TrackMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class CDStubSearch extends SearchServer {
 
     private CDStubSearch() throws Exception {
-        xmlWriter = null;
+        mmd1XmlWriter = null;
         htmlWriter = new CDStubHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(CDStubIndexField.ARTIST.getName());

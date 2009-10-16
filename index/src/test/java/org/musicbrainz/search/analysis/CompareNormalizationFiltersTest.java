@@ -73,15 +73,21 @@ public class CompareNormalizationFiltersTest extends TestCase {
             {
                 changedByASCIIAndNFKC ++;
             }
-         /*   if(!t.term().equals(t2.term()))
+            if(
+                    (!t0.term().equals(t2.term()))
+                    &&
+                    (t0.term().equals(t.term()))
+                    )
+
+
             {
-                printAsHexAndValue(t0.term());
-                printAsHexAndValue(t.term());
-                printAsHexAndValue(t2.term());
-                printAsHexAndValue(t3.term());
-                System.out.println();
+                //printAsHexAndValue(t0.term());
+                //printAsHexAndValue(t.term());
+                //printAsHexAndValue(t2.term());
+                //printAsHexAndValue(t3.term());
+                //System.out.println();
                 
-            }*/
+            }
         }
         System.out.println("Accent      Filter changed "+ changedByAccent + " chars");
         System.out.println("ASCII       Filter changed "+ changedByASCII + " chars");

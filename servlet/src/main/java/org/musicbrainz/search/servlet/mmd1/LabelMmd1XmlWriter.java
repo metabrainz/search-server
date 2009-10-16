@@ -26,70 +26,77 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.musicbrainz.search.servlet;
+package org.musicbrainz.search.servlet.mmd1;
 
-import com.jthink.brainz.mmd.Artist;
+import com.jthink.brainz.mmd.Label;
+import com.jthink.brainz.mmd.LabelList;
+import com.jthink.brainz.mmd.LifeSpan;
 import com.jthink.brainz.mmd.Metadata;
 import com.jthink.brainz.mmd.ObjectFactory;
-import com.jthink.brainz.mmd.ReleaseGroup;
-import com.jthink.brainz.mmd.ReleaseGroupList;
 import org.apache.commons.lang.StringUtils;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
-import org.musicbrainz.search.index.TrackIndexField;
+import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.servlet.Result;
+import org.musicbrainz.search.servlet.Results;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
+
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 
-public class ReleaseGroupXmlWriter extends XmlWriter {
-
-
+public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
     public Metadata write(Results results) throws IOException {
-
         ObjectFactory of = new ObjectFactory();
 
         Metadata metadata = of.createMetadata();
-        ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
+        LabelList labelList = of.createLabelList();
 
         for (Result result : results.results) {
             MbDocument doc = result.doc;
-            ReleaseGroup releaseGroup = of.createReleaseGroup();
-            releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+            Label label = of.createLabel();
+            label.setId(doc.get(LabelIndexField.LABEL_ID));
+            label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
 
-            releaseGroup.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
+            label.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
-            String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
+            String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {
-                releaseGroup.setTitle(name);
+                label.setName(name);
 
             }
 
-            String type = doc.get(ReleaseGroupIndexField.TYPE);
-            if (type != null) {
-                releaseGroup.getType().add(StringUtils.capitalize(type));
+            String sortname = doc.get(LabelIndexField.SORTNAME);
+            if (sortname != null) {
+                label.setSortName(sortname);
+
             }
 
+            String begin = doc.get(LabelIndexField.BEGIN);
+            String end = doc.get(LabelIndexField.END);
+            if (begin != null || end != null) {
+                LifeSpan lifespan = of.createLifeSpan();
+                if (begin != null) {
+                    lifespan.setBegin(begin);
 
-            String artistName = doc.get(ReleaseGroupIndexField.ARTIST_V1);
-            if (artistName != null) {
+                }
+                if (end != null) {
+                    lifespan.setEnd(end);
 
-                Artist artist = of.createArtist();
-                artist.setName(artistName);
-                artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
-                artist.setSortName(doc.get(ReleaseGroupIndexField.ARTIST_SORTNAME));
-                releaseGroup.setArtist(artist);
+                }
+                label.setLifeSpan(lifespan);
+
             }
 
+            String comment = doc.get(LabelIndexField.COMMENT);
+            if (comment != null) {
+                label.setDisambiguation(comment);
+            }
 
-            releaseGroupList.getReleaseGroup().add(releaseGroup);
+            labelList.getLabel().add(label);
+
         }
-        releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));
-        releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
-        metadata.setReleaseGroupList(releaseGroupList);
+        labelList.setCount(BigInteger.valueOf(results.totalHits));
+        labelList.setOffset(BigInteger.valueOf(results.offset));
+        metadata.setLabelList(labelList);
         return metadata;
     }
-
 }

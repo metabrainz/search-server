@@ -6,11 +6,10 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.ReleaseGroupSearch;
-import org.musicbrainz.search.servlet.ReleaseGroupXmlWriter;
+import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
@@ -168,7 +167,7 @@ public class FindReleaseGroupTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
-        ResultsWriter writer = new ReleaseGroupXmlWriter();
+        ResultsWriter writer = new ReleaseGroupMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);

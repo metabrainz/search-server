@@ -6,10 +6,9 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.LabelSearch;
-import org.musicbrainz.search.servlet.LabelXmlWriter;
+import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -251,7 +250,7 @@ public class FindLabelTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
-        ResultsWriter writer = new LabelXmlWriter();
+        ResultsWriter writer = new LabelMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class FreeDBSearch extends SearchServer {
 
     private FreeDBSearch() throws Exception {
-        xmlWriter = null;
+        mmd1XmlWriter = null;
         htmlWriter = new FreeDBHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(FreeDBIndexField.ARTIST.getName());

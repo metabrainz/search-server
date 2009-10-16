@@ -4,15 +4,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.ReleaseSearch;
-import org.musicbrainz.search.servlet.ReleaseXmlWriter;
+import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
 import org.musicbrainz.search.servlet.ResourceType;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -640,7 +637,7 @@ public class FindReleaseTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
-        ResultsWriter writer = new ReleaseXmlWriter();
+        ResultsWriter writer = new ReleaseMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);

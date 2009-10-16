@@ -4,6 +4,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.TrackIndexField;
 import org.musicbrainz.search.index.TrackAnalyzer;
+import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ public class TrackSearch extends SearchServer {
     public TrackSearch() throws Exception {
 
 
-        xmlWriter = new TrackXmlWriter();
+        mmd1XmlWriter = new TrackMmd1XmlWriter();
         htmlWriter = new TrackHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(TrackIndexField.TRACK.getName());

@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.musicbrainz.search.servlet;
+package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.Artist;
 import com.jthink.brainz.mmd.DiscList;
@@ -41,15 +41,15 @@ import com.jthink.brainz.mmd.TextRepresentation;
 import com.jthink.brainz.mmd.TrackList;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.index.ReleaseIndexField;
-import org.musicbrainz.search.index.TrackIndexField;
+import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.servlet.Result;
+import org.musicbrainz.search.servlet.Results;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.Locale;
 
-public class ReleaseXmlWriter extends XmlWriter {
+public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
 
 
     public Metadata write(Results results) throws IOException {

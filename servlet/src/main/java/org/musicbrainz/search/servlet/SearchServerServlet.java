@@ -55,6 +55,9 @@ public class SearchServerServlet extends HttpServlet {
     final static String RESPONSE_XML = "xml";
     final static String RESPONSE_HTML = "html";
 
+    final static String VERSION_1 = "1";
+    final static String VERSION_2 = "2";
+
     final static String CHARSET = "UTF-8";
 
     private boolean isServletInitialized = false;
@@ -107,7 +110,7 @@ public class SearchServerServlet extends HttpServlet {
         //Ensure encoding set to UTF8
         request.setCharacterEncoding(CHARSET);
 
-        //If we receive Count Parameter then we just return a count imediately, the options are the same as for the type
+        //If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
         //parameter
         String count = request.getParameter(RequestParameter.COUNT.getName());
         if(count!=null) {
@@ -155,6 +158,11 @@ public class SearchServerServlet extends HttpServlet {
         String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
         if (responseFormat == null || responseFormat.isEmpty()) {
             responseFormat = RESPONSE_HTML;
+        }
+
+        String responseVersion = request.getParameter(RequestParameter.VERSION.getName());
+        if (responseVersion == null || responseVersion.isEmpty()) {
+            responseVersion = VERSION_2;
         }
 
         Integer offset = DEFAULT_OFFSET;
@@ -233,13 +241,7 @@ public class SearchServerServlet extends HttpServlet {
             SearchServer searchServer = SearchServerFactory.getSearchServer(resourceType);
             Results results = searchServer.search(query, offset, limit);
 
-            //TODO Doesnt seem right to throw this exception, but it is currently expected by mb_server when have no results
-            if (results.results.size() == 0) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, ErrorMessage.NO_MATCHES.getMsg(query));
-                return;
-            }
-
-            ResultsWriter writer = searchServer.getWriter(responseFormat);
+            ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
 
             if (writer == null) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));

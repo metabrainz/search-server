@@ -259,7 +259,7 @@ public class IndexBuilder
     private static void prepareDbConnection(Connection connection) throws SQLException
     {
 		Statement st = connection.createStatement();
-		st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
+		//st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
     }
     
 }

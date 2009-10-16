@@ -29,32 +29,34 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.MetaIndexField;
+import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
+import org.musicbrainz.search.servlet.mmd2.XmlWriter;
 
-import java.io.IOException;
 import java.io.File;
-import java.util.List;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
-import java.text.SimpleDateFormat;
 
 public abstract class SearchServer {
 
     protected PerFieldAnalyzerWrapper analyzer;
     protected XmlWriter xmlWriter;
+    protected Mmd1XmlWriter mmd1XmlWriter;
     protected HtmlWriter htmlWriter;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
@@ -109,6 +111,10 @@ public abstract class SearchServer {
         return xmlWriter;
     }
 
+    public Mmd1XmlWriter getXmlV1Writer() {
+        return mmd1XmlWriter;
+    }
+
     public HtmlWriter getHtmlWriter() {
         return htmlWriter;
     }
@@ -122,9 +128,22 @@ public abstract class SearchServer {
     }
 
 
-    public ResultsWriter getWriter(String fmt) {
+    public ResultsWriter getWriter(String fmt, String version) {
         if (SearchServerServlet.RESPONSE_XML.equals(fmt)) {
-            return getXmlWriter();
+            if(SearchServerServlet.VERSION_1.equals(version)) {
+                return getXmlV1Writer();
+            }
+            else {
+                //TODO whilst in dev fall back to v1 if don't have a v2 one yet
+                ResultsWriter writer = getXmlWriter();
+                if(writer==null)  {
+                   return getXmlV1Writer();
+                } else {
+                   return writer; 
+                }
+
+            }
+
         } else {
             return getHtmlWriter();
         }

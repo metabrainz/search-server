@@ -1,4 +1,4 @@
-/* Copyright (c) 2009 Lukas Lalinsky
+/* Copyright (c) 2009 Paul Taylor
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,17 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.musicbrainz.search.servlet;
+package org.musicbrainz.search.servlet.mmd2;
 
-import com.jthink.brainz.mmd.Artist;
-import com.jthink.brainz.mmd.ArtistList;
-import com.jthink.brainz.mmd.LifeSpan;
-import com.jthink.brainz.mmd.Metadata;
-import com.jthink.brainz.mmd.ObjectFactory;
+
 import org.apache.commons.lang.StringUtils;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.servlet.Result;
+import org.musicbrainz.search.servlet.Results;
 
-import javax.xml.namespace.QName;
+
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -62,8 +62,12 @@ public class ArtistXmlWriter extends XmlWriter {
                 artist.setType(StringUtils.capitalize(artype));
             }
 
+
             artist.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
+
+            artist.setGender("M");
+            
             String name = doc.get(ArtistIndexField.ARTIST);
             if (name != null) {
                 artist.setName(name);
