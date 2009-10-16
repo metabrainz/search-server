@@ -14,8 +14,12 @@ public enum ArtistIndexField implements IndexField {
     BEGIN		("begin",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
     COMMENT		("comment",		Field.Store.YES,	Field.Index.ANALYZED),
-    TYPE		("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED),;
+    TYPE		("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    GENDER      ("gender",      Field.Store.YES,    Field.Index.NOT_ANALYZED),
+    COUNTRY     ("country",     Field.Store.YES,    Field.Index.NOT_ANALYZED),
 
+
+    ;
     private String name;
 	private Field.Store store;
     private Field.Index index;

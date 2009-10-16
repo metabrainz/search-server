@@ -38,8 +38,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (1, 'Person');");
         stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (2, 'Group');");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Farming Incident',1)");
-        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-            " VALUES (521316,1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36',1,null, 1999,4, null, 2, 0)");
+        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending,gender,country)" +
+            " VALUES (521316,1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36',1,null, 1999,4, null, 2, 0,1,1)");
+        stmt.addBatch("INSERT INTO gender(id, name)VALUES (1,'Male')");
+        stmt.addBatch("INSERT INTO gender(id, name)VALUES (2,'Female')");
+        stmt.addBatch("INSERT INTO country( id, isocode, name)VALUES (1,'AF','Afghanistan')");
 
         stmt.executeBatch();
         stmt.close();
@@ -154,6 +157,68 @@ public class ArtistIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
+
+    public void testIndexArtistWithCountry() throws Exception {
+
+            addArtistOne();
+            RAMDirectory ramDir = new RAMDirectory();
+            createIndex(ramDir);
+
+            IndexReader ir = IndexReader.open(ramDir, true);
+            assertEquals(1, ir.numDocs());
+            {
+                Document doc = ir.document(0);
+                assertEquals(1, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
+                assertEquals("af", doc.getField(ArtistIndexField.COUNTRY.getName()).stringValue());
+            }
+            ir.close();
+        }
+
+    public void testIndexArtistWithNoCountry() throws Exception {
+
+            addArtistTwo();
+            RAMDirectory ramDir = new RAMDirectory();
+            createIndex(ramDir);
+
+            IndexReader ir = IndexReader.open(ramDir, true);
+            assertEquals(1, ir.numDocs());
+            {
+                Document doc = ir.document(0);
+                assertEquals(0, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
+             }
+            ir.close();
+        }
+    public void testIndexArtistWithGender() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ArtistIndexField.GENDER.getName()).length);
+            assertEquals("male", doc.getField(ArtistIndexField.GENDER.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    public void testIndexArtistWithNoGender() throws Exception {
+
+        addArtistTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(0, doc.getFields(ArtistIndexField.GENDER.getName()).length);
+        }
+        ir.close();
+    }
+
 
     /**
      * Checks fields are indexed correctly for artist with alias (the aliases are not stored)

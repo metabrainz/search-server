@@ -86,12 +86,13 @@ public class ArtistIndex extends Index {
             "SELECT artist.id, gid, n0.name as name, n1.name as sortname, " +
                 "	lower(artist_type.name) as type, begindate_year, begindate_month, begindate_day, " +
                 "	enddate_year, enddate_month, enddate_day, " +
-                "	comment, lower(isocode) as country " +
+                "	comment, lower(isocode) as country, lower(gender.name) as gender " +
                 "FROM artist " +
                 " LEFT JOIN artist_name n0 ON artist.name = n0.id " +
                 " LEFT JOIN artist_name n1 ON artist.sortname = n1.id " +
                 " LEFT JOIN artist_type ON artist.type = artist_type.id " +
                 " LEFT JOIN country ON artist.country = country.id " +
+                " LEFT JOIN gender ON artist.gender=gender.id " +
                 "WHERE artist.id BETWEEN ? AND ?");
 
 
@@ -127,6 +128,8 @@ public class ArtistIndex extends Index {
                    Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
 
         addNonEmptyFieldToDocument(doc, ArtistIndexField.COMMENT, rs.getString("comment"));
+         addNonEmptyFieldToDocument(doc, ArtistIndexField.COUNTRY, rs.getString("country"));
+        addNonEmptyFieldToDocument(doc, ArtistIndexField.GENDER, rs.getString("gender"));
 
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {

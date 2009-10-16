@@ -20,6 +20,8 @@ import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
+import org.musicbrainz.search.servlet.mmd2.ArtistXmlWriter;
+import org.musicbrainz.search.servlet.mmd2.XmlWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -53,6 +55,9 @@ public class FindArtistTest extends TestCase {
             Index.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1999-04");
             Index.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
             Index.addFieldToDocument(doc, ArtistIndexField.COMMENT, "the real one");
+            Index.addFieldToDocument(doc, ArtistIndexField.COUNTRY, "af");
+            Index.addFieldToDocument(doc, ArtistIndexField.GENDER, "male");
+
             writer.addDocument(doc);
         }
 
@@ -189,6 +194,33 @@ public class FindArtistTest extends TestCase {
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
+    public void testFindArtistByCountry() throws Exception {
+        Results res = ss.searchLucene("country:\"AF\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+    }
+
+    public void testFindArtistByGenderLowercase() throws Exception {
+        Results res = ss.searchLucene("gender:\"male\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+    }
+
+    public void testFindArtistByGenderTitlecase() throws Exception {
+        Results res = ss.searchLucene("gender:\"Male\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+    }
+
     public void testFindArtistByDefaultField() throws Exception {
 
         //Matches on name field without it being specified
@@ -231,7 +263,7 @@ public class FindArtistTest extends TestCase {
      *
      * @throws Exception
      */
-    public void testOutputAsXml() throws Exception {
+    public void testOutputAsMmd1Xml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
         Mmd1XmlWriter v1Writer = new ArtistMmd1XmlWriter();
@@ -254,6 +286,36 @@ public class FindArtistTest extends TestCase {
         assertFalse(output.contains("disambugation"));
     }
 
+
+    /**
+    
+     *
+     * @throws Exception
+     */
+    public void testOutputXml() throws Exception {
+
+        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+        XmlWriter v1Writer = new ArtistXmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        v1Writer.write(pr, res);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        //assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));  group comes before id in output
+        //assertTrue(output.contains("<artist-list count=\"1\" offset=\"0\">"));               offset comes before count in output
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("type=\"Group\""));
+        assertTrue(output.contains("<name>Farming Incident</name>"));
+        assertTrue(output.contains("<sort-name>Farming Incident</sort-name>"));
+        assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
+        assertTrue(output.contains("<country>AF</country>"));
+        assertTrue(output.contains("<gender>Male</gender>"));
+        assertFalse(output.contains("alias"));
+        assertFalse(output.contains("disambugation"));
+    }
     public void testOutputAsHtml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
@@ -282,7 +344,7 @@ public class FindArtistTest extends TestCase {
      *
      * @throws Exception
      */
-    public void testOutputAsXmlSpecialCharacters() throws Exception {
+    public void testOutputAsMmd1XmlSpecialCharacters() throws Exception {
 
         Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 1);
         Mmd1XmlWriter v1Writer = new ArtistMmd1XmlWriter();

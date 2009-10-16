@@ -66,8 +66,21 @@ public class ArtistXmlWriter extends XmlWriter {
             artist.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
 
-            artist.setGender("M");
-            
+
+            String gender = doc.get(ArtistIndexField.GENDER);
+            if (gender != null) {
+                artist.setGender(StringUtils.capitalize(gender));
+
+            }
+
+
+
+            String country = doc.get(ArtistIndexField.COUNTRY);
+            if (country != null) {
+                artist.setCountry(StringUtils.upperCase(country));
+
+            }
+
             String name = doc.get(ArtistIndexField.ARTIST);
             if (name != null) {
                 artist.setName(name);
