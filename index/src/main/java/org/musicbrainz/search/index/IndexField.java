@@ -1,5 +1,6 @@
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
 
 /**
@@ -9,6 +10,6 @@ public interface IndexField {
 
     public String getName();
     public Field.Store getStore();
-	public Field.Index getIndex();
-
+    public Field.Index getIndex();
+    public Analyzer getAnalyzer();
 }

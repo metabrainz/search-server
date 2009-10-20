@@ -28,6 +28,8 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 
 /**
@@ -35,33 +37,49 @@ import org.apache.lucene.document.Field;
  */
 public enum FreeDBIndexField implements IndexField {
 
-	ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
-	TITLE		("title",		Field.Store.YES,	Field.Index.ANALYZED),
-	DISCID		("discid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-	CATEGORY	("cat",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
-	YEAR		("year",		Field.Store.YES,	Field.Index.ANALYZED),
-	TRACKS		("tracks",		Field.Store.YES,	Field.Index.ANALYZED),;
+    ARTIST      ("artist",    Field.Store.YES,    Field.Index.ANALYZED),
+    TITLE       ("title",     Field.Store.YES,    Field.Index.ANALYZED),
+    DISCID      ("discid",    Field.Store.YES,    Field.Index.NOT_ANALYZED,  new KeywordAnalyzer()),
+    CATEGORY    ("cat",       Field.Store.YES,    Field.Index.NOT_ANALYZED,  new KeywordAnalyzer() ),
+    YEAR        ("year",      Field.Store.YES,    Field.Index.ANALYZED),
+    TRACKS      ("tracks",    Field.Store.YES,    Field.Index.ANALYZED),
+    ;
 
-	private String name;
-	private Field.Store store;
-	private Field.Index index;
+    private String name;
+    private Field.Store store;
+    private Field.Index index;
+    private Analyzer analyzer;
 
-	private FreeDBIndexField(String name, Field.Store store, Field.Index index) {
-		this.name = name;
-		this.store = store;
-		this.index = index;
-	}
+    private FreeDBIndexField(String name, Field.Store store, Field.Index index) {
+        this.name = name;
+        this.store = store;
+        this.index = index;
+    }
+    
+    private FreeDBIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
+        this(name, store, index);
+        this.analyzer = analyzer;
+    }
+    
+    public String getName() {
+        return name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Field.Store getStore() {
+        return store;
+    }
 
-	public Field.Store getStore() {
-		return store;
-	}
+    public Field.Index getIndex() {
+        return index;
+    }
 
-	public Field.Index getIndex() {
-		return index;
-	}
+    public Analyzer getAnalyzer() {
+        return analyzer;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 
 }

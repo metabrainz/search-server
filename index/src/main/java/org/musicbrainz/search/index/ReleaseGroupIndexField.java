@@ -19,6 +19,8 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 
 /**
@@ -26,19 +28,20 @@ import org.apache.lucene.document.Field;
  */
 public enum ReleaseGroupIndexField implements IndexField {
 
-    ENTITY_TYPE        ("_type",        Field.Store.YES,    Field.Index.NOT_ANALYZED),
-    ENTITY_GID         ("_gid",         Field.Store.YES,    Field.Index.NOT_ANALYZED),
+    ENTITY_TYPE        ("_type",        Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    ENTITY_GID         ("_gid",         Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST    	       ("artist",    	Field.Store.NO,     Field.Index.ANALYZED),
     RELEASEGROUP       ("releasegroup",	Field.Store.NO,     Field.Index.ANALYZED),
     RELEASES           ("releases",     Field.Store.NO,     Field.Index.ANALYZED),
     FIRST_RELEASE_DATE ("date",         Field.Store.NO,     Field.Index.NOT_ANALYZED),    
-    TYPE               ("type",         Field.Store.NO,     Field.Index.ANALYZED),
+    TYPE               ("type",         Field.Store.NO,     Field.Index.ANALYZED, new KeywordAnalyzer()),
     COMMENT            ("comment",      Field.Store.NO,     Field.Index.ANALYZED),
     ;
 
     private String name;
     private Field.Store store;
     private Field.Index index;
+    private Analyzer analyzer;
 
     private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index) {
         this.name = name;
@@ -46,6 +49,11 @@ public enum ReleaseGroupIndexField implements IndexField {
         this.index = index;
     }
 
+    private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
+        this(name, store, index);
+        this.analyzer = analyzer;
+    }
+    
     public String getName() {
         return name;
     }
@@ -56,6 +64,10 @@ public enum ReleaseGroupIndexField implements IndexField {
 
     public Field.Index getIndex() {
         return index;
+    }
+
+    public Analyzer getAnalyzer() {
+        return analyzer;
     }
     
     @Override

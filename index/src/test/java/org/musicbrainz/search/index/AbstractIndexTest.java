@@ -15,7 +15,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 
 public abstract class AbstractIndexTest extends TestCase {
@@ -25,9 +25,9 @@ public abstract class AbstractIndexTest extends TestCase {
         return DriverManager.getConnection("jdbc:h2:mem");
     }
 
-    protected List<Document> search(RAMDirectory ramDir, String query, int offset, int limit) throws Exception {
+    protected List<Document> search(Class indexFieldClass, RAMDirectory ramDir, String query, int offset, int limit) throws Exception {
         IndexSearcher searcher = new IndexSearcher(ramDir, true);
-        QueryParser parser = new QueryParser(null, new StandardUnaccentAnalyzer());
+        QueryParser parser = new QueryParser(null, new PerFieldEntityAnalyzer(indexFieldClass));
         TopScoreDocCollector collector = TopScoreDocCollector.create(offset + limit, true);
         searcher.search(parser.parse(query), collector);
 

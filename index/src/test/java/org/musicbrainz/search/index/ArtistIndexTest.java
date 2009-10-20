@@ -4,7 +4,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.ArtistIndex;
 import org.musicbrainz.search.index.ArtistIndexField;
 
@@ -15,6 +15,8 @@ import java.util.List;
 
 public class ArtistIndexTest extends AbstractIndexTest {
 
+    private static Class INDEX_FIELD_CLASS = ArtistIndexField.class;
+    
     private static String ARTIST_ONE_GID = "4302e264-1cf0-4d1f-aca7-2a6f89e34b36";
     private static String ARTIST_TWO_GID = "ccd4879c-5e88-4385-b131-bf65296bf245";
     private static String ARTIST_THREE_GID = "ae8707b6-684c-4d4a-95c5-d117970a6dfe";
@@ -25,7 +27,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = new IndexWriter(ramDir, new PerFieldEntityAnalyzer(INDEX_FIELD_CLASS), true, IndexWriter.MaxFieldLength.LIMITED);
         ArtistIndex ai = new ArtistIndex(createConnection());
         ai.init();
         ai.indexData(writer, 0, Integer.MAX_VALUE);
@@ -137,7 +139,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ArtistIndexField.ALIAS + ":\"Echo & The Bunnyman\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -157,11 +159,16 @@ public class ArtistIndexTest extends AbstractIndexTest {
         // Check if something has been indexed
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            System.out.println(doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
+            
+        }
         ir.close();
         
         // Try to search using this piece of information
         String query = ArtistIndexField.TYPE + ":Group";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -200,7 +207,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ArtistIndexField.ALIAS + ":\"Echo And The Bunnymen ACN\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -228,7 +235,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ArtistIndexField.BEGIN + ":1978";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -255,7 +262,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ArtistIndexField.END + ":1995";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -299,7 +306,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ArtistIndexField.SORTNAME + ":\"Lynch, Siobhan\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -338,7 +345,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ArtistIndexField.COUNTRY + ":af";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -377,7 +384,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ArtistIndexField.GENDER + ":Male";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);

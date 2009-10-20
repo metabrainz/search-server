@@ -4,7 +4,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.ReleaseGroupIndex;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 
@@ -15,6 +15,8 @@ import java.util.List;
 
 public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
+    private static Class INDEX_FIELD_CLASS = RecordingIndexField.class;
+    
     private static String RELEASEGROUP_ONE_GID = "148a0024-1cf3-3b7c-a0f4-d653dc2ba44b";
     private static String RELEASEGROUP_TWO_GID = "ccd4879c-5e88-4385-b131-bf65296bf245";
     private static String ENTITY_TYPE = "release-group";
@@ -25,7 +27,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = new IndexWriter(ramDir, new PerFieldEntityAnalyzer(INDEX_FIELD_CLASS), true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseGroupIndex rgi = new ReleaseGroupIndex(createConnection());
         rgi.init();
         rgi.indexData(writer, 0, Integer.MAX_VALUE);
@@ -161,7 +163,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
         
         String query = ReleaseGroupIndexField.TYPE + ":\"Compilation\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -184,7 +186,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
         
         String query = ReleaseGroupIndexField.COMMENT + ":\"a rg comment\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -207,7 +209,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
         
         String query = ReleaseGroupIndexField.RELEASEGROUP + ":\"Le Meilleur des deux\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -230,7 +232,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
         
         String query = ReleaseGroupIndexField.RELEASES + ":\"Le Meilleur des deux : integrale\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -255,7 +257,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = ReleaseGroupIndexField.ARTIST + ":\"Jacques Dutronc\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -267,7 +269,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         query = ReleaseGroupIndexField.ARTIST + ":\"Francoise Hardy\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -293,7 +295,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         // Try to search using this piece of information
         // Try to search using this piece of information
         String query = ReleaseGroupIndexField.ARTIST + ":\"Jacques Dutronc\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -305,7 +307,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         query = ReleaseGroupIndexField.ARTIST + ":\"Francoise Hardy\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -330,7 +332,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = ReleaseGroupIndexField.ARTIST + ":\"Jacques\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -341,7 +343,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         }
         
         query = ReleaseGroupIndexField.ARTIST + ":\"Francoise\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -366,7 +368,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = ReleaseGroupIndexField.ARTIST + ":\"Jacques\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -377,7 +379,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         }
         
         query = ReleaseGroupIndexField.ARTIST + ":\"Francoise\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -405,7 +407,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = ReleaseGroupIndexField.ARTIST + ":\"Jacques et Francoise\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -433,7 +435,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = ReleaseGroupIndexField.ARTIST + ":\"Jacques et Francoise\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -457,7 +459,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = ReleaseGroupIndexField.FIRST_RELEASE_DATE + ":1998-04";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);

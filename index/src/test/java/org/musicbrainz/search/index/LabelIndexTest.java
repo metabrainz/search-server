@@ -4,7 +4,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.LabelIndex;
 import org.musicbrainz.search.index.LabelIndexField;
 
@@ -15,6 +15,8 @@ import java.util.List;
 
 public class LabelIndexTest extends AbstractIndexTest {
 
+    private static Class INDEX_FIELD_CLASS = LabelIndexField.class;
+    
     private static String LABEL_ONE_GID = "a539bb1e-f2e1-4b45-9db8-8053841e7503";
     private static String LABEL_TWO_GID = "d8caa692-704d-412b-a410-4fbcf5b9c796";
     private static String LABEL_THREE_GID = "d8caa692-704d-412b-a410-4fbcf5b9c796";
@@ -25,7 +27,7 @@ public class LabelIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = new IndexWriter(ramDir, new PerFieldEntityAnalyzer(INDEX_FIELD_CLASS), true, IndexWriter.MaxFieldLength.LIMITED);
         LabelIndex li = new LabelIndex(createConnection());
         li.init();
         li.indexData(writer, 0, Integer.MAX_VALUE);
@@ -137,7 +139,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = LabelIndexField.COUNTRY + ":af";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -163,7 +165,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         String query; 
         List<Document> results;
         query = LabelIndexField.COMMENT + ":\"DO NOT EDIT THIS LABEL\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -175,7 +177,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         
         // Search again in an altered form
         query = LabelIndexField.COMMENT + ":\"NOT eDiT THIS label\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -209,7 +211,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = LabelIndexField.CODE + ":5807";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -231,7 +233,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = LabelIndexField.CODE + ":99998";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -258,7 +260,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = LabelIndexField.ALIAS + ":\"4AD US\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -285,7 +287,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = LabelIndexField.BEGIN + ":\"1979\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -329,7 +331,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         
         // Try to search using this piece of information
         String query = LabelIndexField.END + ":\"2009-04\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -351,8 +353,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         ir.close();
         
         // Try to search using this piece of information
-        String query = LabelIndexField.TYPE + ":\"bootleg production\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        String query = LabelIndexField.TYPE + ":\"Bootleg Production\"";
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);

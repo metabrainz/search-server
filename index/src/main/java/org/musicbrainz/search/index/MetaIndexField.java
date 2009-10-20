@@ -19,6 +19,7 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
 
 /**
@@ -26,12 +27,13 @@ import org.apache.lucene.document.Field;
  */
 public enum MetaIndexField implements IndexField {
 
-    META		("meta",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    META        ("meta",        Field.Store.YES,    Field.Index.NOT_ANALYZED),
     ;
 
     private String name;
-	private Field.Store store;
+    private Field.Store store;
     private Field.Index index;
+    private Analyzer analyzer;
 
     private MetaIndexField(String name, Field.Store store, Field.Index index) {
         this.name = name;
@@ -44,11 +46,15 @@ public enum MetaIndexField implements IndexField {
     }
 
     public Field.Store getStore() {
-		return store;
-	}
+        return store;
+    }
 
-	public Field.Index getIndex() {
-		return index;
-	}
+    public Field.Index getIndex() {
+        return index;
+    }
+
+    public Analyzer getAnalyzer() {
+        return analyzer;
+    }
 }
 

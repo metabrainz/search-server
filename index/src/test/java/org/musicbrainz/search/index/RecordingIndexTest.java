@@ -4,7 +4,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.RecordingIndexField;
 
 import java.sql.Connection;
@@ -14,6 +14,8 @@ import java.util.List;
 
 public class RecordingIndexTest extends AbstractIndexTest {
 
+    private static Class INDEX_FIELD_CLASS = RecordingIndexField.class;
+    
     private static String RECORDING_ONE_GID = "27ae9c34-36c7-43f6-8f7d-fe775b151bc1";
     private static String RECORDING_TWO_GID = "b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d";
     private static String ENTITY_TYPE = "recording";
@@ -23,7 +25,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = new IndexWriter(ramDir, new PerFieldEntityAnalyzer(INDEX_FIELD_CLASS), true, IndexWriter.MaxFieldLength.LIMITED);
         RecordingIndex ri = new RecordingIndex(createConnection());
         ri.init();
         ri.indexData(writer, 0, Integer.MAX_VALUE);
@@ -144,7 +146,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.COMMENT + ":\"a very useful comment\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -170,7 +172,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.ARTIST + ":\"The Beatles\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -195,7 +197,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.ARTIST + ":\"The Beatles\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -206,7 +208,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         }
         
         query = RecordingIndexField.ARTIST + ":\"Mister YX\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -231,7 +233,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.ARTIST + ":\"John Lennon\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -242,7 +244,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         }
         
         query = RecordingIndexField.ARTIST + ":\"Beatles\"";
-        results = search(ramDir, query, 0, 10);
+        results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -267,7 +269,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.ARTIST + ":\"Mister X\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -295,7 +297,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.ARTIST + ":\"John Lennon & Beatles\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -323,7 +325,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.ARTIST + ":\"Mister X presents Beetles\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -348,7 +350,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.RECORDING + ":\"A Day in the Life\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);
@@ -373,7 +375,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         // Try to search using this piece of information
         String query = RecordingIndexField.TRACK + ":\"A Day in the Life (original)\"";
-        List<Document> results = search(ramDir, query, 0, 10);
+        List<Document> results = search(INDEX_FIELD_CLASS, ramDir, query, 0, 10);
         assertEquals(1, results.size());
         {
             Document doc = results.get(0);

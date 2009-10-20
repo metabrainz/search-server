@@ -1,5 +1,6 @@
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
 
 /**
@@ -30,6 +31,7 @@ public enum ReleaseIndexField implements IndexField {
     private String name;
 	private Field.Store store;
     private Field.Index index;
+    private Analyzer analyzer;
 
     private ReleaseIndexField(String name, Field.Store store, Field.Index index) {
         this.name = name;
@@ -37,6 +39,11 @@ public enum ReleaseIndexField implements IndexField {
         this.index = index;
     }
 
+    private ReleaseIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
+        this(name, store, index);
+        this.analyzer = analyzer;
+    }
+    
     public String getName() {
         return name;
     }
@@ -49,4 +56,7 @@ public enum ReleaseIndexField implements IndexField {
 		return index;
 	}
 
+    public Analyzer getAnalyzer() {
+        return analyzer;
+    }
 }
