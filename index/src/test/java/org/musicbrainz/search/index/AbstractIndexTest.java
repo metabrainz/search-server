@@ -96,7 +96,10 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work_type");
 
-                
+                stmt.addBatch("DROP TABLE release_raw");
+                stmt.addBatch("DROP TABLE cdtoc_raw");
+                stmt.addBatch("DROP TABLE track_raw");
+
                 stmt.executeBatch();
                 stmt.close();
             }
@@ -121,7 +124,8 @@ public abstract class AbstractIndexTest extends TestCase {
             setupReleaseTables(stmt);
             setupRecordingTables(stmt);
             setupWorkTables(stmt);
-
+            setupCDStubTables(stmt);
+            
             insertReferenceData(stmt);
 
             stmt.executeBatch();
@@ -442,7 +446,40 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  refcount integer DEFAULT 0" +
                 ")");
     }
-	
+
+    protected void setupCDStubTables(Statement stmt) throws Exception {
+        
+        stmt.addBatch("CREATE TABLE release_raw (" +
+                "  id serial NOT NULL," +
+                "  title character varying(255) NOT NULL," +
+                "  artist character varying(255)," +
+                "  added timestamp DEFAULT now()," +
+                "  lastmodified timestamp DEFAULT now()," +
+                "  lookupcount integer DEFAULT 0," +
+                "  modifycount integer DEFAULT 0," +
+                "  source integer DEFAULT 0," +
+                "  barcode character varying(255)," +
+                "  comment character varying(255)" +
+                ")");
+        
+        stmt.addBatch("CREATE TABLE track_raw (" +
+                "  id serial NOT NULL," +
+                "  release integer NOT NULL," +
+                "  title character varying(255) NOT NULL," +
+                "  artist character varying(255)," +
+                "  sequence integer NOT NULL" +
+                ")");
+        
+        stmt.addBatch("CREATE TABLE cdtoc_raw (" +
+                "  id serial NOT NULL," +
+                "  release integer NOT NULL," +
+                "  discid character(28) NOT NULL," +
+                "  trackcount integer NOT NULL," +
+                "  leadoutoffset integer NOT NULL" +
+                //"  trackoffset integer[] NOT NULL" +   // Not needed for our purposes (and h2 doesn't support array)
+                ")");            
+    }
+    
     protected void insertReferenceData(Statement stmt) throws Exception {
 
         stmt.addBatch("INSERT INTO gender (id, name) VALUES " + 
