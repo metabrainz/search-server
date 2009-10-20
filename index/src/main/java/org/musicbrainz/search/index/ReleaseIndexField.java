@@ -21,7 +21,7 @@ public enum ReleaseIndexField implements IndexField {
     NUM_DISC_IDS	("discids",		Field.Store.YES,	Field.Index.ANALYZED),
     AMAZON_ID		("asin",		Field.Store.YES,	Field.Index.ANALYZED),
     SCRIPT			("script",		Field.Store.YES,	Field.Index.ANALYZED),
-    LANGUAGE		("language",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    LANGUAGE		("lang",	    Field.Store.YES,	Field.Index.NOT_ANALYZED),
     TYPE		    ("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     STATUS		    ("status",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
