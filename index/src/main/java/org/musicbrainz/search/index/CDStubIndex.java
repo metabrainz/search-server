@@ -23,6 +23,7 @@ import java.io.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.musicbrainz.search.MbDocument;
 
 import java.sql.*;
 
@@ -32,17 +33,20 @@ public class CDStubIndex extends DatabaseIndex {
         super(dbConnection);
     }
 
+    @Override
     public String getName() {
         return "cdstub";
     }
 
+    @Override
     public int getMaxId() throws SQLException {
         Statement st = this.dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(release_raw.id) FROM release_raw");
         rs.next();
         return rs.getInt(1);
     }
-
+    
+    @Override
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         PreparedStatement st = dbConnection.prepareStatement(
@@ -62,22 +66,22 @@ public class CDStubIndex extends DatabaseIndex {
     }
 
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
-        Document doc = new Document();
-        addFieldToDocument(doc, CDStubIndexField.TITLE, rs.getString("title"));
-        addFieldToDocument(doc, CDStubIndexField.ARTIST, rs.getString("artist"));
-        addFieldToDocument(doc, CDStubIndexField.DISCID, rs.getString("discid"));
-        addFieldToDocument(doc, CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
+        MbDocument doc = new MbDocument();
+        doc.addField(CDStubIndexField.TITLE, rs.getString("title"));
+        doc.addField(CDStubIndexField.ARTIST, rs.getString("artist"));
+        doc.addField(CDStubIndexField.DISCID, rs.getString("discid"));
+        doc.addField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
 
         String barcode = rs.getString("barcode");
         if (barcode != null && !barcode.isEmpty()) {
-            addFieldToDocument(doc, CDStubIndexField.BARCODE, barcode);
+            doc.addField(CDStubIndexField.BARCODE, barcode);
         }
         String comment = rs.getString("comment");
         if (comment != null && !comment.isEmpty()) {
-            addFieldToDocument(doc, CDStubIndexField.COMMENT, comment);
+            doc.addField(CDStubIndexField.COMMENT, comment);
         }
 
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

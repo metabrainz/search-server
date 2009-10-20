@@ -24,6 +24,7 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.musicbrainz.search.MbDocument;
 
 import java.sql.*;
 
@@ -107,29 +108,29 @@ public class ArtistIndex extends DatabaseIndex {
 
     protected Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> names) throws SQLException {
 
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int artistId = rs.getInt("id");
-        addFieldToDocument(doc, ArtistIndexField.ENTITY_TYPE, this.getName());
-        addFieldToDocument(doc, ArtistIndexField.ENTITY_GID, rs.getString("gid"));
-        addFieldToDocument(doc, ArtistIndexField.ARTIST, rs.getString("name"));
-        addFieldToDocument(doc, ArtistIndexField.SORTNAME, rs.getString("sortname"));
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.TYPE, rs.getString("type"));
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.GENDER, rs.getString("gender"));
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.COMMENT, rs.getString("comment"));
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.COUNTRY, rs.getString("country"));
+        doc.addField(ArtistIndexField.ENTITY_TYPE, this.getName());
+        doc.addField(ArtistIndexField.ENTITY_GID, rs.getString("gid"));
+        doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
+        doc.addField(ArtistIndexField.SORTNAME, rs.getString("sortname"));
+        doc.addNonEmptyField(ArtistIndexField.TYPE, rs.getString("type"));
+        doc.addNonEmptyField(ArtistIndexField.GENDER, rs.getString("gender"));
+        doc.addNonEmptyField(ArtistIndexField.COMMENT, rs.getString("comment"));
+        doc.addNonEmptyField(ArtistIndexField.COUNTRY, rs.getString("country"));
 
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.BEGIN, 
+        doc.addNonEmptyField(ArtistIndexField.BEGIN, 
             Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
 
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.END, 
+        doc.addNonEmptyField(ArtistIndexField.END, 
             Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
         
         if (names.containsKey(artistId)) {
             for (String name : names.get(artistId)) {
-                addFieldToDocument(doc, ArtistIndexField.ALIAS, name);
+                doc.addField(ArtistIndexField.ALIAS, name);
             }
         }
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

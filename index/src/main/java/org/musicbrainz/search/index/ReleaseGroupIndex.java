@@ -24,6 +24,7 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.musicbrainz.search.MbDocument;
 
 import java.sql.*;
 
@@ -162,24 +163,24 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, Map<Integer, ArtistCredit>> artistCredits, Map<Integer, List<String>> releaseNames) throws SQLException {
         
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int rgId = rs.getInt("id");
-        addFieldToDocument(doc, ReleaseGroupIndexField.ENTITY_TYPE, this.getName());
-        addFieldToDocument(doc, ReleaseGroupIndexField.ENTITY_GID, rs.getString("gid"));
-        addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
-        addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.COMMENT, rs.getString("comment"));
-        addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.TYPE, rs.getString("type"));
+        doc.addField(ReleaseGroupIndexField.ENTITY_TYPE, this.getName());
+        doc.addField(ReleaseGroupIndexField.ENTITY_GID, rs.getString("gid"));
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
+        doc.addNonEmptyField(ReleaseGroupIndexField.COMMENT, rs.getString("comment"));
+        doc.addNonEmptyField(ReleaseGroupIndexField.TYPE, rs.getString("type"));
 
-        addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.FIRST_RELEASE_DATE, 
+        doc.addNonEmptyField(ReleaseGroupIndexField.FIRST_RELEASE_DATE, 
                 Utils.formatDate(rs.getInt("firstreleasedate_year"), rs.getInt("firstreleasedate_month"), rs.getInt("firstreleasedate_day")));
         
         // Artist credits
         if (artistCredits.containsKey(rgId)) {
             for (ArtistCredit ac : artistCredits.get(rgId).values()) {
-                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, ac.getArtistCreditString());
+                doc.addField(ReleaseGroupIndexField.ARTIST, ac.getArtistCreditString());
                 for (ArtistCreditName acn : ac) {
                     if (!acn.getName().equals(acn.getArtistName())) {
-                        addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, acn.getArtistName());
+                        doc.addField(ReleaseGroupIndexField.ARTIST, acn.getArtistName());
                     }
                 }
             }
@@ -192,10 +193,10 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 sb.append(name);
                 sb.append(" ");
             }
-            addFieldToDocument(doc, ReleaseGroupIndexField.RELEASES, sb.toString());
+            doc.addField(ReleaseGroupIndexField.RELEASES, sb.toString());
         }
         
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

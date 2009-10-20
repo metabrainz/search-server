@@ -21,6 +21,7 @@ package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.search.MbDocument;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -57,10 +58,6 @@ public class ReleaseIndex extends DatabaseIndex {
                 "       SELECT release.id AS release, artist_credit " +
                 "          FROM release " +
                 "          WHERE release.id BETWEEN ? AND ? " +
-//                "       UNION " +
-//                "       SELECT DISTINCT release_group, artist_credit " +
-//                "          FROM release " +
-//                "          WHERE release.release_group BETWEEN ? AND ? " +
                 "       ) t ON t.artist_credit = artist_credit_name.artist_credit " +
                 "  ORDER BY t.release, t.artist_credit, artist_credit_name.position"
         );
@@ -207,58 +204,58 @@ public class ReleaseIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs, Map<Integer, Map<Integer, ArtistCredit>> artistCredits, 
             Map<Integer, List<MediumInfo>> mediumInfos, Map<Integer, List<LabelCatno>> labelCatnos) throws SQLException {
         
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int releaseId = rs.getInt("id");
-        addFieldToDocument(doc, ReleaseGroupIndexField.ENTITY_TYPE, this.getName());
-        addFieldToDocument(doc, ReleaseGroupIndexField.ENTITY_GID, rs.getString("gid"));
-        addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
+        doc.addField(ReleaseIndexField.ENTITY_TYPE, this.getName());
+        doc.addField(ReleaseIndexField.ENTITY_GID, rs.getString("gid"));
+        doc.addField(ReleaseIndexField.RELEASE, rs.getString("name"));
 
         
         // Artist credits
         if (artistCredits.containsKey(releaseId)) {
             for (ArtistCredit ac : artistCredits.get(releaseId).values()) {
-                addFieldToDocument(doc, ReleaseIndexField.ARTIST, ac.getArtistCreditString());
+                doc.addField(ReleaseIndexField.ARTIST, ac.getArtistCreditString());
                 for (ArtistCreditName acn : ac) {
                     if (!acn.getName().equals(acn.getArtistName())) {
-                        addFieldToDocument(doc, ReleaseIndexField.ARTIST, acn.getArtistName());
+                        doc.addField(ReleaseIndexField.ARTIST, acn.getArtistName());
                     }
                 }
             }
         }
         
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.DATE, 
+        doc.addNonEmptyField(ReleaseIndexField.DATE, 
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.COUNTRY, rs.getString("country"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.BARCODE, rs.getString("barcode"));
+        doc.addNonEmptyField(ReleaseIndexField.COUNTRY, rs.getString("country"));
+        doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
 
         // Labels & catno
         if (labelCatnos.containsKey(releaseId)) {
             for (LabelCatno lc : labelCatnos.get(releaseId)) {
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.LABEL, lc.label);
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, lc.catno);
+                doc.addNonEmptyField(ReleaseIndexField.LABEL, lc.label);
+                doc.addNonEmptyField(ReleaseIndexField.CATALOG_NO, lc.catno);
             }
         }
         
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.TYPE, rs.getString("type"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.SCRIPT, rs.getString("script"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.LANGUAGE, rs.getString("language"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.STATUS, rs.getString("status"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.PACKAGING, rs.getString("packaging"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.COMMENT, rs.getString("comment"));
+        doc.addNonEmptyField(ReleaseIndexField.TYPE, rs.getString("type"));
+        doc.addNonEmptyField(ReleaseIndexField.SCRIPT, rs.getString("script"));
+        doc.addNonEmptyField(ReleaseIndexField.LANGUAGE, rs.getString("language"));
+        doc.addNonEmptyField(ReleaseIndexField.STATUS, rs.getString("status"));
+        doc.addNonEmptyField(ReleaseIndexField.PACKAGING, rs.getString("packaging"));
+        doc.addNonEmptyField(ReleaseIndexField.COMMENT, rs.getString("comment"));
         
         // Medium infos: format, name, trackcount
         if (mediumInfos.containsKey(releaseId)) {
             for (MediumInfo info : mediumInfos.get(releaseId)) {
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.FORMAT, info.format);
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.MEDIUM, info.name);
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, info.trackcount.toString());
+                doc.addNonEmptyField(ReleaseIndexField.FORMAT, info.format);
+                doc.addNonEmptyField(ReleaseIndexField.MEDIUM, info.name);
+                doc.addNonEmptyField(ReleaseIndexField.NUM_TRACKS, info.trackcount.toString());
             }
         }
 //        addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
 
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.ASIN, rs.getString("amazonasin"));
+        doc.addNonEmptyField(ReleaseIndexField.ASIN, rs.getString("amazonasin"));
         
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

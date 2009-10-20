@@ -24,6 +24,7 @@ import java.io.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.document.Document;
+import org.musicbrainz.search.MbDocument;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -163,22 +164,22 @@ public class RecordingIndex extends DatabaseIndex {
 
     protected Document documentFromResultSet(ResultSet rs, Map<Integer, Map<Integer, ArtistCredit>> artistCredits, Map<Integer, List<String>> trackNames)
     throws SQLException {
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
 
         int recordingId = rs.getInt("id");
-        addFieldToDocument(doc, RecordingIndexField.ENTITY_TYPE, this.getName());
-        addFieldToDocument(doc, RecordingIndexField.ENTITY_GID, rs.getString("gid"));
-        addFieldToDocument(doc, RecordingIndexField.RECORDING, rs.getString("name"));
-        addNonEmptyFieldToDocument(doc, RecordingIndexField.COMMENT, rs.getString("comment"));
-        addFieldToDocument(doc, RecordingIndexField.DURATION, NumericUtils.longToPrefixCoded(rs.getLong("length")));
-        addFieldToDocument(doc, RecordingIndexField.QUANTIZED_DURATION, NumericUtils.longToPrefixCoded(rs.getLong("length") / QUANTIZED_DURATION));
+        doc.addField(RecordingIndexField.ENTITY_TYPE, this.getName());
+        doc.addField(RecordingIndexField.ENTITY_GID, rs.getString("gid"));
+        doc.addField(RecordingIndexField.RECORDING, rs.getString("name"));
+        doc.addNonEmptyField(RecordingIndexField.COMMENT, rs.getString("comment"));
+        doc.addField(RecordingIndexField.DURATION, NumericUtils.longToPrefixCoded(rs.getLong("length")));
+        doc.addField(RecordingIndexField.QUANTIZED_DURATION, NumericUtils.longToPrefixCoded(rs.getLong("length") / QUANTIZED_DURATION));
         
         if (artistCredits.containsKey(recordingId)) {
             for (ArtistCredit ac : artistCredits.get(recordingId).values()) {
-                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, ac.getArtistCreditString());
+                doc.addField(ReleaseGroupIndexField.ARTIST, ac.getArtistCreditString());
                 for (ArtistCreditName acn : ac) {
                     if (!acn.getName().equals(acn.getArtistName())) {
-                        addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, acn.getArtistName());
+                        doc.addField(ReleaseGroupIndexField.ARTIST, acn.getArtistName());
                     }
                 }
             }
@@ -186,11 +187,11 @@ public class RecordingIndex extends DatabaseIndex {
         
         if (trackNames.containsKey(recordingId)) {
             for (String name : trackNames.get(recordingId)) {
-                addFieldToDocument(doc, RecordingIndexField.TRACK, name);
+                doc.addField(RecordingIndexField.TRACK, name);
             }
         }
         
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

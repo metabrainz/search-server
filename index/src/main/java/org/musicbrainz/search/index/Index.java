@@ -19,35 +19,8 @@
 
 package org.musicbrainz.search.index;
 
-import java.sql.SQLException;
+public interface Index {
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.util.NumericUtils;
-
-public abstract class Index {
-
-    public abstract String getName();
-
-    public void init() throws SQLException {};
-    public void destroy() throws SQLException {};
-    
-    protected static String normalizeDate(String date) {
-        return date.replace("-00", "");
-    }
-
-    public static void addFieldToDocument(Document doc, IndexField field, String value) {
-        doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
-    }
-
-    public static void addNumericFieldToDocument(Document doc, IndexField field, Integer value) {
-        addFieldToDocument(doc,field,NumericUtils.intToPrefixCoded(value));
-    }
-    
-    public static void addNonEmptyFieldToDocument(Document doc, IndexField field, String value) {
-        if (value != null && !value.isEmpty()) {
-            doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
-        }
-    }
+    public String getName();
 
 }
