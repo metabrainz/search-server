@@ -29,7 +29,6 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.CharFilter;
 import org.apache.lucene.analysis.MappingCharFilter;
@@ -64,7 +63,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         result = new StandardFilter(result);
         result = new AccentFilter(result);
-        result = new LowerCaseFilter(result);
+        result = new LowercaseFilter(result);
         return result;
     }
 
@@ -82,7 +81,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
             streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
             streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
-            streams.filteredTokenStream = new LowerCaseFilter(streams.filteredTokenStream);
+            streams.filteredTokenStream = new LowercaseFilter(streams.filteredTokenStream);
         }
         else {
             streams.tokenStream.reset(new MappingCharFilter(charConvertMap,reader));
