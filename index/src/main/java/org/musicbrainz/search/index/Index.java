@@ -23,6 +23,7 @@ import java.sql.SQLException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.util.NumericUtils;
 
 public abstract class Index {
 
@@ -39,6 +40,10 @@ public abstract class Index {
         doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
     }
 
+    public static void addNumericFieldToDocument(Document doc, IndexField field, Integer value) {
+        addFieldToDocument(doc,field,NumericUtils.intToPrefixCoded(value));
+    }
+    
     public static void addNonEmptyFieldToDocument(Document doc, IndexField field, String value) {
         if (value != null && !value.isEmpty()) {
             doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
