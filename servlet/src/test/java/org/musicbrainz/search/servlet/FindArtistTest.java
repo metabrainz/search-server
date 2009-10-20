@@ -9,7 +9,6 @@ import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
 import org.musicbrainz.search.index.Index;
-import org.musicbrainz.search.index.ArtistAnalyzer;
 import org.musicbrainz.search.servlet.ArtistHtmlWriter;
 import org.musicbrainz.search.servlet.ArtistSearch;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
@@ -22,6 +21,7 @@ import org.musicbrainz.search.servlet.SearchServerServlet;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ArtistXmlWriter;
 import org.musicbrainz.search.servlet.mmd2.XmlWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -43,7 +43,7 @@ public class FindArtistTest extends TestCase {
         SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new ArtistAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         //General Purpose Artist

@@ -16,6 +16,7 @@ import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
 import org.musicbrainz.search.servlet.mmd2.LabelXmlWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,7 +39,7 @@ public class FindLabelTest extends TestCase {
          SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new LabelAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(LabelIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         {

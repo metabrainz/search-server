@@ -20,6 +20,8 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -27,21 +29,22 @@ import org.apache.lucene.document.Field;
 //TODO users probably just want to search for artist , and have it sorted all combinations
 public enum ReleaseGroupIndexField implements IndexField {
 
-	ARTIST_ID		    ("arid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
+	ARTIST_ID		    ("arid",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST              ("artist",          Field.Store.YES,	Field.Index.ANALYZED),  //FullArtist(s) for releasegroup
 	ARTIST_NAME         ("artistname",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_SORTNAME	    ("sortname",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
     ARTIST_COMMENT	    ("artistcomment",	Field.Store.YES,	Field.Index.NO),       //ONLY used by Html, maybe can be dropped
-    RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED),
-	TYPE			    ("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
+	TYPE			    ("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
 	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED);
 
 	private String name;
 	private Field.Store store;
 	private Field.Index index;
+    private Analyzer analyzer;
 
 	private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index) {
 		this.name = name;
@@ -49,7 +52,12 @@ public enum ReleaseGroupIndexField implements IndexField {
 		this.index = index;
 	}
 
-	public String getName() {
+    private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
+        this(name, store, index);
+        this.analyzer = analyzer;
+    }
+
+    public String getName() {
 		return name;
 	}
 
@@ -60,5 +68,10 @@ public enum ReleaseGroupIndexField implements IndexField {
 	public Field.Index getIndex() {
 		return index;
 	}
+
+    public Analyzer getAnalyzer() {
+        return analyzer;
+    }
+
 
 }

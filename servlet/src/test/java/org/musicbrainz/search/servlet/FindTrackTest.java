@@ -16,6 +16,7 @@ import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
 import org.musicbrainz.search.servlet.TrackSearch;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,7 +42,7 @@ public class FindTrackTest extends TestCase {
         SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new TrackAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TrackIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         Document doc = new Document();

@@ -16,6 +16,7 @@ import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -40,7 +41,7 @@ public class FindReleaseTest extends TestCase {
         SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new ReleaseAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         Document doc = new Document();

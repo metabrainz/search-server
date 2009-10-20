@@ -31,6 +31,7 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
 
@@ -49,7 +50,7 @@ public class LabelIndex extends Index {
 
     public Analyzer getAnalyzer()
     {
-        return new LabelAnalyzer();
+        return new PerFieldEntityAnalyzer(LabelIndexField.class);
     }
 
     public int getMaxId() throws SQLException {

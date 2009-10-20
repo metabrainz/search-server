@@ -27,6 +27,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
 
@@ -42,7 +43,7 @@ public class ArtistIndex extends Index {
 
     public Analyzer getAnalyzer()
     {
-        return new ArtistAnalyzer();
+        return new PerFieldEntityAnalyzer(ArtistIndexField.class);
     }
 
     public int getMaxId() throws SQLException {

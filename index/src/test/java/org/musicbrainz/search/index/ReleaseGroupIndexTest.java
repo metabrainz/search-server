@@ -7,6 +7,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.index.ReleaseGroupIndex;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -21,7 +22,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        PerFieldAnalyzerWrapper analyzer = new ReleaseGroupAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseGroupIndex li = new ReleaseGroupIndex(createConnection());
         li.indexData(writer, 0, Integer.MAX_VALUE);

@@ -3,10 +3,9 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
-import org.musicbrainz.search.index.ReleaseGroupAnalyzer;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.LabelXmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseGroupXmlWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
 
@@ -20,7 +19,7 @@ public class ReleaseGroupSearch extends SearchServer{
         htmlWriter          = new ReleaseGroupHtmlWriter();
         defaultFields       = new ArrayList<String>();
         defaultFields.add(ReleaseGroupIndexField.RELEASEGROUP.getName());
-        analyzer = new ReleaseGroupAnalyzer();
+        analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
     }
 
     public ReleaseGroupSearch(String indexDir) throws Exception {

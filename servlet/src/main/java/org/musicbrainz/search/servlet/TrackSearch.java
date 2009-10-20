@@ -3,8 +3,8 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.TrackIndexField;
-import org.musicbrainz.search.index.TrackAnalyzer;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ public class TrackSearch extends SearchServer {
         htmlWriter = new TrackHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(TrackIndexField.TRACK.getName());
-        analyzer = new TrackAnalyzer();
+        analyzer = new PerFieldEntityAnalyzer(TrackIndexField.class);
     }
 
     public TrackSearch(String indexDir) throws Exception {

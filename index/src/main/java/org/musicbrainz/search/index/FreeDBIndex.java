@@ -45,6 +45,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 public class FreeDBIndex {
 
@@ -63,7 +64,7 @@ public class FreeDBIndex {
 
     public Analyzer getAnalyzer()
     {
-        return new FreeDBAnalyzer();
+        return new PerFieldEntityAnalyzer(FreeDBIndexField.class);
     }
     
     public String getName() {

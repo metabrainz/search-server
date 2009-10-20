@@ -19,14 +19,12 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.*;
-
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
+import java.io.IOException;
 import java.sql.*;
 
 public class CDStubIndex extends Index {
@@ -41,7 +39,7 @@ public class CDStubIndex extends Index {
 
     public Analyzer getAnalyzer()
     {
-        return new CDStubAnalyzer();
+        return new PerFieldEntityAnalyzer(CDStubIndexField.class);
     }
 
     public int getMaxId() throws SQLException {

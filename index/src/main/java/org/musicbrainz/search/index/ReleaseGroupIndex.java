@@ -25,6 +25,7 @@ import java.util.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
 
@@ -40,7 +41,7 @@ public class
     }
 
     public Analyzer getAnalyzer() {
-        return new ReleaseGroupAnalyzer();
+        return new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
     }
 
     public int getMaxId() throws SQLException {

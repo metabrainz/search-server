@@ -6,11 +6,9 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.FreeDBIndexField;
 import org.musicbrainz.search.index.Index;
-import org.musicbrainz.search.index.ReleaseAnalyzer;
-import org.musicbrainz.search.index.FreeDBAnalyzer;
 import org.musicbrainz.search.servlet.FreeDBHtmlWriter;
 import org.musicbrainz.search.servlet.FreeDBSearch;
 import org.musicbrainz.search.servlet.MbDocument;
@@ -40,7 +38,7 @@ public class FindFreeDBTest extends TestCase {
         SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new FreeDBAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(FreeDBIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         //A complete FreeDB entry

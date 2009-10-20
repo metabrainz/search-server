@@ -16,6 +16,7 @@ import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
 import org.musicbrainz.search.servlet.mmd2.ReleaseGroupXmlWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,7 +39,7 @@ public class FindReleaseGroupTest extends TestCase {
          SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new ReleaseGroupAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         //Release Group with single artist

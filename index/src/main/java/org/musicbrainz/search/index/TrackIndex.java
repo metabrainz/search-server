@@ -24,6 +24,7 @@ import java.io.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
 import java.util.List;
@@ -45,7 +46,7 @@ public class TrackIndex extends Index {
 
     public Analyzer getAnalyzer()
     {
-        return new TrackAnalyzer();
+        return new PerFieldEntityAnalyzer(TrackIndexField.class);
     }
 
     public int getMaxId() throws SQLException {

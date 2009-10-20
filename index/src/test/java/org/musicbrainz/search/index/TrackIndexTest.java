@@ -7,6 +7,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.TrackIndex;
 import org.musicbrainz.search.index.TrackIndexField;
 
@@ -23,7 +24,7 @@ public class TrackIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        PerFieldAnalyzerWrapper analyzer = new TrackAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TrackIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         TrackIndex li = new TrackIndex(createConnection());
         li.indexData(writer, 0, Integer.MAX_VALUE);

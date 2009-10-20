@@ -7,6 +7,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.document.Document;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -19,7 +20,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
     }
 
      private void createIndex(RAMDirectory ramDir) throws Exception {
-        PerFieldAnalyzerWrapper analyzer = new CDStubAnalyzer();
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(CDStubIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         CDStubIndex ci = new CDStubIndex(createConnection());
         ci.indexData(writer, 0, Integer.MAX_VALUE);

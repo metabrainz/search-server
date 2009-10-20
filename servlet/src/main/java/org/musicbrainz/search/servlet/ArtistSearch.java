@@ -3,9 +3,9 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.ArtistIndexField;
-import org.musicbrainz.search.index.ArtistAnalyzer;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ArtistXmlWriter;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ public class ArtistSearch extends SearchServer {
         defaultFields.add(ArtistIndexField.ARTIST.getName());
         defaultFields.add(ArtistIndexField.ALIAS.getName());
         defaultFields.add(ArtistIndexField.SORTNAME.getName());
-        analyzer = new ArtistAnalyzer();
+        analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
     }
 
 
