@@ -159,11 +159,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
         // Check if something has been indexed
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            System.out.println(doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
-            
-        }
         ir.close();
         
         // Try to search using this piece of information
