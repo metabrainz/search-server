@@ -23,10 +23,7 @@ import java.io.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.NumberTools;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.sql.*;
 import java.util.List;
@@ -104,7 +101,7 @@ public class TrackIndex extends Index {
             aw.setArtistCreditName(rs.getString("artistCreditName"));
             aw.setArtistSortName(rs.getString("artistSortName"));
             aw.setArtistPos(rs.getInt("pos"));
-            aw.setComment(rs.getString("comment"));
+            aw.setArtistComment(rs.getString("comment"));
             aw.setJoinPhrase(rs.getString("joinphrase"));
             list.add(aw);
         }
@@ -171,7 +168,7 @@ public class TrackIndex extends Index {
                 if (!artist.getArtistName().equals(artist.getArtistCreditName())) {
                     addFieldToDocument(doc, TrackIndexField.ARTIST, artist.getArtistCreditName());
                 }
-                addNonEmptyFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, artist.getComment());
+                addNonEmptyFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
 
             //Construct a single string comprising all credits, this will be need for V1 because just has single
@@ -185,7 +182,7 @@ public class TrackIndex extends Index {
                     sb.append(' ' + artist.getJoinPhrase() + ' ');
                 }
             }
-            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_V1, sb.toString());
+            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, sb.toString());
             //System.out.println(rgId+":"+sb.toString());
             */
         }

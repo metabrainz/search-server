@@ -26,19 +26,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.musicbrainz.search.servlet.mmd1;
+package org.musicbrainz.search.servlet.mmd2;
 
-import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
+
 import java.io.IOException;
 import java.math.BigInteger;
 
-public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
+public class ReleaseGroupXmlWriter extends XmlWriter {
 
 
     public Metadata write(Results results) throws IOException {
@@ -66,21 +67,35 @@ public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
                 releaseGroup.getType().add(StringUtils.capitalize(type));
             }
 
-            //Just add the first Artist (if there are more than one)
-            //TODO I don't like this, say they search on an artist that normally appears as second artists
-            //the results returned will show the artist they did not search for
-            //i.e http://localhost:8080/?type=release-group&query=artist:%22Cincinnati%20Pops%20Orchestra%22&fmt=xml&version=1
-            String artistName = doc.get(ReleaseGroupIndexField.ARTIST_NAME);
-            if (artistName != null) {
+            String[] artistIds          = doc.getValues(ReleaseGroupIndexField.ARTIST_ID);
+            String[] artistNames        = doc.getValues(ReleaseGroupIndexField.ARTIST_NAME);
+            String[] artistJoinPhrases  = doc.getValues(ReleaseGroupIndexField.ARTIST_JOINPHRASE);
+            String[] artistSortNames    = doc.getValues(ReleaseGroupIndexField.ARTIST_SORTNAME);
+            String[] artistCreditNames  = doc.getValues(ReleaseGroupIndexField.ARTIST_NAMECREDIT);
 
-                Artist artist = of.createArtist();
-                artist.setName(artistName);
-                artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
-                artist.setSortName(doc.get(ReleaseGroupIndexField.ARTIST_SORTNAME));
-                releaseGroup.setArtist(artist);
+            ArtistCredit ac = of.createArtistCredit();
+            for (int i = 0; i < artistIds.length; i++) {
+
+                Artist     artist   = of.createArtist();
+                artist.setId(artistIds[i]);
+                artist.setName(artistNames[i]);
+                artist.setSortName(artistSortNames[i]);
+                NameCredit nc = of.createNameCredit();
+                nc.setArtist(artist);
+                if(!artistJoinPhrases[i].equals("-")) {
+                    nc.setJoinphrase(artistJoinPhrases[i]);
+                }
+                if(!artistCreditNames[i].equals(artistNames[i])) {
+                    nc.setName(artistCreditNames[i]);
+                }
+                ac.getNameCredit().add(nc);
+                releaseGroup.setArtistCredit(ac);
             }
 
-
+            //TODO For now just show no of releases linked to release group, but may want to list release names (and ids)
+            ReleaseList releaseList = of.createReleaseList();
+            releaseList.setCount(BigInteger.valueOf(doc.getValues(ReleaseGroupIndexField.RELEASE).length));
+            releaseGroup.setReleaseList(releaseList);
             releaseGroupList.getReleaseGroup().add(releaseGroup);
         }
         releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));

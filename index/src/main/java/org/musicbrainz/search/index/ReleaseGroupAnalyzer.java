@@ -14,7 +14,6 @@ public class ReleaseGroupAnalyzer extends PerFieldAnalyzerWrapper {
         addAnalyzer(ReleaseGroupIndexField.RELEASEGROUP_ID.getName(), new KeywordAnalyzer());
         addAnalyzer(ReleaseGroupIndexField.ARTIST_ID.getName(), new KeywordAnalyzer());
         addAnalyzer(ReleaseGroupIndexField.TYPE.getName(),new KeywordAnalyzer());
-
     }
 
 }

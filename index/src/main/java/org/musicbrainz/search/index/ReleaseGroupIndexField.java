@@ -24,18 +24,20 @@ import org.apache.lucene.document.Field;
 /**
  * Fields created in Lucene Search Index
  */
+//TODO users probably just want to search for artist , and have it sorted all combinations
 public enum ReleaseGroupIndexField implements IndexField {
 
-	ARTIST_ID		("arid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
-	ARTIST			("artist",			Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_SORTNAME	("sortname",	    Field.Store.YES,	Field.Index.ANALYZED),
-    RELEASEGROUP_ID	("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
-	RELEASEGROUP	("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED),
-	TYPE			("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
-	RELEASES		("releases",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_COMMENT  ("comment",		    Field.Store.YES,    Field.Index.ANALYZED),
-    ARTIST_V1   	("artistv1",		Field.Store.YES,	Field.Index.ANALYZED),
-    ;
+	ARTIST_ID		    ("arid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    ARTIST              ("artist",          Field.Store.YES,	Field.Index.ANALYZED),  //FullArtist(s) for releasegroup
+	ARTIST_NAME         ("artistname",		Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_SORTNAME	    ("sortname",	    Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
+    ARTIST_COMMENT	    ("artistcomment",	Field.Store.YES,	Field.Index.NO),       //ONLY used by Html, maybe can be dropped
+    RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
+	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED),
+	TYPE			    ("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED),
+	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED);
 
 	private String name;
 	private Field.Store store;

@@ -100,7 +100,7 @@ public class
                         "INNER JOIN artist_name an2 on acn.name=an2.id " +
                         "INNER JOIN artist_name an3 on a.sortname=an3.id " +
                         "WHERE rg.id BETWEEN ? AND ?  " +
-                        "order by rg.id,acn.position ");
+                        "order by rg.id,acn.position ");          //Order by pos so come in expected order
         st.setInt(1, min);
         st.setInt(2, max);
 
@@ -121,7 +121,7 @@ public class
             aw.setArtistCreditName(rs.getString("artistCreditName"));
             aw.setArtistSortName(rs.getString("artistSortName"));
             aw.setArtistPos(rs.getInt("pos"));
-            aw.setComment(rs.getString("comment"));
+            aw.setArtistComment(rs.getString("comment"));
             aw.setJoinPhrase(rs.getString("joinphrase"));
             list.add(aw);
         }
@@ -152,29 +152,42 @@ public class
         addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
         addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.TYPE, rs.getString("type"));
 
+        //Add each release name within this release group
         if (releases.containsKey(rgId)) {
             for (String release : releases.get(rgId)) {
-                addFieldToDocument(doc, ReleaseGroupIndexField.RELEASES, release);
+                addFieldToDocument(doc, ReleaseGroupIndexField.RELEASE, release);
             }
         }
 
         if (artists.containsKey(rgId)) {
-            //For each credit artist for this release
+            //For each artist credit for this release
             for (ArtistWrapper artist : artists.get(rgId)) {
-                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, artist.getArtistId());
-                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, artist.getArtistName());
-                addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                //Only add if different
-                if (!artist.getArtistName().equals(artist.getArtistCreditName())) {
-                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, artist.getArtistCreditName());
+                 addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, artist.getArtistId());
+                //TODO in many cases these three values might be the same is user actually interested in searching
+                //by these variations, or do we just need for output
+                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAME, artist.getArtistName());
+                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
+                //JoinPhrase if exists , just required for output
+                if (artist.getJoinPhrase()!= null && !artist.getJoinPhrase().isEmpty()) {
+                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
                 }
-                addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, artist.getComment());
+                else {
+                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, "-");
+                }
+                //Artist comment required by html
+                if (artist.getArtistComment()!= null && !artist.getArtistComment().isEmpty()) {
+                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, artist.getArtistComment());
+                }
+                else {
+                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, "-");
+                }
+
+
             }
 
-            //Construct a single string comprising all credits, this will be need for V1 because just has single
-            //field for artist
-            //TODO optimize, if only have single artist we don't need extra field
-
+            //Construct a single string representing the full credit for this release group this is typically field that
+            //users will search on when looking for release group by artist
             StringBuffer sb = new StringBuffer();
             for (ArtistWrapper artist : artists.get(rgId)) {
                 sb.append(artist.getArtistCreditName());
@@ -182,9 +195,7 @@ public class
                     sb.append(' ' + artist.getJoinPhrase() + ' ');
                 }
             }
-            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_V1, sb.toString());
-            //System.out.println(rgId+":"+sb.toString());
-
+            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, sb.toString());
         }
         return doc;
     }

@@ -183,7 +183,7 @@ public class ReleaseIndex extends Index {
             aw.setArtistCreditName(rs.getString("artistCreditName"));
             aw.setArtistSortName(rs.getString("artistSortName"));
             aw.setArtistPos(rs.getInt("pos"));
-            aw.setComment(rs.getString("comment"));
+            aw.setArtistComment(rs.getString("comment"));
             aw.setJoinPhrase(rs.getString("joinphrase"));
             list.add(aw);
         }
@@ -279,11 +279,12 @@ public class ReleaseIndex extends Index {
                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, artist.getArtistId());
                 addFieldToDocument(doc, ReleaseIndexField.ARTIST, artist.getArtistName());
                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                
                 //Only add if different
                 if (!artist.getArtistName().equals(artist.getArtistCreditName())) {
                     addFieldToDocument(doc, ReleaseIndexField.ARTIST, artist.getArtistCreditName());
                 }
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getComment());
+                addNonEmptyFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
 
             //Construct a single string comprising all credits, this will be need for V1 because just has single
