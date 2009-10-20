@@ -299,7 +299,7 @@ public class FindReleaseTest extends TestCase {
      * @throws Exception
      */
     public void testFindReleaseByLanguage() throws Exception {
-        Results res = ss.search("language:eng", 0, 10);
+        Results res = ss.search("lang:eng", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -330,7 +330,7 @@ public class FindReleaseTest extends TestCase {
      * @throws Exception
      */
     public void testFindReleaseByLanguageUppercase() throws Exception {
-        Results res = ss.search("language:ENG", 0, 10);
+        Results res = ss.search("lang:ENG", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
