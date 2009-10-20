@@ -85,10 +85,10 @@ public class TrackIndex extends DatabaseIndex {
         for(int i=1;i<attributes.length;i++)
         {
             int nextVal = (Integer) attributes[i];
-            if (nextVal >= ReleaseType.getMinDbId() && nextVal <= ReleaseType.getMaxDbId()) {
-                addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseType.getByDbId(nextVal).getName());
-                break;
-            }
+//            if (nextVal >= ReleaseType.getMinDbId() && nextVal <= ReleaseType.getMaxDbId()) {
+//                addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseType.getByDbId(nextVal).getName());
+//                break;
+//            }
         }
    
         addFieldToDocument(doc, TrackIndexField.DURATION, NumberTools.longToString(rs.getLong("length")));

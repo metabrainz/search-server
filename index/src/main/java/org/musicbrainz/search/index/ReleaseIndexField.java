@@ -1,35 +1,44 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
  */
 public enum ReleaseIndexField implements IndexField {
 
-    ARTIST_ID		("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    ARTIST			("artist",		Field.Store.YES,	Field.Index.ANALYZED),
-    RELEASE_ID		("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    RELEASE			("release",		Field.Store.YES,	Field.Index.ANALYZED),
-    NUM_TRACKS		("tracks",		Field.Store.YES,	Field.Index.ANALYZED),
-    BARCODE			("barcode",		Field.Store.YES,	Field.Index.ANALYZED),
-    CATALOG_NO		("catno",		Field.Store.YES,	Field.Index.ANALYZED),
-    LABEL			("label",		Field.Store.YES,	Field.Index.ANALYZED),
-    DATE			("date",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    COUNTRY			("country",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    NUM_DISC_IDS	("discids",		Field.Store.YES,	Field.Index.ANALYZED),
-    AMAZON_ID		("asin",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    SCRIPT			("script",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    LANGUAGE		("language",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    TYPE		    ("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    STATUS		    ("status",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
-    FORMAT  		("format",		Field.Store.YES,	Field.Index.ANALYZED),
+    ENTITY_TYPE     ("_type",       Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    ENTITY_GID      ("_gid",        Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    ARTIST          ("artist",      Field.Store.NO,     Field.Index.ANALYZED),
+    RELEASE         ("release",     Field.Store.NO,     Field.Index.ANALYZED),
+    
+    DATE            ("date",        Field.Store.NO,     Field.Index.NOT_ANALYZED),
+    COUNTRY         ("country",     Field.Store.NO,     Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    BARCODE         ("barcode",     Field.Store.NO,     Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
+    LABEL           ("label",       Field.Store.NO,     Field.Index.ANALYZED),
+    CATALOG_NO      ("catno",       Field.Store.NO,     Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    
+    TYPE            ("type",        Field.Store.NO,     Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    SCRIPT          ("script",      Field.Store.NO,     Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    LANGUAGE        ("lang",        Field.Store.NO,     Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    STATUS          ("status",      Field.Store.NO,     Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    PACKAGING       ("packaging",   Field.Store.NO,     Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    COMMENT         ("comment",     Field.Store.NO,     Field.Index.ANALYZED),
+    
+    FORMAT          ("format",      Field.Store.NO,     Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    ASIN            ("asin",        Field.Store.NO,     Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    MEDIUM          ("medium",      Field.Store.NO,     Field.Index.NOT_ANALYZED),
+    //TODO: useless? keep?
+    NUM_DISC_IDS    ("discids",     Field.Store.NO,     Field.Index.ANALYZED),
+    NUM_TRACKS      ("tracks",      Field.Store.NO,     Field.Index.ANALYZED),
     ;
 
     private String name;
-	private Field.Store store;
+    private Field.Store store;
     private Field.Index index;
     private Analyzer analyzer;
 
@@ -49,14 +58,20 @@ public enum ReleaseIndexField implements IndexField {
     }
 
     public Field.Store getStore() {
-		return store;
-	}
+        return store;
+    }
 
-	public Field.Index getIndex() {
-		return index;
-	}
+    public Field.Index getIndex() {
+        return index;
+    }
 
     public Analyzer getAnalyzer() {
         return analyzer;
     }
+    
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }
