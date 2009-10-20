@@ -183,8 +183,6 @@ public class
                 else {
                     addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, "-");
                 }
-
-
             }
 
             //Construct a single string representing the full credit for this release group this is typically field that

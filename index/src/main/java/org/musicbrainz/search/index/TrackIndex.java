@@ -183,7 +183,7 @@ public class TrackIndex extends Index {
                     sb.append(' ' + artist.getJoinPhrase() + ' ');
                 }
             }
-            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, sb.toString());
+            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAME, sb.toString());
             //System.out.println(rgId+":"+sb.toString());
             */
         }

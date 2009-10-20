@@ -61,7 +61,7 @@ public class ReleaseIndex extends Index {
 
         //A particular release can have multiple catalognos, labels when released as an imprint, typically used
         //by major labels
-        Map<Integer, List<List<String>>> events = new HashMap<Integer, List<List<String>>>();
+        Map<Integer, List<List<String>>> labelInfo = new HashMap<Integer, List<List<String>>>();
         PreparedStatement st = dbConnection.prepareStatement(
                 "SELECT rl.release as releaseId, ln.name as label, catno " +
                         "FROM release_label rl " +
@@ -74,11 +74,11 @@ public class ReleaseIndex extends Index {
         while (rs.next()) {
             int releaseId = rs.getInt("releaseId");
             List<List<String>> list;
-            if (!events.containsKey(releaseId)) {
+            if (!labelInfo.containsKey(releaseId)) {
                 list = new LinkedList<List<String>>();
-                events.put(releaseId, list);
+                labelInfo.put(releaseId, list);
             } else {
-                list = events.get(releaseId);
+                list = labelInfo.get(releaseId);
             }
             List<String> entry = new ArrayList<String>(2);
             entry.add(rs.getString("label"));
@@ -87,7 +87,7 @@ public class ReleaseIndex extends Index {
         }
         st.close();
 
-        //Format,NumTracks a release can be released on mutiple mediums, and possibly involving formats, i.e a release is on CD with
+        //Format,NumTracks a release can be released on multiple mediums, and possibly involving formats, i.e a release is on CD with
         //a special 7" single included. We also need total tracks, if release consists of multiple mediums we just have
         //to sum up the tracks on each medium to get the total for the release
         Map<Integer, List<List<String>>> formats = new HashMap<Integer, List<List<String>>>();
@@ -209,13 +209,13 @@ public class ReleaseIndex extends Index {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, events, formats,numDiscIds,artists));
+            indexWriter.addDocument(documentFromResultSet(rs, labelInfo, formats,numDiscIds,artists));
         }
         st.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer,List<List<String>>> events,
+                                          Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> formats,
                                           Map<Integer,List<List<String>>>  numDiscIds,
                                           Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
@@ -233,10 +233,8 @@ public class ReleaseIndex extends Index {
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.LANGUAGE, rs.getString("language"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.SCRIPT, rs.getString("script"));
 
-
-
-        if (events.containsKey(releaseId)) {
-            for (List<String> entry : events.get(releaseId)) {
+        if (labelInfo.containsKey(releaseId)) {
+            for (List<String> entry : labelInfo.get(releaseId)) {
                 String str;
 
                 str = entry.get(0);
@@ -275,23 +273,32 @@ public class ReleaseIndex extends Index {
         }
 
          if (artists.containsKey(releaseId)) {
-            //For each credit artist for this release
-            for (ArtistWrapper artist : artists.get(releaseId)) {
-                addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, artist.getArtistId());
-                addFieldToDocument(doc, ReleaseIndexField.ARTIST, artist.getArtistName());
-                addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                
-                //Only add if different
-                if (!artist.getArtistName().equals(artist.getArtistCreditName())) {
-                    addFieldToDocument(doc, ReleaseIndexField.ARTIST, artist.getArtistCreditName());
-                }
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
-            }
+             //For each artist credit for this release
+             for (ArtistWrapper artist : artists.get(releaseId)) {
+                  addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, artist.getArtistId());
+                 //TODO in many cases these three values might be the same is user actually interested in searching
+                 //by these variations, or do we just need for output
+                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAME, artist.getArtistName());
+                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
+                 //JoinPhrase if exists , just required for output
+                 if (artist.getJoinPhrase()!= null && !artist.getJoinPhrase().isEmpty()) {
+                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                 }
+                 else {
+                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, "-");
+                 }
+                 //Artist comment required by html
+                 if (artist.getArtistComment()!= null && !artist.getArtistComment().isEmpty()) {
+                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
+                 }
+                 else {
+                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, "-");
+                 }
+             }
 
-            //Construct a single string comprising all credits, this will be need for V1 because just has single
-            //field for artist
-            //TODO optimize, if only have single artist we don't need extra field
-
+            //Construct a single string representing the full credit for this release group this is typically field that
+            //users will search on when looking for release by artist
             StringBuffer sb = new StringBuffer();
             for (ArtistWrapper artist : artists.get(releaseId)) {
                 sb.append(artist.getArtistCreditName());
@@ -299,7 +306,7 @@ public class ReleaseIndex extends Index {
                     sb.append(' ' + artist.getJoinPhrase() + ' ');
                 }
             }
-            addFieldToDocument(doc, ReleaseIndexField.ARTIST_V1, sb.toString());
+            addFieldToDocument(doc, ReleaseIndexField.ARTIST, sb.toString());
 
         }
 

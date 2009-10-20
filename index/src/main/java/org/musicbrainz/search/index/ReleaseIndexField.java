@@ -12,17 +12,19 @@ import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
 public enum ReleaseIndexField implements IndexField {
 
     ARTIST_ID		("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST			("artist",		Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_NAME     ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
     RELEASE_ID		("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     RELEASE			("release",		Field.Store.YES,	Field.Index.ANALYZED),
-    NUM_TRACKS		("tracks",		Field.Store.YES,	Field.Index.ANALYZED),
+    NUM_TRACKS		("tracks",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     BARCODE			("barcode",		Field.Store.YES,	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
     CATALOG_NO		("catno",		Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     LABEL			("label",		Field.Store.YES,	Field.Index.ANALYZED),
     DATE			("date",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     COUNTRY			("country",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
-    NUM_DISC_IDS	("discids",		Field.Store.YES,	Field.Index.ANALYZED),
+    NUM_DISC_IDS	("discids",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     AMAZON_ID		("asin",		Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     SCRIPT			("script",		Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     LANGUAGE		("lang",	    Field.Store.YES,	Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
@@ -30,7 +32,7 @@ public enum ReleaseIndexField implements IndexField {
     STATUS		    ("status",		Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
     FORMAT  		("format",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_V1   	("artistv1",	Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST          ("artist",	    Field.Store.YES,	Field.Index.ANALYZED),
     ;
 
     private String name;

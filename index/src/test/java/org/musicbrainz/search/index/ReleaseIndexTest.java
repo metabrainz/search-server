@@ -5,7 +5,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 
@@ -437,7 +436,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(ReleaseIndexField.RELEASE_ID.getName()).stringValue());
-            assertEquals("Echo & The Bunnymen", doc.getField(ReleaseIndexField.ARTIST.getName()).stringValue());
+            assertEquals("Echo & The Bunnymen", doc.getField(ReleaseIndexField.ARTIST_NAME.getName()).stringValue());
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(ReleaseIndexField.ARTIST_ID.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseIndexField.TYPE.getName()).length);
             assertEquals("Single", doc.getField(ReleaseIndexField.TYPE.getName()).stringValue());
@@ -464,8 +463,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, ir.numDocs());
             {
                 Document doc = ir.document(0);
-                assertEquals(1, doc.getFields(ReleaseIndexField.ARTIST.getName()).length);
-                assertEquals("Echo & The Bunnymen", doc.getField(ReleaseIndexField.ARTIST.getName()).stringValue());
+                assertEquals(1, doc.getFields(ReleaseIndexField.ARTIST_NAME.getName()).length);
+                assertEquals("Echo & The Bunnymen", doc.getField(ReleaseIndexField.ARTIST_NAME.getName()).stringValue());
 
 
 
@@ -857,47 +856,13 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
     }
 
-    /**
-     * @throws Exception
-     */
-    ///TODO check not relevent anymore because dont have release evetn anymore, only ever have max of one of each of these
-    //except for label/catno which do need grouping
-    public void testIndexEmptyReleaseEvent() throws Exception {
-
-        addReleaseSix();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-//            assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
-//            assertEquals(1, doc.getFields(ReleaseIndexField.DATE.getName()).length);
-//             assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
-//             assertEquals(1, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
-
-//            assertEquals("gb", doc.getField(ReleaseIndexField.COUNTRY.getName()).stringValue());
-//            assertEquals("-", doc.getField(ReleaseIndexField.BARCODE.getName()).stringValue());
-//            assertEquals("1970-01-01", doc.getField(ReleaseIndexField.DATE.getName()).stringValue());
-//            assertEquals("-", doc.getField(ReleaseIndexField.CATALOG_NO.getName()).stringValue());
-//            assertEquals("-", doc.getField(ReleaseIndexField.LABEL.getName()).stringValue());
-//            assertEquals("-",doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
-
-
-        }
-        ir.close();
-
-    }
 
 
     /**
      * @throws Exception
      */
 
-    public void testIndexNoReleaseEvent() throws Exception {
+    public void testIndexNoLabelInfo() throws Exception {
 
         addReleaseTwo();
         RAMDirectory ramDir = new RAMDirectory();
