@@ -148,53 +148,31 @@ public class
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> releases, Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
         Document doc = new Document();
-        int rgId = rs.getInt("id");
+        int id = rs.getInt("id");
         addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
         addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
         addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.TYPE, rs.getString("type"));
 
         //Add each release name within this release group
-        if (releases.containsKey(rgId)) {
-            for (String release : releases.get(rgId)) {
+        if (releases.containsKey(id)) {
+            for (String release : releases.get(id)) {
                 addFieldToDocument(doc, ReleaseGroupIndexField.RELEASE, release);
             }
         }
 
-        if (artists.containsKey(rgId)) {
+        if (artists.containsKey(id)) {
             //For each artist credit for this release
-            for (ArtistWrapper artist : artists.get(rgId)) {
+            for (ArtistWrapper artist : artists.get(id)) {
                  addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, artist.getArtistId());
                 //TODO in many cases these three values might be the same is user actually interested in searching
                 //by these variations, or do we just need for output
                 addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAME, artist.getArtistName());
                 addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
                 addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                //JoinPhrase if exists , just required for output
-                if (artist.getJoinPhrase()!= null && !artist.getJoinPhrase().isEmpty()) {
-                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                }
-                else {
-                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, "-");
-                }
-                //Artist comment required by html
-                if (artist.getArtistComment()!= null && !artist.getArtistComment().isEmpty()) {
-                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, artist.getArtistComment());
-                }
-                else {
-                    addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, "-");
-                }
+                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
-
-            //Construct a single string representing the full credit for this release group this is typically field that
-            //users will search on when looking for release group by artist
-            StringBuffer sb = new StringBuffer();
-            for (ArtistWrapper artist : artists.get(rgId)) {
-                sb.append(artist.getArtistCreditName());
-                if (artist.getJoinPhrase() != null) {
-                    sb.append(' ' + artist.getJoinPhrase() + ' ');
-                }
-            }
-            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, sb.toString());
+            addFieldToDocument(doc, TrackIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
         return doc;
     }

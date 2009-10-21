@@ -262,7 +262,8 @@ public class TrackIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(TrackIndexField.TRACK.getName()).length);
-            assertEquals(0, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
+            assertEquals(1, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
+            assertEquals("-", doc.getField(TrackIndexField.RELEASE_TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -284,7 +285,9 @@ public class TrackIndexTest extends AbstractIndexTest {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(TrackIndexField.TRACK.getName()).length);
             assertEquals(1, doc.getFields(TrackIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals(0, doc.getFields(TrackIndexField.ARTIST_COMMENT.getName()).length);
+            assertEquals(1, doc.getFields(TrackIndexField.ARTIST_COMMENT.getName()).length);
+            assertEquals("-", doc.getField(TrackIndexField.ARTIST_COMMENT.getName()).stringValue());
+
         }
         ir.close();
     }

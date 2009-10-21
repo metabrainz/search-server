@@ -80,16 +80,8 @@ public class CDStubIndex extends Index {
         addFieldToDocument(doc, CDStubIndexField.ARTIST, rs.getString("artist"));
         addFieldToDocument(doc, CDStubIndexField.DISCID, rs.getString("discid"));
         addFieldToDocument(doc, CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
-
-        String barcode = rs.getString("barcode");
-        if (barcode != null && !barcode.isEmpty()) {
-            addFieldToDocument(doc, CDStubIndexField.BARCODE, barcode);
-        }
-        String comment = rs.getString("comment");
-        if (comment != null && !comment.isEmpty()) {
-            addFieldToDocument(doc, CDStubIndexField.COMMENT, comment);
-        }
-
+        addNonEmptyFieldToDocument(doc, CDStubIndexField.BARCODE, rs.getString("barcode"));
+        addNonEmptyFieldToDocument(doc, CDStubIndexField.COMMENT, rs.getString("comment"));
         return doc;
     }
 

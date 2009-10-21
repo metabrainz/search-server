@@ -1,5 +1,7 @@
 package org.musicbrainz.search.index;
 
+import java.util.List;
+
 /**
  * 
  */
@@ -66,5 +68,20 @@ class ArtistWrapper {
 
     public void setArtistSortName(String artistSortName) {
         this.artistSortName = artistSortName;
+    }
+
+    /**
+     * Construct a single string representing the full credit for this track this is typically field that
+     * users will search on when matching resource by artist
+     */
+    public static String createFullArtistCredit(List<ArtistWrapper> artists) {
+        StringBuffer sb = new StringBuffer();
+        for (ArtistWrapper artist : artists) {
+            sb.append(artist.getArtistCreditName());
+            if (artist.getJoinPhrase() != null) {
+                sb.append(' ' + artist.getJoinPhrase() + ' ');
+            }
+        }
+        return sb.toString();
     }
 }

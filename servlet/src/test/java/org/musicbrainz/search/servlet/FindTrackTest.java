@@ -8,13 +8,7 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.*;
-import org.musicbrainz.search.servlet.MbDocument;
-import org.musicbrainz.search.servlet.Result;
-import org.musicbrainz.search.servlet.Results;
-import org.musicbrainz.search.servlet.ResultsWriter;
-import org.musicbrainz.search.servlet.SearchServer;
-import org.musicbrainz.search.servlet.SearchServerServlet;
-import org.musicbrainz.search.servlet.TrackSearch;
+import org.musicbrainz.search.servlet.mmd2.TrackXmlWriter;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -52,8 +46,10 @@ public class FindTrackTest extends TestCase {
         Index.addFieldToDocument(doc, TrackIndexField.RELEASE, "Our Glorious 5 Year Plan");
         Index.addFieldToDocument(doc, TrackIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
         Index.addFieldToDocument(doc, TrackIndexField.ARTIST, "Farming Incident");
-        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_COMMENT, "Leeds band");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, "Incident, Farming");
+        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_NAME, "Farming Incident");
+        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_NAMECREDIT, "Farming Incident");
+        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_SORTNAME, "Incident, Farming");
+        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_JOINPHRASE, "-");
 
         Index.addNumericFieldToDocument(doc, TrackIndexField.DURATION, 234000);
         Index.addNumericFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, (234000 / 2000));
@@ -292,12 +288,8 @@ public class FindTrackTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
     }
 
-    /**
-     * Results should match http://musicbrainz.org/ws/1/track/?type=xml&query=%22Gravitational%20Lenz%22
-     *
-     * @throws Exception
-     */
-    public void testOutputAsXml() throws Exception {
+
+    public void testOutputAsMmd1Xml() throws Exception {
 
         Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
         ResultsWriter writer = new TrackMmd1XmlWriter();
@@ -319,6 +311,29 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
+    }
+
+    public void testOutputAsXml() throws Exception {
+
+        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
+        ResultsWriter writer = new TrackXmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("<recording id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
+        assertTrue(output.contains("<title>Gravitational Lenz</title>"));
+        assertTrue(output.contains("<length>234000</length>"));
+        assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
+        assertTrue(output.contains("<name>Farming Incident</name>"));
+        assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
+        //assertTrue(output.contains("release type=\"Album\" id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("count=\"1\""));
     }
 
       public void testOutputAsHtml() throws Exception {

@@ -38,6 +38,7 @@ import com.jthink.brainz.mmd.TrackList;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.index.TrackIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -85,33 +86,40 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
                 track.setArtist(artist);
             }
 
-            
-            String releaseName = doc.get(TrackIndexField.RELEASE);
-            if (releaseName != null) {
-                Release release = of.createRelease();
-                release.setId(doc.get(TrackIndexField.RELEASE_ID));
-                release.setTitle(releaseName);
 
-                String type = doc.get(TrackIndexField.RELEASE_TYPE);
-                if (type != null) {
-                    release.getType().add(StringUtils.capitalize(type));
-                }
+            String[] releaseIds         = doc.getValues(TrackIndexField.RELEASE_ID);
+            String[] releaseTypes       = doc.getValues(TrackIndexField.RELEASE_TYPE);
+            String[] numTracks          = doc.getValues(TrackIndexField.NUM_TRACKS);
+            String[] trackNos           = doc.getValues(TrackIndexField.TRACKNUM);
+            String[] releases           = doc.getValues(TrackIndexField.RELEASE);
 
-                String trackNo = doc.get(TrackIndexField.TRACKNUM);
-                String tracks = doc.get(TrackIndexField.NUM_TRACKS);
-                if (trackNo != null) {
-                    TrackList releaseTrackList = of.createTrackList();
-                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNo) - 1));
-                    if (tracks != null) {
-                        releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(tracks)));
+            ReleaseList releaseList = of.createReleaseList();
+            for (int i = 0; i < releaseIds.length; i++) {
+                String releaseName = releases[i];
+                if (releaseName != null) {
+                    Release release = of.createRelease();
+                    release.setId(releaseIds[i]);
+                    release.setTitle(releaseName);
+
+                    String type = releaseTypes[i];
+                    if (!type.equals("-")) {
+                        release.getType().add(StringUtils.capitalize(type));
                     }
-                    release.setTrackList(releaseTrackList);
 
+                    String trackNo = trackNos[i];
+                    String tracks  = numTracks[i];
+                    if (trackNo != null) {
+                        TrackList releaseTrackList = of.createTrackList();
+                        releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNo) - 1));
+                        if (tracks != null) {
+                            releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(tracks)));
+                        }
+                        release.setTrackList(releaseTrackList);
+                    }
+                    releaseList.getRelease().add(release);
                 }
-                ReleaseList releaseList = of.createReleaseList();
-                releaseList.getRelease().add(release);
-                track.setReleaseList(releaseList);
             }
+            track.setReleaseList(releaseList);
             trackList.getTrack().add(track);
         }
         trackList.setCount(BigInteger.valueOf(results.totalHits));

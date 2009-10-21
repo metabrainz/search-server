@@ -13,6 +13,9 @@ public enum TrackIndexField implements IndexField {
     TRACK				("track",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_ID			("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST				("artist",		Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_NAME     ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
     ARTIST_SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED, new KeywordAnalyzer()),
     RELEASE_ID			("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     RELEASE				("release",		Field.Store.YES,	Field.Index.ANALYZED),

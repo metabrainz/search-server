@@ -10,10 +10,11 @@ import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
  * Fields created in Lucene Search Index
  */
 public enum ReleaseIndexField implements IndexField {
-
+    ARTIST          ("artist",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_ID		("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST_NAME     ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
     RELEASE_ID		("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
@@ -30,9 +31,7 @@ public enum ReleaseIndexField implements IndexField {
     LANGUAGE		("lang",	    Field.Store.YES,	Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     TYPE		    ("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     STATUS		    ("status",		Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
-    ARTIST_COMMENT  ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
     FORMAT  		("format",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST          ("artist",	    Field.Store.YES,	Field.Index.ANALYZED),
     ;
 
     private String name;

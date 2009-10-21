@@ -220,7 +220,7 @@ public class ReleaseIndex extends Index {
                                           Map<Integer,List<List<String>>>  numDiscIds,
                                           Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
         Document doc = new Document();
-        int releaseId = rs.getInt("id");
+        int id = rs.getInt("id");
         addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
         addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.TYPE, rs.getString("type"));
@@ -233,38 +233,27 @@ public class ReleaseIndex extends Index {
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.LANGUAGE, rs.getString("language"));
         addNonEmptyFieldToDocument(doc, ReleaseIndexField.SCRIPT, rs.getString("script"));
 
-        if (labelInfo.containsKey(releaseId)) {
-            for (List<String> entry : labelInfo.get(releaseId)) {
-                String str;
-
-                str = entry.get(0);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                addFieldToDocument(doc, ReleaseIndexField.LABEL, str);
-
-                str = entry.get(1);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, str);
+        if (labelInfo.containsKey(id)) {
+            for (List<String> entry : labelInfo.get(id)) {
+                addFieldOrHyphenToDocument(doc, ReleaseIndexField.LABEL, entry.get(0));
+                addFieldOrHyphenToDocument(doc, ReleaseIndexField.CATALOG_NO, entry.get(1));
             }
         }
 
-        if (formats.containsKey(releaseId)) {
-            for (List<String> entry : formats.get(releaseId)) {
+        if (formats.containsKey(id)) {
+            for (List<String> entry : formats.get(id)) {
                 String str;
                 str = entry.get(0);
                 addNonEmptyFieldToDocument(doc, ReleaseIndexField.FORMAT, str);
             }
 
             //Num Tracks already calculated
-            addNonEmptyFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS,formats.get(releaseId).get(0).get(1));
+            addNonEmptyFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS,formats.get(id).get(0).get(1));
         }
 
 
-        if (numDiscIds.containsKey(releaseId)) {
-            for (List<String> entry : numDiscIds.get(releaseId)) {
+        if (numDiscIds.containsKey(id)) {
+            for (List<String> entry : numDiscIds.get(id)) {
                 String str;
                 str = entry.get(0);
                 addNonEmptyFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, str);
@@ -272,44 +261,20 @@ public class ReleaseIndex extends Index {
             }
         }
 
-         if (artists.containsKey(releaseId)) {
+         if (artists.containsKey(id)) {
              //For each artist credit for this release
-             for (ArtistWrapper artist : artists.get(releaseId)) {
+             for (ArtistWrapper artist : artists.get(id)) {
                   addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, artist.getArtistId());
                  //TODO in many cases these three values might be the same is user actually interested in searching
                  //by these variations, or do we just need for output
                  addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAME, artist.getArtistName());
                  addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
                  addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                 //JoinPhrase if exists , just required for output
-                 if (artist.getJoinPhrase()!= null && !artist.getJoinPhrase().isEmpty()) {
-                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                 }
-                 else {
-                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, "-");
-                 }
-                 //Artist comment required by html
-                 if (artist.getArtistComment()!= null && !artist.getArtistComment().isEmpty()) {
-                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
-                 }
-                 else {
-                     addFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, "-");
-                 }
-             }
-
-            //Construct a single string representing the full credit for this release group this is typically field that
-            //users will search on when looking for release by artist
-            StringBuffer sb = new StringBuffer();
-            for (ArtistWrapper artist : artists.get(releaseId)) {
-                sb.append(artist.getArtistCreditName());
-                if (artist.getJoinPhrase() != null) {
-                    sb.append(' ' + artist.getJoinPhrase() + ' ');
-                }
+                 addFieldOrHyphenToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                 addFieldOrHyphenToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
-            addFieldToDocument(doc, ReleaseIndexField.ARTIST, sb.toString());
-
+            addFieldToDocument(doc, TrackIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
-
         return doc;
     }
 

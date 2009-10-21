@@ -129,7 +129,7 @@ public class ArtistIndex extends Index {
                    Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
 
         addNonEmptyFieldToDocument(doc, ArtistIndexField.COMMENT, rs.getString("comment"));
-         addNonEmptyFieldToDocument(doc, ArtistIndexField.COUNTRY, rs.getString("country"));
+        addNonEmptyFieldToDocument(doc, ArtistIndexField.COUNTRY, rs.getString("country"));
         addNonEmptyFieldToDocument(doc, ArtistIndexField.GENDER, rs.getString("gender"));
 
         if (aliases.containsKey(artistId)) {
