@@ -130,7 +130,7 @@ public class LabelIndex extends DatabaseIndex {
         addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
         addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
 
-        //Search V1 allows you to search for unknown labels,
+        //Allows you to search for labels of Unknown type
         String type=rs.getString("type");
         if(type!=null) {
             addFieldToDocument(doc, LabelIndexField.TYPE, type);

@@ -279,7 +279,7 @@ public class ReleaseIndex extends DatabaseIndex {
                  addFieldOrHyphenToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
                  addFieldOrHyphenToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
-            addFieldToDocument(doc, TrackIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+            addFieldToDocument(doc, ReleaseIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
         return doc;
     }

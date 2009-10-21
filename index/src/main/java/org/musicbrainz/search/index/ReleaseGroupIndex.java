@@ -177,7 +177,7 @@ public class
                 addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
                 addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
-            addFieldToDocument(doc, TrackIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
         return doc;
     }

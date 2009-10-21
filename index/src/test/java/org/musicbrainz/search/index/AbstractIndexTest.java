@@ -72,6 +72,9 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE cdtoc_raw");
                 stmt.addBatch("DROP TABLE track_raw");
 
+                stmt.addBatch("DROP TABLE work_name");
+                stmt.addBatch("DROP TABLE work");
+
                 stmt.executeBatch();
                 stmt.close();
             }
@@ -91,6 +94,7 @@ public abstract class AbstractIndexTest extends TestCase {
             setupRecordingTables(stmt);
             setupAnnotationTables(stmt);
             setupCDStubTables(stmt);
+            setupWorkTables(stmt);
             stmt.executeBatch();
             stmt.close();
         }
@@ -458,5 +462,28 @@ public abstract class AbstractIndexTest extends TestCase {
                 ")");            
     }
 
+    protected void setupWorkTables(Statement stmt) throws Exception {
+        stmt.addBatch("CREATE TABLE work" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  gid uuid NOT NULL," +
+                "  name integer NOT NULL," +
+                "  artist_credit integer NOT NULL," +
+                "  type integer," +
+                "  iswc character(15)," +
+                "  comment character varying(255)," +
+                "  editpending integer NOT NULL DEFAULT 0," +
+                "  CONSTRAINT work_pkey PRIMARY KEY (id)" +
+                ")");
+        stmt.addBatch("CREATE TABLE work_name" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  name character varying NOT NULL," +
+                "  refcount integer DEFAULT 0," +
+                "  CONSTRAINT work_name_pkey PRIMARY KEY (id)" +
+                ")");
+        //stmt.addBatch("");
+                                   
+    }
 
 }

@@ -136,6 +136,7 @@ public class IndexBuilder
                 new LabelIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
                 new CDStubIndex(rawDbConn),
+                new WorkIndex(rawDbConn),
         };
 
         for (Index index : indexes) {

@@ -13,6 +13,7 @@ public enum ResourceType {
     CDSTUB("cdstub"),
     FREEDB("freedb"),
     ANNOTATION("annotation"),
+    WORK("work"),
     ;
 
     private String name;

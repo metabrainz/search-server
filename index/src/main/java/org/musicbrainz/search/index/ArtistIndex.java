@@ -119,7 +119,7 @@ public class ArtistIndex extends DatabaseIndex {
         addFieldToDocument(doc, ArtistIndexField.ARTIST, rs.getString("name"));
         addFieldToDocument(doc, ArtistIndexField.SORTNAME, rs.getString("sortname"));
 
-        //Search V1 allows you to search for unknown artists,
+        //Allows you to search for artists  of unknown type
         String type=rs.getString("type");
         if(type!=null) {
             addFieldToDocument(doc, ArtistIndexField.TYPE, type);
