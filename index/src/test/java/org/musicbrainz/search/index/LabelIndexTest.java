@@ -25,7 +25,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(LabelIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         LabelIndex li = new LabelIndex(createConnection());
+        li.init();
         li.indexData(writer, 0, Integer.MAX_VALUE);
+        li.destroy();
         writer.close();
     }
 

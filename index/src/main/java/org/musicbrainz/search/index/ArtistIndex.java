@@ -31,11 +31,11 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
 
-public class ArtistIndex extends Index {
+public class ArtistIndex extends DatabaseIndex {
 
-    public ArtistIndex(Connection dbConnection) {
+    public ArtistIndex(Connection dbConnection) throws SQLException{
 		super(dbConnection);
-	}
+    }
 
 	public String getName() {
         return "artist";
@@ -60,14 +60,33 @@ public class ArtistIndex extends Index {
         return rs.getInt(1);
     }
 
-    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = dbConnection.prepareStatement
-                ("SELECT artist_alias.artist as artist, n.name as alias " +
+     @Override
+    public void init() throws SQLException {
+        //TODO playground also adds artist credits (artist refer to something different in particular release
+        //as an alias, should we do this ? 
+        addPreparedStatement("ALIASES","SELECT artist_alias.artist as artist, n.name as alias " +
         		"FROM artist_alias " +
         		" JOIN artist_name n ON (artist_alias.name = n.id) " +
         		"WHERE artist BETWEEN ? AND ?");
 
+
+        addPreparedStatement("ARTISTS",
+                "SELECT artist.id, gid, n0.name as name, n1.name as sortname, " +
+                "	lower(artist_type.name) as type, begindate_year, begindate_month, begindate_day, " +
+                "	enddate_year, enddate_month, enddate_day, " +
+                "	comment, lower(isocode) as country, lower(gender.name) as gender " +
+                "FROM artist " +
+                " LEFT JOIN artist_name n0 ON artist.name = n0.id " +
+                " LEFT JOIN artist_name n1 ON artist.sortname = n1.id " +
+                " LEFT JOIN artist_type ON artist.type = artist_type.id " +
+                " LEFT JOIN country ON artist.country = country.id " +
+                " LEFT JOIN gender ON artist.gender=gender.id " +
+                "WHERE artist.id BETWEEN ? AND ?");
+    }
+
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -82,28 +101,14 @@ public class ArtistIndex extends Index {
             }
             list.add(rs.getString("alias"));
         }
-        st.close();
-        st = dbConnection.prepareStatement(
-            "SELECT artist.id, gid, n0.name as name, n1.name as sortname, " +
-                "	lower(artist_type.name) as type, begindate_year, begindate_month, begindate_day, " +
-                "	enddate_year, enddate_month, enddate_day, " +
-                "	comment, lower(isocode) as country, lower(gender.name) as gender " +
-                "FROM artist " +
-                " LEFT JOIN artist_name n0 ON artist.name = n0.id " +
-                " LEFT JOIN artist_name n1 ON artist.sortname = n1.id " +
-                " LEFT JOIN artist_type ON artist.type = artist_type.id " +
-                " LEFT JOIN country ON artist.country = country.id " +
-                " LEFT JOIN gender ON artist.gender=gender.id " +
-                "WHERE artist.id BETWEEN ? AND ?");
 
-
+        st = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, aliases));
         }
-        st.close();
     }
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {

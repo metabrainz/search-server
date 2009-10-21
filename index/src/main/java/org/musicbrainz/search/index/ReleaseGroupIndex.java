@@ -30,7 +30,7 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import java.sql.*;
 
 public class
-        ReleaseGroupIndex extends Index {
+        ReleaseGroupIndex extends DatabaseIndex {
 
     public ReleaseGroupIndex(Connection dbConnection) {
         super(dbConnection);
@@ -58,35 +58,16 @@ public class
         return rs.getInt(1);
     }
 
-    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-
-        //Releases
-        Map<Integer, List<String>> releases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = dbConnection.prepareStatement(
+    @Override
+    public void init() throws SQLException {
+        addPreparedStatement("RELEASES",
                 "SELECT DISTINCT release_group, n0.name as name " +
                 "FROM release " +
                 "LEFT JOIN release_name n0 ON release.name = n0.id " +
                 "WHERE release_group BETWEEN ? AND ?");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int rgId = rs.getInt("release_group");
-            List<String> list;
-            if (!releases.containsKey(rgId)) {
-                list = new LinkedList<String>();
-                releases.put(rgId, list);
-            } else {
-                list = releases.get(rgId);
-            }
-            list.add(rs.getString("name"));
-        }
-        st.close();
 
-        //Artists
-        Map<Integer, List<ArtistWrapper>> artists = new HashMap<Integer, List<ArtistWrapper>>();
-        st = dbConnection.prepareStatement(
-                "SELECT rg.id as releaseGroupId, " +
+        addPreparedStatement("ARTISTS",
+                        "SELECT rg.id as releaseGroupId, " +
                         "acn.position as pos, " +
                         "acn.joinphrase as joinphrase, " +
                         "a.gid as artistId,  " +
@@ -102,10 +83,42 @@ public class
                         "INNER JOIN artist_name an3 on a.sortname=an3.id " +
                         "WHERE rg.id BETWEEN ? AND ?  " +
                         "order by rg.id,acn.position ");          //Order by pos so come in expected order
+
+        addPreparedStatement("RELEASEGROUPS",
+            "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
+                        "FROM release_group AS rg " +
+                        "LEFT JOIN release_name n0 ON rg.name = n0.id " +
+                        "LEFT JOIN release_group_type  ON rg.type = release_group_type.id " +
+                        "WHERE rg.id BETWEEN ? AND ?" +
+                        "order by rg.id");
+    }
+
+
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+
+        //Releases
+        Map<Integer, List<String>> releases = new HashMap<Integer, List<String>>();
+        PreparedStatement st =getPreparedStatement("RELEASES");
         st.setInt(1, min);
         st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int rgId = rs.getInt("release_group");
+            List<String> list;
+            if (!releases.containsKey(rgId)) {
+                list = new LinkedList<String>();
+                releases.put(rgId, list);
+            } else {
+                list = releases.get(rgId);
+            }
+            list.add(rs.getString("name"));
+        }
 
-
+        //Artists
+        Map<Integer, List<ArtistWrapper>> artists = new HashMap<Integer, List<ArtistWrapper>>();
+        st = getPreparedStatement("ARTISTS");
+        st.setInt(1, min);
+        st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
             int releaseGroupId = rs.getInt("releaseGroupId");
@@ -126,23 +139,15 @@ public class
             aw.setJoinPhrase(rs.getString("joinphrase"));
             list.add(aw);
         }
-        st.close();
 
-
-        st = dbConnection.prepareStatement(
-                "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
-                        "FROM release_group AS rg " +
-                        "LEFT JOIN release_name n0 ON rg.name = n0.id " +
-                        "LEFT JOIN release_group_type  ON rg.type = release_group_type.id " +
-                        "WHERE rg.id BETWEEN ? AND ?" +
-                        "order by rg.id");
+        //ReleaseGroups
+        st = getPreparedStatement("RELEASEGROUPS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, releases, artists));
         }
-        st.close();
 
     }
 

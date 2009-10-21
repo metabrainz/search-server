@@ -27,7 +27,9 @@ public class TrackIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TrackIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         TrackIndex li = new TrackIndex(createConnection());
+        li.init();
         li.indexData(writer, 0, Integer.MAX_VALUE);
+        li.destroy();
         writer.close();
 
     }

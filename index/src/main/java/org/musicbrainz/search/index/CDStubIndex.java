@@ -27,7 +27,7 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import java.io.IOException;
 import java.sql.*;
 
-public class CDStubIndex extends Index {
+public class CDStubIndex extends DatabaseIndex {
 
     public CDStubIndex(Connection dbConnection) {
         super(dbConnection);
@@ -56,22 +56,26 @@ public class CDStubIndex extends Index {
         return rs.getInt(1);
     }
 
+    @Override
+    public void init() throws SQLException {
+        addPreparedStatement("CDSTUBS",
+                "SELECT release_raw.title, release_raw.artist, barcode, comment, discid, count(track_raw.id) as tracks " +
+                "FROM release_raw " +
+                "JOIN cdtoc_raw ON release_raw.id = cdtoc_raw.release " +
+                "JOIN track_raw ON track_raw.release = release_raw.id " +
+                "WHERE release_raw.id BETWEEN ? AND ? " +
+                "GROUP BY release_raw.title, release_raw.id, release_raw.artist, barcode, comment, discid");
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT release_raw.title, release_raw.artist, barcode, comment, discid, count(track_raw.id) as tracks " +
-                    "FROM release_raw " +
-                    "JOIN cdtoc_raw ON release_raw.id = cdtoc_raw.release " +
-                    "JOIN track_raw ON track_raw.release = release_raw.id " +
-                    "WHERE release_raw.id BETWEEN ? AND ? " +
-                    "GROUP BY release_raw.title, release_raw.id, release_raw.artist, barcode, comment, discid");
+        PreparedStatement st = getPreparedStatement("CDSTUBS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs));
         }
-        st.close();
     }
 
     public Document documentFromResultSet(ResultSet rs) throws SQLException {

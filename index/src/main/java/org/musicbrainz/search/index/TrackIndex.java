@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class TrackIndex extends Index {
+public class TrackIndex extends DatabaseIndex {
 
     private final static int QUANTIZED_DURATION = 2000;
    
@@ -63,21 +63,9 @@ public class TrackIndex extends Index {
         return rs.getInt(1);
     }
 
-    /**
-     * Get Artist Information for the recordings
-     *
-     * @param min
-     * @param max
-     * @return
-     * @throws SQLException
-     * @throws IOException
-     */
-    private Map<Integer, List<ArtistWrapper>> loadArtists(int min, int max) throws SQLException, IOException{
-
-        //Artists
-        Map<Integer, List<ArtistWrapper>> artistWrapper = new HashMap<Integer, List<ArtistWrapper>>();
-        PreparedStatement st = dbConnection.prepareStatement(
-               "SELECT re.id as recordingId, " +
+    public void init() throws SQLException {
+          addPreparedStatement("ARTISTS",
+                  "SELECT re.id as recordingId, " +
                "acn.position as pos, " +
                "acn.joinphrase as joinphrase, " +
                "a.gid as artistId,  " +
@@ -93,6 +81,47 @@ public class TrackIndex extends Index {
                "INNER JOIN artist_name an3 on a.sortname=an3.id " +
                "WHERE re.id BETWEEN ? AND ?  " +
                "order by re.id,acn.position ");
+
+        addPreparedStatement("TRACKS",
+                "SELECT t.recording, t.position,tl.trackcount, " +
+                "r.gid as releaseid,rn.name as releasename,rgt.name as type " +
+                "FROM track t " +
+                "INNER JOIN tracklist tl " +
+                "ON t.tracklist=tl.id " +
+                "INNER JOIN medium m " +
+                "ON m.tracklist=tl.id " +
+                "INNER JOIN release r " +
+                "ON m.release=r.id " +
+                "INNER JOIN release_group rg " +
+                "ON rg.id = r.release_group " +
+                "LEFT JOIN release_group_type rgt " +
+                "ON rg.type = rgt.id " +
+                "INNER JOIN release_name rn " +
+                "ON r.name=rn.id " +
+                "WHERE t.recording BETWEEN ? AND ?");
+
+        addPreparedStatement("RECORDINGS",
+                "SELECT re.id as recordingId,re.gid as trackid,re.length as duration,tn.name as trackname " +
+                "FROM recording re " +
+                "INNER JOIN track_name tn " +
+                "ON re.name=tn.id " +
+                "WHERE re.id BETWEEN ? AND ?");
+    }
+
+    /**
+     * Get Artist Information for the recordings
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<ArtistWrapper>> loadArtists(int min, int max) throws SQLException, IOException{
+
+        //Artists
+        Map<Integer, List<ArtistWrapper>> artistWrapper = new HashMap<Integer, List<ArtistWrapper>>();
+        PreparedStatement st = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -115,7 +144,6 @@ public class TrackIndex extends Index {
            aw.setJoinPhrase(rs.getString("joinphrase"));
            list.add(aw);
         }
-        st.close();
         return artistWrapper;
     }
 
@@ -133,23 +161,7 @@ public class TrackIndex extends Index {
 
         //Tracks and Release Info
         Map<Integer, List<TrackWrapper>> tracks = new HashMap<Integer, List<TrackWrapper>>();
-        PreparedStatement st = dbConnection.prepareStatement(
-              "SELECT t.recording, t.position,tl.trackcount, " +
-                "r.gid as releaseid,rn.name as releasename,rgt.name as type " +
-                "FROM track t " +
-                "INNER JOIN tracklist tl " +
-                "ON t.tracklist=tl.id " +
-                "INNER JOIN medium m " +
-                "ON m.tracklist=tl.id " +
-                "INNER JOIN release r " +
-                "ON m.release=r.id " +
-                "INNER JOIN release_group rg " +
-                "ON rg.id = r.release_group " +
-                "LEFT JOIN release_group_type rgt " +
-                "ON rg.type = rgt.id " +
-                "INNER JOIN release_name rn " +
-                "ON r.name=rn.id " +
-                "WHERE t.recording BETWEEN ? AND ?");
+        PreparedStatement st = getPreparedStatement("TRACKS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -170,7 +182,6 @@ public class TrackIndex extends Index {
            tw.setTrackPosition(rs.getInt("position"));
            list.add(tw);
         }
-        st.close();
         return tracks;
     }
 
@@ -191,19 +202,13 @@ public class TrackIndex extends Index {
                                 Map<Integer, List<ArtistWrapper>> artists,
                                 Map<Integer, List<TrackWrapper>> tracks) throws SQLException, IOException{
 
-        PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT re.id as recordingId,re.gid as trackid,re.length as duration,tn.name as trackname " +
-                "FROM recording re " +
-                "INNER JOIN track_name tn " +
-                "ON re.name=tn.id " +
-                "WHERE re.id BETWEEN ? AND ?");
+        PreparedStatement st = getPreparedStatement("RECORDINGS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs,artists,tracks));
         }
-        st.close();
 
     }
 

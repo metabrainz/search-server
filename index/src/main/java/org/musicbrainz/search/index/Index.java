@@ -34,10 +34,10 @@ import org.apache.lucene.util.NumericUtils;
 public abstract class Index {
 
 	protected Connection dbConnection;
-	
-	public Index(Connection dbConnection) {
-		this.dbConnection = dbConnection;
-	}
+
+    public void init() throws SQLException {};
+    public void destroy() throws SQLException {};
+
 	
 	public abstract int getMaxId() throws SQLException;
     public abstract int getNoOfRows(int maxId) throws SQLException ;

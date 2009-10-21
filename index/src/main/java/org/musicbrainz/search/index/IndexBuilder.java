@@ -183,7 +183,8 @@ public class IndexBuilder
         indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
-
+        
+        index.init();
         int maxId = index.getMaxId();
         if (options.isTest() && MAX_TEST_ID < maxId)
             maxId = MAX_TEST_ID;
@@ -194,6 +195,7 @@ public class IndexBuilder
             j += IDS_PER_CHUNK;
         }
 
+        index.destroy();
         addMetaFieldsToIndex(indexWriter);
         System.out.println("\n  Optimizing");
         indexWriter.optimize();

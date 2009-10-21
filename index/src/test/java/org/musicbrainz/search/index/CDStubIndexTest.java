@@ -23,7 +23,9 @@ public class CDStubIndexTest extends AbstractIndexTest{
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(CDStubIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         CDStubIndex ci = new CDStubIndex(createConnection());
+        ci.init();
         ci.indexData(writer, 0, Integer.MAX_VALUE);
+        ci.destroy();
         writer.close();
 
     }

@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
-public class ReleaseIndex extends Index {
+public class ReleaseIndex extends DatabaseIndex {
 
 
     public ReleaseIndex(Connection dbConnection) {
@@ -57,17 +57,71 @@ public class ReleaseIndex extends Index {
         return rs.getInt(1);
     }
 
+    @Override
+    public void init() throws SQLException {
+       addPreparedStatement("LABELINFOS",
+               "SELECT rl.release as releaseId, ln.name as label, catno " +
+                "FROM release_label rl " +
+                "LEFT JOIN label l ON rl.label=l.id " +
+                "LEFT JOIN label_name ln ON l.name = ln.id " +
+                "WHERE rl.release BETWEEN ? AND ?");
+
+        addPreparedStatement("FORMATS",
+              "SELECT m.release as releaseId, mf.name as format,sum(tr.trackcount) as numTracks " +
+                "FROM medium m " +
+                "LEFT JOIN medium_format mf ON m.format=mf.id " +
+                "LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
+                "WHERE m.release BETWEEN ? AND ? " +
+                "GROUP BY release,mf.name");
+
+        addPreparedStatement("NOOFDISCIDS",
+            "SELECT m.release as releaseId, count(mc.id) as discids " +
+            "FROM medium m " +
+            "LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
+            "WHERE m.release BETWEEN ? AND ?" +
+            "GROUP BY releaseId");
+
+         addPreparedStatement("ARTISTS",
+                "SELECT r.id as releaseId, " +
+                "acn.position as pos, " +
+                "acn.joinphrase as joinphrase, " +
+                "a.gid as artistId,  " +
+                "a.comment as comment, " +
+                "an.name as artistName, " +
+                "an2.name as artistCreditName, " +
+                "an3.name as artistSortName " +
+                "FROM release AS r " +
+                "INNER JOIN artist_credit_name acn ON r.artist_credit=acn.artist_credit " +
+                "INNER JOIN artist a ON a.id=acn.artist " +
+                "INNER JOIN artist_name an on a.name=an.id " +
+                "INNER JOIN artist_name an2 on acn.name=an2.id " +
+                "INNER JOIN artist_name an3 on a.sortname=an3.id " +
+                "WHERE r.id BETWEEN ? AND ?  " +
+                "order by r.id,acn.position ");
+
+         addPreparedStatement("RELEASES",
+                "SELECT rl.id, rl.gid, rn.name as name, " +
+                "barcode,lower(country.isocode) as country, " +
+                "date_year, date_month, date_day,rgt.name as type,rm.amazonasin, " +
+                "language.isocode_3t as language, script.isocode as script,rs.name as status " +
+                "FROM release rl " +
+                "INNER JOIN release_meta rm ON rl.id = rm.id " +
+                "INNER JOIN release_group rg ON rg.id = rl.release_group " +
+                "LEFT JOIN release_group_type rgt  ON rg.type = rgt.id " +
+                "LEFT JOIN country ON rl.country=country.id " +
+                "LEFT JOIN release_name rn ON rl.name = rn.id " +
+                "LEFT JOIN release_status rs ON rl.status = rs.id " +
+                "LEFT JOIN language ON rl.language=language.id " +
+                "LEFT JOIN script ON rl.script=script.id " +
+                "WHERE rl.id BETWEEN ? AND ?");
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         //A particular release can have multiple catalognos, labels when released as an imprint, typically used
         //by major labels
         Map<Integer, List<List<String>>> labelInfo = new HashMap<Integer, List<List<String>>>();
-        PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT rl.release as releaseId, ln.name as label, catno " +
-                        "FROM release_label rl " +
-                        "LEFT JOIN label l ON rl.label=l.id " +
-                        "LEFT JOIN label_name ln ON l.name = ln.id " +
-                        "WHERE rl.release BETWEEN ? AND ?");
+        PreparedStatement st = getPreparedStatement("LABELINFOS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -85,20 +139,13 @@ public class ReleaseIndex extends Index {
             entry.add(rs.getString("catno"));
             list.add(entry);
         }
-        st.close();
+
 
         //Format,NumTracks a release can be released on multiple mediums, and possibly involving formats, i.e a release is on CD with
         //a special 7" single included. We also need total tracks, if release consists of multiple mediums we just have
         //to sum up the tracks on each medium to get the total for the release
         Map<Integer, List<List<String>>> formats = new HashMap<Integer, List<List<String>>>();
-        st = dbConnection.prepareStatement(
-                "SELECT m.release as releaseId, mf.name as format,sum(tr.trackcount) as numTracks " +
-                "FROM medium m " +
-                "LEFT JOIN medium_format mf ON m.format=mf.id " +
-                "LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
-                "WHERE m.release BETWEEN ? AND ? " +
-                "GROUP BY release,mf.name"
-                );
+        st = getPreparedStatement("FORMATS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
@@ -116,17 +163,10 @@ public class ReleaseIndex extends Index {
             entry.add(rs.getString("numTracks"));
             list.add(entry);
         }
-        st.close();
 
         //No of Disc Ids
         Map<Integer, List<List<String>>> numDiscIds = new HashMap<Integer, List<List<String>>>();
-        st = dbConnection.prepareStatement(
-                "SELECT m.release as releaseId, count(mc.id) as discids " +
-                "FROM medium m " +
-                "LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
-                "WHERE m.release BETWEEN ? AND ?" +
-                "GROUP BY releaseId"
-                );
+        st = getPreparedStatement("NOOFDISCIDS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
@@ -143,31 +183,13 @@ public class ReleaseIndex extends Index {
             entry.add(rs.getString("discids"));
             list.add(entry);
         }
-        st.close();
+
 
         //Artists
         Map<Integer, List<ArtistWrapper>> artists = new HashMap<Integer, List<ArtistWrapper>>();
-        st = dbConnection.prepareStatement(
-                "SELECT r.id as releaseId, " +
-                "acn.position as pos, " +
-                "acn.joinphrase as joinphrase, " +
-                "a.gid as artistId,  " +
-                "a.comment as comment, " +
-                "an.name as artistName, " +
-                "an2.name as artistCreditName, " +
-                "an3.name as artistSortName " +
-                "FROM release AS r " +
-                "INNER JOIN artist_credit_name acn ON r.artist_credit=acn.artist_credit " +
-                "INNER JOIN artist a ON a.id=acn.artist " +
-                "INNER JOIN artist_name an on a.name=an.id " +
-                "INNER JOIN artist_name an2 on acn.name=an2.id " +
-                "INNER JOIN artist_name an3 on a.sortname=an3.id " +
-                "WHERE r.id BETWEEN ? AND ?  " +
-                "order by r.id,acn.position ");
+        st = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
-
-
         rs = st.executeQuery();
         while (rs.next()) {
             int releaseGroupId = rs.getInt("releaseId");
@@ -188,30 +210,14 @@ public class ReleaseIndex extends Index {
             aw.setJoinPhrase(rs.getString("joinphrase"));
             list.add(aw);
         }
-        st.close();
 
-        st = dbConnection.prepareStatement(
-                "SELECT rl.id, rl.gid, rn.name as name, " +
-                "barcode,lower(country.isocode) as country, " +
-                "date_year, date_month, date_day,rgt.name as type,rm.amazonasin, " +
-                "language.isocode_3t as language, script.isocode as script,rs.name as status " +
-                "FROM release rl " +
-                "INNER JOIN release_meta rm ON rl.id = rm.id " +
-                "INNER JOIN release_group rg ON rg.id = rl.release_group " +
-                "LEFT JOIN release_group_type rgt  ON rg.type = rgt.id " +
-                "LEFT JOIN country ON rl.country=country.id " +
-                "LEFT JOIN release_name rn ON rl.name = rn.id " +
-                "LEFT JOIN release_status rs ON rl.status = rs.id " +
-                "LEFT JOIN language ON rl.language=language.id " +
-                "LEFT JOIN script ON rl.script=script.id " +
-                "WHERE rl.id BETWEEN ? AND ?");
+        st = getPreparedStatement("RELEASES");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, labelInfo, formats,numDiscIds,artists));
         }
-        st.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
