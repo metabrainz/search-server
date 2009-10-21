@@ -3,7 +3,7 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.AnnotationIndexField;
-import org.musicbrainz.search.index.AnnotationAnalyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class AnnotationSearch extends SearchServer {
         htmlWriter = new AnnotationHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(AnnotationIndexField.TEXT.getName());
-        analyzer = new AnnotationAnalyzer();
+        analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
     }
 
     public AnnotationSearch(String indexDir) throws Exception {

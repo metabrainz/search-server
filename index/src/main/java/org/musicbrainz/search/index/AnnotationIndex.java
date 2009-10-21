@@ -10,6 +10,7 @@ import java.sql.Statement;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 public class AnnotationIndex extends DatabaseIndex {
 
@@ -23,7 +24,7 @@ public class AnnotationIndex extends DatabaseIndex {
 
     public Analyzer getAnalyzer()
     {
-        return new AnnotationAnalyzer();
+        return new PerFieldEntityAnalyzer(AnnotationIndexField.class);
     }
     
     public int getMaxId() throws SQLException {

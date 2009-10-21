@@ -20,6 +20,8 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -52,5 +54,11 @@ public enum AnnotationIndexField implements IndexField {
 	public Field.Index getIndex() {
 		return index;
 	}
+
+
+    public Analyzer getAnalyzer()
+    {
+        return new PerFieldEntityAnalyzer(LabelIndexField.class);
+    }
 
 }
