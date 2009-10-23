@@ -50,7 +50,7 @@ public abstract class Index {
 	}
 
     /**
-     * Add numeric field to document, handled specailly so that ranges searches work properly
+     * Add numeric field to document, handled specially so that ranges searches work properly
      * @param doc
      * @param field
      * @param value

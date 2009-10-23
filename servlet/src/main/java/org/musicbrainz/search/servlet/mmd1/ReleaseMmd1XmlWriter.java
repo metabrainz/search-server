@@ -40,6 +40,7 @@ import com.jthink.brainz.mmd.ReleaseList;
 import com.jthink.brainz.mmd.TextRepresentation;
 import com.jthink.brainz.mmd.TrackList;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
@@ -180,20 +181,31 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                 release.setArtist(artist);
             }
 
-            String discIds = doc.get(ReleaseIndexField.NUM_DISC_IDS);
-            if (discIds != null) {
+            String[] numDiscsIdsOnMedium = doc.getValues(ReleaseIndexField.NUM_DISCIDS_MEDIUM);
+            if(numDiscsIdsOnMedium.length>0)
+            {
+                int numDiscs = 0;
+                for(int i=0;i<numDiscsIdsOnMedium.length;i++) {
+                    numDiscs+=NumericUtils.prefixCodedToInt(numDiscsIdsOnMedium[i]);
+                }
+
                 DiscList discList = of.createDiscList();
-                discList.setCount(BigInteger.valueOf(Long.parseLong(discIds)));
+                discList.setCount(BigInteger.valueOf(numDiscs));
                 release.setDiscList(discList);
             }
 
-            String tracks = doc.get(ReleaseIndexField.NUM_TRACKS);
-            if (tracks != null) {
+            String[] numTracksOnMedium = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
+            if(numTracksOnMedium.length>0)
+            {
+                int numTracks = 0;
+                for(int i=0;i<numTracksOnMedium.length;i++) {
+                    numTracks+=NumericUtils.prefixCodedToInt(numTracksOnMedium[i]);
+                }
+
                 TrackList trackList = of.createTrackList();
-                trackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
+                trackList.setCount(BigInteger.valueOf(numTracks));
                 release.setTrackList(trackList);
             }
-
             releaseList.getRelease().add(release);
         }
         releaseList.setCount(BigInteger.valueOf(results.totalHits));

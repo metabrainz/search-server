@@ -66,20 +66,14 @@ public class ReleaseIndex extends DatabaseIndex {
                 "LEFT JOIN label_name ln ON l.name = ln.id " +
                 "WHERE rl.release BETWEEN ? AND ?");
 
-        addPreparedStatement("FORMATS",
-              "SELECT m.release as releaseId, mf.name as format,sum(tr.trackcount) as numTracks " +
+        addPreparedStatement("MEDIUMS",
+              "SELECT m.release as releaseId, mf.name as format,tr.trackcount as numTracksOnMedium, count(mc.id) as discidsOnMedium " +
                 "FROM medium m " +
                 "LEFT JOIN medium_format mf ON m.format=mf.id " +
                 "LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
+                "LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
                 "WHERE m.release BETWEEN ? AND ? " +
-                "GROUP BY release,mf.name");
-
-        addPreparedStatement("NOOFDISCIDS",
-            "SELECT m.release as releaseId, count(mc.id) as discids " +
-            "FROM medium m " +
-            "LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
-            "WHERE m.release BETWEEN ? AND ?" +
-            "GROUP BY releaseId");
+                "GROUP BY m.release,m.id,mf.name,tr.trackcount");
 
          addPreparedStatement("ARTISTS",
                 "SELECT r.id as releaseId, " +
@@ -141,46 +135,26 @@ public class ReleaseIndex extends DatabaseIndex {
         }
 
 
-        //Format,NumTracks a release can be released on multiple mediums, and possibly involving formats, i.e a release is on CD with
-        //a special 7" single included. We also need total tracks, if release consists of multiple mediums we just have
-        //to sum up the tracks on each medium to get the total for the release
-        Map<Integer, List<List<String>>> formats = new HashMap<Integer, List<List<String>>>();
-        st = getPreparedStatement("FORMATS");
+        //Medium, NumTracks a release can be released on multiple mediums, and possibly involving mediums, i.e a release is on CD with
+        //a special 7" single included. We also need total tracks and discs ids per medium
+        Map<Integer, List<List<String>>> mediums = new HashMap<Integer, List<List<String>>>();
+        st = getPreparedStatement("MEDIUMS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
             int releaseId = rs.getInt("releaseId");
             List<List<String>> list;
-            if (!formats.containsKey(releaseId)) {
+            if (!mediums.containsKey(releaseId)) {
                 list = new LinkedList<List<String>>();
-                formats.put(releaseId, list);
+                mediums.put(releaseId, list);
             } else {
-                list = formats.get(releaseId);
+                list = mediums.get(releaseId);
             }
-            List<String> entry = new ArrayList<String>(2);
+            List<String> entry = new ArrayList<String>(3);
             entry.add(rs.getString("format"));
-            entry.add(rs.getString("numTracks"));
-            list.add(entry);
-        }
-
-        //No of Disc Ids
-        Map<Integer, List<List<String>>> numDiscIds = new HashMap<Integer, List<List<String>>>();
-        st = getPreparedStatement("NOOFDISCIDS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        while (rs.next()) {
-            int releaseId = rs.getInt("releaseId");
-            List<List<String>> list;
-            if (!numDiscIds.containsKey(releaseId)) {
-                list = new LinkedList<List<String>>();
-                numDiscIds.put(releaseId, list);
-            } else {
-                list = numDiscIds.get(releaseId);
-            }
-            List<String> entry = new ArrayList<String>(2);
-            entry.add(rs.getString("discids"));
+            entry.add(String.valueOf(rs.getInt("numTracksOnMedium")));
+            entry.add(String.valueOf(rs.getInt("discIdsOnMedium")));
             list.add(entry);
         }
 
@@ -216,14 +190,13 @@ public class ReleaseIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, labelInfo, formats,numDiscIds,artists));
+            indexWriter.addDocument(documentFromResultSet(rs, labelInfo, mediums,artists));
         }
     }
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer,List<List<String>>> labelInfo,
-                                          Map<Integer,List<List<String>>> formats,
-                                          Map<Integer,List<List<String>>>  numDiscIds,
+                                          Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
         Document doc = new Document();
         int id = rs.getInt("id");
@@ -246,30 +219,34 @@ public class ReleaseIndex extends DatabaseIndex {
             }
         }
 
-        if (formats.containsKey(id)) {
-            for (List<String> entry : formats.get(id)) {
+        int trackCount = 0;
+        int discCount = 0;
+        if (mediums.containsKey(id)) {
+            for (List<String> entry : mediums.get(id)) {
                 String str;
                 str = entry.get(0);
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.FORMAT, str);
-            }
+                addFieldOrHyphenToDocument(doc, ReleaseIndexField.FORMAT, str);
+                int numTracksOnMedium = Integer.parseInt(entry.get(1));
+                addNumericFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS_MEDIUM,numTracksOnMedium);
+                trackCount+=numTracksOnMedium;
 
-            //Num Tracks already calculated
-            addNonEmptyFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS,formats.get(id).get(0).get(1));
-        }
-
-
-        if (numDiscIds.containsKey(id)) {
-            for (List<String> entry : numDiscIds.get(id)) {
-                String str;
-                str = entry.get(0);
-                addNonEmptyFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, str);
+                int numDiscsOnMedium = Integer.parseInt(entry.get(2));
+                addNumericFieldToDocument(doc,ReleaseIndexField.NUM_DISCIDS_MEDIUM,numDiscsOnMedium);
+                discCount+=numDiscsOnMedium;
 
             }
+
+            //Num Tracks over the whole release
+            addNumericFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS,trackCount);
+
+            //Num Discs over the whole release
+            addNumericFieldToDocument(doc,ReleaseIndexField.NUM_DISCIDS,trackCount);
+
         }
 
-         if (artists.containsKey(id)) {
-             //For each artist credit for this release
-             for (ArtistWrapper artist : artists.get(id)) {
+        if (artists.containsKey(id)) {
+            //For each artist credit for this release
+            for (ArtistWrapper artist : artists.get(id)) {
                   addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, artist.getArtistId());
                  //TODO in many cases these three values might be the same is user actually interested in searching
                  //by these variations, or do we just need for output

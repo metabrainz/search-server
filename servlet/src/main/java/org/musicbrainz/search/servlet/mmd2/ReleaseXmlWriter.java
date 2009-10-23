@@ -30,6 +30,7 @@ package org.musicbrainz.search.servlet.mmd2;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
@@ -69,7 +70,7 @@ public class ReleaseXmlWriter extends XmlWriter {
 
             String status = doc.get(ReleaseIndexField.STATUS);
             if (status != null) {
-                    release.setStatus(status);
+                release.setStatus(status);
             }
 
             String country = doc.get(ReleaseIndexField.COUNTRY);
@@ -92,11 +93,6 @@ public class ReleaseXmlWriter extends XmlWriter {
                 release.setAsin(barcode);
             }
 
-            String format = doc.get(ReleaseIndexField.FORMAT);
-            //TODO can only store first format, need chnage made to XML
-            if (format != null) {
-                release.setFormat(format);
-            }
 
             release.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
@@ -118,6 +114,7 @@ public class ReleaseXmlWriter extends XmlWriter {
             String[] labels = doc.getValues(ReleaseIndexField.LABEL);
             //Releases can only have multiple labe;/catno combinations
             if (labels.length > 0) {
+                LabelInfoList labelInfoList = of.createLabelInfoList();
                 String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
                 for (int i = 0; i < labels.length; i++) {
                     LabelInfo labelInfo = of.createLabelInfo();
@@ -131,52 +128,56 @@ public class ReleaseXmlWriter extends XmlWriter {
                     if (!catnos[i].equals("-")) {
                         labelInfo.setCatalogNumber(catnos[i]);
                     }
-                    release.getLabelInfo().add(labelInfo);
+                    labelInfoList.getLabelInfo().add(labelInfo);
                 }
+                release.setLabelInfoList(labelInfoList);
             }
 
-            String[] artistIds          = doc.getValues(ReleaseIndexField.ARTIST_ID);
-            String[] artistNames        = doc.getValues(ReleaseIndexField.ARTIST_NAME);
-            String[] artistJoinPhrases  = doc.getValues(ReleaseIndexField.ARTIST_JOINPHRASE);
-            String[] artistSortNames    = doc.getValues(ReleaseIndexField.ARTIST_SORTNAME);
-            String[] artistCreditNames  = doc.getValues(ReleaseIndexField.ARTIST_NAMECREDIT);
+            String[] artistIds = doc.getValues(ReleaseIndexField.ARTIST_ID);
+            String[] artistNames = doc.getValues(ReleaseIndexField.ARTIST_NAME);
+            String[] artistJoinPhrases = doc.getValues(ReleaseIndexField.ARTIST_JOINPHRASE);
+            String[] artistSortNames = doc.getValues(ReleaseIndexField.ARTIST_SORTNAME);
+            String[] artistCreditNames = doc.getValues(ReleaseIndexField.ARTIST_NAMECREDIT);
 
             ArtistCredit ac = of.createArtistCredit();
             for (int i = 0; i < artistIds.length; i++) {
 
-                Artist     artist   = of.createArtist();
+                Artist artist = of.createArtist();
                 artist.setId(artistIds[i]);
                 artist.setName(artistNames[i]);
                 artist.setSortName(artistSortNames[i]);
                 NameCredit nc = of.createNameCredit();
                 nc.setArtist(artist);
-                if(!artistJoinPhrases[i].equals("-")) {
+                if (!artistJoinPhrases[i].equals("-")) {
                     nc.setJoinphrase(artistJoinPhrases[i]);
                 }
-                if(!artistCreditNames[i].equals(artistNames[i])) {
+                if (!artistCreditNames[i].equals(artistNames[i])) {
                     nc.setName(artistCreditNames[i]);
                 }
                 ac.getNameCredit().add(nc);
                 release.setArtistCredit(ac);
             }
 
+            MediumList mediumList = of.createMediumList();
+            String[] formats = doc.getValues(ReleaseIndexField.FORMAT);
+            String[] numTracks = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
+            String[] numDiscIds = doc.getValues(ReleaseIndexField.NUM_DISCIDS_MEDIUM);
+            for (int i = 0; i < formats.length; i++) {
 
-          /* TODO, currently only available at medium level which seems to be fine grained
-            MediumList ml = release.getMediumList();
-            String discIds = doc.get(ReleaseIndexField.NUM_DISC_IDS);
-            if (discIds != null) {
-                DiscList discList = of.createDiscList();
-                discList.setCount(BigInteger.valueOf(Long.parseLong(discIds)));
-                release.setDiscList(discList);
-            }
+                Medium medium = of.createMedium();
+                medium.setFormat(formats[i]);
 
-            String tracks = doc.get(ReleaseIndexField.NUM_TRACKS);
-            if (tracks != null) {
                 TrackList trackList = of.createTrackList();
-                trackList.setCount(BigInteger.valueOf(Long.parseLong(tracks)));
-                release.setTrackList(trackList);
+                trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
+                medium.setTrackList(trackList);
+
+                DiscList discList = of.createDiscList();
+                discList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numDiscIds[i])));
+                medium.setDiscList(discList);
+
+                mediumList.getMedium().add(medium);
             }
-           */
+            release.setMediumList(mediumList);
             releaseList.getRelease().add(release);
         }
         releaseList.setCount(BigInteger.valueOf(results.totalHits));
@@ -185,5 +186,4 @@ public class ReleaseXmlWriter extends XmlWriter {
         return metadata;
 
     }
-
 }

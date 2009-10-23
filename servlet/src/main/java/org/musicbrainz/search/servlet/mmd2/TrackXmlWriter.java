@@ -94,40 +94,39 @@ public class TrackXmlWriter extends XmlWriter {
                 recording.setArtistCredit(ac);
             }
 
-            String releaseName = doc.get(TrackIndexField.RELEASE);
-            if (releaseName != null) {
-                Release release = of.createRelease();
-                release.setId(doc.get(TrackIndexField.RELEASE_ID));
-                release.setTitle(releaseName);
+            String[] releaseNames  = doc.getValues(TrackIndexField.RELEASE);
+            String[] releaseIds    = doc.getValues(TrackIndexField.RELEASE_ID);
+            String[] releaseTypes  = doc.getValues(TrackIndexField.RELEASE_TYPE);
+            String[] trackNos      = doc.getValues(TrackIndexField.TRACKNUM);
+            String[] numTracks     = doc.getValues(TrackIndexField.NUM_TRACKS);
 
-                String type = doc.get(TrackIndexField.RELEASE_TYPE);
-                ReleaseGroup rg = of.createReleaseGroup();
-                release.setReleaseGroup(rg);
-                if (type != null) {
-                    release.getReleaseGroup().getType().add(StringUtils.capitalize(type));
-                }
-
-
-                /* TODO not supported in MMD
-                String trackNo = doc.get(TrackIndexField.TRACKNUM);
-                String tracks = doc.get(TrackIndexField.NUM_TRACKS);
-                if (trackNo != null) {
-                    TrackList releaseTrackList = of.createTrackList();
-                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNo) - 1));
-                    if (tracks != null) {
-                        releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(tracks)));
-                    }
-                    release.setTrackList(releaseTrackList);
-
-                }
+            if(releaseNames.length>0)
+            {
                 ReleaseList releaseList = of.createReleaseList();
-                releaseList.getRelease().add(release);
+                for(int i=0;i<releaseNames.length;i++) {
+
+                    Release release = of.createRelease();
+                    release.setId(releaseIds[i]);
+                    release.setTitle(releaseNames[i]);
+
+                    ReleaseGroup rg = of.createReleaseGroup();
+                    release.setReleaseGroup(rg);
+                    if (!releaseTypes[i].equals("-")) {
+                        release.getReleaseGroup().getType().add(StringUtils.capitalize(releaseTypes[i]));
+                    }
+
+                    TrackList releaseTrackList = of.createTrackList();
+                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNos[i]) - 1));
+                    releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
+                    Medium medium = of.createMedium();
+                    medium.setTrackList(releaseTrackList);
+
+                    MediumList mediumList = of.createMediumList();
+                    mediumList.getMedium().add(medium);
+                    release.setMediumList(mediumList);
+                    releaseList.getRelease().add(release);
+                }
                 recording.setReleaseList(releaseList);
-                */
-
-                //TODO dosnt exist in MMD
-                //recording.setRelease()
-
             }
             recordingList.getRecording().add(recording);
         }

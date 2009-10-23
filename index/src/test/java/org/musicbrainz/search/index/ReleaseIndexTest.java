@@ -5,6 +5,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 
@@ -569,7 +570,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
+            assertEquals("-", doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
         }
         ir.close();
 
@@ -798,8 +800,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISC_IDS.getName()).length);
-            assertEquals("2", doc.getField(ReleaseIndexField.NUM_DISC_IDS.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
+            assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
         }
         ir.close();
     }
@@ -818,8 +820,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_TRACKS.getName()).length);
-            assertEquals("10", doc.getField(ReleaseIndexField.NUM_TRACKS.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_TRACKS_MEDIUM.getName()).length);
+            assertEquals(10, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_TRACKS_MEDIUM.getName()).stringValue()));
         }
         ir.close();
     }
@@ -880,7 +882,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(0, doc.getFields(ReleaseIndexField.DATE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
         }
         ir.close();
 
