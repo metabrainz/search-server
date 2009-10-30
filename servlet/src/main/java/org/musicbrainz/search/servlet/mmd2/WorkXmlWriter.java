@@ -39,6 +39,7 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Locale;
 
 public class WorkXmlWriter extends XmlWriter {
 
@@ -64,7 +65,7 @@ public class WorkXmlWriter extends XmlWriter {
 
             String type = doc.get(WorkIndexField.TYPE);
             if (type != null) {
-                work.setType(StringUtils.capitalize(type));
+                work.setType(type.toLowerCase(Locale.US));
             }
 
             String iswc = doc.get(WorkIndexField.ISWC);
@@ -73,15 +74,14 @@ public class WorkXmlWriter extends XmlWriter {
             }
 
 
-            String[] artistIds          = doc.getValues(ReleaseGroupIndexField.ARTIST_ID);
-            String[] artistNames        = doc.getValues(ReleaseGroupIndexField.ARTIST_NAME);
-            String[] artistJoinPhrases  = doc.getValues(ReleaseGroupIndexField.ARTIST_JOINPHRASE);
-            String[] artistSortNames    = doc.getValues(ReleaseGroupIndexField.ARTIST_SORTNAME);
-            String[] artistCreditNames  = doc.getValues(ReleaseGroupIndexField.ARTIST_NAMECREDIT);
+            String[] artistIds          = doc.getValues(WorkIndexField.ARTIST_ID);
+            String[] artistNames        = doc.getValues(WorkIndexField.ARTIST_NAME);
+            String[] artistJoinPhrases  = doc.getValues(WorkIndexField.ARTIST_JOINPHRASE);
+            String[] artistSortNames    = doc.getValues(WorkIndexField.ARTIST_SORTNAME);
+            String[] artistCreditNames  = doc.getValues(WorkIndexField.ARTIST_NAMECREDIT);
 
             ArtistCredit ac = of.createArtistCredit();
             for (int i = 0; i < artistIds.length; i++) {
-
                 Artist     artist   = of.createArtist();
                 artist.setId(artistIds[i]);
                 artist.setName(artistNames[i]);

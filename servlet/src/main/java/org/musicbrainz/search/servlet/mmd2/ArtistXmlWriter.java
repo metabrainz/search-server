@@ -39,6 +39,7 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Locale;
 
 
 public class ArtistXmlWriter extends XmlWriter {
@@ -59,7 +60,7 @@ public class ArtistXmlWriter extends XmlWriter {
 
             String artype = doc.get(ArtistIndexField.TYPE);
             if (artype != null) {
-                artist.setType(StringUtils.capitalize(artype));
+                artist.setType(artype.toLowerCase(Locale.US));
             }
 
 
@@ -69,7 +70,7 @@ public class ArtistXmlWriter extends XmlWriter {
 
             String gender = doc.get(ArtistIndexField.GENDER);
             if (gender != null) {
-                artist.setGender(StringUtils.capitalize(gender));
+                artist.setGender(gender.toLowerCase(Locale.US));
 
             }
 
@@ -77,7 +78,7 @@ public class ArtistXmlWriter extends XmlWriter {
 
             String country = doc.get(ArtistIndexField.COUNTRY);
             if (country != null) {
-                artist.setCountry(StringUtils.upperCase(country));
+                artist.setCountry(country.toLowerCase(Locale.US));
 
             }
 

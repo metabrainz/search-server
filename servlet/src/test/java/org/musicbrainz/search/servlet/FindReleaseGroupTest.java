@@ -298,7 +298,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("<name-credit>"));
         assertTrue(output.contains("<artist-credit>"));
         assertTrue(output.contains("artist id=\"707622da-475f-48e1-905d-248718df6521\""));
-        assertTrue(output.contains("type=\"Single\""));
+        assertTrue(output.contains("type=\"single\""));
         assertTrue(output.contains("release-list count=\"1\""));
 
 
@@ -350,7 +350,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"0011c128-b1f2-300e-88cc-c33c30dce704\""));
-        assertTrue(output.contains("type=\"Album\""));
+        assertTrue(output.contains("type=\"album\""));
         assertTrue(output.contains("<title>Epics</title>"));
         assertTrue(output.contains("<name-credit joinphrase=\"and\">"));
         assertTrue(output.contains("<name>Erich Kunzel</name>"));

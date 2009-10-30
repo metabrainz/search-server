@@ -332,7 +332,7 @@ public class FindTrackTest extends TestCase {
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("release id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
-        assertTrue(output.contains("release-group type=\"Album\""));
+        assertTrue(output.contains("release-group type=\"album\""));
         assertTrue(output.contains("track-list offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
         assertTrue(output.contains("offset=\"0\""));

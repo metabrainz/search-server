@@ -554,9 +554,9 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
-        assertTrue(output.contains("<language>ENG</language>"));
-        assertTrue(output.contains("<script>Latn</script>"));
-        assertTrue(output.contains("<release-group type=\"Album\""));
+        assertTrue(output.contains("<language>eng</language>"));
+        assertTrue(output.contains("<script>latn</script>"));
+        assertTrue(output.contains("<release-group type=\"album\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
@@ -564,8 +564,8 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<disc-list count=\"1\""));
         assertTrue(output.contains("<track-list count=\"10\""));
         assertTrue(output.contains("<date>2005</date>"));
-        assertTrue(output.contains("<country>GB</country>"));
-        assertTrue(output.contains("<format>Vinyl</format>"));
+        assertTrue(output.contains("<country>gb</country>"));
+        assertTrue(output.contains("<format>vinyl</format>"));
         assertTrue(output.contains("<asin>07599273202</asin>"));
 
         assertTrue(output.contains("<label><name>Wrath Records</name></label>"));

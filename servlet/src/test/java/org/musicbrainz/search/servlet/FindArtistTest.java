@@ -307,12 +307,12 @@ public class FindArtistTest extends TestCase {
         //assertTrue(output.contains("<artist-list count=\"1\" offset=\"0\">"));               offset comes before count in output
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
-        assertTrue(output.contains("type=\"Group\""));
+        assertTrue(output.contains("type=\"group\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Farming Incident</sort-name>"));
         assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
-        assertTrue(output.contains("<country>AF</country>"));
-        assertTrue(output.contains("<gender>Male</gender>"));
+        assertTrue(output.contains("<country>af</country>"));
+        assertTrue(output.contains("<gender>male</gender>"));
         assertFalse(output.contains("alias"));
         assertFalse(output.contains("disambugation"));
     }

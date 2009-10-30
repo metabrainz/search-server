@@ -288,7 +288,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
-        assertTrue(output.contains("type=\"Production\""));
+        assertTrue(output.contains("type=\"production\""));
         assertTrue(output.contains("<name>Jockey Slut</name>"));
         assertTrue(output.contains("<sort-name>Slut, Jockey</sort-name>"));
         assertTrue(output.contains("<begin>1993</begin"));

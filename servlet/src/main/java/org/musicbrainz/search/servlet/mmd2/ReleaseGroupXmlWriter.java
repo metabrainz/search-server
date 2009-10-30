@@ -38,6 +38,7 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Locale;
 
 public class ReleaseGroupXmlWriter extends XmlWriter {
 
@@ -63,10 +64,10 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
             }
 
             String type = doc.get(ReleaseGroupIndexField.TYPE);
-            if (type != null) {
-                releaseGroup.getType().add(StringUtils.capitalize(type));
+            if(type!=null) {
+                releaseGroup.getType().add(type.toLowerCase((Locale.US)));
             }
-
+            
             String[] artistIds          = doc.getValues(ReleaseGroupIndexField.ARTIST_ID);
             String[] artistNames        = doc.getValues(ReleaseGroupIndexField.ARTIST_NAME);
             String[] artistJoinPhrases  = doc.getValues(ReleaseGroupIndexField.ARTIST_JOINPHRASE);

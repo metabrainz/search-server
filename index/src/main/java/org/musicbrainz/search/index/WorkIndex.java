@@ -80,7 +80,7 @@ public class WorkIndex extends DatabaseIndex {
                         "order by w.id,acn.position ");          //Order by pos so come in expected order
 
         addPreparedStatement("WORKS",
-                        "SELECT w.id as wid, w.gid, wn.name as name, lower(wt.name) as type " +
+                        "SELECT w.id as wid, w.gid, wn.name as name, lower(wt.name) as type, iswc " +
                         "FROM work AS w " +
                         "LEFT JOIN work_name wn ON w.name = wn.id " +
                         "LEFT JOIN work_type wt ON w.type = wt.id " +
@@ -135,6 +135,7 @@ public class WorkIndex extends DatabaseIndex {
         addFieldToDocument(doc, WorkIndexField.WORK_ID, rs.getString("gid"));
         addFieldToDocument(doc, WorkIndexField.WORK, rs.getString("name"));
         addNonEmptyFieldToDocument(doc, WorkIndexField.TYPE, rs.getString("type"));
+        addNonEmptyFieldToDocument(doc, WorkIndexField.ISWC, rs.getString("iswc"));
 
         if (artists.containsKey(id)) {
             //For each artist credit

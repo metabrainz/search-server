@@ -38,6 +38,7 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Locale;
 
 public class LabelXmlWriter extends XmlWriter {
 
@@ -51,8 +52,10 @@ public class LabelXmlWriter extends XmlWriter {
             MbDocument doc = result.doc;
             Label label = of.createLabel();
             label.setId(doc.get(LabelIndexField.LABEL_ID));
-            label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
-
+            String type = doc.get(LabelIndexField.TYPE);
+            if(type!=null) {
+                label.setType(type.toLowerCase((Locale.US)));
+            }
             label.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             String name = doc.get(LabelIndexField.LABEL);

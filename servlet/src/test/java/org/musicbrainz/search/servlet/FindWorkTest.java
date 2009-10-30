@@ -47,6 +47,14 @@ public class FindWorkTest extends TestCase {
             Document doc = new Document();
             Index.addFieldToDocument(doc, WorkIndexField.WORK_ID, "4ff89cf0-86af-11de-90ed-001fc6f176ff");
             Index.addFieldToDocument(doc, WorkIndexField.WORK, "Symphony No. 5");
+            Index.addFieldToDocument(doc, WorkIndexField.ISWC,"T-101779304-1");
+            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
+            Index.addFieldToDocument(doc, WorkIndexField.ARTIST, "Ludwig van Beethoven");
+            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
+            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
+            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_SORTNAME, "Beethoven, Ludwig van");
+            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_JOINPHRASE, "-");
+
             writer.addDocument(doc);
         }
         writer.close();
@@ -91,5 +99,10 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"4ff89cf0-86af-11de-90ed-001fc6f176ff\""));
         assertTrue(output.contains("<title>Symphony No. 5</title>"));
+        assertTrue(output.contains("<name>Ludwig van Beethoven</name>"));
+        assertTrue(output.contains("<sort-name>Beethoven, Ludwig van</sort-name>"));
+        assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
+
+
     }
 }

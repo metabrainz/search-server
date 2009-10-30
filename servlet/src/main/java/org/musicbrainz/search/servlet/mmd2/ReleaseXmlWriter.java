@@ -65,17 +65,17 @@ public class ReleaseXmlWriter extends XmlWriter {
             ReleaseGroup rg = of.createReleaseGroup();
             release.setReleaseGroup(rg);
             if (type != null) {
-                release.getReleaseGroup().getType().add(StringUtils.capitalize(type));
+                release.getReleaseGroup().getType().add(type.toLowerCase(Locale.US));
             }
 
             String status = doc.get(ReleaseIndexField.STATUS);
             if (status != null) {
-                release.setStatus(status);
+                release.setStatus(status.toLowerCase(Locale.US));
             }
 
             String country = doc.get(ReleaseIndexField.COUNTRY);
             if (country != null) {
-                release.setCountry(StringUtils.upperCase(country));
+                release.setCountry(country.toLowerCase(Locale.US));
             }
 
             String date = doc.get(ReleaseIndexField.DATE);
@@ -99,12 +99,12 @@ public class ReleaseXmlWriter extends XmlWriter {
             TextRepresentation tr = of.createTextRepresentation();
             String script = doc.get(ReleaseIndexField.SCRIPT);
             if (script != null) {
-                tr.setScript(script);
+                tr.setScript(script.toLowerCase(Locale.US));
             }
 
             String lang = doc.get(ReleaseIndexField.LANGUAGE);
             if (lang != null) {
-                tr.setLanguage(lang.toUpperCase(Locale.US));
+                tr.setLanguage(lang.toLowerCase(Locale.US));
             }
 
             if (script != null || lang != null) {
@@ -165,7 +165,7 @@ public class ReleaseXmlWriter extends XmlWriter {
             for (int i = 0; i < formats.length; i++) {
 
                 Medium medium = of.createMedium();
-                medium.setFormat(formats[i]);
+                medium.setFormat(formats[i].toLowerCase(Locale.US));
 
                 TrackList trackList = of.createTrackList();
                 trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
