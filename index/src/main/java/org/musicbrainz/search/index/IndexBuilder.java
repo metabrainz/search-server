@@ -134,9 +134,9 @@ public class IndexBuilder
                 new ReleaseGroupIndex(mainDbConn),
                 new TrackIndex(mainDbConn),
                 new LabelIndex(mainDbConn),
+                new WorkIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
-                new CDStubIndex(rawDbConn),
-                new WorkIndex(rawDbConn),
+                new CDStubIndex(rawDbConn), //Note different db
         };
 
         for (Index index : indexes) {
@@ -319,8 +319,8 @@ class IndexBuilderOptions {
     public String getFreeDBDump() { return freeDBDump; }
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,track,label,annotation,cdstub,freedb)")
-    private String indexes = "artist,label,release,track,releasegroup,annotation,cdstub";
+    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,track,label,work,annotation,cdstub)")
+    private String indexes = "artist,label,release,track,releasegroup,work,annotation,cdstub";
     public ArrayList<String> selectedIndexes() { return new ArrayList<String>(Arrays.asList(indexes.split(","))); }
     public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
 

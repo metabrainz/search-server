@@ -55,7 +55,7 @@ public class LabelIndex extends DatabaseIndex {
 
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM label");
+        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM work");
         rs.next();
         return rs.getInt(1);
     }
