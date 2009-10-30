@@ -7,7 +7,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.search.index.TrackIndexField;
+import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
 
 
@@ -15,18 +15,18 @@ import org.musicbrainz.search.index.ReleaseGroupType;
  * Subclasses QueryParser to handle numeric fields that we might want wish to do range queries for and handle type
  * searches specified using integers.
  */
-public class TrackQueryParser extends QueryParser {
+public class RecordingQueryParser extends QueryParser {
 
-    public TrackQueryParser(String field, Analyzer a) {
+    public RecordingQueryParser(String field, Analyzer a) {
         super(field, a);
     }
 
     protected Query newTermQuery(Term term) {
         if (
-                (term.field() == TrackIndexField.DURATION.getName()) ||
-                        (term.field() == TrackIndexField.QUANTIZED_DURATION.getName()) ||
-                        (term.field() == TrackIndexField.TRACKNUM.getName()) ||
-                        (term.field() == TrackIndexField.NUM_TRACKS.getName())
+                (term.field() == RecordingIndexField.DURATION.getName()) ||
+                        (term.field() == RecordingIndexField.QUANTIZED_DURATION.getName()) ||
+                        (term.field() == RecordingIndexField.TRACKNUM.getName()) ||
+                        (term.field() == RecordingIndexField.NUM_TRACKS.getName())
                 ) {
             try
             {
@@ -39,7 +39,7 @@ public class TrackQueryParser extends QueryParser {
                 return super.newTermQuery(term);
             }
 
-        } else if( term.field() == TrackIndexField.RELEASE_TYPE.getName()) {
+        } else if( term.field() == RecordingIndexField.RELEASE_TYPE.getName()) {
             try {
                 int typeId = Integer.parseInt(term.text());
                 if (typeId >= ReleaseGroupType.getMinSearchId() && typeId <= ReleaseGroupType.getMaxSearchId()) {
@@ -65,10 +65,10 @@ public class TrackQueryParser extends QueryParser {
                                boolean inclusive) {
 
         if (
-                (field.equals(TrackIndexField.DURATION.getName())) ||
-                (field.equals(TrackIndexField.QUANTIZED_DURATION.getName())) ||
-                (field.equals(TrackIndexField.TRACKNUM.getName())) ||
-                (field.equals(TrackIndexField.NUM_TRACKS.getName()))
+                (field.equals(RecordingIndexField.DURATION.getName())) ||
+                (field.equals(RecordingIndexField.QUANTIZED_DURATION.getName())) ||
+                (field.equals(RecordingIndexField.TRACKNUM.getName())) ||
+                (field.equals(RecordingIndexField.NUM_TRACKS.getName()))
             )
         {
             part1 = NumericUtils.intToPrefixCoded(Integer.parseInt(part1));

@@ -135,8 +135,13 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
 
+        //V1 Compatability
+        if(type.equals("track"))
+        {
+            type=ResourceType.RECORDING.getName();
+        }
         //TEMPORARY FIX mb_server uses release_group instead of release-group
-        if (type.equals("release_group"))
+        else if (type.equals("release_group"))
         {
             type=ResourceType.RELEASE_GROUP.getName();
         }
@@ -154,10 +159,10 @@ public class SearchServerServlet extends HttpServlet {
 
 
 
-        //Default to html if not provided
+        //Default to xml if not provided
         String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
         if (responseFormat == null || responseFormat.isEmpty()) {
-            responseFormat = RESPONSE_HTML;
+            responseFormat = RESPONSE_XML;
         }
 
         String responseVersion = request.getParameter(RequestParameter.VERSION.getName());
@@ -207,7 +212,7 @@ public class SearchServerServlet extends HttpServlet {
             }
             break;
 
-            case TRACK: {
+            case RECORDING: {
                 String tport = request.getParameter(RequestParameter.TAGGER_PORT.getName());
                 String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
                 String oldLink = request.getParameter(RequestParameter.OLD_STYLE_LINK.getName());

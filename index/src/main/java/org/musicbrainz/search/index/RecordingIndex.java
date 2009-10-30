@@ -32,21 +32,21 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class TrackIndex extends DatabaseIndex {
+public class RecordingIndex extends DatabaseIndex {
 
     private final static int QUANTIZED_DURATION = 2000;
    
-    public TrackIndex(Connection dbConnection) {
+    public RecordingIndex(Connection dbConnection) {
         super(dbConnection);
     }
 
     public String getName() {
-        return "track";
+        return "recording";
     }
 
     public Analyzer getAnalyzer()
     {
-        return new PerFieldEntityAnalyzer(TrackIndexField.class);
+        return new PerFieldEntityAnalyzer(RecordingIndexField.class);
     }
 
     public int getMaxId() throws SQLException {
@@ -226,34 +226,34 @@ public class TrackIndex extends DatabaseIndex {
         int id = rs.getInt("recordingId");
 
         Document doc = new Document();
-        addFieldToDocument(doc, TrackIndexField.TRACK_ID, rs.getString("trackid"));
-        addNonEmptyFieldToDocument(doc, TrackIndexField.TRACK, rs.getString("trackname"));
-        addNumericFieldToDocument(doc, TrackIndexField.DURATION, rs.getInt("duration"));
-        addNumericFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+        addFieldToDocument(doc, RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
+        addNonEmptyFieldToDocument(doc, RecordingIndexField.RECORDING, rs.getString("trackname"));
+        addNumericFieldToDocument(doc, RecordingIndexField.DURATION, rs.getInt("duration"));
+        addNumericFieldToDocument(doc, RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
 
         if (tracks.containsKey(id)) {
             //For each track for this recording
             for (TrackWrapper track : tracks.get(id)) {
-                addNumericFieldToDocument(doc, TrackIndexField.NUM_TRACKS, track.getTrackCount());
-                addNumericFieldToDocument(doc, TrackIndexField.TRACKNUM, track.getTrackPosition());
-                addFieldOrHyphenToDocument(doc,TrackIndexField.RELEASE_TYPE, track.getReleaseGroupType());
-                addFieldToDocument(doc, TrackIndexField.RELEASE_ID, track.getReleaseId());
-                addFieldToDocument(doc, TrackIndexField.RELEASE, track.getReleaseName());
+                addNumericFieldToDocument(doc, RecordingIndexField.NUM_TRACKS, track.getTrackCount());
+                addNumericFieldToDocument(doc, RecordingIndexField.TRACKNUM, track.getTrackPosition());
+                addFieldOrHyphenToDocument(doc, RecordingIndexField.RELEASE_TYPE, track.getReleaseGroupType());
+                addFieldToDocument(doc, RecordingIndexField.RELEASE_ID, track.getReleaseId());
+                addFieldToDocument(doc, RecordingIndexField.RELEASE, track.getReleaseName());
             }
         }
 
         if (artists.containsKey(id)) {
             //For each credit artist for this recording
             for (ArtistWrapper artist : artists.get(id)) {
-                addFieldToDocument(doc, TrackIndexField.ARTIST_ID, artist.getArtistId());
-                addFieldToDocument(doc, TrackIndexField.ARTIST_NAME, artist.getArtistName());
-                addFieldToDocument(doc, TrackIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                addFieldToDocument(doc, TrackIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                addFieldOrHyphenToDocument(doc, TrackIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                addFieldOrHyphenToDocument(doc, TrackIndexField.ARTIST_COMMENT, artist.getArtistComment());
+                addFieldToDocument(doc, RecordingIndexField.ARTIST_ID, artist.getArtistId());
+                addFieldToDocument(doc, RecordingIndexField.ARTIST_NAME, artist.getArtistName());
+                addFieldToDocument(doc, RecordingIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                addFieldToDocument(doc, RecordingIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
+                addFieldOrHyphenToDocument(doc, RecordingIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                addFieldOrHyphenToDocument(doc, RecordingIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
 
-            addFieldToDocument(doc, TrackIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+            addFieldToDocument(doc, RecordingIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
         return doc;
     }

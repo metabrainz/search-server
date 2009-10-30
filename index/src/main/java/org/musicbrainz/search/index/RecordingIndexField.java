@@ -7,13 +7,14 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 /**
  * Fields created in Lucene Search Index
  */
-public enum TrackIndexField implements IndexField {
+public enum RecordingIndexField implements IndexField {
 
-    TRACK_ID			("trid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    TRACK				("track",		Field.Store.YES,	Field.Index.ANALYZED),
+    //TODO trid and track need renaming whilst maintaining v1 compatability on search
+    RECORDING_ID        ("trid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    RECORDING           ("track",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_ID			("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST				("artist",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_NAME     ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
+    ARTIST_NAME         ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
     ARTIST_SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED, new KeywordAnalyzer()),
@@ -31,14 +32,14 @@ public enum TrackIndexField implements IndexField {
     private Field.Index index;
     private Analyzer analyzer;
         
-    private TrackIndexField(String name, Field.Store store, Field.Index index) {
+    private RecordingIndexField(String name, Field.Store store, Field.Index index) {
         this.name = name;
         this.store = store;
         this.index = index;
     }
 
 
-     private TrackIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
+     private RecordingIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
         this(name, store, index);
         this.analyzer = analyzer;
     }

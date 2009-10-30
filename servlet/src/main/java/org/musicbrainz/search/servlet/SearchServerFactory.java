@@ -12,7 +12,7 @@ public class SearchServerFactory {
         search.put(ResourceType.LABEL, new LabelSearch(indexDir));
         search.put(ResourceType.RELEASE, new ReleaseSearch(indexDir));
         search.put(ResourceType.RELEASE_GROUP, new ReleaseGroupSearch(indexDir));
-        search.put(ResourceType.TRACK, new TrackSearch(indexDir));
+        search.put(ResourceType.RECORDING, new RecordingSearch(indexDir));
         search.put(ResourceType.WORK, new WorkSearch(indexDir));
         search.put(ResourceType.ANNOTATION, new AnnotationSearch(indexDir));
         search.put(ResourceType.FREEDB, new FreeDBSearch(indexDir));

@@ -35,7 +35,7 @@ import java.util.Date;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.FieldMethodizer;
-import org.musicbrainz.search.index.TrackIndexField;
+import org.musicbrainz.search.index.RecordingIndexField;
 
 public class TrackHtmlWriter extends HtmlWriter {
 
@@ -57,10 +57,10 @@ public class TrackHtmlWriter extends HtmlWriter {
         context.put("Utils",Utils.class);
         context.put("Math", Math.class);
 		// Make IndexField enum available in template context
-		context.put("TrackIndexField", new FieldMethodizer( "org.musicbrainz.search.index.TrackIndexField" ));
+		context.put("RecordingIndexField", new FieldMethodizer( "org.musicbrainz.search.index.RecordingIndexField" ));
 
         if(results.results.size()==1) {
-            context.put("redirect",results.results.get(0).getDoc().get(TrackIndexField.TRACK_ID));
+            context.put("redirect",results.results.get(0).getDoc().get(RecordingIndexField.RECORDING_ID));
         }
 
         if(extraInfoMap.get(RequestParameter.TAGGER_PORT)!=null) {                

@@ -9,7 +9,7 @@ public enum ResourceType {
     LABEL("label"),
     RELEASE("release"),
     RELEASE_GROUP("release-group"),
-    TRACK("track"), 
+    RECORDING("recording"), 
     CDSTUB("cdstub"),
     FREEDB("freedb"),
     ANNOTATION("annotation"),

@@ -37,8 +37,7 @@ import com.jthink.brainz.mmd.Track;
 import com.jthink.brainz.mmd.TrackList;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.commons.lang.StringUtils;
-import org.musicbrainz.search.index.TrackIndexField;
-import org.musicbrainz.search.index.ReleaseIndexField;
+import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -60,38 +59,38 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
             MbDocument doc = result.doc;
             Track track = of.createTrack();
 
-            track.setId(doc.get(TrackIndexField.TRACK_ID));
+            track.setId(doc.get(RecordingIndexField.RECORDING_ID));
             
             track.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
-            String name = doc.get(TrackIndexField.TRACK);
+            String name = doc.get(RecordingIndexField.RECORDING);
 
             if (name != null) {
                 track.setTitle(name);
             }
 
-            String duration = doc.get(TrackIndexField.DURATION);
+            String duration = doc.get(RecordingIndexField.DURATION);
             if (duration != null) {
                 track.setDuration(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
             }
 
 
-            String artistName = doc.get(TrackIndexField.ARTIST);
+            String artistName = doc.get(RecordingIndexField.ARTIST);
             if (artistName != null) {
 
                 Artist artist = of.createArtist();
                 artist.setName(artistName);
-                artist.setId(doc.get(TrackIndexField.ARTIST_ID));
-                artist.setSortName(doc.get(TrackIndexField.ARTIST_SORTNAME));
+                artist.setId(doc.get(RecordingIndexField.ARTIST_ID));
+                artist.setSortName(doc.get(RecordingIndexField.ARTIST_SORTNAME));
                 track.setArtist(artist);
             }
 
 
-            String[] releaseIds         = doc.getValues(TrackIndexField.RELEASE_ID);
-            String[] releaseTypes       = doc.getValues(TrackIndexField.RELEASE_TYPE);
-            String[] numTracks          = doc.getValues(TrackIndexField.NUM_TRACKS);
-            String[] trackNos           = doc.getValues(TrackIndexField.TRACKNUM);
-            String[] releases           = doc.getValues(TrackIndexField.RELEASE);
+            String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
+            String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
+            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
+            String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
+            String[] releases           = doc.getValues(RecordingIndexField.RELEASE);
 
             ReleaseList releaseList = of.createReleaseList();
             for (int i = 0; i < releaseIds.length; i++) {

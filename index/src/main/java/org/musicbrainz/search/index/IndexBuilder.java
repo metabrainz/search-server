@@ -33,9 +33,6 @@ import java.util.*;
 import java.sql.*;
 import java.io.*;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
@@ -132,7 +129,7 @@ public class IndexBuilder
                 new ArtistIndex(mainDbConn),
                 new ReleaseIndex(mainDbConn),
                 new ReleaseGroupIndex(mainDbConn),
-                new TrackIndex(mainDbConn),
+                new RecordingIndex(mainDbConn),
                 new LabelIndex(mainDbConn),
                 new WorkIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
@@ -319,8 +316,8 @@ class IndexBuilderOptions {
     public String getFreeDBDump() { return freeDBDump; }
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,track,label,work,annotation,cdstub)")
-    private String indexes = "artist,label,release,track,releasegroup,work,annotation,cdstub";
+    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,recording,label,work,annotation,cdstub)")
+    private String indexes = "artist,label,release,recording,releasegroup,work,annotation,cdstub";
     public ArrayList<String> selectedIndexes() { return new ArrayList<String>(Arrays.asList(indexes.split(","))); }
     public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
 

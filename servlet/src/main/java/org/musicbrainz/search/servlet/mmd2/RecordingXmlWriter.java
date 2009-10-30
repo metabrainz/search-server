@@ -29,9 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 import org.apache.lucene.util.NumericUtils;
-import org.apache.commons.lang.StringUtils;
-import org.musicbrainz.search.index.TrackIndexField;
-import org.musicbrainz.search.index.ReleaseIndexField;
+import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -41,7 +39,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Locale;
 
-public class TrackXmlWriter extends XmlWriter {
+public class RecordingXmlWriter extends XmlWriter {
 
     public Metadata write(Results results) throws IOException {
 
@@ -55,26 +53,26 @@ public class TrackXmlWriter extends XmlWriter {
             MbDocument doc = result.doc;
             Recording recording = of.createRecording();
 
-            recording.setId(doc.get(TrackIndexField.TRACK_ID));
+            recording.setId(doc.get(RecordingIndexField.RECORDING_ID));
 
             recording.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
-            String name = doc.get(TrackIndexField.TRACK);
+            String name = doc.get(RecordingIndexField.RECORDING);
 
             if (name != null) {
                 recording.setTitle(name);
             }
 
-            String duration = doc.get(TrackIndexField.DURATION);
+            String duration = doc.get(RecordingIndexField.DURATION);
             if (duration != null) {
                 recording.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
             }
 
-            String[] artistIds          = doc.getValues(TrackIndexField.ARTIST_ID);
-            String[] artistNames        = doc.getValues(TrackIndexField.ARTIST_NAME);
-            String[] artistJoinPhrases  = doc.getValues(TrackIndexField.ARTIST_JOINPHRASE);
-            String[] artistSortNames    = doc.getValues(TrackIndexField.ARTIST_SORTNAME);
-            String[] artistCreditNames  = doc.getValues(TrackIndexField.ARTIST_NAMECREDIT);
+            String[] artistIds          = doc.getValues(RecordingIndexField.ARTIST_ID);
+            String[] artistNames        = doc.getValues(RecordingIndexField.ARTIST_NAME);
+            String[] artistJoinPhrases  = doc.getValues(RecordingIndexField.ARTIST_JOINPHRASE);
+            String[] artistSortNames    = doc.getValues(RecordingIndexField.ARTIST_SORTNAME);
+            String[] artistCreditNames  = doc.getValues(RecordingIndexField.ARTIST_NAMECREDIT);
 
             ArtistCredit ac = of.createArtistCredit();
             for (int i = 0; i < artistIds.length; i++) {
@@ -95,11 +93,11 @@ public class TrackXmlWriter extends XmlWriter {
                 recording.setArtistCredit(ac);
             }
 
-            String[] releaseNames  = doc.getValues(TrackIndexField.RELEASE);
-            String[] releaseIds    = doc.getValues(TrackIndexField.RELEASE_ID);
-            String[] releaseTypes  = doc.getValues(TrackIndexField.RELEASE_TYPE);
-            String[] trackNos      = doc.getValues(TrackIndexField.TRACKNUM);
-            String[] numTracks     = doc.getValues(TrackIndexField.NUM_TRACKS);
+            String[] releaseNames  = doc.getValues(RecordingIndexField.RELEASE);
+            String[] releaseIds    = doc.getValues(RecordingIndexField.RELEASE_ID);
+            String[] releaseTypes  = doc.getValues(RecordingIndexField.RELEASE_TYPE);
+            String[] trackNos      = doc.getValues(RecordingIndexField.TRACKNUM);
+            String[] numTracks     = doc.getValues(RecordingIndexField.NUM_TRACKS);
 
             if(releaseNames.length>0)
             {

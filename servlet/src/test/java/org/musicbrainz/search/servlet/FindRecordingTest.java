@@ -8,7 +8,7 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.*;
-import org.musicbrainz.search.servlet.mmd2.TrackXmlWriter;
+import org.musicbrainz.search.servlet.mmd2.RecordingXmlWriter;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -20,13 +20,13 @@ import java.util.EnumMap;
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
  * will not get added to another release
  */
-public class FindTrackTest extends TestCase {
+public class FindRecordingTest extends TestCase {
 
 
     private SearchServer ss;
 
 
-    public FindTrackTest(String testName) {
+    public FindRecordingTest(String testName) {
         super(testName);
     }
 
@@ -36,29 +36,29 @@ public class FindTrackTest extends TestCase {
         SearchServerServlet.setUpVelocity();
         Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TrackIndexField.class);
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         Document doc = new Document();
-        Index.addFieldToDocument(doc, TrackIndexField.TRACK_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
-        Index.addFieldToDocument(doc, TrackIndexField.TRACK, "Gravitational Lenz");
-        Index.addFieldToDocument(doc, TrackIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
-        Index.addFieldToDocument(doc, TrackIndexField.RELEASE, "Our Glorious 5 Year Plan");
-        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        Index.addFieldToDocument(doc, TrackIndexField.ARTIST, "Farming Incident");
-        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_NAME, "Farming Incident");
-        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_NAMECREDIT, "Farming Incident");
-        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_SORTNAME, "Incident, Farming");
-        Index.addFieldToDocument(doc, TrackIndexField.ARTIST_JOINPHRASE, "-");
+        Index.addFieldToDocument(doc, RecordingIndexField.RECORDING_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
+        Index.addFieldToDocument(doc, RecordingIndexField.RECORDING, "Gravitational Lenz");
+        Index.addFieldToDocument(doc, RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
+        Index.addFieldToDocument(doc, RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
+        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST, "Farming Incident");
+        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_NAME, "Farming Incident");
+        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_NAMECREDIT, "Farming Incident");
+        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_SORTNAME, "Incident, Farming");
+        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_JOINPHRASE, "-");
 
-        Index.addNumericFieldToDocument(doc, TrackIndexField.DURATION, 234000);
-        Index.addNumericFieldToDocument(doc, TrackIndexField.QUANTIZED_DURATION, (234000 / 2000));
-        Index.addNumericFieldToDocument(doc, TrackIndexField.NUM_TRACKS,10);
-        Index.addNumericFieldToDocument(doc, TrackIndexField.TRACKNUM, 5);
-        Index.addFieldToDocument(doc, TrackIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
+        Index.addNumericFieldToDocument(doc, RecordingIndexField.DURATION, 234000);
+        Index.addNumericFieldToDocument(doc, RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
+        Index.addNumericFieldToDocument(doc, RecordingIndexField.NUM_TRACKS,10);
+        Index.addNumericFieldToDocument(doc, RecordingIndexField.TRACKNUM, 5);
+        Index.addFieldToDocument(doc, RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
         writer.addDocument(doc);
         writer.close();
-        ss = new TrackSearch(new IndexSearcher(ramDir,true));
+        ss = new RecordingSearch(new IndexSearcher(ramDir,true));
     }
 
     public void testFindTrack() throws Exception {
@@ -66,15 +66,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackById() throws Exception {
@@ -82,15 +82,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackByReleaseId() throws Exception {
@@ -98,15 +98,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackByArtistId() throws Exception {
@@ -114,15 +114,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
      public void testFindTrackByArtistName() throws Exception {
@@ -130,15 +130,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
      public void testFindTrackByArtistSortname() throws Exception {
@@ -146,15 +146,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5,NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackByReleaseType() throws Exception {
@@ -162,15 +162,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackByReleaseTypeNumeric() throws Exception {
@@ -178,30 +178,30 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
     public void testFindTrackByNumberOfTracksOnRelease() throws Exception {
         Results res = ss.searchLucene("tracks:10", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackByDuration() throws Exception {
@@ -209,14 +209,14 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
 
@@ -230,14 +230,14 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackByQdur() throws Exception {
@@ -245,15 +245,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
     public void testFindTrackByTrackNumber() throws Exception {
@@ -261,14 +261,14 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
 
@@ -277,15 +277,15 @@ public class FindTrackTest extends TestCase {
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(TrackIndexField.TRACK_ID));
-        assertEquals("Gravitational Lenz", doc.get(TrackIndexField.TRACK));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(TrackIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(TrackIndexField.ARTIST));
-        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(TrackIndexField.RELEASE_ID));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.TRACKNUM)));
-        assertEquals("Our Glorious 5 Year Plan", doc.get(TrackIndexField.RELEASE));
-        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(TrackIndexField.DURATION)));
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
 
@@ -316,7 +316,7 @@ public class FindTrackTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = new TrackXmlWriter();
+        ResultsWriter writer = new RecordingXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
