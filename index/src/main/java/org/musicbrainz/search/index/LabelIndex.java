@@ -126,7 +126,7 @@ public class LabelIndex extends DatabaseIndex {
 
         Document doc = new Document();
         int labelId = rs.getInt("id");
-        addFieldToDocument(doc, LabelIndexField.LABEL_GID, rs.getString("gid"));
+        addFieldToDocument(doc, LabelIndexField.LABEL_ID, rs.getString("gid"));
         addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
         addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
 

@@ -111,6 +111,25 @@ public class LabelIndexTest extends AbstractIndexTest {
         conn.close();
     }
 
+    public void testIndexLabel() throws Exception {
+
+           addLabelThree();
+           RAMDirectory ramDir = new RAMDirectory();
+           createIndex(ramDir);
+
+           IndexReader ir = IndexReader.open(ramDir, true);
+           assertEquals(1, ir.numDocs());
+           {
+               Document doc = ir.document(0);
+               assertEquals(1, doc.getFields(LabelIndexField.LABEL_ID.getName()).length);
+               assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(LabelIndexField.LABEL_ID.getName()).stringValue());               
+               assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
+               assertEquals("af", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
+           }
+           ir.close();
+
+       }
+
 
     public void testIndexLabelWithNoCountry() throws Exception {
 
