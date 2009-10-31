@@ -88,6 +88,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO medium(id, tracklist, release, position, format, name, editpending) VALUES (1, 1, 491240, 1, 7, null, 1)");
         stmt.addBatch("INSERT INTO medium_format(id, name,year )VALUES (1, 'CD', 1982)");
         stmt.addBatch("INSERT INTO medium_format(id, name,year )VALUES (7, 'Vinyl', 1895)");
+        stmt.addBatch("INSERT INTO medium_cdtoc( id, medium, cdtoc, editpending) VALUES (1, 1, 1, 0)");
+
 
         stmt.executeBatch();
         stmt.close();
@@ -475,6 +477,27 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             ir.close();
         }
 
+        /**
+         * @throws Exception
+         */
+        public void testIndexReleaseNumDiscs() throws Exception {
+
+            addReleaseOne();
+            RAMDirectory ramDir = new RAMDirectory();
+            createIndex(ramDir);
+
+            IndexReader ir = IndexReader.open(ramDir, true);
+            assertEquals(1, ir.numDocs());
+            {
+                Document doc = ir.document(0);
+                assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
+                assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
+                assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS.getName()).length);
+                assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS.getName()).stringValue()));
+
+            }
+            ir.close();
+        }
     /**
          * @throws Exception
          */

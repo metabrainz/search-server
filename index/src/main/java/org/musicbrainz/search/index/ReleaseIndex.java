@@ -240,7 +240,7 @@ public class ReleaseIndex extends DatabaseIndex {
             addNumericFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS,trackCount);
 
             //Num Discs over the whole release
-            addNumericFieldToDocument(doc,ReleaseIndexField.NUM_DISCIDS,trackCount);
+            addNumericFieldToDocument(doc,ReleaseIndexField.NUM_DISCIDS,discCount);
 
         }
 
