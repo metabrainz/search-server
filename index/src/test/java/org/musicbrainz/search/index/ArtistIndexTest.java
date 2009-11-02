@@ -38,13 +38,9 @@ public class ArtistIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (1, 'Person');");
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (2, 'Group');");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Farming Incident',1)");
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending,gender,country)" +
             " VALUES (521316,1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36',1,null, 1999,4, null, 2, 0,1,1)");
-        stmt.addBatch("INSERT INTO gender(id, name)VALUES (1,'Male')");
-        stmt.addBatch("INSERT INTO gender(id, name)VALUES (2,'Female')");
         stmt.addBatch("INSERT INTO country( id, isocode, name)VALUES (1,'AF','Afghanistan')");
 
         stmt.executeBatch();
@@ -57,8 +53,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (1, 'Person');");
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (2, 'Group');");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Echo & The Bunnymen',1)");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Echo and The Bunnymen',1)");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Echo & The Bunnyman',1)");
@@ -79,8 +73,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (1, 'Person');");
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (2, 'Group');");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Farming Incident',1)");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Siobhan Lynch',1)");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Lynch, Siobhan',1)");

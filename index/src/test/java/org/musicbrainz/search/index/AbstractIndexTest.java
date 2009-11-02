@@ -13,7 +13,6 @@ public abstract class AbstractIndexTest extends TestCase {
     protected Connection createConnection() throws Exception {
         Class.forName("org.h2.Driver");
         return DriverManager.getConnection("jdbc:h2:mem");
-
     }
 
     public void setup() throws Exception {
@@ -25,8 +24,6 @@ public abstract class AbstractIndexTest extends TestCase {
             try {
                 Statement stmt = conn.createStatement();
                 stmt.addBatch("DROP TABLE country");
-                stmt.addBatch("DROP TABLE language");
-                stmt.addBatch("DROP TABLE script");
 
                 stmt.addBatch("DROP TABLE artist");
                 stmt.addBatch("DROP TABLE artist_alias");
@@ -42,6 +39,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE label_type");
 
                 stmt.addBatch("DROP TABLE release");
+                stmt.addBatch("DROP TABLE release_meta");
                 stmt.addBatch("DROP TABLE release_name");
                 stmt.addBatch("DROP TABLE release_status");
                 stmt.addBatch("DROP TABLE release_packaging");
@@ -49,9 +47,9 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE medium");
                 stmt.addBatch("DROP TABLE medium_format");
                 stmt.addBatch("DROP TABLE medium_cdtoc");
-                stmt.addBatch("DROP TABLE release_meta");
                 stmt.addBatch("DROP TABLE tracklist");
-
+                stmt.addBatch("DROP TABLE language");
+                stmt.addBatch("DROP TABLE script");
 
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE release_group_type");
@@ -72,8 +70,9 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE cdtoc_raw");
                 stmt.addBatch("DROP TABLE track_raw");
 
-                stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work");
+                stmt.addBatch("DROP TABLE work_name");
+                stmt.addBatch("DROP TABLE work_type");
 
                 stmt.executeBatch();
                 stmt.close();
@@ -95,6 +94,8 @@ public abstract class AbstractIndexTest extends TestCase {
             setupAnnotationTables(stmt);
             setupCDStubTables(stmt);
             setupWorkTables(stmt);
+            insertReferenceData(stmt);
+            
             stmt.executeBatch();
             stmt.close();
         }
@@ -106,39 +107,19 @@ public abstract class AbstractIndexTest extends TestCase {
     }
 
     protected void setupCommonTables(Statement stmt) throws Exception {
-        stmt.addBatch("CREATE TABLE country" +
-                "(" +
+        stmt.addBatch("CREATE TABLE country (" +
                 "  id serial NOT NULL," +
                 "  isocode character varying(2) NOT NULL," +
                 "  name character varying(100) NOT NULL" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE language" +
-                "(" +
-                "  id serial NOT NULL," +
-                "  isocode_3t character(3) NOT NULL," +
-                "  isocode_3b character(3) NOT NULL," +
-                "  isocode_2 character(2)," +
-                "  name character varying(100) NOT NULL," +
-                "  frequency integer NOT NULL DEFAULT 0," +
-                "  CONSTRAINT language_pkey PRIMARY KEY (id)" +
-                ")");
-
-        stmt.addBatch("CREATE TABLE script" +
-                "(" +
-                "  id serial NOT NULL," +
-                "  isocode character(4) NOT NULL," +
-                "  isonumber character(3) NOT NULL," +
-                "  name character varying(100) NOT NULL," +
-                "  frequency integer NOT NULL DEFAULT 0" +
-                ")");
     }
 
     protected void setupArtistTables(Statement stmt) throws Exception {
 
         stmt.addBatch("CREATE TABLE artist (" +
                 "  id serial NOT NULL," +
-                "  gid character(36) NOT NULL," +
+                "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
                 "  sortname integer NOT NULL," +
                 "  begindate_year integer," +
@@ -195,7 +176,7 @@ public abstract class AbstractIndexTest extends TestCase {
     protected void setupLabelTables(Statement stmt) throws Exception {
         stmt.addBatch("CREATE TABLE label (" +
                 "  id serial NOT NULL," +
-                "  gid character(36) NOT NULL," +
+                "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
                 "  sortname integer NOT NULL," +
                 "  begindate_year integer," +
@@ -234,7 +215,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE release (" +
                 "  id serial NOT NULL," +
-                "  gid character(36)," +
+                "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  release_group integer NOT NULL," +
@@ -290,8 +271,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  year integer" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE release_meta" +
-                "(" +
+        stmt.addBatch("CREATE TABLE release_meta (" +
                 "  id integer NOT NULL," +
                 "  lastupdate timestamp," +
                 "  dateadded timestamp," +
@@ -301,8 +281,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  amazonstore character varying(20)" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE medium_cdtoc" +
-                "(" +
+        stmt.addBatch("CREATE TABLE medium_cdtoc (" +
                 "  id serial NOT NULL," +
                 "  medium integer NOT NULL," +
                 "  cdtoc integer NOT NULL," +
@@ -310,18 +289,34 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  CONSTRAINT medium_cdtoc_pkey PRIMARY KEY (id)" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE tracklist" +
-                "(" +
+        stmt.addBatch("CREATE TABLE tracklist (" +
                 "  id serial NOT NULL," +
                 "  trackcount integer NOT NULL DEFAULT 0," +
                 "  CONSTRAINT tracklist_pkey PRIMARY KEY (id)" +
+                ")");
+        
+        stmt.addBatch("CREATE TABLE language (" +
+                "  id serial NOT NULL," +
+                "  isocode_3t character(3) NOT NULL," +
+                "  isocode_3b character(3) NOT NULL," +
+                "  isocode_2 character(2)," +
+                "  name character varying(100) NOT NULL," +
+                "  frequency integer NOT NULL DEFAULT 0," +
+                "  CONSTRAINT language_pkey PRIMARY KEY (id)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE script (" +
+                "  id serial NOT NULL," +
+                "  isocode character(4) NOT NULL," +
+                "  isonumber character(3) NOT NULL," +
+                "  name character varying(100) NOT NULL," +
+                "  frequency integer NOT NULL DEFAULT 0" +
                 ")");
     }
 
     protected void setupReleaseGroupTables(Statement stmt) throws Exception {
 
-        stmt.addBatch("CREATE TABLE release_group" +
-                "(" +
+        stmt.addBatch("CREATE TABLE release_group (" +
                 "  id serial NOT NULL," +
                 "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
@@ -331,8 +326,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  editpending integer NOT NULL DEFAULT 0" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE release_group_type" +
-                "(" +
+        stmt.addBatch("CREATE TABLE release_group_type (" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL" +
                 ")");
@@ -340,16 +334,14 @@ public abstract class AbstractIndexTest extends TestCase {
 
     protected void setupRecordingTables(Statement stmt) throws Exception {
 
-        stmt.addBatch("CREATE TABLE track_name" +
-                "(" +
+        stmt.addBatch("CREATE TABLE track_name (" +
                 "  id serial NOT NULL," +
                 "  name character varying NOT NULL," +
                 "  refcount integer DEFAULT 0," +
                 "  CONSTRAINT track_name_pkey PRIMARY KEY (id)" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE track" +
-                "(" +
+        stmt.addBatch("CREATE TABLE track (" +
                 "  id serial NOT NULL," +
                 "  recording integer NOT NULL," +
                 "  tracklist integer NOT NULL," +
@@ -361,8 +353,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  CONSTRAINT track_pkey PRIMARY KEY (id)" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE recording" +
-                "(" +
+        stmt.addBatch("CREATE TABLE recording (" +
                 "  id serial NOT NULL," +
                 "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
@@ -375,54 +366,48 @@ public abstract class AbstractIndexTest extends TestCase {
     }
 
     protected void setupAnnotationTables(Statement stmt) throws Exception {
+        
         stmt.addBatch(
-                "CREATE TABLE annotation" +
-                "(" +
+                "CREATE TABLE annotation (" +
                 "  id serial NOT NULL, " +
                 "  editor integer NOT NULL," +
                 "  text text," +
                 "  changelog character varying(255), " +
                 "  created timestamp," +
-                "  CONSTRAINT annotation_pkey PRIMARY KEY (id))" );
+                "  CONSTRAINT annotation_pkey PRIMARY KEY (id)" +
+                ")" );
 
-
-        stmt.addBatch("CREATE TABLE artist_annotation" +
-                "(" +
+        stmt.addBatch("CREATE TABLE artist_annotation (" +
                 "  artist integer NOT NULL," +
                 "  annotation integer NOT NULL," +
                 "  CONSTRAINT artist_annotation_pkey PRIMARY KEY (artist, annotation)" +
                 ")");
         
-        stmt.addBatch("CREATE TABLE label_annotation" +
-                "(" +
+        stmt.addBatch("CREATE TABLE label_annotation (" +
                 "  label integer NOT NULL," +
                 "  annotation integer NOT NULL," +
                 "  CONSTRAINT label_annotation_pkey PRIMARY KEY (label, annotation)" +
                 ")");
         
-        stmt.addBatch("CREATE TABLE recording_annotation" +
-                "(" +
+        stmt.addBatch("CREATE TABLE recording_annotation (" +
                 "  recording integer NOT NULL," +
                 "  annotation integer NOT NULL," +
                 "  CONSTRAINT recording_annotation_pkey PRIMARY KEY (recording, annotation)" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE release_annotation" +
-                        "(" +
-                        "  release integer NOT NULL," +
-                        "  annotation integer NOT NULL," +
-                        "  CONSTRAINT release_annotation_pkey PRIMARY KEY (release, annotation)" +
-                        ")");
+        stmt.addBatch("CREATE TABLE release_annotation (" +
+                "  release integer NOT NULL," +
+                "  annotation integer NOT NULL," +
+                "  CONSTRAINT release_annotation_pkey PRIMARY KEY (release, annotation)" +
+                ")");
 
-        stmt.addBatch("CREATE TABLE release_group_annotation" +
-                "(" +
+        stmt.addBatch("CREATE TABLE release_group_annotation (" +
                 "  release_group integer NOT NULL," +
                 "  annotation integer NOT NULL," +
                 "  CONSTRAINT release_group_annotation_pkey PRIMARY KEY (release_group, annotation)" +
                 ")");
         
-        stmt.addBatch("CREATE TABLE work_annotation" +
-                "(" +
+        stmt.addBatch("CREATE TABLE work_annotation (" +
                 "  work integer NOT NULL," +
                 "  annotation integer NOT NULL," +
                 "  CONSTRAINT work_annotation_pkey PRIMARY KEY (work, annotation)" +
@@ -430,8 +415,8 @@ public abstract class AbstractIndexTest extends TestCase {
     }
 
     protected void setupCDStubTables(Statement stmt) throws Exception {
-        stmt.addBatch("CREATE TABLE release_raw" +
-                "(" +
+        
+        stmt.addBatch("CREATE TABLE release_raw (" +
                 "  id serial NOT NULL," +
                 "  title character varying(255) NOT NULL," +
                 "  artist character varying(255)," +
@@ -443,28 +428,28 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  barcode character varying(255)," +
                 "  comment character varying(255)" +
                 ")");
-        stmt.addBatch("CREATE TABLE track_raw" +
-                "(" +
+        
+        stmt.addBatch("CREATE TABLE track_raw (" +
                 "  id serial NOT NULL," +
                 "  release integer NOT NULL," +
                 "  title character varying(255) NOT NULL," +
                 "  artist character varying(255)," +
                 "  sequence integer NOT NULL" +
                 ")");
-        stmt.addBatch("CREATE TABLE cdtoc_raw" +
-                "(" +
+        
+        stmt.addBatch("CREATE TABLE cdtoc_raw (" +
                 "  id serial NOT NULL," +
                 "  release integer NOT NULL," +
                 "  discid character(28) NOT NULL," +
                 "  trackcount integer NOT NULL," +
-                "  leadoutoffset integer NOT NULL," +
-               // "  trackoffset integer[] NOT NULL" +   //NOt need for our purposes hsql doesnt like syntax
+                "  leadoutoffset integer NOT NULL" +
+                // "  trackoffset integer[] NOT NULL"  // Not needed for our purposes (and h2 doesn't support array)
                 ")");            
     }
 
     protected void setupWorkTables(Statement stmt) throws Exception {
-        stmt.addBatch("CREATE TABLE work" +
-                "(" +
+        
+        stmt.addBatch("CREATE TABLE work (" +
                 "  id serial NOT NULL," +
                 "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
@@ -475,15 +460,91 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  editpending integer NOT NULL DEFAULT 0," +
                 "  CONSTRAINT work_pkey PRIMARY KEY (id)" +
                 ")");
-        stmt.addBatch("CREATE TABLE work_name" +
-                "(" +
+        
+        stmt.addBatch("CREATE TABLE work_name (" +
                 "  id serial NOT NULL," +
                 "  name character varying NOT NULL," +
                 "  refcount integer DEFAULT 0," +
                 "  CONSTRAINT work_name_pkey PRIMARY KEY (id)" +
                 ")");
-        //stmt.addBatch("");
-                                   
+
+        stmt.addBatch("CREATE TABLE work_type (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
+    }
+    
+    protected void insertReferenceData(Statement stmt) throws Exception {
+
+        stmt.addBatch("INSERT INTO gender (id, name) VALUES " + 
+                "(1, 'Male'), " +
+                "(2, 'Female') "
+        );
+
+        stmt.addBatch("INSERT INTO artist_type (id, name) VALUES " + 
+                "(1, 'Person'), " +
+                "(2, 'Group') "
+        );
+
+        stmt.addBatch("INSERT INTO label_type (id, name) VALUES " + 
+                "(1, 'Distributor'), " +
+                "(2, 'Holding'), " +
+                "(3, 'Production'), " +
+                "(4, 'Original Production'), " +
+                "(5, 'Bootleg Production'), " +
+                "(6, 'Reissue Production'), " +
+                "(7, 'Publisher') "
+        );
+
+        stmt.addBatch("INSERT INTO release_status (id, name) VALUES " + 
+                "(1, 'Official'), " +
+                "(2, 'Promotion'), " +
+                "(3, 'Bootleg'), " +
+                "(4, 'Pseudo-Release') "
+        );
+
+        stmt.addBatch("INSERT INTO release_packaging (id, name) VALUES " + 
+                "(1, 'Jewel Case'), " +
+                "(2, 'Slim Jewel Case'), " +
+                "(3, 'Digipak'), " +
+                "(4, 'Paper Sleeve'), " +
+                "(5, 'Other') "
+        );
+
+        stmt.addBatch("INSERT INTO release_group_type (id, name) VALUES " + 
+                "(1, 'Non-Album Tracks'), " +
+                "(2, 'Album'), " +
+                "(3, 'Single'), " +
+                "(4, 'EP'), " +
+                "(5, 'Compilation'), " +
+                "(6, 'Soundtrack'), " +
+                "(7, 'Spokenword'), " +
+                "(8, 'Interview'), " +
+                "(9, 'Audiobook'), " +
+                "(10, 'Live'), " +
+                "(11, 'Remix'), " +
+                "(12, 'Other') "
+        );
+
+        stmt.addBatch("INSERT INTO medium_format (id, name, year) VALUES " + 
+                "(1, 'CD', 1982), " +
+                "(2, 'DVD', 1995), " +
+                "(3, 'SACD', 1999), " +
+                "(4, 'DualDisc', 2004), " +
+                "(5, 'LaserDisc', 1978), " +
+                "(6, 'MiniDisc', 1992), " +
+                "(7, 'Vinyl', 1895), " +
+                "(8, 'Cassette', 1964), " +
+                "(9, 'Cartridge', 1962), " +
+                "(10, 'Reel-to-reel', 1935), " +
+                "(11, 'DAT', 1976), " +
+                "(12, 'Digital Media', NULL), " +
+                "(13, 'Other', NULL), " +
+                "(14, 'Wax Cylinder', 1877), " +
+                "(15, 'Piano Roll', 1883), " +
+                "(16, 'DCC', 1992) "
+        );
+
     }
 
 }

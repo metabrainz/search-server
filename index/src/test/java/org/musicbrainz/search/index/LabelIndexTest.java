@@ -5,7 +5,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.LabelIndex;
 import org.musicbrainz.search.index.LabelIndexField;
@@ -45,7 +44,6 @@ public class LabelIndexTest extends AbstractIndexTest {
 
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
-		stmt.addBatch("INSERT INTO label_type (id, name) VALUES (4, 'Original Production')");
 		
         stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
 					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
@@ -73,7 +71,6 @@ public class LabelIndexTest extends AbstractIndexTest {
 		stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (38, 'CA','Canada')");
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
-		stmt.addBatch("INSERT INTO label_type (id, name) VALUES (7, 'Publisher')");
 		
         stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
 					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +

@@ -34,8 +34,6 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (1, 'Person');");
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (2, 'Group');");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Echo & The Bunnymen',1)");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Echo and The Bunnymen',1)");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Echo & The Bunnyman',1)");
