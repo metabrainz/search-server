@@ -260,7 +260,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(LabelIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
+            assertEquals(1, doc.getFields(LabelIndexField.ALIAS.getName()).length); 
         }
         ir.close();
     }

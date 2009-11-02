@@ -115,6 +115,17 @@ public class ArtistXmlWriter extends XmlWriter {
                 artist.setDisambiguation(comment);
             }
 
+            String[] aliases = doc.getValues(ArtistIndexField.ALIAS);
+            if(aliases.length>0)
+            {
+                AliasList aliasList = of.createAliasList();
+                for(int i = 0;i<aliases.length;i++) {
+                    Alias alias = of.createAlias();
+                    alias.getContent().add(aliases[i]);
+                    aliasList.getAlias().add(alias);
+                }
+                artist.setAliasList(aliasList);
+            }
             artistList.getArtist().add(artist);
 
         }

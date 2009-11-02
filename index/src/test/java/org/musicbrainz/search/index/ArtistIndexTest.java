@@ -238,7 +238,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
+            assertEquals(3, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
             assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
             assertEquals(1, doc.getFields(ArtistIndexField.ARTIST_ID.getName()).length);
             assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);

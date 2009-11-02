@@ -32,6 +32,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -91,6 +92,18 @@ public class LabelXmlWriter extends XmlWriter {
                 label.setDisambiguation(comment);
             }
 
+            String[] aliases = doc.getValues(LabelIndexField.ALIAS);
+            if(aliases.length>0)
+            {
+                AliasList aliasList = of.createAliasList();
+                for(int i = 0;i<aliases.length;i++) {
+                    Alias alias = of.createAlias();
+                    alias.getContent().add(aliases[i]);
+                    aliasList.getAlias().add(alias);
+                }
+                label.setAliasList(aliasList);
+            }
+            
             labelList.getLabel().add(label);
 
         }

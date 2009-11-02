@@ -80,7 +80,7 @@ public class FindLabelTest extends TestCase {
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
         assertEquals("1993", doc.get(LabelIndexField.BEGIN));
         assertEquals("2004", doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
+        assertEquals("Jockeys",doc.get(LabelIndexField.ALIAS));
         assertNull(doc.get(LabelIndexField.COMMENT));
         assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
         assertEquals("production", doc.get(LabelIndexField.TYPE));
@@ -93,12 +93,6 @@ public class FindLabelTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-        assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-        assertEquals("2004", doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
-        assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-        assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelByDefault() throws Exception {
@@ -110,12 +104,6 @@ public class FindLabelTest extends TestCase {
             MbDocument doc = result.doc;
             assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
             assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-            assertEquals("2004", doc.get(LabelIndexField.END));
-            assertNull(doc.get(LabelIndexField.ALIAS));
-            assertNull(doc.get(LabelIndexField.COMMENT));
-            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-            assertEquals("production", doc.get(LabelIndexField.TYPE));
         }
 
         {
@@ -125,12 +113,6 @@ public class FindLabelTest extends TestCase {
             MbDocument doc = result.doc;
             assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
             assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-            assertEquals("2004", doc.get(LabelIndexField.END));
-            assertNull(doc.get(LabelIndexField.ALIAS));
-            assertNull(doc.get(LabelIndexField.COMMENT));
-            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-            assertEquals("production", doc.get(LabelIndexField.TYPE));
         }
 
         {
@@ -140,12 +122,6 @@ public class FindLabelTest extends TestCase {
             MbDocument doc = result.doc;
             assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
             assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-            assertEquals("2004", doc.get(LabelIndexField.END));
-            assertNull(doc.get(LabelIndexField.ALIAS));
-            assertNull(doc.get(LabelIndexField.COMMENT));
-            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-            assertEquals("production", doc.get(LabelIndexField.TYPE));
         }
     }
 
@@ -158,12 +134,6 @@ public class FindLabelTest extends TestCase {
         //(This will always come first because searcher sots by score and then docno, and this doc added first)
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-        assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-        assertEquals("2004", doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
-        assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-        assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelByNumericType() throws Exception {
@@ -175,12 +145,6 @@ public class FindLabelTest extends TestCase {
             //(This will always come first because searcher sots by score and then docno, and this doc added first)
             assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
             assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-            assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-            assertEquals("2004", doc.get(LabelIndexField.END));
-            assertNull(doc.get(LabelIndexField.ALIAS));
-            assertNull(doc.get(LabelIndexField.COMMENT));
-            assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-            assertEquals("production", doc.get(LabelIndexField.TYPE));
         }
 
 
@@ -191,12 +155,6 @@ public class FindLabelTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-        assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-        assertEquals("2004", doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
-        assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-        assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelByCountry() throws Exception {
@@ -206,12 +164,6 @@ public class FindLabelTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-        assertEquals("1993", doc.get(LabelIndexField.BEGIN));
-        assertEquals("2004", doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
-        assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("Slut, Jockey", doc.get(LabelIndexField.SORTNAME));
-        assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelByCode() throws Exception {
@@ -221,12 +173,6 @@ public class FindLabelTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("4AD", doc.get(LabelIndexField.LABEL));
-        assertEquals("1979", doc.get(LabelIndexField.BEGIN));
-        assertNull(doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
-        assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("5807", doc.get(LabelIndexField.CODE));
-        assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
 
     public void testFindLabelByZeroedCode() throws Exception {
@@ -236,12 +182,6 @@ public class FindLabelTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("4AD", doc.get(LabelIndexField.LABEL));
-        assertEquals("1979", doc.get(LabelIndexField.BEGIN));
-        assertNull(doc.get(LabelIndexField.END));
-        assertNull(doc.get(LabelIndexField.ALIAS));
-        assertNull(doc.get(LabelIndexField.COMMENT));
-        assertEquals("5807", doc.get(LabelIndexField.CODE));
-        assertEquals("production", doc.get(LabelIndexField.TYPE));
     }
     /**
      * Tests get same results as
@@ -291,6 +231,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("type=\"production\""));
         assertTrue(output.contains("<name>Jockey Slut</name>"));
         assertTrue(output.contains("<sort-name>Slut, Jockey</sort-name>"));
+        assertTrue(output.contains("<alias>Jockeys</alias>"));
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
     }

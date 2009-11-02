@@ -10,7 +10,7 @@ import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
  */
 public enum ArtistIndexField implements IndexField {
 
-    ALIAS		("alias",		Field.Store.NO,		Field.Index.ANALYZED),
+    ALIAS		("alias",		Field.Store.YES,		Field.Index.ANALYZED),
     ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),

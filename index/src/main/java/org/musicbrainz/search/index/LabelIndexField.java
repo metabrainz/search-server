@@ -14,7 +14,7 @@ public enum LabelIndexField implements IndexField {
     LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED),
     COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),
     CODE		("code",		Field.Store.YES, 	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
-    ALIAS		("alias",		Field.Store.NO, 	Field.Index.ANALYZED),
+    ALIAS		("alias",		Field.Store.YES, 	Field.Index.ANALYZED),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     BEGIN		("begin",		Field.Store.YES, 	Field.Index.NOT_ANALYZED),
     END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED),

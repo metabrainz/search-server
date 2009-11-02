@@ -57,7 +57,6 @@ public class FindArtistTest extends TestCase {
             Index.addFieldToDocument(doc, ArtistIndexField.COMMENT, "the real one");
             Index.addFieldToDocument(doc, ArtistIndexField.COUNTRY, "af");
             Index.addFieldToDocument(doc, ArtistIndexField.GENDER, "male");
-
             writer.addDocument(doc);
         }
 
@@ -273,6 +272,7 @@ public class FindArtistTest extends TestCase {
         pr.close();
 
         String output = sw.toString();
+        System.out.println("Xml is" + output);
         //assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));  group comes before id in output
         //assertTrue(output.contains("<artist-list count=\"1\" offset=\"0\">"));               offset comes before count in output
         assertTrue(output.contains("count=\"1\""));
@@ -316,6 +316,35 @@ public class FindArtistTest extends TestCase {
         assertFalse(output.contains("alias"));
         assertFalse(output.contains("disambugation"));
     }
+
+    /**
+
+     *
+     * @throws Exception
+     */
+    public void testOutputXml2() throws Exception {
+
+        Results res = ss.searchLucene("artist:\"Echo & the Bunnymen\"", 0, 1);
+        XmlWriter v1Writer = new ArtistXmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        v1Writer.write(pr, res);
+        pr.close();
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("type=\"group\""));
+        assertTrue(output.contains("<name>Echo &amp; The Bunnymen</name>"));
+        assertTrue(output.contains("<sort-name>Echo &amp; The Bunnymen</sort-name>"));
+        assertTrue(output.contains("<life-span><begin>1978</begin></life-span>"));
+        assertTrue(output.contains("<alias>Echo And The Bunnymen</alias>"));
+        assertTrue(output.contains("<alias>Echo &amp; The Bunnyman</alias>"));
+        assertTrue(output.contains("<alias>Echo and The Bunymen</alias>"));
+        assertTrue(output.contains("<alias>Echo &amp; The Bunymen</alias>"));
+    }
+
+
     public void testOutputAsHtml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
