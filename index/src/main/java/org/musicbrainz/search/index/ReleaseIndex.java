@@ -22,6 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
@@ -198,24 +199,24 @@ public class ReleaseIndex extends DatabaseIndex {
                                           Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
-        addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
-        addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.TYPE, rs.getString("type"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.STATUS, rs.getString("status"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.COUNTRY, rs.getString("country"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.DATE,
+        doc.addField(ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
+        doc.addField(ReleaseIndexField.RELEASE, rs.getString("name"));
+        doc.addNonEmptyField(ReleaseIndexField.TYPE, rs.getString("type"));
+        doc.addNonEmptyField(ReleaseIndexField.STATUS, rs.getString("status"));
+        doc.addNonEmptyField(ReleaseIndexField.COUNTRY, rs.getString("country"));
+        doc.addNonEmptyField(ReleaseIndexField.DATE,
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.BARCODE, rs.getString("barcode"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, rs.getString("amazonasin"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.LANGUAGE, rs.getString("language"));
-        addNonEmptyFieldToDocument(doc, ReleaseIndexField.SCRIPT, rs.getString("script"));
+        doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
+        doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazonasin"));
+        doc.addNonEmptyField(ReleaseIndexField.LANGUAGE, rs.getString("language"));
+        doc.addNonEmptyField(ReleaseIndexField.SCRIPT, rs.getString("script"));
 
         if (labelInfo.containsKey(id)) {
             for (List<String> entry : labelInfo.get(id)) {
-                addFieldOrHyphenToDocument(doc, ReleaseIndexField.LABEL, entry.get(0));
-                addFieldOrHyphenToDocument(doc, ReleaseIndexField.CATALOG_NO, entry.get(1));
+                doc.addFieldOrHyphen(ReleaseIndexField.LABEL, entry.get(0));
+                doc.addFieldOrHyphen(ReleaseIndexField.CATALOG_NO, entry.get(1));
             }
         }
 
@@ -225,40 +226,40 @@ public class ReleaseIndex extends DatabaseIndex {
             for (List<String> entry : mediums.get(id)) {
                 String str;
                 str = entry.get(0);
-                addFieldOrHyphenToDocument(doc, ReleaseIndexField.FORMAT, str);
+                doc.addFieldOrHyphen(ReleaseIndexField.FORMAT, str);
                 int numTracksOnMedium = Integer.parseInt(entry.get(1));
-                addNumericFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS_MEDIUM,numTracksOnMedium);
+                doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM,numTracksOnMedium);
                 trackCount+=numTracksOnMedium;
 
                 int numDiscsOnMedium = Integer.parseInt(entry.get(2));
-                addNumericFieldToDocument(doc,ReleaseIndexField.NUM_DISCIDS_MEDIUM,numDiscsOnMedium);
+                doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM,numDiscsOnMedium);
                 discCount+=numDiscsOnMedium;
 
             }
 
             //Num Tracks over the whole release
-            addNumericFieldToDocument(doc,ReleaseIndexField.NUM_TRACKS,trackCount);
+            doc.addNumericField(ReleaseIndexField.NUM_TRACKS,trackCount);
 
             //Num Discs over the whole release
-            addNumericFieldToDocument(doc,ReleaseIndexField.NUM_DISCIDS,discCount);
+            doc.addNumericField(ReleaseIndexField.NUM_DISCIDS,discCount);
 
         }
 
         if (artists.containsKey(id)) {
             //For each artist credit for this release
             for (ArtistWrapper artist : artists.get(id)) {
-                  addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, artist.getArtistId());
+                  doc.addField(ReleaseIndexField.ARTIST_ID, artist.getArtistId());
                  //TODO in many cases these three values might be the same is user actually interested in searching
                  //by these variations, or do we just need for output
-                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAME, artist.getArtistName());
-                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                 addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                 addFieldOrHyphenToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                 addFieldOrHyphenToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
+                 doc.addField(ReleaseIndexField.ARTIST_NAME, artist.getArtistName());
+                 doc.addField(ReleaseIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                 doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
+                 doc.addFieldOrHyphen(ReleaseIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                 doc.addFieldOrHyphen(ReleaseIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
-            addFieldToDocument(doc, ReleaseIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+            doc.addField(ReleaseIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

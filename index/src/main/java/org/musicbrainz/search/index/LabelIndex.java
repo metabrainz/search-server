@@ -27,10 +27,7 @@ import java.util.regex.Matcher;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
@@ -124,41 +121,41 @@ public class LabelIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
 
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int labelId = rs.getInt("id");
-        addFieldToDocument(doc, LabelIndexField.LABEL_ID, rs.getString("gid"));
-        addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
-        addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
+        doc.addField(LabelIndexField.LABEL_ID, rs.getString("gid"));
+        doc.addField(LabelIndexField.LABEL, rs.getString("name"));
+        doc.addField(LabelIndexField.SORTNAME, rs.getString("sortname"));
 
         //Allows you to search for labels of Unknown type
         String type=rs.getString("type");
         if(type!=null) {
-            addFieldToDocument(doc, LabelIndexField.TYPE, type);
+            doc.addField(LabelIndexField.TYPE, type);
         } else {
-            addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.UNKNOWN.getName());
+            doc.addField(LabelIndexField.TYPE, LabelType.UNKNOWN.getName());
         }
 
-        addNonEmptyFieldToDocument(doc, LabelIndexField.COMMENT, rs.getString("comment"));
-        addNonEmptyFieldToDocument(doc, LabelIndexField.COUNTRY, rs.getString("country"));
+        doc.addNonEmptyField(LabelIndexField.COMMENT, rs.getString("comment"));
+        doc.addNonEmptyField(LabelIndexField.COUNTRY, rs.getString("country"));
         
-        addNonEmptyFieldToDocument(doc, LabelIndexField.BEGIN, 
+        doc.addNonEmptyField(LabelIndexField.BEGIN, 
         	Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
 
-        addNonEmptyFieldToDocument(doc, LabelIndexField.END, 
+        doc.addNonEmptyField(LabelIndexField.END, 
             Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
         
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
             Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
-            addFieldToDocument(doc, LabelIndexField.CODE, m.replaceFirst(""));
+            doc.addField(LabelIndexField.CODE, m.replaceFirst(""));
         }
 
         if (aliases.containsKey(labelId)) {
             for (String alias : aliases.get(labelId)) {
-                addFieldToDocument(doc, LabelIndexField.ALIAS, alias);
+                doc.addField(LabelIndexField.ALIAS, alias);
             }
         }
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

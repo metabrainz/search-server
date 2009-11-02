@@ -2,15 +2,14 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.velocity.app.Velocity;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.AnnotationType;
-import org.musicbrainz.search.index.Index;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,12 +36,12 @@ public class FindAnnotationTest extends TestCase {
 
         //A complete Annotation entry
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, AnnotationIndexField.TYPE, AnnotationType.RELEASE.getName());
-            Index.addFieldToDocument(doc, AnnotationIndexField.NAME, "Pieds nus sur la braise");
-            Index.addFieldToDocument(doc, AnnotationIndexField.MBID, "bdb24cb5-404b-4f60-bba4-7b730325ae47");
-            Index.addFieldToDocument(doc, AnnotationIndexField.TEXT, "EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-");
-            writer.addDocument(doc);
+            MbDocument doc = new MbDocument();
+            doc.addField(AnnotationIndexField.TYPE, AnnotationType.RELEASE.getName());
+            doc.addField(AnnotationIndexField.NAME, "Pieds nus sur la braise");
+            doc.addField(AnnotationIndexField.MBID, "bdb24cb5-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.TEXT, "EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-");
+            writer.addDocument(doc.getLuceneDocument());
         }
 
         writer.close();

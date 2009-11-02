@@ -28,11 +28,9 @@
 
 package org.musicbrainz.search.servlet.mmd2;
 
-import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.mmd2.*;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 

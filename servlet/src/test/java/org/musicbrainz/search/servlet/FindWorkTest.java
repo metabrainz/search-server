@@ -1,7 +1,6 @@
 package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
@@ -9,14 +8,12 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.LabelSearch;
-import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
 import org.musicbrainz.search.servlet.SearchServer;
 import org.musicbrainz.search.servlet.SearchServerServlet;
-import org.musicbrainz.search.servlet.mmd2.LabelXmlWriter;
 import org.musicbrainz.search.servlet.mmd2.WorkXmlWriter;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -44,18 +41,18 @@ public class FindWorkTest extends TestCase {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, WorkIndexField.WORK_ID, "4ff89cf0-86af-11de-90ed-001fc6f176ff");
-            Index.addFieldToDocument(doc, WorkIndexField.WORK, "Symphony No. 5");
-            Index.addFieldToDocument(doc, WorkIndexField.ISWC,"T-101779304-1");
-            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
-            Index.addFieldToDocument(doc, WorkIndexField.ARTIST, "Ludwig van Beethoven");
-            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
-            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
-            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_SORTNAME, "Beethoven, Ludwig van");
-            Index.addFieldToDocument(doc, WorkIndexField.ARTIST_JOINPHRASE, "-");
+            MbDocument doc = new MbDocument();
+            doc.addField(WorkIndexField.WORK_ID, "4ff89cf0-86af-11de-90ed-001fc6f176ff");
+            doc.addField(WorkIndexField.WORK, "Symphony No. 5");
+            doc.addField(WorkIndexField.ISWC,"T-101779304-1");
+            doc.addField(WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
+            doc.addField(WorkIndexField.ARTIST, "Ludwig van Beethoven");
+            doc.addField(WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
+            doc.addField(WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
+            doc.addField(WorkIndexField.ARTIST_SORTNAME, "Beethoven, Ludwig van");
+            doc.addField(WorkIndexField.ARTIST_JOINPHRASE, "-");
 
-            writer.addDocument(doc);
+            writer.addDocument(doc.getLuceneDocument());
         }
         writer.close();
         ss = new LabelSearch(new IndexSearcher(ramDir, true));

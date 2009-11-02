@@ -30,7 +30,7 @@ import org.apache.lucene.index.IndexWriter;
 /**
  * An abstract Index specialized in indexing information from a Database
  */
-public abstract class DatabaseIndex extends Index {
+public abstract class DatabaseIndex implements Index {
 
     protected HashMap<String, PreparedStatement> preparedStatements;
     protected Connection dbConnection;
@@ -54,13 +54,17 @@ public abstract class DatabaseIndex extends Index {
         return dbConnection;
     }
 
-    @Override
+    public void init() throws SQLException {
+    }
+    
     public void destroy() throws SQLException {
         for (PreparedStatement st : preparedStatements.values() ) {
             st.close();
         }
     }
 
+    public abstract int getNoOfRows(int maxId) throws SQLException ;
+    
     /**
      * Returns the max id
      *

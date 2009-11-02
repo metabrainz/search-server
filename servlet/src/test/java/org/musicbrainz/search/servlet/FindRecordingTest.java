@@ -1,12 +1,12 @@
 package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.velocity.app.Velocity;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.mmd2.RecordingXmlWriter;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
@@ -39,24 +39,24 @@ public class FindRecordingTest extends TestCase {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
-        Document doc = new Document();
-        Index.addFieldToDocument(doc, RecordingIndexField.RECORDING_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
-        Index.addFieldToDocument(doc, RecordingIndexField.RECORDING, "Gravitational Lenz");
-        Index.addFieldToDocument(doc, RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
-        Index.addFieldToDocument(doc, RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
-        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST, "Farming Incident");
-        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_NAME, "Farming Incident");
-        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_NAMECREDIT, "Farming Incident");
-        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_SORTNAME, "Incident, Farming");
-        Index.addFieldToDocument(doc, RecordingIndexField.ARTIST_JOINPHRASE, "-");
+        MbDocument doc = new MbDocument();
+        doc.addField(RecordingIndexField.RECORDING_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
+        doc.addField(RecordingIndexField.RECORDING, "Gravitational Lenz");
+        doc.addField(RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
+        doc.addField(RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
+        doc.addField(RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        doc.addField(RecordingIndexField.ARTIST, "Farming Incident");
+        doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
+        doc.addField(RecordingIndexField.ARTIST_NAMECREDIT, "Farming Incident");
+        doc.addField(RecordingIndexField.ARTIST_SORTNAME, "Incident, Farming");
+        doc.addField(RecordingIndexField.ARTIST_JOINPHRASE, "-");
 
-        Index.addNumericFieldToDocument(doc, RecordingIndexField.DURATION, 234000);
-        Index.addNumericFieldToDocument(doc, RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
-        Index.addNumericFieldToDocument(doc, RecordingIndexField.NUM_TRACKS,10);
-        Index.addNumericFieldToDocument(doc, RecordingIndexField.TRACKNUM, 5);
-        Index.addFieldToDocument(doc, RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
-        writer.addDocument(doc);
+        doc.addNumericField(RecordingIndexField.DURATION, 234000);
+        doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
+        doc.addNumericField(RecordingIndexField.NUM_TRACKS,10);
+        doc.addNumericField(RecordingIndexField.TRACKNUM, 5);
+        doc.addField(RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
+        writer.addDocument(doc.getLuceneDocument());
         writer.close();
         ss = new RecordingSearch(new IndexSearcher(ramDir,true));
     }

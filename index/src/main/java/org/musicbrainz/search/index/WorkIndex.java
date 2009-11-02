@@ -25,6 +25,7 @@ import java.util.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
@@ -130,28 +131,28 @@ public class WorkIndex extends DatabaseIndex {
     }
 
     public Document documentFromResultSet(ResultSet rs,Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int id = rs.getInt("wid");
-        addFieldToDocument(doc, WorkIndexField.WORK_ID, rs.getString("gid"));
-        addFieldToDocument(doc, WorkIndexField.WORK, rs.getString("name"));
-        addNonEmptyFieldToDocument(doc, WorkIndexField.TYPE, rs.getString("type"));
-        addNonEmptyFieldToDocument(doc, WorkIndexField.ISWC, rs.getString("iswc"));
+        doc.addField(WorkIndexField.WORK_ID, rs.getString("gid"));
+        doc.addField(WorkIndexField.WORK, rs.getString("name"));
+        doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
+        doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
 
         if (artists.containsKey(id)) {
             //For each artist credit
             for (ArtistWrapper artist : artists.get(id)) {
-                 addFieldToDocument(doc, WorkIndexField.ARTIST_ID, artist.getArtistId());
+                 doc.addField(WorkIndexField.ARTIST_ID, artist.getArtistId());
                 //TODO in many cases these three values might be the same is user actually interested in searching
                 //by these variations, or do we just need for output
-                addFieldToDocument(doc, WorkIndexField.ARTIST_NAME, artist.getArtistName());
-                addFieldToDocument(doc, WorkIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                addFieldToDocument(doc, WorkIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                addFieldOrHyphenToDocument(doc, WorkIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                addFieldOrHyphenToDocument(doc, WorkIndexField.ARTIST_COMMENT, artist.getArtistComment());
+                doc.addField(WorkIndexField.ARTIST_NAME, artist.getArtistName());
+                doc.addField(WorkIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                doc.addField(WorkIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
+                doc.addFieldOrHyphen(WorkIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                doc.addFieldOrHyphen(WorkIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
-            addFieldToDocument(doc, WorkIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+            doc.addField(WorkIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

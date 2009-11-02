@@ -19,89 +19,12 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
-import org.apache.lucene.document.NumberTools;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.util.NumericUtils;
 
-public abstract class Index {
+public interface Index {
 
-	protected Connection dbConnection;
-
-    public void init() throws SQLException {};
-    public void destroy() throws SQLException {};
-
-	
-	public abstract int getMaxId() throws SQLException;
-    public abstract int getNoOfRows(int maxId) throws SQLException ;
-    public abstract String getName();
-    public abstract Analyzer getAnalyzer();
-    public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
-
-	protected static String normalizeDate(String date) {
-		return date.replace("-00", "");
-	}
-
-    /**
-     * Add numeric field to document, handled specially so that ranges searches work properly
-     * @param doc
-     * @param field
-     * @param value
-     */
-    public static void addNumericFieldToDocument(Document doc, IndexField field, Integer value) {
-        addFieldToDocument(doc,field,NumericUtils.intToPrefixCoded(value));
-    }
-
-    /**
-     * Add field to document
-     *
-     * @param doc
-     * @param field
-     * @param value
-     */
-    public static void addFieldToDocument(Document doc, IndexField field, String value) {
-		doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
-	}
-
-    /**
-     * Add field to document if not empty
-     *
-     * @param doc
-     * @param field
-     * @param value
-     */
-    public static void addNonEmptyFieldToDocument(Document doc, IndexField field, String value) {
-        if (value != null && !value.isEmpty()) {
-        	doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
-        }
-	}
-
-    /**
-     * Add field to document if not empty, otherwise add hyphen.
-     *
-     * This method is necessary when adding fields that make up a set within in a list so that
-     * order is preserved.
-     *
-     * @param doc
-     * @param field
-     * @param value
-     */
-    //TODO is thia way we can achieve the same effect without needing to store these fields
-    public static void addFieldOrHyphenToDocument(Document doc, IndexField field, String value) {
-        if (value != null && !value.isEmpty()) {
-        	doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
-        }
-        else {
-           doc.add(new Field(field.getName(), "-", field.getStore(), field.getIndex()));
-        }
-
-    }
+    public String getName();
+    
+    public Analyzer getAnalyzer();
 
 }

@@ -42,7 +42,7 @@ import com.jthink.brainz.mmd.TrackList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.ReleaseIndexField;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 

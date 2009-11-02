@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
@@ -9,7 +8,7 @@ import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.LabelSearch;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
@@ -43,29 +42,28 @@ public class FindLabelTest extends TestCase {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
-            Index.addFieldToDocument(doc, LabelIndexField.LABEL, "Jockey Slut");
-            Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "Slut, Jockey");
-            Index.addFieldToDocument(doc, LabelIndexField.ALIAS, "Jockeys");
-            Index.addFieldToDocument(doc, LabelIndexField.BEGIN, "1993");
-            Index.addFieldToDocument(doc, LabelIndexField.END, "2004");
-            Index.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
-            Index.addFieldToDocument(doc, LabelIndexField.COUNTRY, "GB");
-            writer.addDocument(doc);
+            MbDocument doc = new MbDocument();
+            doc.addField(LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
+            doc.addField(LabelIndexField.LABEL, "Jockey Slut");
+            doc.addField(LabelIndexField.SORTNAME, "Slut, Jockey");
+            doc.addField(LabelIndexField.ALIAS, "Jockeys");
+            doc.addField(LabelIndexField.BEGIN, "1993");
+            doc.addField(LabelIndexField.END, "2004");
+            doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+            doc.addField(LabelIndexField.COUNTRY, "GB");
+            writer.addDocument(doc.getLuceneDocument());
         }
 
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7503");
-            Index.addFieldToDocument(doc, LabelIndexField.LABEL, "4AD");
-            Index.addFieldToDocument(doc, LabelIndexField.SORTNAME, "4AD");
-            Index.addFieldToDocument(doc, LabelIndexField.BEGIN, "1979");
-            Index.addFieldToDocument(doc, LabelIndexField.CODE, "5807");
-            Index.addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
-            writer.addDocument(doc);
+            MbDocument doc = new MbDocument();
+            doc.addField(LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7503");
+            doc.addField(LabelIndexField.LABEL, "4AD");
+            doc.addField(LabelIndexField.SORTNAME, "4AD");
+            doc.addField(LabelIndexField.BEGIN, "1979");
+            doc.addField(LabelIndexField.CODE, "5807");
+            doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+            writer.addDocument(doc.getLuceneDocument());
         }
-
 
         writer.close();
         ss = new LabelSearch(new IndexSearcher(ramDir, true));

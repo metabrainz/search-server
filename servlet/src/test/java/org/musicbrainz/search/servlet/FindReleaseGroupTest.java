@@ -1,13 +1,12 @@
 package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.*;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.ReleaseGroupSearch;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.Result;
@@ -43,43 +42,43 @@ public class FindReleaseGroupTest extends TestCase {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
         //Release Group with single artist
-        Document doc = new Document();
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASE_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c46");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASE, "secret");
+        MbDocument doc = new MbDocument();
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
+        doc.addField(ReleaseGroupIndexField.RELEASE_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c46");
+        doc.addField(ReleaseGroupIndexField.RELEASE, "secret");
 
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, "The Wedding Present");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_SORTNAME, "Wedding Present, The");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, "-");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAMECREDIT, "The Wedding Present");
-        writer.addDocument(doc);
+        doc.addField(ReleaseGroupIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
+        doc.addField(ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
+        doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
+        doc.addField(ReleaseGroupIndexField.ARTIST, "The Wedding Present");
+        doc.addField(ReleaseGroupIndexField.ARTIST_SORTNAME, "Wedding Present, The");
+        doc.addField(ReleaseGroupIndexField.ARTIST_JOINPHRASE, "-");
+        doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "The Wedding Present");
+        writer.addDocument(doc.getLuceneDocument());
 
         //Release Group with multiple Artist and different name credit and no releases
-        doc = new Document();
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, "0011c128-b1f2-300e-88cc-c33c30dce704");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, "Epics");
+        doc = new MbDocument();
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, "0011c128-b1f2-300e-88cc-c33c30dce704");
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Epics");
 
 
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.ALBUM.getName());
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, "99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAME, "Erich Kunzel");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_SORTNAME, "Kunzel, Eric");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, "and");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Erich Kunzel");
+        doc.addField(ReleaseGroupIndexField.TYPE, ReleaseGroupType.ALBUM.getName());
+        doc.addField(ReleaseGroupIndexField.ARTIST_ID, "99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
+        doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "Erich Kunzel");
+        doc.addField(ReleaseGroupIndexField.ARTIST_SORTNAME, "Kunzel, Eric");
+        doc.addField(ReleaseGroupIndexField.ARTIST_JOINPHRASE, "and");
+        doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Erich Kunzel");
 
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_SORTNAME, "Cincinnati Pops Orchestra, The");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, "-");
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
+        doc.addField(ReleaseGroupIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
+        doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
+        doc.addField(ReleaseGroupIndexField.ARTIST_SORTNAME, "Cincinnati Pops Orchestra, The");
+        doc.addField(ReleaseGroupIndexField.ARTIST_JOINPHRASE, "-");
+        doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
 
-        Index.addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
+        doc.addField(ReleaseGroupIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
 
-        writer.addDocument(doc);
+        writer.addDocument(doc.getLuceneDocument());
         writer.close();
         ss = new ReleaseGroupSearch(new IndexSearcher(ramDir,true));
     }

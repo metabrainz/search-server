@@ -10,6 +10,7 @@ import java.sql.Statement;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 public class AnnotationIndex extends DatabaseIndex {
@@ -168,13 +169,13 @@ public class AnnotationIndex extends DatabaseIndex {
     }
 
     public Document documentFromResultSet(ResultSet rs,AnnotationType type) throws SQLException {
-		Document doc = new Document();
-		addFieldToDocument(doc, AnnotationIndexField.MBID, rs.getString("gid"));
-		addFieldToDocument(doc, AnnotationIndexField.NAME, rs.getString("name"));
-		addFieldToDocument(doc, AnnotationIndexField.TYPE, type.getName());
-		addFieldToDocument(doc, AnnotationIndexField.TEXT, rs.getString("text"));
+        MbDocument doc = new MbDocument();
+        doc.addField(AnnotationIndexField.MBID, rs.getString("gid"));
+        doc.addField(AnnotationIndexField.NAME, rs.getString("name"));
+	doc.addField(AnnotationIndexField.TYPE, type.getName());
+	doc.addField(AnnotationIndexField.TEXT, rs.getString("text"));
 
-		return doc;
-	}
+        return doc.getLuceneDocument();
+    }
 
 }

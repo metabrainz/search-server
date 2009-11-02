@@ -22,6 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
@@ -79,14 +80,14 @@ public class CDStubIndex extends DatabaseIndex {
     }
 
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
-        Document doc = new Document();
-        addFieldToDocument(doc, CDStubIndexField.TITLE, rs.getString("title"));
-        addFieldToDocument(doc, CDStubIndexField.ARTIST, rs.getString("artist"));
-        addFieldToDocument(doc, CDStubIndexField.DISCID, rs.getString("discid"));
-        addFieldToDocument(doc, CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
-        addNonEmptyFieldToDocument(doc, CDStubIndexField.BARCODE, rs.getString("barcode"));
-        addNonEmptyFieldToDocument(doc, CDStubIndexField.COMMENT, rs.getString("comment"));
-        return doc;
+        MbDocument doc = new MbDocument();
+        doc.addField(CDStubIndexField.TITLE, rs.getString("title"));
+        doc.addField(CDStubIndexField.ARTIST, rs.getString("artist"));
+        doc.addField(CDStubIndexField.DISCID, rs.getString("discid"));
+        doc.addField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
+        doc.addNonEmptyField(CDStubIndexField.BARCODE, rs.getString("barcode"));
+        doc.addNonEmptyField(CDStubIndexField.COMMENT, rs.getString("comment"));
+        return doc.getLuceneDocument();
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
@@ -155,35 +156,35 @@ public class
     }
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<ReleaseWrapper>> releases, Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
-        addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
-        addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
-        addNonEmptyFieldToDocument(doc, ReleaseGroupIndexField.TYPE, rs.getString("type"));
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
+        doc.addNonEmptyField(ReleaseGroupIndexField.TYPE, rs.getString("type"));
 
         //Add each release name within this release group
         if (releases.containsKey(id)) {
             for (ReleaseWrapper release : releases.get(id)) {
-                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.RELEASE, release.getReleaseName());
-                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
+                doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE, release.getReleaseName());
+                doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
             }
         }
 
         if (artists.containsKey(id)) {
             //For each artist credit for this release
             for (ArtistWrapper artist : artists.get(id)) {
-                 addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, artist.getArtistId());
+                 doc.addField(ReleaseGroupIndexField.ARTIST_ID, artist.getArtistId());
                 //TODO in many cases these three values might be the same is user actually interested in searching
                 //by these variations, or do we just need for output
-                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAME, artist.getArtistName());
-                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, artist.getArtistComment());
+                doc.addField(ReleaseGroupIndexField.ARTIST_NAME, artist.getArtistName());
+                doc.addField(ReleaseGroupIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
+                doc.addFieldOrHyphen(ReleaseGroupIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                doc.addFieldOrHyphen(ReleaseGroupIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
-            addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+            doc.addField(ReleaseGroupIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

@@ -125,7 +125,7 @@ public class IndexBuilder
 
 
         // MusicBrainz data indexing
-        Index[] indexes = {
+        DatabaseIndex[] indexes = {
                 new ArtistIndex(mainDbConn),
                 new ReleaseIndex(mainDbConn),
                 new ReleaseGroupIndex(mainDbConn),
@@ -136,7 +136,7 @@ public class IndexBuilder
                 new CDStubIndex(rawDbConn), //Note different db
         };
 
-        for (Index index : indexes) {
+        for (DatabaseIndex index : indexes) {
 
             // Check if this index should be built
             if (!options.buildIndex(index.getName())) {
@@ -173,7 +173,7 @@ public class IndexBuilder
      * @throws IOException 
      * @throws SQLException 
      */
-    private static void buildDatabaseIndex(Index index, IndexBuilderOptions options) throws IOException, SQLException
+    private static void buildDatabaseIndex(DatabaseIndex index, IndexBuilderOptions options) throws IOException, SQLException
     {
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getName() + "_index";

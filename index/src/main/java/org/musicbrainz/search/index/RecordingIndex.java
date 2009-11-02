@@ -24,6 +24,7 @@ import java.io.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
@@ -225,37 +226,37 @@ public class RecordingIndex extends DatabaseIndex {
 
         int id = rs.getInt("recordingId");
 
-        Document doc = new Document();
-        addFieldToDocument(doc, RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
-        addNonEmptyFieldToDocument(doc, RecordingIndexField.RECORDING, rs.getString("trackname"));
-        addNumericFieldToDocument(doc, RecordingIndexField.DURATION, rs.getInt("duration"));
-        addNumericFieldToDocument(doc, RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+        MbDocument doc = new MbDocument();
+        doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
+        doc.addNonEmptyField(RecordingIndexField.RECORDING, rs.getString("trackname"));
+        doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
+        doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
 
         if (tracks.containsKey(id)) {
             //For each track for this recording
             for (TrackWrapper track : tracks.get(id)) {
-                addNumericFieldToDocument(doc, RecordingIndexField.NUM_TRACKS, track.getTrackCount());
-                addNumericFieldToDocument(doc, RecordingIndexField.TRACKNUM, track.getTrackPosition());
-                addFieldOrHyphenToDocument(doc, RecordingIndexField.RELEASE_TYPE, track.getReleaseGroupType());
-                addFieldToDocument(doc, RecordingIndexField.RELEASE_ID, track.getReleaseId());
-                addFieldToDocument(doc, RecordingIndexField.RELEASE, track.getReleaseName());
+                doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
+                doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
+                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, track.getReleaseGroupType());
+                doc.addField(RecordingIndexField.RELEASE_ID, track.getReleaseId());
+                doc.addField(RecordingIndexField.RELEASE, track.getReleaseName());
             }
         }
 
         if (artists.containsKey(id)) {
             //For each credit artist for this recording
             for (ArtistWrapper artist : artists.get(id)) {
-                addFieldToDocument(doc, RecordingIndexField.ARTIST_ID, artist.getArtistId());
-                addFieldToDocument(doc, RecordingIndexField.ARTIST_NAME, artist.getArtistName());
-                addFieldToDocument(doc, RecordingIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                addFieldToDocument(doc, RecordingIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                addFieldOrHyphenToDocument(doc, RecordingIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                addFieldOrHyphenToDocument(doc, RecordingIndexField.ARTIST_COMMENT, artist.getArtistComment());
+                doc.addField(RecordingIndexField.ARTIST_ID, artist.getArtistId());
+                doc.addField(RecordingIndexField.ARTIST_NAME, artist.getArtistName());
+                doc.addField(RecordingIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
+                doc.addField(RecordingIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
+                doc.addFieldOrHyphen(RecordingIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
+                doc.addFieldOrHyphen(RecordingIndexField.ARTIST_COMMENT, artist.getArtistComment());
             }
 
-            addFieldToDocument(doc, RecordingIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+            doc.addField(RecordingIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

@@ -25,8 +25,7 @@ import java.util.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
@@ -113,36 +112,36 @@ public class ArtistIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
     	
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int artistId = rs.getInt("id");
-        addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, rs.getString("gid"));
-        addFieldToDocument(doc, ArtistIndexField.ARTIST, rs.getString("name"));
-        addFieldToDocument(doc, ArtistIndexField.SORTNAME, rs.getString("sortname"));
+        doc.addField(ArtistIndexField.ARTIST_ID, rs.getString("gid"));
+        doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
+        doc.addField(ArtistIndexField.SORTNAME, rs.getString("sortname"));
 
         //Allows you to search for artists  of unknown type
         String type=rs.getString("type");
         if(type!=null) {
-            addFieldToDocument(doc, ArtistIndexField.TYPE, type);
+            doc.addField(ArtistIndexField.TYPE, type);
         } else {
-            addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.UNKNOWN.getName());
+            doc.addField(ArtistIndexField.TYPE, ArtistType.UNKNOWN.getName());
         }
 
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.BEGIN,
+        doc.addNonEmptyField(ArtistIndexField.BEGIN,
                    Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
 
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.END,
+        doc.addNonEmptyField(ArtistIndexField.END,
                    Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
 
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.COMMENT, rs.getString("comment"));
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.COUNTRY, rs.getString("country"));
-        addNonEmptyFieldToDocument(doc, ArtistIndexField.GENDER, rs.getString("gender"));
+        doc.addNonEmptyField(ArtistIndexField.COMMENT, rs.getString("comment"));
+        doc.addNonEmptyField(ArtistIndexField.COUNTRY, rs.getString("country"));
+        doc.addNonEmptyField(ArtistIndexField.GENDER, rs.getString("gender"));
 
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {
-            	addFieldToDocument(doc, ArtistIndexField.ALIAS, alias);
+            	doc.addField(ArtistIndexField.ALIAS, alias);
             }
         }
-        return doc;
+        return doc.getLuceneDocument();
     }
 
 }

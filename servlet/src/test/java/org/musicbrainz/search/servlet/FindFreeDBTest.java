@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
@@ -8,10 +7,9 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.FreeDBIndexField;
-import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.servlet.FreeDBHtmlWriter;
 import org.musicbrainz.search.servlet.FreeDBSearch;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
@@ -43,14 +41,14 @@ public class FindFreeDBTest extends TestCase {
 
         //A complete FreeDB entry
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, FreeDBIndexField.ARTIST, "Ska-P");
-            Index.addFieldToDocument(doc, FreeDBIndexField.TITLE, "L\u00e1grimas & Gozos");
-            Index.addFieldToDocument(doc, FreeDBIndexField.CATEGORY, "folk");
-            Index.addFieldToDocument(doc, FreeDBIndexField.DISCID, "c20c4b0d");
-            Index.addFieldToDocument(doc, FreeDBIndexField.TRACKS, "13");
-            Index.addFieldToDocument(doc, FreeDBIndexField.YEAR, "2008");
-            writer.addDocument(doc);
+            MbDocument doc = new MbDocument();
+            doc.addField(FreeDBIndexField.ARTIST, "Ska-P");
+            doc.addField(FreeDBIndexField.TITLE, "L\u00e1grimas & Gozos");
+            doc.addField(FreeDBIndexField.CATEGORY, "folk");
+            doc.addField(FreeDBIndexField.DISCID, "c20c4b0d");
+            doc.addField(FreeDBIndexField.TRACKS, "13");
+            doc.addField(FreeDBIndexField.YEAR, "2008");
+            writer.addDocument(doc.getLuceneDocument());
         }
 
         writer.close();

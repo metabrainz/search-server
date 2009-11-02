@@ -28,6 +28,8 @@
 
 package org.musicbrainz.search.servlet;
 
+import org.musicbrainz.search.MbDocument;
+
 public class Result {
 
 	public MbDocument doc;

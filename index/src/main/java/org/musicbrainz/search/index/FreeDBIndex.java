@@ -43,8 +43,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 public class FreeDBIndex {
@@ -106,7 +105,7 @@ public class FreeDBIndex {
 	}
 	
 	protected Document documentFromFreeDBEntry(String category, byte[] content) throws IOException {
-		Document doc = new Document();
+	        MbDocument doc = new MbDocument();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(content)));
 		
 		String title = "";
@@ -141,13 +140,13 @@ public class FreeDBIndex {
 			return null;
 		}
 		
-		Index.addFieldToDocument(doc, FreeDBIndexField.ARTIST, artist);
-		Index.addFieldToDocument(doc, FreeDBIndexField.TITLE, release);
-		Index.addFieldToDocument(doc, FreeDBIndexField.DISCID, discid);
-		Index.addFieldToDocument(doc, FreeDBIndexField.CATEGORY, category);
-		Index.addFieldToDocument(doc, FreeDBIndexField.YEAR, year);
-		Index.addFieldToDocument(doc, FreeDBIndexField.TRACKS, numTracks.toString());
+		doc.addField(FreeDBIndexField.ARTIST, artist);
+		doc.addField(FreeDBIndexField.TITLE, release);
+		doc.addField(FreeDBIndexField.DISCID, discid);
+		doc.addField(FreeDBIndexField.CATEGORY, category);
+		doc.addField(FreeDBIndexField.YEAR, year);
+		doc.addField(FreeDBIndexField.TRACKS, numTracks.toString());
 		
-		return doc;
+		return doc.getLuceneDocument();
 	}
 }

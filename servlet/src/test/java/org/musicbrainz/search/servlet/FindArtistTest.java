@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
@@ -8,11 +7,10 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
-import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.servlet.ArtistHtmlWriter;
 import org.musicbrainz.search.servlet.ArtistSearch;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
@@ -48,31 +46,31 @@ public class FindArtistTest extends TestCase {
 
         //General Purpose Artist
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST, "Farming Incident");
-            Index.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Farming Incident");
-            Index.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1999-04");
-            Index.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
-            Index.addFieldToDocument(doc, ArtistIndexField.COMMENT, "the real one");
-            Index.addFieldToDocument(doc, ArtistIndexField.COUNTRY, "af");
-            Index.addFieldToDocument(doc, ArtistIndexField.GENDER, "male");
-            writer.addDocument(doc);
+            MbDocument doc = new MbDocument();
+            doc.addField(ArtistIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(ArtistIndexField.ARTIST, "Farming Incident");
+            doc.addField(ArtistIndexField.SORTNAME, "Farming Incident");
+            doc.addField(ArtistIndexField.BEGIN, "1999-04");
+            doc.addField(ArtistIndexField.TYPE, ArtistType.GROUP.getName());
+            doc.addField(ArtistIndexField.COMMENT, "the real one");
+            doc.addField(ArtistIndexField.COUNTRY, "af");
+            doc.addField(ArtistIndexField.GENDER, "male");
+            writer.addDocument(doc.getLuceneDocument());
         }
 
         //Artist with & on name and aliases
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, "ccd4879c-5e88-4385-b131-bf65296bf245");
-            Index.addFieldToDocument(doc, ArtistIndexField.ARTIST, "Echo & The Bunnymen");
-            Index.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Echo & The Bunnymen");
-            Index.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1978");
-            Index.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
-            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo And The Bunnymen");
-            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo & The Bunnyman");
-            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo and The Bunymen");
-            Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo & The Bunymen");
-            writer.addDocument(doc);
+            MbDocument doc = new MbDocument();
+            doc.addField(ArtistIndexField.ARTIST_ID, "ccd4879c-5e88-4385-b131-bf65296bf245");
+            doc.addField(ArtistIndexField.ARTIST, "Echo & The Bunnymen");
+            doc.addField(ArtistIndexField.SORTNAME, "Echo & The Bunnymen");
+            doc.addField(ArtistIndexField.BEGIN, "1978");
+            doc.addField(ArtistIndexField.TYPE, ArtistType.GROUP.getName());
+            doc.addField(ArtistIndexField.ALIAS, "Echo And The Bunnymen");
+            doc.addField(ArtistIndexField.ALIAS, "Echo & The Bunnyman");
+            doc.addField(ArtistIndexField.ALIAS, "Echo and The Bunymen");
+            doc.addField(ArtistIndexField.ALIAS, "Echo & The Bunymen");
+            writer.addDocument(doc.getLuceneDocument());
         }
         writer.close();
         ss = new ArtistSearch(new IndexSearcher(ramDir,true));

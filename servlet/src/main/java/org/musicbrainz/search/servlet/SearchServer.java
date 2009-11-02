@@ -38,6 +38,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.XmlWriter;

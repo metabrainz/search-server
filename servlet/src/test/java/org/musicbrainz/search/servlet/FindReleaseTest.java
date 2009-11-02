@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
@@ -8,7 +7,7 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.index.*;
-import org.musicbrainz.search.servlet.MbDocument;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.ReleaseSearch;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
 import org.musicbrainz.search.servlet.ResourceType;
@@ -46,78 +45,78 @@ public class FindReleaseTest extends TestCase {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
-        Document doc = new Document();
-        Index.addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
-        Index.addFieldToDocument(doc, ReleaseIndexField.RELEASE, "Our Glorious 5 Year Plan");
-        Index.addFieldToDocument(doc, ReleaseIndexField.SCRIPT, "Latn");
-        Index.addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, "eng");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST, "Farming Incident");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAME, "Farming Incident");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAMECREDIT, "Farming Incident");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, "Incident, Farming");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, "-");
+        MbDocument doc = new MbDocument();
+        doc.addField(ReleaseIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
+        doc.addField(ReleaseIndexField.RELEASE, "Our Glorious 5 Year Plan");
+        doc.addField(ReleaseIndexField.SCRIPT, "Latn");
+        doc.addField(ReleaseIndexField.LANGUAGE, "eng");
+        doc.addField(ReleaseIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        doc.addField(ReleaseIndexField.ARTIST, "Farming Incident");
+        doc.addField(ReleaseIndexField.ARTIST_NAME, "Farming Incident");
+        doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Farming Incident");
+        doc.addField(ReleaseIndexField.ARTIST_SORTNAME, "Incident, Farming");
+        doc.addField(ReleaseIndexField.ARTIST_JOINPHRASE, "-");
 
         //Medium 1
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS_MEDIUM, 10);
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
-        Index.addFieldToDocument(doc, ReleaseIndexField.FORMAT, "Vinyl");
+        doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 10);
+        doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
+        doc.addField(ReleaseIndexField.FORMAT, "Vinyl");
         //Medium 2
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS_MEDIUM, 7);
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_DISCIDS_MEDIUM, 2);
-        Index.addFieldToDocument(doc, ReleaseIndexField.FORMAT, "-");
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, 17);
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_DISCIDS, 3);
+        doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 7);
+        doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 2);
+        doc.addField(ReleaseIndexField.FORMAT, "-");
+        doc.addNumericField(ReleaseIndexField.NUM_TRACKS, 17);
+        doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, 3);
 
-        Index.addFieldToDocument(doc, ReleaseIndexField.STATUS, "Official");
-        Index.addFieldToDocument(doc, ReleaseIndexField.TYPE, "album");
-        Index.addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, "B00004Y6O9");
+        doc.addField(ReleaseIndexField.STATUS, "Official");
+        doc.addField(ReleaseIndexField.TYPE, "album");
+        doc.addField(ReleaseIndexField.AMAZON_ID, "B00004Y6O9");
 
-        Index.addFieldToDocument(doc, ReleaseIndexField.COUNTRY, "gb");
+        doc.addField(ReleaseIndexField.COUNTRY, "gb");
 
-        Index.addFieldToDocument(doc, ReleaseIndexField.DATE, "2005");
-        Index.addFieldToDocument(doc, ReleaseIndexField.BARCODE, "07599273202");
+        doc.addField(ReleaseIndexField.DATE, "2005");
+        doc.addField(ReleaseIndexField.BARCODE, "07599273202");
 
         //Multiples allowed of these
-        Index.addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, "WRATHCD25");
-        Index.addFieldToDocument(doc, ReleaseIndexField.LABEL, "Wrath Records");
+        doc.addField(ReleaseIndexField.CATALOG_NO, "WRATHCD25");
+        doc.addField(ReleaseIndexField.LABEL, "Wrath Records");
 
-        Index.addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, "LP001");
-        Index.addFieldToDocument(doc, ReleaseIndexField.LABEL, "Major Records");
+        doc.addField(ReleaseIndexField.CATALOG_NO, "LP001");
+        doc.addField(ReleaseIndexField.LABEL, "Major Records");
 
 
-        writer.addDocument(doc);
+        writer.addDocument(doc.getLuceneDocument());
 
         //Release with Multiple Artists
-        doc = new Document();
-        Index.addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, "0011c128-b1f2-300e-88cc-c33c30dce704");
-        Index.addFieldToDocument(doc, ReleaseIndexField.RELEASE, "Epics");
-        Index.addFieldToDocument(doc, ReleaseIndexField.SCRIPT, "Taml");
-        Index.addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, "fra");
-        Index.addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, "99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAME, "Erich Kunzel");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, "Kunzel, Eric");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, "and");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAMECREDIT, "Erich Kunzel");
+        doc = new MbDocument();
+        doc.addField(ReleaseIndexField.RELEASE_ID, "0011c128-b1f2-300e-88cc-c33c30dce704");
+        doc.addField(ReleaseIndexField.RELEASE, "Epics");
+        doc.addField(ReleaseIndexField.SCRIPT, "Taml");
+        doc.addField(ReleaseIndexField.LANGUAGE, "fra");
+        doc.addField(ReleaseIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
+        doc.addField(ReleaseIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
+        doc.addField(ReleaseIndexField.ARTIST_ID, "99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
+        doc.addField(ReleaseIndexField.ARTIST_NAME, "Erich Kunzel");
+        doc.addField(ReleaseIndexField.ARTIST_SORTNAME, "Kunzel, Eric");
+        doc.addField(ReleaseIndexField.ARTIST_JOINPHRASE, "and");
+        doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Erich Kunzel");
 
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_SORTNAME, "Cincinnati Pops Orchestra, The");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_JOINPHRASE, "-");
-        Index.addFieldToDocument(doc, ReleaseIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
+        doc.addField(ReleaseIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
+        doc.addField(ReleaseIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
+        doc.addField(ReleaseIndexField.ARTIST_SORTNAME, "Cincinnati Pops Orchestra, The");
+        doc.addField(ReleaseIndexField.ARTIST_JOINPHRASE, "-");
+        doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
 
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS_MEDIUM, 14);
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
-        Index.addFieldToDocument(doc, ReleaseIndexField.STATUS, "Promotion");
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, 14);
-        Index.addNumericFieldToDocument(doc, ReleaseIndexField.NUM_DISCIDS, 1);
-        Index.addFieldToDocument(doc, ReleaseIndexField.FORMAT, "CD");
+        doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 14);
+        doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
+        doc.addField(ReleaseIndexField.STATUS, "Promotion");
+        doc.addNumericField(ReleaseIndexField.NUM_TRACKS, 14);
+        doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, 1);
+        doc.addField(ReleaseIndexField.FORMAT, "CD");
 
-        Index.addFieldToDocument(doc, ReleaseIndexField.COUNTRY, "us");
-        Index.addFieldToDocument(doc, ReleaseIndexField.DATE, "2003-09-23");
-        writer.addDocument(doc);
+        doc.addField(ReleaseIndexField.COUNTRY, "us");
+        doc.addField(ReleaseIndexField.DATE, "2003-09-23");
+        writer.addDocument(doc.getLuceneDocument());
 
         writer.close();
         Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
