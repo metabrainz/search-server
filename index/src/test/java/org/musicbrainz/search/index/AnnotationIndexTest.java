@@ -86,8 +86,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (1, 'Person');");
-        stmt.addBatch("INSERT INTO artist_type(id,name)VALUES (2, 'Group');");
         stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Farming Incident',1)");
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
              " VALUES (521316,1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36',1,null, 1999,4, null, 2, 0)");
@@ -114,7 +112,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
-		stmt.addBatch("INSERT INTO label_type (id, name) VALUES (4, 'Original Production')");
 
         stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " +
 					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
