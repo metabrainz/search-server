@@ -46,6 +46,7 @@ public class FindReleaseGroupTest extends TestCase {
         Document doc = new Document();
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
+        Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASE_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c46");
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.RELEASE, "secret");
 
         Index.addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
@@ -122,6 +123,19 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+     public void testFindReleaseGroupByReleaseId() throws Exception {
+        Results res = ss.searchLucene("releaseid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"", 0, 10);
+        assertEquals(0, res.totalHits);
+        res = ss.searchLucene("release:secret", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID));
+        assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST_NAME));
+        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
 
     //release
     public void testFindReleaseGroupByArtist() throws Exception {
@@ -300,6 +314,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("artist id=\"707622da-475f-48e1-905d-248718df6521\""));
         assertTrue(output.contains("type=\"single\""));
         assertTrue(output.contains("release-list count=\"1\""));
+        assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title></release>")); 
 
 
     }

@@ -61,7 +61,7 @@ public class
     @Override
     public void init() throws SQLException {
         addPreparedStatement("RELEASES",
-                "SELECT DISTINCT release_group, n0.name as name " +
+                "SELECT DISTINCT release_group, release.gid as gid, n0.name as name " +
                 "FROM release " +
                 "LEFT JOIN release_name n0 ON release.name = n0.id " +
                 "WHERE release_group BETWEEN ? AND ?");
@@ -85,7 +85,7 @@ public class
                         "order by rg.id,acn.position ");          //Order by pos so come in expected order
 
         addPreparedStatement("RELEASEGROUPS",
-            "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
+                        "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
                         "FROM release_group AS rg " +
                         "LEFT JOIN release_name n0 ON rg.name = n0.id " +
                         "LEFT JOIN release_group_type  ON rg.type = release_group_type.id " +
@@ -97,21 +97,24 @@ public class
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         //Releases
-        Map<Integer, List<String>> releases = new HashMap<Integer, List<String>>();
+        Map<Integer, List<ReleaseWrapper>> releases = new HashMap<Integer, List<ReleaseWrapper>>();
         PreparedStatement st =getPreparedStatement("RELEASES");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int rgId = rs.getInt("release_group");
-            List<String> list;
+            List<ReleaseWrapper> list;
             if (!releases.containsKey(rgId)) {
-                list = new LinkedList<String>();
+                list = new LinkedList<ReleaseWrapper>();
                 releases.put(rgId, list);
             } else {
                 list = releases.get(rgId);
             }
-            list.add(rs.getString("name"));
+            ReleaseWrapper rw = new ReleaseWrapper();
+            rw.setReleaseId(rs.getString("gid"));
+            rw.setReleaseName(rs.getString("name"));
+            list.add(rw);
         }
 
         //Artists
@@ -151,7 +154,7 @@ public class
 
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> releases, Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<ReleaseWrapper>> releases, Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
         Document doc = new Document();
         int id = rs.getInt("id");
         addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
@@ -160,8 +163,9 @@ public class
 
         //Add each release name within this release group
         if (releases.containsKey(id)) {
-            for (String release : releases.get(id)) {
-                addFieldToDocument(doc, ReleaseGroupIndexField.RELEASE, release);
+            for (ReleaseWrapper release : releases.get(id)) {
+                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.RELEASE, release.getReleaseName());
+                addFieldOrHyphenToDocument(doc, ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
             }
         }
 

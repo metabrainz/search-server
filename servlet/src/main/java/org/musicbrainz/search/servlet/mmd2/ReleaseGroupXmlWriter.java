@@ -31,6 +31,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -93,9 +94,16 @@ public class ReleaseGroupXmlWriter extends XmlWriter {
                 releaseGroup.setArtistCredit(ac);
             }
 
-            //TODO For now just show no of releases linked to release group, but may want to list release names (and ids)
+            String[] releaseIds          = doc.getValues(ReleaseIndexField.RELEASE_ID);
+            String[] releaseNames        = doc.getValues(ReleaseIndexField.RELEASE);
             ReleaseList releaseList = of.createReleaseList();
-            releaseList.setCount(BigInteger.valueOf(doc.getValues(ReleaseGroupIndexField.RELEASE).length));
+            releaseList.setCount(BigInteger.valueOf(releaseIds.length));
+            for(int i =0; i< releaseIds.length; i++) {
+                Release release = of.createRelease();
+                release.setId(releaseIds[i]);
+                release.setTitle(releaseNames[i]);
+                releaseList.getRelease().add(release);
+            }
             releaseGroup.setReleaseList(releaseList);
             releaseGroupList.getReleaseGroup().add(releaseGroup);
         }
