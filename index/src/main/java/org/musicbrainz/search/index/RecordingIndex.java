@@ -84,8 +84,8 @@ public class RecordingIndex extends DatabaseIndex {
                "order by re.id,acn.position ");
 
         addPreparedStatement("TRACKS",
-                "SELECT tn.name as trackname, t.recording, t.position,tl.trackcount, " +
-                "r.gid as releaseid,rn.name as releasename,rgt.name as type " +
+                "SELECT tn.name as trackname, t.recording, t.position as trackposition,tl.trackcount, " +
+                "r.gid as releaseid,rn.name as releasename,rgt.name as type,m.position as mediumposition " +
                 "FROM track t " +
                 "INNER JOIN track_name tn " +
                 "ON t.name=tn.id " +
@@ -182,8 +182,9 @@ public class RecordingIndex extends DatabaseIndex {
            tw.setReleaseId(rs.getString("releaseid"));
            tw.setReleaseName(rs.getString("releasename"));
            tw.setTrackCount(rs.getInt("trackcount"));
-           tw.setTrackPosition(rs.getInt("position"));
+           tw.setTrackPosition(rs.getInt("trackposition"));
            tw.setTrackName(rs.getString("trackname"));
+           tw.setMediumPosition(rs.getInt("mediumposition"));
            list.add(tw);
         }
         return tracks;
@@ -247,6 +248,7 @@ public class RecordingIndex extends DatabaseIndex {
                 //Added to TRACK_OUTPUT for outputting xml, and to recording for searching
                 doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
                 doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
+                doc.addField(RecordingIndexField.MEDIUM_POS_OUTPUT, String.valueOf(track.getMediumPosition()));
 
             }
         }

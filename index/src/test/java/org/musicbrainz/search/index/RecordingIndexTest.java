@@ -173,7 +173,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.DURATION.getName()).stringValue()));
-            assertEquals(16, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.QUANTIZED_DURATION.getName()).stringValue()));
+            
         }
         ir.close();
     }

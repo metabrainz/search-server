@@ -99,6 +99,7 @@ public class RecordingXmlWriter extends XmlWriter {
             String[] trackNos      = doc.getValues(RecordingIndexField.TRACKNUM);
             String[] numTracks     = doc.getValues(RecordingIndexField.NUM_TRACKS);
             String[] trackName     = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
+            String[] mediumPos     = doc.getValues(RecordingIndexField.MEDIUM_POS_OUTPUT);
 
             if(releaseNames.length>0)
             {
@@ -122,8 +123,9 @@ public class RecordingXmlWriter extends XmlWriter {
                     releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
                     releaseTrackList.getTrack().add(track);
                     Medium medium = of.createMedium();
+                    medium.setPosition(new BigInteger(mediumPos[i]));
                     medium.setTrackList(releaseTrackList);
-
+                    
                     MediumList mediumList = of.createMediumList();
                     mediumList.getMedium().add(medium);
                     release.setMediumList(mediumList);

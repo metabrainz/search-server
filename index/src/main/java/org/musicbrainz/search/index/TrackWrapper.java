@@ -12,7 +12,7 @@ class TrackWrapper {
     private String  releaseName;
     private String  releaseGroupType;
     private String  trackName;
-
+    private int     mediumPosition;
 
     public int getTrackPosition() {
         return trackPosition;
@@ -60,5 +60,13 @@ class TrackWrapper {
 
     public void setTrackName(String trackName) {
         this.trackName = trackName;
+    }
+
+    public int getMediumPosition() {
+        return mediumPosition;
+    }
+
+    public void setMediumPosition(int mediumPosition) {
+        this.mediumPosition = mediumPosition;
     }
 }
