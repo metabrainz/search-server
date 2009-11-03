@@ -131,7 +131,7 @@ public abstract class SearchServer {
 
     public ResultsWriter getWriter(String fmt, String version) {
         if (SearchServerServlet.RESPONSE_XML.equals(fmt)) {
-            if(SearchServerServlet.VERSION_1.equals(version)) {
+            if(SearchServerServlet.WS_VERSION_1.equals(version)) {
                 return getXmlV1Writer();
             }
             else {

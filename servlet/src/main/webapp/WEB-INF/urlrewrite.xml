@@ -12,10 +12,10 @@
     <rule>
        <note>
            Matches urls like http://localhost:8080/ws/1/artist/?query=blur&amp;fmt=xml
-           and converts to http://localhost:8080/?type=artist&amp;query=blur&amp;fmt=xml
+           and converts to http://localhost:8080/?type=artist&amp;query=blur&amp;fmt=xml&amp;version=1
        </note>
-       <from>^/ws/1/(.*)/\?(.*)$</from>
-       <to>/?type=$1&amp;$2</to>
+       <from>^/ws/(\d)/(.*)/\?(.*)$</from>
+       <to>/?version=$1&amp;type=$2&amp;$3</to>
      </rule>
 
     <rule>

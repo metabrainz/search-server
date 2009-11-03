@@ -55,8 +55,8 @@ public class SearchServerServlet extends HttpServlet {
     final static String RESPONSE_XML = "xml";
     final static String RESPONSE_HTML = "html";
 
-    final static String VERSION_1 = "1";
-    final static String VERSION_2 = "2";
+    final static String WS_VERSION_1 = "1";
+    final static String WS_VERSION_2 = "2";
 
     final static String CHARSET = "UTF-8";
 
@@ -167,7 +167,7 @@ public class SearchServerServlet extends HttpServlet {
 
         String responseVersion = request.getParameter(RequestParameter.VERSION.getName());
         if (responseVersion == null || responseVersion.isEmpty()) {
-            responseVersion = VERSION_2;
+            responseVersion = WS_VERSION_2;
         }
 
         Integer offset = DEFAULT_OFFSET;
