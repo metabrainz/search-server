@@ -61,7 +61,7 @@ public class FindRecordingTest extends TestCase {
         ss = new RecordingSearch(new IndexSearcher(ramDir,true));
     }
 
-    public void testFindTrack() throws Exception {
+    public void testFindRecordingByV1TrackField() throws Exception {
         Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -77,7 +77,24 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackById() throws Exception {
+
+    public void testFindRecording() throws Exception {
+        Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    }
+
+     public void testFindRecordingByV1TrackId() throws Exception {
         Results res = ss.searchLucene("trid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -93,7 +110,23 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackByReleaseId() throws Exception {
+    public void testFindRecordingById() throws Exception {
+        Results res = ss.searchLucene("rid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    }
+
+    public void testFindRecordingByReleaseId() throws Exception {
         Results res = ss.searchLucene("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -109,7 +142,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackByArtistId() throws Exception {
+    public void testFindRecordingByArtistId() throws Exception {
         Results res = ss.searchLucene("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -125,7 +158,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-     public void testFindTrackByArtistName() throws Exception {
+     public void testFindRecordingByArtistName() throws Exception {
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -141,7 +174,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-     public void testFindTrackByArtistSortname() throws Exception {
+     public void testFindRecordingByArtistSortname() throws Exception {
         Results res = ss.searchLucene("sortname:\"Incident, Farming\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -157,7 +190,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackByReleaseType() throws Exception {
+    public void testFindRecordingByReleaseType() throws Exception {
         Results res = ss.searchLucene("type:\"album\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -173,7 +206,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackByReleaseTypeNumeric() throws Exception {
+    public void testFindRecordingByReleaseTypeNumeric() throws Exception {
         Results res = ss.searchLucene("type:\"1\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -188,7 +221,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
-    public void testFindTrackByNumberOfTracksOnRelease() throws Exception {
+    public void testFindRecordingByNumberOfTracksOnRelease() throws Exception {
         Results res = ss.searchLucene("tracks:10", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -204,7 +237,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackByDuration() throws Exception {
+    public void testFindRecordingByDuration() throws Exception {
         Results res = ss.searchLucene("dur:234000", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -220,12 +253,12 @@ public class FindRecordingTest extends TestCase {
     }
 
 
-    public void testFindTrackByNonNumericDuration() throws Exception {
+    public void testFindRecordingByNonNumericDuration() throws Exception {
         Results res = ss.searchLucene("dur:fred", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
-    public void testFindTrackByDurationRange() throws Exception {
+    public void testFindRecordingByDurationRange() throws Exception {
         Results res = ss.searchLucene("dur:[87 TO 240000]", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -240,7 +273,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackByQdur() throws Exception {
+    public void testFindRecordingByQdur() throws Exception {
         Results res = ss.searchLucene("qdur:117", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -256,7 +289,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-    public void testFindTrackByTrackNumber() throws Exception {
+    public void testFindRecordingByTrackNumber() throws Exception {
         Results res = ss.searchLucene("tnum:5", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -272,7 +305,7 @@ public class FindRecordingTest extends TestCase {
     }
 
 
-    public void testFindTrackByDefault() throws Exception {
+    public void testFindRecordingByDefault() throws Exception {
         Results res = ss.searchLucene("\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -339,167 +372,4 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("count=\"1\""));
     }
 
-      public void testOutputAsHtml() throws Exception {
-
-        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
-        ResultsWriter writer = new TrackHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
-        pr.close();
-
-        String output = sw.toString();
-        //System.out.println("Html is" + output);
-        assertTrue(output.contains("hits=1"));
-        assertTrue(output.contains("offset=0"));
-        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
-        assertTrue(output.contains("searchresultseven"));
-        assertTrue(output.contains("Gravitational Lenz"));
-        assertTrue(output.contains("Farming Incident"));
-        assertTrue(output.contains("Our Glorious 5 Year Plan"));
-        assertTrue(output.contains("3:54"));
-        assertFalse(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
-        assertFalse(output.contains("tlen good"));
-    }
-
-
-      public void testOutputAndTportAsHtml() throws Exception {
-
-        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
-        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
-
-        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
-        ResultsWriter writer = new TrackHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res,extraInfoMap);
-        pr.close();
-
-        String output = sw.toString();
-        //System.out.println("Html is" + output);
-        assertTrue(output.contains("hits=1"));
-        assertTrue(output.contains("offset=0"));
-        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
-        assertTrue(output.contains("searchresultseven"));
-        assertTrue(output.contains("Gravitational Lenz"));
-        assertTrue(output.contains("Farming Incident"));
-        assertTrue(output.contains("Our Glorious 5 Year Plan"));
-        assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
-        assertFalse(output.contains("tlen good"));
-    }
-
-    public void testOutputAndTportDurGoodMatchAsHtml() throws Exception {
-
-        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
-        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
-        extraInfoMap.put(RequestParameter.DURATION, "234000");
-
-
-
-        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
-        ResultsWriter writer = new TrackHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res,extraInfoMap);
-        pr.close();
-
-        String output = sw.toString();
-        //System.out.println("Html is" + output);
-        assertTrue(output.contains("hits=1"));
-        assertTrue(output.contains("offset=0"));
-        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
-        assertTrue(output.contains("searchresultseven"));
-        assertTrue(output.contains("Gravitational Lenz"));
-        assertTrue(output.contains("Farming Incident"));
-        assertTrue(output.contains("Our Glorious 5 Year Plan"));
-        assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
-        assertTrue(output.contains("tlen good"));
-    }
-
-    public void testOutputAndTportDurOkMatchAsHtml() throws Exception {
-
-        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
-        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
-        extraInfoMap.put(RequestParameter.DURATION, "240000");
-
-
-
-        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
-        ResultsWriter writer = new TrackHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res,extraInfoMap);
-        pr.close();
-
-        String output = sw.toString();
-        //System.out.println("Html is" + output);
-        assertTrue(output.contains("hits=1"));
-        assertTrue(output.contains("offset=0"));
-        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
-        assertTrue(output.contains("searchresultseven"));
-        assertTrue(output.contains("Gravitational Lenz"));
-        assertTrue(output.contains("Farming Incident"));
-        assertTrue(output.contains("Our Glorious 5 Year Plan"));
-        assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
-        assertTrue(output.contains("tlen ok"));
-    }
-
-    public void testOutputAndTportDurPoorMatchAsHtml() throws Exception {
-
-        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
-        extraInfoMap.put(RequestParameter.TAGGER_PORT, "8000");
-        extraInfoMap.put(RequestParameter.DURATION, "240");
-
-
-
-        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
-        ResultsWriter writer = new TrackHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res,extraInfoMap);
-        pr.close();
-
-        String output = sw.toString();
-        //System.out.println("Html is" + output);
-        assertTrue(output.contains("hits=1"));
-        assertTrue(output.contains("offset=0"));
-        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
-        assertTrue(output.contains("searchresultseven"));
-        assertTrue(output.contains("Gravitational Lenz"));
-        assertTrue(output.contains("Farming Incident"));
-        assertTrue(output.contains("Our Glorious 5 Year Plan"));
-        assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("http://127.0.0.1:8000/openalbum?id=1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
-        assertTrue(output.contains("tlen bad"));
-    }
-
-    public void testOutputOldStyleLinkAsHtml() throws Exception {
-
-        EnumMap<RequestParameter, String> extraInfoMap =  new EnumMap<RequestParameter, String>(RequestParameter.class);
-        extraInfoMap.put(RequestParameter.OLD_STYLE_LINK, "1");
-
-
-
-        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 1);
-        ResultsWriter writer = new TrackHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res,extraInfoMap);
-        pr.close();
-
-        String output = sw.toString();
-        //System.out.println("Html is" + output);
-        assertTrue(output.contains("hits=1"));
-        assertTrue(output.contains("offset=0"));
-        assertTrue(output.contains("redirect=7ca7782b-a602-448b-b108-bb881a7be2d6"));
-        assertTrue(output.contains("searchresultseven"));
-        assertTrue(output.contains("Gravitational Lenz"));
-        assertTrue(output.contains("Farming Incident"));
-        assertTrue(output.contains("Our Glorious 5 Year Plan"));
-        assertTrue(output.contains("3:54"));
-        assertTrue(output.contains("<a href=\"tag:7ca7782b-a602-448b-b108-bb881a7be2d6:1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\">"));
-    }
 }

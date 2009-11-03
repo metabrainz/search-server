@@ -343,29 +343,6 @@ public class FindArtistTest extends TestCase {
     }
 
 
-    public void testOutputAsHtml() throws Exception {
-
-        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter writer = new ArtistHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
-        pr.close();
-
-        String output = sw.toString();
-//      System.out.println("Xml is" + output);
-//        assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));  group comes before id in output
-//        assertTrue(output.contains("<artist-list count=\"1\" offset=\"0\">"));               offset comes before count in output
-        assertTrue(output.contains("group"));
-        assertTrue(output.contains("Farming Incident"));
-        assertTrue(output.contains("1999-04"));
-        assertTrue(output.contains("the real one"));
-        assertFalse(output.contains("end"));
-        assertFalse(output.contains("alias"));
-        assertFalse(output.contains("disambugation"));
-
-    }
-
     /**
      * Tests that & is converted to valid xml
      *
@@ -388,25 +365,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<name>Echo &amp; The Bunnymen</name>"));
     }
 
-    /**
-     * Tests that & is converted to valid html
-     *
-     * @throws Exception
-     */
-    public void testOutputAsHtmlSpecialCharacters() throws Exception {
 
-        Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 1);
-        ResultsWriter writer = new ArtistHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
-        pr.close();
-
-        String output = sw.toString();
-        assertTrue(output.contains("group"));
-        assertTrue(output.contains("Echo &amp; The Bunnymen"));
-        //System.out.println(output);
-    }
 
     public void testXmlWritingPerformance() throws Exception {
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
@@ -424,21 +383,7 @@ public class FindArtistTest extends TestCase {
         System.out.println("XML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
     }
 
-    public void testHtmlWritingPerformance() throws Exception {
-        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
-        assertEquals(1, res.totalHits);
-
-        Date start = new Date();
-        ResultsWriter writer = new ArtistHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        for (int i = 0; i < 1000; i++) {
-            writer.write(pr, res);
-        }
-        pr.close();
-        Date end = new Date();
-        System.out.println("HTML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
-    }
+    
 
 
     /**
