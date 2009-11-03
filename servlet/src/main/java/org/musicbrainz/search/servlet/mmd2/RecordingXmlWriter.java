@@ -57,7 +57,7 @@ public class RecordingXmlWriter extends XmlWriter {
 
             recording.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
-            String name = doc.get(RecordingIndexField.RECORDING);
+            String name = doc.get(RecordingIndexField.RECORDING_OUTPUT);
 
             if (name != null) {
                 recording.setTitle(name);
@@ -98,6 +98,7 @@ public class RecordingXmlWriter extends XmlWriter {
             String[] releaseTypes  = doc.getValues(RecordingIndexField.RELEASE_TYPE);
             String[] trackNos      = doc.getValues(RecordingIndexField.TRACKNUM);
             String[] numTracks     = doc.getValues(RecordingIndexField.NUM_TRACKS);
+            String[] trackName     = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
 
             if(releaseNames.length>0)
             {
@@ -114,9 +115,12 @@ public class RecordingXmlWriter extends XmlWriter {
                         release.getReleaseGroup().getType().add(releaseTypes[i].toLowerCase(Locale.US));
                     }
 
+                    Track track = of.createTrack();
+                    track.setTitle(trackName[i]);
                     TrackList releaseTrackList = of.createTrackList();
                     releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNos[i]) - 1));
                     releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
+                    releaseTrackList.getTrack().add(track);
                     Medium medium = of.createMedium();
                     medium.setTrackList(releaseTrackList);
 

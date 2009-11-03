@@ -11,6 +11,7 @@ class TrackWrapper {
     private String  releaseId;
     private String  releaseName;
     private String  releaseGroupType;
+    private String  trackName;
 
 
     public int getTrackPosition() {
@@ -51,5 +52,13 @@ class TrackWrapper {
 
     public void setReleaseGroupType(String releaseGroupType) {
         this.releaseGroupType = releaseGroupType;
+    }
+
+    public String getTrackName() {
+        return trackName;
+    }
+
+    public void setTrackName(String trackName) {
+        this.trackName = trackName;
     }
 }

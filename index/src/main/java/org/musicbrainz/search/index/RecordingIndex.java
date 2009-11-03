@@ -84,9 +84,11 @@ public class RecordingIndex extends DatabaseIndex {
                "order by re.id,acn.position ");
 
         addPreparedStatement("TRACKS",
-                "SELECT t.recording, t.position,tl.trackcount, " +
+                "SELECT tn.name as trackname, t.recording, t.position,tl.trackcount, " +
                 "r.gid as releaseid,rn.name as releasename,rgt.name as type " +
                 "FROM track t " +
+                "INNER JOIN track_name tn " +
+                "ON t.name=tn.id " +
                 "INNER JOIN tracklist tl " +
                 "ON t.tracklist=tl.id " +
                 "INNER JOIN medium m " +
@@ -181,6 +183,7 @@ public class RecordingIndex extends DatabaseIndex {
            tw.setReleaseName(rs.getString("releasename"));
            tw.setTrackCount(rs.getInt("trackcount"));
            tw.setTrackPosition(rs.getInt("position"));
+           tw.setTrackName(rs.getString("trackname"));
            list.add(tw);
         }
         return tracks;
@@ -228,7 +231,8 @@ public class RecordingIndex extends DatabaseIndex {
 
         MbDocument doc = new MbDocument();
         doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
-        doc.addNonEmptyField(RecordingIndexField.RECORDING, rs.getString("trackname"));
+        doc.addNonEmptyField(RecordingIndexField.RECORDING, rs.getString("trackname"));         //Search
+        doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, rs.getString("trackname"));  //Output
         doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
 
@@ -240,6 +244,10 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, track.getReleaseGroupType());
                 doc.addField(RecordingIndexField.RELEASE_ID, track.getReleaseId());
                 doc.addField(RecordingIndexField.RELEASE, track.getReleaseName());
+                //Added to TRACK_OUTPUT for outputting xml, and to recording for searching
+                doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
+                doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
+
             }
         }
 
