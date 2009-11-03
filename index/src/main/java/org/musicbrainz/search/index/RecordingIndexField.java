@@ -9,9 +9,8 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
  */
 public enum RecordingIndexField implements IndexField {
 
-    //TODO trid and track need renaming whilst maintaining v1 compatability on search
-    RECORDING_ID        ("trid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    RECORDING           ("track",		Field.Store.YES,	Field.Index.ANALYZED),
+    RECORDING_ID        ("rid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    RECORDING           ("recording",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_ID			("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST				("artist",		Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_NAME         ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
