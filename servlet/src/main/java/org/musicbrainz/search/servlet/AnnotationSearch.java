@@ -12,7 +12,6 @@ public class AnnotationSearch extends SearchServer {
 
     private AnnotationSearch() throws Exception {
         mmd1XmlWriter = null;
-        htmlWriter = new AnnotationHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(AnnotationIndexField.TEXT.getName());
         analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2009 Lukas Lalinsky
+/* Copyright (c) 2009 Paul Taylor
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,47 +30,71 @@ package org.musicbrainz.search.servlet.mmd2;
 
 
 import org.musicbrainz.mmd2.*;
-import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
+
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Locale;
 
-public class LabelXmlWriter extends XmlWriter {
+
+public class ArtistWriter extends ResultsWriter {
+
+
 
     public Metadata write(Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
 
         Metadata metadata = of.createMetadata();
-        LabelList labelList = of.createLabelList();
+        ArtistList artistList = of.createArtistList();
 
         for (Result result : results.results) {
             MbDocument doc = result.doc;
-            Label label = of.createLabel();
-            label.setId(doc.get(LabelIndexField.LABEL_ID));
-            String type = doc.get(LabelIndexField.TYPE);
-            if(type!=null) {
-                label.setType(type.toLowerCase((Locale.US)));
-            }
-            label.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
+            Artist artist = of.createArtist();
 
-            String name = doc.get(LabelIndexField.LABEL);
+            artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
+
+            String artype = doc.get(ArtistIndexField.TYPE);
+            if (artype != null) {
+                artist.setType(artype.toLowerCase(Locale.US));
+            }
+
+
+            artist.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
+
+
+
+            String gender = doc.get(ArtistIndexField.GENDER);
+            if (gender != null) {
+                artist.setGender(gender.toLowerCase(Locale.US));
+
+            }
+
+
+
+            String country = doc.get(ArtistIndexField.COUNTRY);
+            if (country != null) {
+                artist.setCountry(country.toLowerCase(Locale.US));
+
+            }
+
+            String name = doc.get(ArtistIndexField.ARTIST);
             if (name != null) {
-                label.setName(name);
+                artist.setName(name);
 
             }
 
-            String sortname = doc.get(LabelIndexField.SORTNAME);
+            String sortname = doc.get(ArtistIndexField.SORTNAME);
             if (sortname != null) {
-                label.setSortName(sortname);
+                artist.setSortName(name);
 
             }
 
-            String begin = doc.get(LabelIndexField.BEGIN);
-            String end = doc.get(LabelIndexField.END);
+            String begin = doc.get(ArtistIndexField.BEGIN);
+            String end = doc.get(ArtistIndexField.END);
             if (begin != null || end != null) {
                 LifeSpan lifespan = of.createLifeSpan();
                 if (begin != null) {
@@ -81,16 +105,16 @@ public class LabelXmlWriter extends XmlWriter {
                     lifespan.setEnd(end);
 
                 }
-                label.setLifeSpan(lifespan);
+                artist.setLifeSpan(lifespan);
 
             }
 
-            String comment = doc.get(LabelIndexField.COMMENT);
+            String comment = doc.get(ArtistIndexField.COMMENT);
             if (comment != null) {
-                label.setDisambiguation(comment);
+                artist.setDisambiguation(comment);
             }
 
-            String[] aliases = doc.getValues(LabelIndexField.ALIAS);
+            String[] aliases = doc.getValues(ArtistIndexField.ALIAS);
             if(aliases.length>0)
             {
                 AliasList aliasList = of.createAliasList();
@@ -99,15 +123,16 @@ public class LabelXmlWriter extends XmlWriter {
                     alias.getContent().add(aliases[i]);
                     aliasList.getAlias().add(alias);
                 }
-                label.setAliasList(aliasList);
+                artist.setAliasList(aliasList);
             }
-            
-            labelList.getLabel().add(label);
+            artistList.getArtist().add(artist);
 
         }
-        labelList.setCount(BigInteger.valueOf(results.totalHits));
-        labelList.setOffset(BigInteger.valueOf(results.offset));
-        metadata.setLabelList(labelList);
+        artistList.setCount(BigInteger.valueOf(results.totalHits));
+        artistList.setOffset(BigInteger.valueOf(results.offset));
+        metadata.setArtistList(artistList);
         return metadata;
     }
+
+
 }

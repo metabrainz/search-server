@@ -40,7 +40,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Locale;
 
-public class ReleaseGroupXmlWriter extends XmlWriter {
+public class ReleaseGroupWriter extends ResultsWriter {
 
 
     public Metadata write(Results results) throws IOException {

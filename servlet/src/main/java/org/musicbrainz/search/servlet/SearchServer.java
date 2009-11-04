@@ -41,7 +41,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.XmlWriter;
+import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,13 +56,11 @@ import java.util.logging.Logger;
 public abstract class SearchServer {
 
     protected PerFieldAnalyzerWrapper analyzer;
-    protected XmlWriter xmlWriter;
+    protected ResultsWriter resultsWriter;
     protected Mmd1XmlWriter mmd1XmlWriter;
-    protected HtmlWriter htmlWriter;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
     protected Date          serverLastUpdatedDate;
-    protected String        htmlLastUpdated;
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz",Locale.US);
     protected AtomicInteger    searchCount = new AtomicInteger();
 
@@ -95,7 +93,6 @@ public abstract class SearchServer {
             serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(indexSearcher.getIndexReader().document(indexSearcher.getIndexReader().maxDoc()-1)
                     .getField(MetaIndexField.META.getName()).stringValue()));
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            htmlWriter.setLastUpdated(dateFormat.format(serverLastUpdatedDate));
         }
         catch(Exception e) {
             System.out.println(e);
@@ -108,16 +105,12 @@ public abstract class SearchServer {
     }
 
 
-    public XmlWriter getXmlWriter() {
-        return xmlWriter;
+    public org.musicbrainz.search.servlet.mmd2.ResultsWriter getXmlWriter() {
+        return resultsWriter;
     }
 
     public Mmd1XmlWriter getXmlV1Writer() {
         return mmd1XmlWriter;
-    }
-
-    public HtmlWriter getHtmlWriter() {
-        return htmlWriter;
     }
 
     public List<String> getSearchFields() {
@@ -129,24 +122,12 @@ public abstract class SearchServer {
     }
 
 
-    public ResultsWriter getWriter(String fmt, String version) {
-        if (SearchServerServlet.RESPONSE_XML.equals(fmt)) {
-            if(SearchServerServlet.WS_VERSION_1.equals(version)) {
-                return getXmlV1Writer();
-            }
-            else {
-                //TODO whilst in dev fall back to v1 if don't have a v2 one yet
-                ResultsWriter writer = getXmlWriter();
-                if(writer==null)  {
-                   return getXmlV1Writer();
-                } else {
-                   return writer; 
-                }
-
-            }
-
-        } else {
-            return getHtmlWriter();
+    public org.musicbrainz.search.servlet.ResultsWriter getWriter(String fmt, String version) {
+        if(SearchServerServlet.WS_VERSION_1.equals(version)) {
+            return getXmlV1Writer();
+        }
+        else {
+            return getXmlWriter();
         }
     }
 

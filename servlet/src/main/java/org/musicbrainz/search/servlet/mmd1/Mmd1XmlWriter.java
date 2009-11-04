@@ -87,7 +87,7 @@ public abstract class Mmd1XmlWriter extends ResultsWriter {
      * @param results
      * @throws IOException
      */
-    public void write(PrintWriter out, Results results, EnumMap<RequestParameter,String> extraInfoMap) throws IOException {
+    public void write(PrintWriter out, Results results, String outputFormat) throws IOException {
         try {
             Metadata metadata = write(results);
             Marshaller m = context.createMarshaller();

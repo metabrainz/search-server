@@ -29,7 +29,7 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.velocity.app.Velocity;
+import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,9 +39,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.logging.Logger;
-import java.util.EnumMap;
 import java.lang.management.ManagementFactory;
+import java.util.logging.Logger;
 
 public class SearchServerServlet extends HttpServlet {
 
@@ -52,8 +51,8 @@ public class SearchServerServlet extends HttpServlet {
     final static int MAX_MATCHES_LIMIT = 100;
 
 
-    final static String RESPONSE_XML = "xml";
-    final static String RESPONSE_HTML = "html";
+    public final static String RESPONSE_XML    = "xml";
+    public final static String RESPONSE_JSON   = "json";
 
     final static String WS_VERSION_1 = "1";
     final static String WS_VERSION_2 = "2";
@@ -70,11 +69,8 @@ public class SearchServerServlet extends HttpServlet {
         String indexDir = getServletConfig().getInitParameter("index_dir");
         log.info("Index dir = " + indexDir);
         log.info("Max Heap = "+ ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
-        // Setup Velocity and Search server
-        setUpVelocity();
 
         try {
-            Velocity.init();
             SearchServerFactory.init(indexDir);
             isServletInitialized = true;
         } catch (Exception e1) {
@@ -85,12 +81,7 @@ public class SearchServerServlet extends HttpServlet {
 
     }
 
-    public static void setUpVelocity() {
-        Velocity.setProperty("resource.loader", "class");
-        Velocity.setProperty("class.resource.loader.class", org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader.class.getName());
-        Velocity.setProperty("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
-        Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM, new VelocityLogChute());
-    }
+
 
     @Override
     public void destroy() {
@@ -195,68 +186,30 @@ public class SearchServerServlet extends HttpServlet {
             }
         }
 
-        EnumMap<RequestParameter, String> extraInfoMap = new EnumMap<RequestParameter, String>(RequestParameter.class);
-        switch (resourceType) {
-            case RELEASE: {
-                String tport = request.getParameter(RequestParameter.TAGGER_PORT.getName());
-                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
-                if (tport != null) {
-                    extraInfoMap.put(RequestParameter.TAGGER_PORT, tport);
-                    String duration = request.getParameter(RequestParameter.DURATION.getName());
-                    if (duration != null) {
-                        extraInfoMap.put(RequestParameter.DURATION, duration);
-                    }
-                } else if (rel != null) {
-                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
-                }
-            }
-            break;
-
-            case RECORDING: {
-                String tport = request.getParameter(RequestParameter.TAGGER_PORT.getName());
-                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
-                String oldLink = request.getParameter(RequestParameter.OLD_STYLE_LINK.getName());
-
-                if (tport != null) {
-                    extraInfoMap.put(RequestParameter.TAGGER_PORT, tport);
-                    String duration = request.getParameter(RequestParameter.DURATION.getName());
-                    if (duration != null) {
-                        extraInfoMap.put(RequestParameter.DURATION, duration);
-                    }
-                } else if (oldLink != null) {
-                    extraInfoMap.put(RequestParameter.OLD_STYLE_LINK, oldLink);
-                } else if (rel != null) {
-                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
-                }
-            }
-            break;
-
-            case ARTIST: {
-                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
-                if (rel != null) {
-                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
-                }
-            }
-            break;
-        }
 
         // Make the search
         try {
 
             SearchServer searchServer = SearchServerFactory.getSearchServer(resourceType);
             Results results = searchServer.search(query, offset, limit);
-
-            ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
+            org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
 
             if (writer == null) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));
                 return;
             }
             response.setCharacterEncoding(CHARSET);
-            response.setContentType(writer.getMimeType());
+            if(responseFormat.equals(RESPONSE_XML)) {
+                response.setContentType(writer.getMimeType());
+            }
+            else {
+                response.setContentType(((ResultsWriter)writer).getJsonMimeType());
+            }
+
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-            writer.write(out, results, extraInfoMap);
+            writer.write(out, results,responseFormat);
             out.close();
+
         }
         catch (ParseException pe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));

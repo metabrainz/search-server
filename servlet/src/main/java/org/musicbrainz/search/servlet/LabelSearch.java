@@ -4,7 +4,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.LabelXmlWriter;
+import org.musicbrainz.search.servlet.mmd2.LabelWriter;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
@@ -14,9 +14,8 @@ public class LabelSearch extends SearchServer {
 
     public LabelSearch() throws Exception {
 
-        xmlWriter = new LabelXmlWriter();
+        resultsWriter = new LabelWriter();
         mmd1XmlWriter = new LabelMmd1XmlWriter();
-        htmlWriter = new LabelHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(LabelIndexField.LABEL.getName());
         defaultFields.add(LabelIndexField.ALIAS.getName());

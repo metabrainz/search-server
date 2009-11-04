@@ -1,4 +1,4 @@
-package org.musicbrainz.search.servlet.v1support;
+package org.musicbrainz.search.servlet.mmd1;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;

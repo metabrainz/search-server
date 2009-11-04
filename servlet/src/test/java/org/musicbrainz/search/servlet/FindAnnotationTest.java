@@ -5,15 +5,10 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.velocity.app.Velocity;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.AnnotationType;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
 
 /**
  * Test retrieving Annotations entries from index and Outputting as Html
@@ -28,8 +23,6 @@ public class FindAnnotationTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        SearchServerServlet.setUpVelocity();
-        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
@@ -93,39 +86,4 @@ public class FindAnnotationTest extends TestCase {
         Results res = ss.searchLucene("DiscID", 0, 10);
         assertEquals(1, res.totalHits);
     }
-
-
-    public void testOutputAsHtml() throws Exception {
-
-        Results res = ss.searchLucene("DiscID", 0, 1);
-        ResultsWriter writer = new AnnotationHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
-        pr.close();
-
-        String output = sw.toString();
-        //System.out.println(output);
-        assertTrue(output.contains("<a href=\"/release/bdb24cb5-404b-4f60-bba4-7b730325ae47.html\">Pieds nus sur la braise</a>"));
-        assertTrue(output.contains("<td>%WIKIBEGIN%EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-%WIKIEND%</td>"));
-    }
-
-
-
-    public void testHtmlWritingPerformance() throws Exception {
-        Results res = ss.searchLucene("DiscID", 0, 10);
-        assertEquals(1, res.totalHits);
-
-        Date start = new Date();
-        ResultsWriter writer = new AnnotationHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        for (int i = 0; i < 1000; i++) {
-            writer.write(pr, res);
-        }
-        pr.close();
-        Date end = new Date();
-        System.out.println("HTML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
-    }
-
 }

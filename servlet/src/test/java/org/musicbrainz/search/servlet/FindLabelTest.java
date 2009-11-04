@@ -1,21 +1,16 @@
 package org.musicbrainz.search.servlet;
+
 import junit.framework.TestCase;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.index.*;
-import org.musicbrainz.search.servlet.LabelSearch;
-import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.servlet.Result;
-import org.musicbrainz.search.servlet.Results;
-import org.musicbrainz.search.servlet.ResultsWriter;
-import org.musicbrainz.search.servlet.SearchServer;
-import org.musicbrainz.search.servlet.SearchServerServlet;
-import org.musicbrainz.search.servlet.mmd2.LabelXmlWriter;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.LabelType;
+import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
+import org.musicbrainz.search.servlet.mmd2.LabelWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,8 +30,6 @@ public class FindLabelTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-         SearchServerServlet.setUpVelocity();
-        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(LabelIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
@@ -216,7 +209,7 @@ public class FindLabelTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
-        ResultsWriter writer = new LabelXmlWriter();
+        ResultsWriter writer = new LabelWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);

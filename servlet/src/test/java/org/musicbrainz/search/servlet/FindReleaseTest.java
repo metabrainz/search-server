@@ -1,23 +1,18 @@
 package org.musicbrainz.search.servlet;
+
 import junit.framework.TestCase;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
-import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.servlet.ReleaseSearch;
-import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
-import org.musicbrainz.search.servlet.ResourceType;
-import org.musicbrainz.search.servlet.Result;
-import org.musicbrainz.search.servlet.Results;
-import org.musicbrainz.search.servlet.ResultsWriter;
-import org.musicbrainz.search.servlet.SearchServer;
-import org.musicbrainz.search.servlet.SearchServerServlet;
-import org.musicbrainz.search.servlet.mmd2.ReleaseXmlWriter;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.ReleaseGroupType;
+import org.musicbrainz.search.index.ReleaseIndexField;
+import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
+import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -39,8 +34,6 @@ public class FindReleaseTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        SearchServerServlet.setUpVelocity();
-        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
@@ -543,7 +536,7 @@ public class FindReleaseTest extends TestCase {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
-        ResultsWriter writer = new ReleaseXmlWriter();
+        ResultsWriter writer = new ReleaseWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);

@@ -13,7 +13,6 @@ public class CDStubSearch extends SearchServer {
 
     private CDStubSearch() throws Exception {
         mmd1XmlWriter = null;
-        htmlWriter = new CDStubHtmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(CDStubIndexField.ARTIST.getName());
         defaultFields.add(CDStubIndexField.TITLE.getName());

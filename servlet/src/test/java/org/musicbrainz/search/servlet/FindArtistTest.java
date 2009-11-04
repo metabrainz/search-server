@@ -1,25 +1,18 @@
 package org.musicbrainz.search.servlet;
+
 import junit.framework.TestCase;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.velocity.app.Velocity;
+import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
-import org.musicbrainz.search.servlet.ArtistHtmlWriter;
-import org.musicbrainz.search.servlet.ArtistSearch;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
-import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.servlet.Result;
-import org.musicbrainz.search.servlet.Results;
-import org.musicbrainz.search.servlet.ResultsWriter;
-import org.musicbrainz.search.servlet.SearchServer;
-import org.musicbrainz.search.servlet.SearchServerServlet;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.ArtistXmlWriter;
-import org.musicbrainz.search.servlet.mmd2.XmlWriter;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.servlet.mmd2.ArtistWriter;
+import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,8 +31,6 @@ public class FindArtistTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        SearchServerServlet.setUpVelocity();
-        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
@@ -75,6 +66,8 @@ public class FindArtistTest extends TestCase {
         writer.close();
         ss = new ArtistSearch(new IndexSearcher(ramDir,true));
     }
+
+
 
     public void testFindArtistById() throws Exception {
         Results res = ss.searchLucene("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
@@ -293,7 +286,7 @@ public class FindArtistTest extends TestCase {
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        XmlWriter v1Writer = new ArtistXmlWriter();
+        ResultsWriter v1Writer = new ArtistWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -323,7 +316,7 @@ public class FindArtistTest extends TestCase {
     public void testOutputXml2() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Echo & the Bunnymen\"", 0, 1);
-        XmlWriter v1Writer = new ArtistXmlWriter();
+        ResultsWriter v1Writer = new ArtistWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -372,7 +365,7 @@ public class FindArtistTest extends TestCase {
         assertEquals(1, res.totalHits);
 
         Date start = new Date();
-        ResultsWriter writer = new ArtistMmd1XmlWriter();
+        org.musicbrainz.search.servlet.ResultsWriter writer = new ArtistMmd1XmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         for (int i = 0; i < 1000; i++) {
@@ -382,39 +375,4 @@ public class FindArtistTest extends TestCase {
         Date end = new Date();
         System.out.println("XML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
     }
-
-    
-
-
-    /**
-     * Tests strips off header and footer
-     * http://musicbrainz.org/ws/1/artist/?type=xml&query=%22Farming%20Incident%22
-     *
-     * @throws Exception
-     */
-    /*
-    public void testOutputAsXmlFragment() throws Exception {
-
-        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        Mmd1XmlWriter writer = new ArtistMmd1XmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
-        pr.close();
-
-        String output = sw.toString();
-        assertFalse(output.contains("metadata"));
-        assertFalse(output.contains("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
-        assertTrue(output.contains("count=\"1\""));
-        assertTrue(output.contains("offset=\"0\""));
-        assertTrue(output.contains("type=\"Group\""));
-        assertTrue(output.contains("<name>Farming Incident</name>"));
-        assertTrue(output.contains("<sort-name>Farming Incident</sort-name>"));
-        assertTrue(output.contains("<life-span begin=\"1999-04\""));
-        assertFalse(output.contains("end"));
-        assertFalse(output.contains("alias"));
-        assertFalse(output.contains("disambugation"));
-        System.out.println("Xml Fragment is" + output);
-    }
-    */
 }

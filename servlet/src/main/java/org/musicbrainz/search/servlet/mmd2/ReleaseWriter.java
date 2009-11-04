@@ -41,7 +41,7 @@ import java.math.BigInteger;
 import java.util.Locale;
 
 
-public class ReleaseXmlWriter extends XmlWriter {
+public class ReleaseWriter extends ResultsWriter {
 
 
     public Metadata write(Results results) throws IOException {

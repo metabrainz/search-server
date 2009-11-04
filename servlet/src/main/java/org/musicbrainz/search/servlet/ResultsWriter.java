@@ -39,10 +39,9 @@ public abstract class ResultsWriter {
     public abstract String getMimeType();
 
     public void write(PrintWriter out, Results results) throws IOException {
-        write(out,results,new EnumMap<RequestParameter,String>(RequestParameter.class) );
+        write(out, results, SearchServerServlet.RESPONSE_XML ) ;
     }
 
-
-    public abstract void write(PrintWriter out, Results results,EnumMap<RequestParameter,String> extraInfoMap) throws IOException;
+    public abstract void write(PrintWriter out, Results results,String outputFormat) throws IOException ;
 
 }

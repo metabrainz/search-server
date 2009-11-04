@@ -30,9 +30,7 @@ package org.musicbrainz.search.servlet.mmd2;
 
 
 import org.musicbrainz.mmd2.Metadata;
-import org.musicbrainz.search.servlet.RequestParameter;
-import org.musicbrainz.search.servlet.Results;
-import org.musicbrainz.search.servlet.ResultsWriter;
+import org.musicbrainz.search.servlet.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -42,26 +40,41 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.EnumMap;
 
-public abstract class XmlWriter extends ResultsWriter {
+import com.sun.jersey.api.json.JSONJAXBContext;
+import com.sun.jersey.api.json.JSONMarshaller;
 
-    static final JAXBContext context = initContext();
+public abstract class ResultsWriter extends org.musicbrainz.search.servlet.ResultsWriter {
+
+    static final JAXBContext        context  = initContext();
+    static final JSONJAXBContext jsoncontext = initJsonContext();
 
     public String getMimeType() {
-        return "application/xml; charset=UTF-8";
-    }
+          return "application/xml; charset=UTF-8";
+      }
 
+    public String getJsonMimeType() {
+          return "application/json; charset=UTF-8";
+      }
     /**
-     *
      * @return
      */
-    protected QName getScore()
-    {
-        return new QName("http://musicbrainz.org/ns/ext#-2.0","score","ext");
+    protected QName getScore() {
+        return new QName("http://musicbrainz.org/ns/ext#-2.0", "score", "ext");
     }
 
     private static JAXBContext initContext() {
         try {
             return JAXBContext.newInstance("org.musicbrainz.mmd2");
+        }
+        catch (JAXBException ex) {
+            //Unable to initilize jaxb context, should never happen
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static JSONJAXBContext initJsonContext() {
+        try {
+            return new JSONJAXBContext("org.musicbrainz.mmd2");
         }
         catch (JAXBException ex) {
             //Unable to initilize jaxb context, should never happen
@@ -81,20 +94,36 @@ public abstract class XmlWriter extends ResultsWriter {
 
 
     /**
-     * Write the results to provider writer
+     * Write the results to provider writer as Xml
      *
      * @param out
      * @param results
      * @throws java.io.IOException
      */
-    public void write(PrintWriter out, Results results, EnumMap<RequestParameter,String> extraInfoMap) throws IOException {
-        try {
-            Metadata metadata = write(results);
-            Marshaller m = context.createMarshaller();
-            m.marshal(metadata, out);
+    public void write(PrintWriter out, Results results,String outputFormat) throws IOException {
+        if(outputFormat.equals(SearchServerServlet.RESPONSE_XML)) {
+
+            try {
+                Metadata metadata = write(results);
+                Marshaller m = context.createMarshaller();
+                m.marshal(metadata, out);
+            }
+            catch (JAXBException je) {
+                throw new IOException(je);
+            }
         }
-        catch (JAXBException je) {
-            throw new IOException(je);
+        else if(outputFormat.equals(SearchServerServlet.RESPONSE_JSON)) {
+            try {
+                Metadata metadata = write(results);
+                JSONMarshaller m = jsoncontext.createJSONMarshaller();
+                m.marshallToJSON(metadata, out);
+            }
+            catch (JAXBException je) {
+                throw new IOException(je);
+            }
+        }
+        else {
+           throw new RuntimeException(ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(this.getClass(), outputFormat));
         }
     }
 }

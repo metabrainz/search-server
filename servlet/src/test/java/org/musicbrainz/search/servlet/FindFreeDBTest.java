@@ -1,24 +1,13 @@
 package org.musicbrainz.search.servlet;
+
 import junit.framework.TestCase;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.apache.velocity.app.Velocity;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.FreeDBIndexField;
-import org.musicbrainz.search.servlet.FreeDBHtmlWriter;
-import org.musicbrainz.search.servlet.FreeDBSearch;
-import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.servlet.Result;
-import org.musicbrainz.search.servlet.Results;
-import org.musicbrainz.search.servlet.ResultsWriter;
-import org.musicbrainz.search.servlet.SearchServer;
-import org.musicbrainz.search.servlet.SearchServerServlet;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
 
 /**
  * Test retrieving FreeDB entries from index and Outputting as Html
@@ -33,8 +22,6 @@ public class FindFreeDBTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        SearchServerServlet.setUpVelocity();
-        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(FreeDBIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
@@ -137,57 +124,7 @@ public class FindFreeDBTest extends TestCase {
             assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
         }
 
-
     }
 
-    public void testOutputAsHtml() throws Exception {
-
-        Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 1);
-        ResultsWriter writer = new FreeDBHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
-        pr.close();
-
-        String output = sw.toString();
-        assertTrue(output.contains("L&aacute;grimas &amp; Gozos"));
-        assertTrue(output.contains("Ska-P"));
-        assertTrue(output.contains("c20c4b0d"));
-
-    }
-
-    /**
-     * Tests that & is converted to valid html
-     *
-     * @throws Exception
-     */
-    public void testOutputAsHtmlSpecialCharacters() throws Exception {
-
-        Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 1);
-        ResultsWriter writer = new FreeDBHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
-        pr.close();
-
-        String output = sw.toString();
-        assertTrue(output.contains("L&aacute;grimas &amp; Gozos"));
-    }
-
-    public void testHtmlWritingPerformance() throws Exception {
-        Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 10);
-        assertEquals(1, res.totalHits);
-
-        Date start = new Date();
-        ResultsWriter writer = new FreeDBHtmlWriter();
-        StringWriter sw = new StringWriter();
-        PrintWriter pr = new PrintWriter(sw);
-        for (int i = 0; i < 1000; i++) {
-            writer.write(pr, res);
-        }
-        pr.close();
-        Date end = new Date();
-        System.out.println("HTML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
-    }
 
 }

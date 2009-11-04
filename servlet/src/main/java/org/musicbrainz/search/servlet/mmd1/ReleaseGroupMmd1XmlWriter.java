@@ -72,15 +72,12 @@ public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
             //i.e http://localhost:8080/?type=release-group&query=artist:%22Cincinnati%20Pops%20Orchestra%22&fmt=xml&version=1
             String artistName = doc.get(ReleaseGroupIndexField.ARTIST_NAME);
             if (artistName != null) {
-
                 Artist artist = of.createArtist();
                 artist.setName(artistName);
                 artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
                 artist.setSortName(doc.get(ReleaseGroupIndexField.ARTIST_SORTNAME));
                 releaseGroup.setArtist(artist);
             }
-
-
             releaseGroupList.getReleaseGroup().add(releaseGroup);
         }
         releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));

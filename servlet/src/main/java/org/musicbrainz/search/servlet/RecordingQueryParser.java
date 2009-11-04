@@ -10,7 +10,7 @@ import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
-import org.musicbrainz.search.servlet.v1support.V1TrackIndexField;
+import org.musicbrainz.search.servlet.mmd1.V1TrackIndexField;
 
 
 /**

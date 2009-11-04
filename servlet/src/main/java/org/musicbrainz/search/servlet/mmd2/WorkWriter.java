@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Locale;
 
-public class WorkXmlWriter extends XmlWriter {
+public class WorkWriter extends ResultsWriter {
 
 
     public Metadata write(Results results) throws IOException {
