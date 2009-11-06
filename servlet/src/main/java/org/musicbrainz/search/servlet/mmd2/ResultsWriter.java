@@ -42,6 +42,7 @@ import java.util.EnumMap;
 
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONMarshaller;
+import com.sun.jersey.api.json.JSONConfiguration;
 
 public abstract class ResultsWriter extends org.musicbrainz.search.servlet.ResultsWriter {
 
@@ -74,7 +75,8 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
 
     private static JSONJAXBContext initJsonContext() {
         try {
-            return new JSONJAXBContext("org.musicbrainz.mmd2");
+            return new JSONJAXBContext(JSONConfiguration.natural().build(),
+            "org.musicbrainz.mmd2");
         }
         catch (JAXBException ex) {
             //Unable to initilize jaxb context, should never happen

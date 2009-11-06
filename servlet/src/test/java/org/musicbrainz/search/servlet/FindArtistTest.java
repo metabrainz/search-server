@@ -294,8 +294,7 @@ public class FindArtistTest extends TestCase {
 
         String output = sw.toString();
         System.out.println("Xml is" + output);
-        //assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));  group comes before id in output
-        //assertTrue(output.contains("<artist-list count=\"1\" offset=\"0\">"));               offset comes before count in output
+        assertTrue(output.contains("id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("type=\"group\""));
@@ -358,21 +357,32 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<name>Echo &amp; The Bunnymen</name>"));
     }
 
+     /**
 
+     *
+     * @throws Exception
+     */
+    public void testOutputJson() throws Exception {
 
-    public void testXmlWritingPerformance() throws Exception {
-        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
-        assertEquals(1, res.totalHits);
-
-        Date start = new Date();
-        org.musicbrainz.search.servlet.ResultsWriter writer = new ArtistMmd1XmlWriter();
+        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+        ResultsWriter writer = new ArtistWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        for (int i = 0; i < 1000; i++) {
-            writer.write(pr, res);
-        }
+        writer.write(pr, res,SearchServerServlet.RESPONSE_JSON);
         pr.close();
-        Date end = new Date();
-        System.out.println("XML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("id\":\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"type\":\"group\""));
+        assertTrue(output.contains("name\":\"Farming Incident\""));
+        assertTrue(output.contains("\"sort-name\":\"Farming Incident\""));
+        assertTrue(output.contains("\"life-span\":{\"begin\":\"1999-04\"}"));
+        assertTrue(output.contains("\"country\":\"af\""));
+        assertTrue(output.contains("\"gender\":\"male\""));
     }
+
 }
