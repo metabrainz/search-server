@@ -185,7 +185,7 @@ public class IndexBuilder
         int j = 0;
         while (j < maxId) {
             System.out.print("  Indexing " + j + "..." + (j + IDS_PER_CHUNK) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
-            index.indexData(indexWriter, j, j + IDS_PER_CHUNK);
+            index.indexData(indexWriter, j, j + IDS_PER_CHUNK - 1);
             j += IDS_PER_CHUNK;
         }
 
