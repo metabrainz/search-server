@@ -40,7 +40,7 @@ public class FindArtistTest extends TestCase {
             MbDocument doc = new MbDocument();
             doc.addField(ArtistIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
             doc.addField(ArtistIndexField.ARTIST, "Farming Incident");
-            doc.addField(ArtistIndexField.SORTNAME, "Farming Incident");
+            doc.addField(ArtistIndexField.SORTNAME, "Incident, Farming");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
             doc.addField(ArtistIndexField.TYPE, ArtistType.GROUP.getName());
             doc.addField(ArtistIndexField.COMMENT, "the real one");
@@ -80,7 +80,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
         assertNull(doc.get(ArtistIndexField.END));
         assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("Incident, Farming", doc.get(ArtistIndexField.SORTNAME));
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
@@ -90,29 +90,15 @@ public class FindArtistTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
-        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
-        assertNull(doc.get(ArtistIndexField.END));
-        assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
 
     public void testFindArtistBySortName() throws Exception {
-        Results res = ss.searchLucene("sortname:\"Farming Incident\"", 0, 10);
+        Results res = ss.searchLucene("sortname:\"Incident, Farming\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
-        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
-        assertNull(doc.get(ArtistIndexField.END));
-        assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
 
@@ -122,13 +108,6 @@ public class FindArtistTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
-        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
-        assertNull(doc.get(ArtistIndexField.END));
-        assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
     public void testFindArtistByNumericType() throws Exception {
@@ -137,13 +116,6 @@ public class FindArtistTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
-        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
-        assertNull(doc.get(ArtistIndexField.END));
-        assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
 
@@ -153,13 +125,6 @@ public class FindArtistTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
-        assertEquals("1999-04", doc.get(ArtistIndexField.BEGIN));
-        assertEquals("the real one", doc.get(ArtistIndexField.COMMENT));
-        assertNull(doc.get(ArtistIndexField.END));
-        assertNull(doc.get(ArtistIndexField.ALIAS));
-        assertEquals("Farming Incident", doc.get(ArtistIndexField.SORTNAME));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
     public void testFindArtistByEndDate() throws Exception {
@@ -178,10 +143,7 @@ public class FindArtistTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
-        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST));
-        assertEquals("1978", doc.get(ArtistIndexField.BEGIN));
-        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE));
+
     }
 
     public void testFindArtistByCountry() throws Exception {
@@ -299,7 +261,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("type=\"group\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
-        assertTrue(output.contains("<sort-name>Farming Incident</sort-name>"));
+        assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
         assertTrue(output.contains("<country>af</country>"));
         assertTrue(output.contains("<gender>male</gender>"));
@@ -379,7 +341,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"type\":\"group\""));
         assertTrue(output.contains("name\":\"Farming Incident\""));
-        assertTrue(output.contains("\"sort-name\":\"Farming Incident\""));
+        assertTrue(output.contains("\"sort-name\":\"Incident, Farming\""));
         assertTrue(output.contains("\"life-span\":{\"begin\":\"1999-04\"}"));
         assertTrue(output.contains("\"country\":\"af\""));
         assertTrue(output.contains("\"gender\":\"male\""));

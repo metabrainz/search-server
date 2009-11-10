@@ -89,7 +89,7 @@ public class ArtistWriter extends ResultsWriter {
 
             String sortname = doc.get(ArtistIndexField.SORTNAME);
             if (sortname != null) {
-                artist.setSortName(name);
+                artist.setSortName(sortname);
 
             }
 
