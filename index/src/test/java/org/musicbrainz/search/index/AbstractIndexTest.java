@@ -12,7 +12,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
     protected Connection createConnection() throws Exception {
         Class.forName("org.h2.Driver");
-        return DriverManager.getConnection("jdbc:h2:mem");
+        return DriverManager.getConnection("jdbc:h2:mem:test");
 
     }
 
