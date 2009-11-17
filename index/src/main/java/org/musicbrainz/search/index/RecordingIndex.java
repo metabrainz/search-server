@@ -65,7 +65,14 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     public void init() throws SQLException {
-          addPreparedStatement("ARTISTS",
+        addPreparedStatement("ISRCS",
+                          "SELECT recording as recordingId, " +
+                           "isrc " +
+                           "FROM isrc " +
+                           "WHERE recording BETWEEN ? AND ?  " +
+                           "order by recording,id");
+
+        addPreparedStatement("ARTISTS",
                   "SELECT re.id as recordingId, " +
                "acn.position as pos, " +
                "acn.joinphrase as joinphrase, " +
@@ -109,6 +116,38 @@ public class RecordingIndex extends DatabaseIndex {
                 "INNER JOIN track_name tn " +
                 "ON re.name=tn.id " +
                 "WHERE re.id BETWEEN ? AND ?");
+    }
+
+    /**
+     * Get ISRC Information for the recordings
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<String>> loadISRCs(int min, int max) throws SQLException, IOException{
+
+        //ISRC
+        Map<Integer, List<String>> isrcWrapper = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("ISRCS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+           int recordingId = rs.getInt("recordingId");
+           List<String> list;
+           if (!isrcWrapper.containsKey(recordingId)) {
+               list = new LinkedList<String>();
+               isrcWrapper.put(recordingId, list);
+           } else {
+               list = isrcWrapper.get(recordingId);
+           }
+           String isrc = new String(rs.getString("isrc"));
+           list.add(isrc);
+        }
+        return isrcWrapper;
     }
 
     /**
@@ -204,6 +243,7 @@ public class RecordingIndex extends DatabaseIndex {
     private void loadRecordings(IndexWriter indexWriter,
                                 int min,
                                 int max,
+                                Map<Integer, List<String>> isrcs,
                                 Map<Integer, List<ArtistWrapper>> artists,
                                 Map<Integer, List<TrackWrapper>> tracks) throws SQLException, IOException{
 
@@ -212,19 +252,21 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs,artists,tracks));
+            indexWriter.addDocument(documentFromResultSet(rs,isrcs,artists,tracks));
         }
 
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>>         isrcWrapper   = loadISRCs(min,max);
         Map<Integer, List<ArtistWrapper>>  artistWrapper = loadArtists(min,max);
         Map<Integer, List<TrackWrapper>>   trackWrapper  = loadTracks(min,max);
 
-        loadRecordings(indexWriter,min,max,artistWrapper,trackWrapper);
+        loadRecordings(indexWriter,min,max,isrcWrapper,artistWrapper,trackWrapper);
     }
 
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, List<String>> isrcs,
                                           Map<Integer, List<ArtistWrapper>> artists,
                                           Map<Integer, List<TrackWrapper>> tracks) throws SQLException {
 
@@ -236,6 +278,13 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, rs.getString("trackname"));  //Output
         doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+
+        if (isrcs.containsKey(id)) {
+            //For each credit artist for this recording
+            for (String isrc : isrcs.get(id)) {
+                doc.addField(RecordingIndexField.ISRC, isrc);
+            }
+        }
 
         if (tracks.containsKey(id)) {
             //For each track for this recording
@@ -266,6 +315,8 @@ public class RecordingIndex extends DatabaseIndex {
 
             doc.addField(RecordingIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
         }
+
+
         return doc.getLuceneDocument();
     }
 

@@ -58,6 +58,9 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
         doc.addField(RecordingIndexField.MEDIUM_POS_OUTPUT, "1");
         doc.addField(RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
+        doc.addField(RecordingIndexField.ISRC, "123456789");
+        doc.addField(RecordingIndexField.ISRC, "abcdefghi");
+
         writer.addDocument(doc.getLuceneDocument());
         writer.close();
         ss = new RecordingSearch(new IndexSearcher(ramDir,true));
@@ -95,6 +98,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
         assertEquals("Gravitational Lens", doc.get(RecordingIndexField.TRACK_OUTPUT));
+        assertEquals("123456789", doc.get(RecordingIndexField.ISRC));
     }
 
      public void testFindRecordingByV1TrackId() throws Exception {
@@ -185,6 +189,13 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    public void testFindRecordingByISRC() throws Exception {
+        Results res = ss.searchLucene("isrc:123456789", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
 
     public void testFindRecordingByNonNumericDuration() throws Exception {
         Results res = ss.searchLucene("dur:fred", 0, 10);
@@ -303,7 +314,10 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("count=\"10\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("<isrc>123456789</isrc>"));
+        assertTrue(output.contains("<isrc>abcdefghi</isrc>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
+
     }
 
 }

@@ -57,6 +57,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE track_name");
                 stmt.addBatch("DROP TABLE track");
                 stmt.addBatch("DROP TABLE recording");
+                stmt.addBatch("DROP TABLE isrc");
 
                 stmt.addBatch("DROP TABLE annotation");
                 stmt.addBatch("DROP TABLE artist_annotation");
@@ -363,6 +364,16 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  editpending integer NOT NULL DEFAULT 0," +
                 "  CONSTRAINT recording_pkey PRIMARY KEY (id)" +
                 ")");
+
+        stmt.addBatch("CREATE TABLE isrc" +
+                    "(" +
+                    "  id serial NOT NULL," +
+                    "  recording integer NOT NULL," +
+                    "  isrc character(12) NOT NULL," +
+                    "  source smallint," +
+                    "  editpending integer NOT NULL DEFAULT 0," +
+                    "  CONSTRAINT isrc_pkey PRIMARY KEY (id)" +
+                    ")");
     }
 
     protected void setupAnnotationTables(Statement stmt) throws Exception {

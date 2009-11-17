@@ -84,6 +84,13 @@ public class RecordingIndexTest extends AbstractIndexTest {
                 + "VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1,1,33000, null,1)");
         stmt.addBatch("INSERT INTO track_name(id, name, refcount)VALUES (1, 'Do It Clean', 1) ");
         stmt.addBatch("INSERT INTO track_name(id, name, refcount)VALUES (2, 'Do It Cleans', 1) ");
+
+        stmt.addBatch("INSERT INTO isrc(" +
+                      " id, recording, isrc, source, editpending)" +
+                      " VALUES (1, 1, '1234568', null, 1);");
+        stmt.addBatch("INSERT INTO isrc(" +
+                      " id, recording, isrc, source, editpending)" +
+                      " VALUES (2, 1, 'abcdefghi', null, 1);");
         stmt.executeBatch();
         stmt.close();
         conn.close();
@@ -163,6 +170,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
+            assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
             assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
             assertEquals("Do It Clean", doc.getField(RecordingIndexField.RECORDING.getName()).stringValue());
             assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
@@ -173,6 +181,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.DURATION.getName()).stringValue()));
+            assertEquals("1234568", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
             
         }
         ir.close();
@@ -318,7 +327,49 @@ public class RecordingIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+     /**
+     * Basic test of all fields
+     *
+     * @throws Exception
+     */
+    public void testISRC() throws Exception {
 
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
+            assertEquals("1234568", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
+
+        }
+        ir.close();
+    }
+
+
+    /**
+     * Basic test of all fields
+     *
+     * @throws Exception
+     */
+    public void testNoISRC() throws Exception {
+
+        addTrackTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(0, doc.getFields(RecordingIndexField.ISRC.getName()).length);
+
+        }
+        ir.close();
+    }
     public void testToAvoidWarnings()
      {
          assertEquals(1,1);

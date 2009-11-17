@@ -3,6 +3,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -27,7 +28,9 @@ public enum RecordingIndexField implements IndexField {
     ARTIST_COMMENT      ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
     TRACK_OUTPUT        ("trackoutoutput",		Field.Store.YES,	Field.Index.NO),    
     RECORDING_OUTPUT    ("recordingoutput",		Field.Store.YES,	Field.Index.NO),
-    MEDIUM_POS_OUTPUT    ("mediumposoutput",		Field.Store.YES,	Field.Index.NO),
+    MEDIUM_POS_OUTPUT   ("mediumposoutput",		Field.Store.YES,	Field.Index.NO),
+    ISRC    		    ("isrc",		    Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+
     ;
 
     private String name;

@@ -68,6 +68,16 @@ public class RecordingWriter extends ResultsWriter {
                 recording.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
             }
 
+            String[] isrcs              = doc.getValues(RecordingIndexField.ISRC);
+            if(isrcs.length>0) {
+                IsrcList isrcList = of.createIsrcList();
+                for (int i = 0; i < isrcs.length; i++) {
+
+                    isrcList.getIsrc().add(isrcs[i]);
+                }
+                recording.setIsrcList(isrcList);
+            }
+            
             String[] artistIds          = doc.getValues(RecordingIndexField.ARTIST_ID);
             String[] artistNames        = doc.getValues(RecordingIndexField.ARTIST_NAME);
             String[] artistJoinPhrases  = doc.getValues(RecordingIndexField.ARTIST_JOINPHRASE);
