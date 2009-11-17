@@ -70,7 +70,7 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-json</artifactId>
-      <version>1.1.2-ea</version>
+      <version>1.1.4</version>
     </dependency>
     <dependency>
       <groupId>org.musicbrainz.search</groupId>
