@@ -7,6 +7,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.queryParser.*;
+import org.apache.lucene.util.Version;
 
 public class AccentFilterTest extends TestCase {
 
@@ -54,7 +55,7 @@ public class AccentFilterTest extends TestCase {
 
     public void testSearchUnaccented() throws Exception {
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser("name", analyzer).parse("test");
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("test");
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
@@ -64,7 +65,7 @@ public class AccentFilterTest extends TestCase {
 
     public void testSearchAccented() throws Exception {
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser("name", analyzer).parse("tést");
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("tést");
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
@@ -74,7 +75,7 @@ public class AccentFilterTest extends TestCase {
 
     public void testSearchAccented2() throws Exception {
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser("name", analyzer).parse("abcaef");
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("abcaef");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -105,7 +106,7 @@ public class AccentFilterTest extends TestCase {
      */
     public void testSearchQe() throws Exception {
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser("name", analyzer).parse("qwe");
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("qwe");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -116,7 +117,7 @@ public class AccentFilterTest extends TestCase {
 
     public void testSearchQe2() throws Exception {
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser("name", analyzer).parse("qwee");
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("qwee");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);

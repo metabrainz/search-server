@@ -3,6 +3,7 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -35,7 +36,7 @@ public class CDStubSearch extends SearchServer {
 
      @Override
     protected QueryParser getParser() {
-     return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
+     return new MultiFieldQueryParser(Version.LUCENE_CURRENT,defaultFields.toArray(new String[0]), analyzer);
   }
 
 }

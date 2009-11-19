@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import com.ibm.icu.text.Transliterator;
+import org.apache.lucene.util.Version;
 
 /**
  * Filters StandardTokenizer with StandardFilter, ICUTransformFilter, AccentFilter, LowerCaseFilter
@@ -59,7 +60,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
 
     public TokenStream tokenStream(String fieldName, Reader reader) {
         CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap,reader);
-        StandardTokenizer tokenStream = new StandardTokenizer(mappingCharFilter);
+        StandardTokenizer tokenStream = new StandardTokenizer(Version.LUCENE_CURRENT,mappingCharFilter);
         TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         result = new StandardFilter(result);
         result = new AccentFilter(result);
@@ -77,7 +78,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         if (streams == null) {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
-            streams.tokenStream = new StandardTokenizer(new MappingCharFilter(charConvertMap,reader));
+            streams.tokenStream = new StandardTokenizer(Version.LUCENE_CURRENT,new MappingCharFilter(charConvertMap,reader));
             streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
             streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);

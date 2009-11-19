@@ -11,7 +11,7 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
  * Normalizes tokens extracted with {@link org.apache.lucene.analysis.standard.StandardTokenizer}.
  * <p/>
  * This is based on StandardFilter in that tokens identified as Acronyms have there dots removed but unlike StandardFilter
- * apostrophes are always removed and there is no epecial rule for words ending in 's .
+ * apostrophes are always removed and there is no special rule for words ending in 's .
  * <p/>
  * Whereas StandardFilter usually leaves apostrophes unless word ends with 's whereby the 's is removed.
  */

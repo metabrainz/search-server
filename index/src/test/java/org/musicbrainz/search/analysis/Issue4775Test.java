@@ -1,15 +1,15 @@
 package org.musicbrainz.search.analysis;
 
 import junit.framework.TestCase;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 
 
 public class Issue4775Test extends TestCase {
@@ -29,27 +29,27 @@ public class Issue4775Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser("name", analyzer).parse("Oreilly");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("Oreilly");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("Theres");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("Theres");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("there's");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("there's");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("There");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("There");
             assertEquals(0, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("it's'");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("it's'");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -70,17 +70,17 @@ public class Issue4775Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser("name", analyzer).parse("res");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("res");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("R.E.S.");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("R.E.S.");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("R.E.S");
+            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("R.E.S");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

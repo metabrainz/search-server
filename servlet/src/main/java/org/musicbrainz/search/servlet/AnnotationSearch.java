@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -34,7 +35,7 @@ public class AnnotationSearch extends SearchServer {
 
     @Override
     protected QueryParser getParser() {
-     return new QueryParser(defaultFields.get(0), analyzer);
+     return new QueryParser(Version.LUCENE_CURRENT,defaultFields.get(0), analyzer);
   }
 
 

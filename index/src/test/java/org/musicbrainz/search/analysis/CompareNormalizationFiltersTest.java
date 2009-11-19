@@ -7,6 +7,8 @@ import java.io.StringReader;
 import java.io.IOException;
 
 import com.ibm.icu.text.Normalizer;
+import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 /**
  * Compare FIlters
@@ -50,33 +52,41 @@ public class CompareNormalizationFiltersTest extends TestCase {
 
         System.out.println("Chars that are changed by one filter different to other filter");
         System.out.println("input:existingfilter:newfilter");
-        while((t0=tokenizer0.next())!=null)
-        {
-            t =result1.next();
-            t2=result2.next();
-            t3=result3.next();
-            t4=result4.next();
 
-            if(!t0.term().equals(t.term()))
+        TermAttribute term  = (TermAttribute)tokenizer0.addAttribute(TermAttribute.class);
+        TermAttribute term1 = (TermAttribute)result1.addAttribute(TermAttribute.class);
+        TermAttribute term2 = (TermAttribute)result2.addAttribute(TermAttribute.class);
+        TermAttribute term3 = (TermAttribute)result3.addAttribute(TermAttribute.class);
+        TermAttribute term4 = (TermAttribute)result4.addAttribute(TermAttribute.class);
+
+        while(tokenizer0.incrementToken())
+        {
+            result1.incrementToken();
+            result2.incrementToken();
+            result3.incrementToken();
+            result4.incrementToken();
+
+
+            if(!term1.term().equals(term.term()))
             {
                 changedByAccent ++;
             }
-            if(!t2.term().equals(t.term()))
-            {
+            if(!term2.term().equals(term.term()))
+                        {
                 changedByASCII ++;
             }
-            if(!t3.term().equals(t.term()))
-            {
+            if(!term3.term().equals(term.term()))
+                        {
                 changedByNFKC ++;
             }
-            if(!t4.term().equals(t.term()))
-            {
+            if(!term4.term().equals(term.term()))
+                        {
                 changedByASCIIAndNFKC ++;
             }
             if(
-                    (!t0.term().equals(t2.term()))
+                    (!term.term().equals(term2.term()))
                     &&
-                    (t0.term().equals(t.term()))
+                    (term.term().equals(term4.term()))
                     )
 
 

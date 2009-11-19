@@ -6,6 +6,7 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.NumericUtils;
+import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.*;
 
 
@@ -16,7 +17,7 @@ import org.musicbrainz.search.index.*;
 public class ReleaseQueryParser extends QueryParser {
 
     public ReleaseQueryParser(String field, Analyzer a) {
-        super(field, a);
+        super(Version.LUCENE_CURRENT,field, a);
     }
 
     protected Query newTermQuery(Term term) {

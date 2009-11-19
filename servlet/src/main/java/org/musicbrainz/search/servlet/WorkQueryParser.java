@@ -7,6 +7,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.NumericUtils;
+import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.*;
 
 
@@ -17,6 +18,6 @@ import org.musicbrainz.search.index.*;
 public class WorkQueryParser extends QueryParser {
 
     public WorkQueryParser(String field, Analyzer a) {
-        super(field, a);
+        super(Version.LUCENE_CURRENT,field, a);
     }
 }

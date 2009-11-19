@@ -161,7 +161,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         addAnnotationOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-
         IndexReader ir = IndexReader.open(ramDir, true);
         assertEquals(1, ir.numDocs());
         {
