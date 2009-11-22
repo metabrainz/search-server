@@ -64,9 +64,8 @@ public class FindArtistTest extends TestCase {
             writer.addDocument(doc.getLuceneDocument());
         }
         writer.close();
-        ss = new ArtistSearch(new IndexSearcher(ramDir,true));
+        ss = new ArtistSearch(new IndexSearcher(ramDir, true));
     }
-
 
 
     public void testFindArtistById() throws Exception {
@@ -241,8 +240,6 @@ public class FindArtistTest extends TestCase {
 
 
     /**
-    
-     *
      * @throws Exception
      */
     public void testOutputXml() throws Exception {
@@ -257,6 +254,7 @@ public class FindArtistTest extends TestCase {
         String output = sw.toString();
         System.out.println("Xml is" + output);
         assertTrue(output.contains("id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("type=\"group\""));
@@ -270,8 +268,6 @@ public class FindArtistTest extends TestCase {
     }
 
     /**
-
-     *
      * @throws Exception
      */
     public void testOutputXml2() throws Exception {
@@ -319,9 +315,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<name>Echo &amp; The Bunnymen</name>"));
     }
 
-     /**
-
-     *
+    /**
      * @throws Exception
      */
     public void testOutputJson() throws Exception {
@@ -330,7 +324,7 @@ public class FindArtistTest extends TestCase {
         ResultsWriter writer = new ArtistWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res,SearchServerServlet.RESPONSE_JSON);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
         pr.close();
 
         String output = sw.toString();
@@ -346,5 +340,19 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("\"country\":\"af\""));
         assertTrue(output.contains("\"gender\":\"male\""));
     }
+
+    public void testOutputJsonMultiple() throws Exception {
+        Results res = ss.searchLucene("artist:\"Farming Incident\" OR artist:\"Echo & The Bunnymen\"", 0, 2);
+
+        ResultsWriter writer = new ArtistWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+        String output = sw.toString();
+        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"score\":\"31\""));
+    }
+
 
 }

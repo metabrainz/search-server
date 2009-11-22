@@ -12,6 +12,7 @@ import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -73,7 +74,7 @@ public class FindReleaseGroupTest extends TestCase {
 
         writer.addDocument(doc.getLuceneDocument());
         writer.close();
-        ss = new ReleaseGroupSearch(new IndexSearcher(ramDir,true));
+        ss = new ReleaseGroupSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testFindReleaseGroupById() throws Exception {
@@ -115,7 +116,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
-     public void testFindReleaseGroupByReleaseId() throws Exception {
+    public void testFindReleaseGroupByReleaseId() throws Exception {
         Results res = ss.searchLucene("releaseid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"", 0, 10);
         assertEquals(0, res.totalHits);
         res = ss.searchLucene("release:secret", 0, 10);
@@ -168,16 +169,16 @@ public class FindReleaseGroupTest extends TestCase {
     }
 
     public void testFindReleaseGroupByNumericType() throws Exception {
-           Results res = ss.searchLucene("type:2", 0, 10);
-           assertEquals(1, res.totalHits);
-           Result result = res.results.get(0);
-           MbDocument doc = result.doc;
-           assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
-           assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-           assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID));
-           assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST_NAME));
-           assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
-       }
+        Results res = ss.searchLucene("type:2", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("707622da-475f-48e1-905d-248718df6521", doc.get(ReleaseGroupIndexField.ARTIST_ID));
+        assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST_NAME));
+        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
 
     public void testFindReleaseGroupByDefault() throws Exception {
         Results res = ss.searchLucene("\"secret\"", 0, 10);
@@ -192,7 +193,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("The Wedding Present", doc.get(ReleaseGroupIndexField.ARTIST_NAME));
         assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
         assertEquals("secret", doc.get(ReleaseGroupIndexField.RELEASE));
-                
+
     }
 
 
@@ -203,18 +204,18 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("Erich Kunzel and Cincinnati Pops",doc.get(ReleaseGroupIndexField.ARTIST));
+        assertEquals("Erich Kunzel and Cincinnati Pops", doc.get(ReleaseGroupIndexField.ARTIST));
 
     }
 
     public void testFindReleaseGroupByAllArtist2() throws Exception {
-            Results res = ss.searchLucene("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
-            assertEquals(1, res.totalHits);
-            Result result = res.results.get(0);
-            MbDocument doc = result.doc;
-            assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
-            assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-            assertEquals("Erich Kunzel and Cincinnati Pops",doc.get(ReleaseGroupIndexField.ARTIST));
+        Results res = ss.searchLucene("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("Erich Kunzel and Cincinnati Pops", doc.get(ReleaseGroupIndexField.ARTIST));
     }
 
 
@@ -225,7 +226,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("Erich Kunzel and Cincinnati Pops",doc.get(ReleaseGroupIndexField.ARTIST));
+        assertEquals("Erich Kunzel and Cincinnati Pops", doc.get(ReleaseGroupIndexField.ARTIST));
 
     }
 
@@ -236,9 +237,10 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("Erich Kunzel and Cincinnati Pops",doc.get(ReleaseGroupIndexField.ARTIST));
+        assertEquals("Erich Kunzel and Cincinnati Pops", doc.get(ReleaseGroupIndexField.ARTIST));
 
     }
+
     public void testFindReleaseGroupBySortArtist2() throws Exception {
         Results res = ss.searchLucene("sortname:\"Kunzel, Eric\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -246,7 +248,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("Erich Kunzel and Cincinnati Pops",doc.get(ReleaseGroupIndexField.ARTIST));
+        assertEquals("Erich Kunzel and Cincinnati Pops", doc.get(ReleaseGroupIndexField.ARTIST));
 
     }
 
@@ -279,7 +281,7 @@ public class FindReleaseGroupTest extends TestCase {
 
     }
 
-     /**
+    /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release-group/?type=xml&query=%22Nobody%27s%20Twisting%20Your%20Arm%22
      *
@@ -297,6 +299,7 @@ public class FindReleaseGroupTest extends TestCase {
         System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\""));
         assertTrue(output.contains("<title>Nobody's Twisting Your Arm</title>"));
         assertTrue(output.contains("<name>The Wedding Present</name>"));
@@ -306,7 +309,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("artist id=\"707622da-475f-48e1-905d-248718df6521\""));
         assertTrue(output.contains("type=\"single\""));
         assertTrue(output.contains("release-list count=\"1\""));
-        assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title></release>")); 
+        assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title></release>"));
 
 
     }
@@ -340,8 +343,7 @@ public class FindReleaseGroupTest extends TestCase {
 
     }
 
-     /**
-     *
+    /**
      * @throws Exception
      */
     public void testOutputAsAsXml2() throws Exception {
@@ -370,7 +372,38 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("<sort-name>Cincinnati Pops Orchestra, The</sort-name>"));
         assertTrue(output.contains("artist id=\"d8fbd94c-cd06-4e8b-a559-761ad969d07e\""));
         assertTrue(output.contains("release-list count=\"0\""));
-
-
     }
+
+    public void testOutputJson() throws Exception {
+
+        Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
+        ResultsWriter writer = new ReleaseGroupWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("id\":\"0011c128-b1f2-300e-88cc-c33c30dce704\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"type\":[\"album\"]"));
+        assertTrue(output.contains("title\":\"Epics\""));
+    }
+
+    public void testOutputJsonMultiple() throws Exception {
+        Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45  OR artist:kunzel", 0, 10);
+
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new ReleaseGroupWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+        String output = sw.toString();
+        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"score\":\"43\""));
+    }
+
 }

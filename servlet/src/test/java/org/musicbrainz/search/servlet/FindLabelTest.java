@@ -10,7 +10,7 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.LabelType;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.LabelWriter;
+import org.musicbrainz.search.servlet.mmd2.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -218,6 +218,7 @@ public class FindLabelTest extends TestCase {
         System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("type=\"production\""));
         assertTrue(output.contains("<name>Jockey Slut</name>"));
@@ -225,5 +226,29 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("<alias>Jockeys</alias>"));
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testOutputJson() throws Exception {
+
+        Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new LabelWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"type\":\"production\""));
+        assertTrue(output.contains("name\":\"Jockey Slut\""));
+        assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
+        assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
     }
 }

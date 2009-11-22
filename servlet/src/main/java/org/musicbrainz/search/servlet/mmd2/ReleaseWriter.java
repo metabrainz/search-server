@@ -54,6 +54,7 @@ public class ReleaseWriter extends ResultsWriter {
             MbDocument doc = result.doc;
             Release release = of.createRelease();
             release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
+            release.setScore(String.valueOf((int)(result.score * 100)));
 
             String name = doc.get(ReleaseIndexField.RELEASE);
             if (name != null) {
@@ -89,11 +90,10 @@ public class ReleaseWriter extends ResultsWriter {
 
             String asin = doc.get(ReleaseIndexField.AMAZON_ID);
             if (asin != null) {
-                release.setAsin(barcode);
+                release.setAsin(asin);
             }
 
 
-            release.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             TextRepresentation tr = of.createTextRepresentation();
             String script = doc.get(ReleaseIndexField.SCRIPT);
@@ -111,7 +111,7 @@ public class ReleaseWriter extends ResultsWriter {
             }
 
             String[] labels = doc.getValues(ReleaseIndexField.LABEL);
-            //Releases can only have multiple labe;/catno combinations
+            //Releases can only have multiple label/catno combinations
             if (labels.length > 0) {
                 LabelInfoList labelInfoList = of.createLabelInfoList();
                 String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);

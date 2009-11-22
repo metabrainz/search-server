@@ -12,6 +12,7 @@ import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
+import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
 
 import java.io.PrintWriter;
@@ -129,6 +130,9 @@ public class FindReleaseTest extends TestCase {
         assertEquals(2, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
         assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
+        assertEquals("07599273202", doc.get(ReleaseIndexField.BARCODE));
+        assertEquals(1, doc.getFields(ReleaseIndexField.AMAZON_ID).length);
+        assertEquals("B00004Y6O9", doc.get(ReleaseIndexField.AMAZON_ID));
 
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
         assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
@@ -545,6 +549,7 @@ public class FindReleaseTest extends TestCase {
         System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<language>eng</language>"));
         assertTrue(output.contains("<script>latn</script>"));
@@ -558,10 +563,35 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<date>2005</date>"));
         assertTrue(output.contains("<country>gb</country>"));
         assertTrue(output.contains("<format>vinyl</format>"));
-        assertTrue(output.contains("<asin>07599273202</asin>"));
+        assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
 
         assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
         assertTrue(output.contains("<catalog-number>WRATHCD25</catalog-number>"));
+
+    }
+
+    public void testOutputJson() throws Exception {
+
+        Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
+        ResultsWriter writer = new ReleaseWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("id\":\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"type\":[\"album\"]"));
+        assertTrue(output.contains("title\":\"Our Glorious 5 Year Plan\""));
+        assertTrue(output.contains("\"status\":\"official\""));
+        assertTrue(output.contains("\"language\":\"eng\""));
+        assertTrue(output.contains("\"script\":\"latn\""));
+        assertTrue(output.contains("\"barcode\":\"07599273202\""));
+        assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
 
     }
 }

@@ -292,7 +292,7 @@ public class FindRecordingTest extends TestCase {
 
     public void testOutputAsXml() throws Exception {
 
-        Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
+        Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
         ResultsWriter writer = new RecordingWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -302,7 +302,8 @@ public class FindRecordingTest extends TestCase {
         System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
-        assertTrue(output.contains("<recording id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
+        assertTrue(output.contains("id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
         assertTrue(output.contains("<title>Gravitational Lenz</title>"));
         assertTrue(output.contains("<length>234000</length>"));
         assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
@@ -317,6 +318,30 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<isrc>123456789</isrc>"));
         assertTrue(output.contains("<isrc>abcdefghi</isrc>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
+
+    }
+
+    public void testOutputJson() throws Exception {
+
+        Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+        ResultsWriter writer = new RecordingWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("id\":\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"type\":[\"album\"]"));
+        assertTrue(output.contains("title\":\"Gravitational Lenz\""));
+        assertTrue(output.contains("\"length\":234000"));
+        assertTrue(output.contains("\"isrc\":[\"123456789"));
+        assertTrue(output.contains("\"position\":1"));
 
     }
 

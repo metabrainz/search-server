@@ -55,8 +55,7 @@ public class LabelWriter extends ResultsWriter {
             if(type!=null) {
                 label.setType(type.toLowerCase((Locale.US)));
             }
-            label.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
-
+            label.setScore(String.valueOf((int)(result.score * 100)));
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {
                 label.setName(name);

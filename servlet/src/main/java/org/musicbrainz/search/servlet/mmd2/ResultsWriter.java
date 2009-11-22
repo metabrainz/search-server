@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.musicbrainz.mmd2.Metadata;
 import org.musicbrainz.search.servlet.*;
 
@@ -46,8 +47,9 @@ import com.sun.jersey.api.json.JSONConfiguration;
 
 public abstract class ResultsWriter extends org.musicbrainz.search.servlet.ResultsWriter {
 
-    static final JAXBContext        context  = initContext();
-    static final JSONJAXBContext jsoncontext = initJsonContext();
+    static final JAXBContext            context         = initContext();
+    static final NamespacePrefixMapper  prefixMapper    = new PreferredMapper();
+    static final JSONJAXBContext        jsoncontext     = initJsonContext();
 
     public String getMimeType() {
           return "application/xml; charset=UTF-8";
@@ -56,13 +58,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
     public String getJsonMimeType() {
           return "application/json; charset=UTF-8";
       }
-    /**
-     * @return
-     */
-    protected QName getScore() {
-        return new QName("http://musicbrainz.org/ns/ext#-2.0", "score", "ext");
-    }
-
+    
     private static JAXBContext initContext() {
         try {
             return JAXBContext.newInstance("org.musicbrainz.mmd2");
@@ -108,6 +104,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
             try {
                 Metadata metadata = write(results);
                 Marshaller m = context.createMarshaller();
+                m.setProperty("com.sun.xml.bind.namespacePrefixMapper", prefixMapper);
                 m.marshal(metadata, out);
             }
             catch (JAXBException je) {
@@ -128,4 +125,20 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
            throw new RuntimeException(ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(this.getClass(), outputFormat));
         }
     }
+
+    /**
+     * Required to map score to ext namespace now that score defined properly because by default JAXB creates
+     * namespaces with names ns1,ns2..
+     */
+    public static class PreferredMapper extends NamespacePrefixMapper {
+        @Override
+        public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
+            if(namespaceUri.equals("http://musicbrainz.org/ns/ext#-2.0"))
+            {
+                return "ext";
+            }
+            return null;
+        }
+    }
+
 }

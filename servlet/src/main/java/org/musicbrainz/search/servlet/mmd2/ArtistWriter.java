@@ -56,6 +56,7 @@ public class ArtistWriter extends ResultsWriter {
             Artist artist = of.createArtist();
 
             artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
+            artist.setScore(String.valueOf((int)(result.score * 100)));
 
             String artype = doc.get(ArtistIndexField.TYPE);
             if (artype != null) {
@@ -63,7 +64,6 @@ public class ArtistWriter extends ResultsWriter {
             }
 
 
-            artist.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
 
 
