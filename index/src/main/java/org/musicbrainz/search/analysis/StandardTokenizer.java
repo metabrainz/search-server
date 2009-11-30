@@ -1,32 +1,20 @@
 package org.musicbrainz.search.analysis;
 
-import java.io.IOException;
-import java.io.Reader;
-
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
-import org.apache.lucene.util.AttributeSource;
-
-/** A grammar-based tokenizer constructed with JFlex
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * <p> This should be a good tokenizer for most European-language documents:
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * <ul>
- *   <li>Splits words at punctuation characters, removing punctuation. However, a
- *     dot that's not followed by whitespace is considered part of a token.
- *   <li>Splits words at hyphens, unless there's a number in the token, in which case
- *     the whole token is interpreted as a product number and is not split.
- *   <li>Recognizes email addresses and internet hostnames as one token.
- * </ul>
- *
- * <p>Many applications have specific tokenizer needs.  If this tokenizer does
- * not suit your application, please consider copying this source code
- * directory to your project and maintaining your own grammar-based tokenizer.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 
@@ -35,6 +23,7 @@ import java.io.Reader;
 
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
@@ -67,7 +56,7 @@ import org.apache.lucene.util.Version;
  * </ul>
  */
 
-public class StandardTokenizer extends Tokenizer {
+public final class StandardTokenizer extends Tokenizer {
   /** A private instance of the JFlex-constructed scanner */
   private final StandardTokenizerImpl scanner;
 
@@ -82,8 +71,7 @@ public class StandardTokenizer extends Tokenizer {
 
   /**
    * @deprecated this solves a bug where HOSTs that end with '.' are identified
-   *             as ACRONYMs. It is deprecated and will be removed in the next
-   *             release.
+   *             as ACRONYMs.
    */
   public static final int ACRONYM_DEP       = 8;
 
@@ -100,17 +88,6 @@ public class StandardTokenizer extends Tokenizer {
     "<ACRONYM_DEP>"
   };
 
-  /** @deprecated Please use {@link #TOKEN_TYPES} instead */
-  public static final String [] tokenImage = TOKEN_TYPES;
-
-  /**
-   * Specifies whether deprecated acronyms should be replaced with HOST type.
-   * This is false by default to support backward compatibility.
-   *<p/>
-   * See http://issues.apache.org/jira/browse/LUCENE-1068
-   *
-   * @deprecated this should be removed in the next release (3.0).
-   */
   private boolean replaceInvalidAcronym;
 
   private int maxTokenLength = StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH;
@@ -124,34 +101,6 @@ public class StandardTokenizer extends Tokenizer {
   /** @see #setMaxTokenLength */
   public int getMaxTokenLength() {
     return maxTokenLength;
-  }
-
-  /**
-   * Creates a new instance of the {@link StandardTokenizer}. Attaches the
-   * <code>input</code> to a newly created JFlex scanner.
-   *
-   * @deprecated Use {@link #StandardTokenizer(Version,
-   * Reader)} instead
-   */
-  public StandardTokenizer(Reader input) {
-    this(Version.LUCENE_24, input);
-  }
-
-  /**
-   * Creates a new instance of the {@link org.apache.lucene.analysis.standard.StandardTokenizer}.  Attaches
-   * the <code>input</code> to the newly created JFlex scanner.
-   *
-   * @param input The input reader
-   * @param replaceInvalidAcronym Set to true to replace mischaracterized acronyms with HOST.
-   *
-   * See http://issues.apache.org/jira/browse/LUCENE-1068
-   *
-   * @deprecated Use {@link #StandardTokenizer(Version, Reader)} instead
-   */
-  public StandardTokenizer(Reader input, boolean replaceInvalidAcronym) {
-    super();
-    this.scanner = new StandardTokenizerImpl(input);
-    init(input, replaceInvalidAcronym);
   }
 
   /**
@@ -170,33 +119,11 @@ public class StandardTokenizer extends Tokenizer {
 
   /**
    * Creates a new StandardTokenizer with a given {@link AttributeSource}.
-   *
-   * @deprecated Use {@link #StandardTokenizer(Version, AttributeSource, Reader)} instead
-   */
-  public StandardTokenizer(AttributeSource source, Reader input, boolean replaceInvalidAcronym) {
-    super(source);
-    this.scanner = new StandardTokenizerImpl(input);
-    init(input, replaceInvalidAcronym);
-  }
-
-  /**
-   * Creates a new StandardTokenizer with a given {@link AttributeSource}.
    */
   public StandardTokenizer(Version matchVersion, AttributeSource source, Reader input) {
     super(source);
     this.scanner = new StandardTokenizerImpl(input);
     init(input, matchVersion);
-  }
-
-  /**
-   * Creates a new StandardTokenizer with a given {@link org.apache.lucene.util.AttributeSource.AttributeFactory}
-   *
-   * @deprecated Use {@link #StandardTokenizer(Version, org.apache.lucene.util.AttributeSource.AttributeFactory, Reader)} instead
-   */
-  public StandardTokenizer(AttributeFactory factory, Reader input, boolean replaceInvalidAcronym) {
-    super(factory);
-    this.scanner = new StandardTokenizerImpl(input);
-    init(input, replaceInvalidAcronym);
   }
 
   /**
@@ -208,21 +135,17 @@ public class StandardTokenizer extends Tokenizer {
     init(input, matchVersion);
   }
 
-  private void init(Reader input, boolean replaceInvalidAcronym) {
-    this.replaceInvalidAcronym = replaceInvalidAcronym;
-    this.input = input;
-    termAtt = (TermAttribute) addAttribute(TermAttribute.class);
-    offsetAtt = (OffsetAttribute) addAttribute(OffsetAttribute.class);
-    posIncrAtt = (PositionIncrementAttribute) addAttribute(PositionIncrementAttribute.class);
-    typeAtt = (TypeAttribute) addAttribute(TypeAttribute.class);
-  }
-
   private void init(Reader input, Version matchVersion) {
     if (matchVersion.onOrAfter(Version.LUCENE_24)) {
-      init(input, true);
+      replaceInvalidAcronym = true;
     } else {
-      init(input, false);
+      replaceInvalidAcronym = false;
     }
+    this.input = input;
+    termAtt = addAttribute(TermAttribute.class);
+    offsetAtt = addAttribute(OffsetAttribute.class);
+    posIncrAtt = addAttribute(PositionIncrementAttribute.class);
+    typeAtt = addAttribute(TypeAttribute.class);
   }
 
   // this tokenizer generates three attributes:
@@ -237,6 +160,7 @@ public class StandardTokenizer extends Tokenizer {
    *
    * @see org.apache.lucene.analysis.TokenStream#next()
    */
+  @Override
   public final boolean incrementToken() throws IOException {
     clearAttributes();
     int posIncr = 1;
@@ -274,22 +198,11 @@ public class StandardTokenizer extends Tokenizer {
     }
   }
 
+  @Override
   public final void end() {
     // set final offset
     int finalOffset = correctOffset(scanner.yychar() + scanner.yylength());
     offsetAtt.setOffset(finalOffset, finalOffset);
-  }
-
-  /** @deprecated Will be removed in Lucene 3.0. This method is final, as it should
-   * not be overridden. Delegates to the backwards compatibility layer. */
-  public final Token next(final Token reusableToken) throws IOException {
-    return super.next(reusableToken);
-  }
-
-  /** @deprecated Will be removed in Lucene 3.0. This method is final, as it should
-   * not be overridden. Delegates to the backwards compatibility layer. */
-  public final Token next() throws IOException {
-    return super.next();
   }
 
   /*
@@ -297,11 +210,13 @@ public class StandardTokenizer extends Tokenizer {
    *
    * @see org.apache.lucene.analysis.TokenStream#reset()
    */
+  @Override
   public void reset() throws IOException {
     super.reset();
     scanner.yyreset(input);
   }
 
+  @Override
   public void reset(Reader reader) throws IOException {
     super.reset(reader);
     reset();
@@ -329,4 +244,3 @@ public class StandardTokenizer extends Tokenizer {
     this.replaceInvalidAcronym = replaceInvalidAcronym;
   }
 }
-
