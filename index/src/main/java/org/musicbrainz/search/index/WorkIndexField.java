@@ -14,7 +14,7 @@ public enum WorkIndexField implements IndexField {
     ARTIST_ID		    ("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST_NAME         ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_COMMENT      ("comment",		Field.Store.YES,    Field.Index.ANALYZED),
+    ARTIST_COMMENT      ("comment",		Field.Store.YES,    Field.Index.NO),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
     WORK_ID		        ("wid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

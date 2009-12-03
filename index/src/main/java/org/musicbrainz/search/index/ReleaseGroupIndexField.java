@@ -35,7 +35,7 @@ public enum ReleaseGroupIndexField implements IndexField {
     ARTIST_SORTNAME	    ("sortname",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
     ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
-    ARTIST_COMMENT	    ("artistcomment",	Field.Store.YES,	Field.Index.NO),       //ONLY used by Html, maybe can be dropped
+    ARTIST_COMMENT	    ("artistcomment",	Field.Store.YES,	Field.Index.NO),       
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED),
 	TYPE			    ("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
