@@ -35,13 +35,15 @@ public class FindWorkTest extends TestCase {
             MbDocument doc = new MbDocument();
             doc.addField(WorkIndexField.WORK_ID, "4ff89cf0-86af-11de-90ed-001fc6f176ff");
             doc.addField(WorkIndexField.WORK, "Symphony No. 5");
-            doc.addField(WorkIndexField.ISWC,"T-101779304-1");
+            doc.addField(WorkIndexField.ISWC, "T-101779304-1");
             doc.addField(WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
             doc.addField(WorkIndexField.ARTIST, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_SORTNAME, "Beethoven, Ludwig van");
             doc.addField(WorkIndexField.ARTIST_JOINPHRASE, "-");
+            doc.addField(WorkIndexField.TYPE, "opera");
+
 
             writer.addDocument(doc.getLuceneDocument());
         }
@@ -60,6 +62,33 @@ public class FindWorkTest extends TestCase {
 
     public void testFindWorkByName() throws Exception {
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+    public void testFindWorkByArtist() throws Exception {
+        Results res = ss.searchLucene("artist:\"Ludwig van Beethoven\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+    public void testFindWorkByISWC() throws Exception {
+        Results res = ss.searchLucene("iswc:\"T-101779304-1\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+    public void testFindWorkByType() throws Exception {
+        Results res = ss.searchLucene("type:\"opera\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -90,6 +119,7 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("<name>Ludwig van Beethoven</name>"));
         assertTrue(output.contains("<sort-name>Beethoven, Ludwig van</sort-name>"));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
+        assertTrue(output.contains("type=\"opera\""));
 
 
     }
