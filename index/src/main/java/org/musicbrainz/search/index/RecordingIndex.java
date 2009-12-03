@@ -289,7 +289,7 @@ public class RecordingIndex extends DatabaseIndex {
         if (tracks.containsKey(id)) {
             //For each track for this recording
             for (TrackWrapper track : tracks.get(id)) {
-                doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
+                doc.addNumericField(RecordingIndexField.NUM_TRACKS_MEDIUM, track.getTrackCount());
                 doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, track.getReleaseGroupType());
                 doc.addField(RecordingIndexField.RELEASE_ID, track.getReleaseId());
