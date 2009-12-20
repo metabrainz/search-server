@@ -46,11 +46,7 @@ import org.apache.commons.lang.time.StopWatch;
 
 public class IndexBuilder
 {
-    // Number of rows to process for each database 'chunk'
-    private static final int IDS_PER_CHUNK = 10000;
 
-    // Number of rows to process in 'test' mode
-    private static final int MAX_TEST_ID = 50000;
 
     // Lucene parameters
     private static final int MAX_BUFFERED_DOCS = 10000;
@@ -184,13 +180,13 @@ public class IndexBuilder
         
         index.init();
         int maxId = index.getMaxId();
-        if (options.isTest() && MAX_TEST_ID < maxId)
-            maxId = MAX_TEST_ID;
+        if (options.isTest() && options.getTestIndexSize() < maxId)
+            maxId = options.getTestIndexSize();
         int j = 0;
         while (j < maxId) {
-            System.out.print("  Indexing " + j + "..." + (j + IDS_PER_CHUNK) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
-            index.indexData(indexWriter, j, j + IDS_PER_CHUNK);
-            j += IDS_PER_CHUNK;
+            System.out.print("  Indexing " + j + "..." + (j + options.getDatabaseChunkSize()) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
+            index.indexData(indexWriter, j, j + options.getDatabaseChunkSize());
+            j += options.getDatabaseChunkSize();
         }
 
         index.destroy();
@@ -266,6 +262,9 @@ public class IndexBuilder
 
 class IndexBuilderOptions {
 
+    private static final int MAX_TEST_ID = 50000;
+    private static final int IDS_PER_CHUNK = 10000;
+
     // Main database connection parameters
 
     @Option(name="--db-host", aliases = { "-h" }, usage="The database server to connect to. (default: localhost)")
@@ -329,5 +328,13 @@ class IndexBuilderOptions {
     @Option(name="--help", usage="Print this usage information.")
     private boolean help = false;
     public boolean isHelp() { return help; }
+
+    @Option(name="--testindexsize", aliases = { "-b" }, usage="The number of rows to index when using the test option. (default: -10000)")
+    private int testIndexSize = MAX_TEST_ID;
+    public int getTestIndexSize() { return testIndexSize; }
+
+    @Option(name="--chunksize", aliases = { "-c" }, usage="Chunk Size, The number of rows to return in each SQL query. (default: -10000)")
+    private int databaseChunkSize = IDS_PER_CHUNK;
+    public int getDatabaseChunkSize() { return databaseChunkSize; }
 
 }
