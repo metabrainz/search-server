@@ -148,6 +148,7 @@ public class FindFreeDBTest extends TestCase {
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("score=\"100\""));
         assertTrue(output.contains("id=\"c20c4b0d\""));
         assertTrue(output.contains("<title>L\u00e1grimas &amp; Gozos</title>"));
         assertTrue(output.contains("<artist>Ska-P</artist>"));
@@ -171,6 +172,7 @@ public class FindFreeDBTest extends TestCase {
 
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"score\":\"100\","));
         assertTrue(output.contains("\"id\":\"c20c4b0d\""));
         assertTrue(output.contains("\"title\":\"L\u00e1grimas & Gozos\""));
         assertTrue(output.contains("\"artist\":\"Ska-P\""));

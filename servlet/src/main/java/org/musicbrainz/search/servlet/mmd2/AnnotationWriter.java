@@ -59,7 +59,7 @@ public class AnnotationWriter extends ResultsWriter {
             annotation.setText(doc.get(AnnotationIndexField.TEXT));
             annotation.setType(doc.get(AnnotationIndexField.TYPE));
             annotation.setEntity(doc.get(AnnotationIndexField.MBID));
-            //annotation.setScore(String.valueOf((int)(result.score * 100)));
+            annotation.setScore(String.valueOf((int)(result.score * 100)));
             annotationList.getAnnotation().add(annotation);
 
         }

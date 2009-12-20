@@ -59,7 +59,7 @@ public class CDStubWriter extends ResultsWriter {
             cdstub.setBarcode(doc.get(CDStubIndexField.BARCODE));
             cdstub.setComment(doc.get(CDStubIndexField.COMMENT));
             cdstub.setId(doc.get(CDStubIndexField.DISCID));
-            //cdstub.setScore(String.valueOf((int)(result.score * 100)));
+            cdstub.setScore(String.valueOf((int)(result.score * 100)));
 
             org.musicbrainz.mmd2.FreedbDisc.TrackList trackList = of.createFreedbDiscTrackList();
             trackList.setCount(new BigInteger(doc.get(CDStubIndexField.NUM_TRACKS)));

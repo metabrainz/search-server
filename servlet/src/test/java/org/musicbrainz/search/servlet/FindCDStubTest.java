@@ -100,6 +100,7 @@ public class FindCDStubTest extends TestCase {
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("score=\"100\""));
         assertTrue(output.contains("id=\"qA87dKURKperVfmckD5b_xo8BO8-\""));
         assertTrue(output.contains("<title>Doo Doo First</title>"));
         assertTrue(output.contains("<artist>Doo Doo</artist>"));
@@ -123,6 +124,7 @@ public class FindCDStubTest extends TestCase {
 
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"score\":\"100\","));
         assertTrue(output.contains("\"id\":\"qA87dKURKperVfmckD5b_xo8BO8-\""));
         assertTrue(output.contains("\"title\":\"Doo Doo First\""));
         assertTrue(output.contains("\"artist\":\"Doo Doo\""));
