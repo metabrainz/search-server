@@ -166,7 +166,7 @@ public class ReleaseWriter extends ResultsWriter {
                 Medium medium = of.createMedium();
                 medium.setFormat(formats[i].toLowerCase(Locale.US));
 
-                TrackList trackList = of.createTrackList();
+                org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
                 trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
                 medium.setTrackList(trackList);
 

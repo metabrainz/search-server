@@ -8,6 +8,11 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.FreeDBIndexField;
+import org.musicbrainz.search.servlet.mmd2.*;
+import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Test retrieving FreeDB entries from index and Outputting as Html
@@ -39,7 +44,7 @@ public class FindFreeDBTest extends TestCase {
         }
 
         writer.close();
-        ss = new FreeDBSearch(new IndexSearcher(ramDir,true));
+        ss = new FreeDBSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testSearchFreeDBByArtist() throws Exception {
@@ -123,6 +128,55 @@ public class FindFreeDBTest extends TestCase {
             assertEquals("13", doc.get(FreeDBIndexField.TRACKS));
             assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
         }
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testOutputXml() throws Exception {
+
+        Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new FreeDBWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("id=\"c20c4b0d\""));
+        assertTrue(output.contains("<title>L\u00e1grimas &amp; Gozos</title>"));
+        assertTrue(output.contains("<artist>Ska-P</artist>"));
+        assertTrue(output.contains("<year>2008</year>"));
+        assertTrue(output.contains("<category>folk</category>"));
+        assertTrue(output.contains("<track-list count=\"13\"/>"));
+
+    }
+
+    public void testOutputJson() throws Exception {
+
+        Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+        ResultsWriter writer = new FreeDBWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"id\":\"c20c4b0d\""));
+        assertTrue(output.contains("\"title\":\"L\u00e1grimas & Gozos\""));
+        assertTrue(output.contains("\"artist\":\"Ska-P\""));
+        assertTrue(output.contains("\"year\":\"2008\""));
+        assertTrue(output.contains("\"category\":\"folk\""));
+        assertTrue(output.contains("\"track-list\":{\"count\":13}"));
 
     }
 

@@ -84,7 +84,10 @@ public class CDStubIndex extends DatabaseIndex {
         doc.addField(CDStubIndexField.TITLE, rs.getString("title"));
         doc.addField(CDStubIndexField.ARTIST, rs.getString("artist"));
         doc.addField(CDStubIndexField.DISCID, rs.getString("discid"));
+
+        //TODO Should really index as number
         doc.addField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
+
         doc.addNonEmptyField(CDStubIndexField.BARCODE, rs.getString("barcode"));
         doc.addNonEmptyField(CDStubIndexField.COMMENT, rs.getString("comment"));
         return doc.getLuceneDocument();

@@ -145,6 +145,8 @@ public class FreeDBIndex {
 		doc.addField(FreeDBIndexField.DISCID, discid);
 		doc.addField(FreeDBIndexField.CATEGORY, category);
 		doc.addField(FreeDBIndexField.YEAR, year);
+
+        //TODO should really index as number
 		doc.addField(FreeDBIndexField.TRACKS, numTracks.toString());
 		
 		return doc.getLuceneDocument();

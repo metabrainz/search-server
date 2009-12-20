@@ -124,12 +124,12 @@ public class RecordingWriter extends ResultsWriter {
                         release.getReleaseGroup().getType().add(releaseTypes[i].toLowerCase(Locale.US));
                     }
 
-                    Track track = of.createTrack();
+                    org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
                     track.setTitle(trackName[i]);
-                    TrackList releaseTrackList = of.createTrackList();
+                    org.musicbrainz.mmd2.Medium.TrackList releaseTrackList = of.createMediumTrackList();
                     releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNos[i]) - 1));
                     releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
-                    releaseTrackList.getTrack().add(track);
+                    releaseTrackList.getDefTrack().add(track);
                     Medium medium = of.createMedium();
                     medium.setPosition(new BigInteger(mediumPos[i]));
                     medium.setTrackList(releaseTrackList);

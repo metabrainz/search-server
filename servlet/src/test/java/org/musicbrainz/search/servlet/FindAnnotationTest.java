@@ -9,6 +9,10 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.AnnotationType;
+import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Test retrieving Annotations entries from index and Outputting as Html
@@ -86,4 +90,48 @@ public class FindAnnotationTest extends TestCase {
         Results res = ss.searchLucene("DiscID", 0, 10);
         assertEquals(1, res.totalHits);
     }
+
+/**
+     * @throws Exception
+     */
+    public void testOutputXml() throws Exception {
+
+        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("type=\"release\""));
+        assertTrue(output.contains("<entity>bdb24cb5-404b-4f60-bba4-7b730325ae47</entity>"));
+        assertTrue(output.contains("<text>EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-</text>"));
+
+    }
+
+    public void testOutputJson() throws Exception {
+
+        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"type\":\"release\""));
+        assertTrue(output.contains("\"entity\":\"bdb24cb5-404b-4f60-bba4-7b730325ae47\""));
+        assertTrue(output.contains("\"text\":\"EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-\""));
+
+    }
+
 }
