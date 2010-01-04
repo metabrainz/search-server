@@ -32,6 +32,7 @@ package org.musicbrainz.search.index;
 import java.util.*;
 import java.sql.*;
 import java.io.*;
+import java.util.Date;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexReader;
@@ -173,7 +174,7 @@ public class IndexBuilder
     {
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getName() + "_index";
-        System.out.println("Building index: " + path);
+        System.out.println("Started Building index: " + path + " at "+new Date());
         indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
@@ -191,7 +192,7 @@ public class IndexBuilder
 
         index.destroy();
         addMetaFieldsToIndex(indexWriter);
-        System.out.println("\n  Optimizing");
+        System.out.println("\n  Started Optimizing at "+new Date());
         indexWriter.optimize();
         indexWriter.close();
 
@@ -202,6 +203,8 @@ public class IndexBuilder
             System.out.println("  Indexed "+dbRows+" rows, creating "+(reader.maxDoc() - 1)+" lucene documents");
             reader.close();
         }
+        System.out.println("\n  Completed Optimizing at "+new Date());
+
     }
     
     /**
@@ -255,6 +258,9 @@ public class IndexBuilder
     private static void prepareDbConnection(Connection connection) throws SQLException
     {
 		Statement st = connection.createStatement();
+        //Forces Query Analyser to take advantage of indexes when they exist, this works round the problem with the
+        //explain sometimes deciding to do full table scans when building recording index causing query to run unacceptably slow.
+        st.executeUpdate("SET enable_seqscan = off");
 		st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
     }
     
@@ -263,7 +269,7 @@ public class IndexBuilder
 class IndexBuilderOptions {
 
     private static final int MAX_TEST_ID = 50000;
-    private static final int IDS_PER_CHUNK = 10000;
+    private static final int IDS_PER_CHUNK = 50000;
 
     // Main database connection parameters
 
