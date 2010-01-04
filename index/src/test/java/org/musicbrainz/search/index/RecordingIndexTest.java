@@ -233,27 +233,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-    /**
-     * Basic test of all fields
-     *
-     * @throws Exception
-     */
-    public void testNoReleaseType() throws Exception {
-
-        addTrackTwo();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
-        {
-            Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals("-", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
-        }
-        ir.close();
-    }
+    
 
      /**
      *
