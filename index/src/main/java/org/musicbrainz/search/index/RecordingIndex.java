@@ -104,7 +104,7 @@ public class RecordingIndex extends DatabaseIndex {
                 "ON m.release=r.id " +
                 "INNER JOIN release_group rg " +
                 "ON rg.id = r.release_group " +
-                "LEFT JOIN release_group_type rgt " +    //according to ruaok is mandatory
+                "INNER JOIN release_group_type rgt " +    
                 "ON rg.type = rgt.id " +
                 "INNER JOIN release_name rn " +
                 "ON r.name=rn.id " +
