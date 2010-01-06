@@ -131,11 +131,7 @@ public class SearchServerServlet extends HttpServlet {
         {
             type=ResourceType.RECORDING.getName();
         }
-        //TEMPORARY FIX mb_server uses release_group instead of release-group
-        else if (type.equals("release_group"))
-        {
-            type=ResourceType.RELEASE_GROUP.getName();
-        }
+
         ResourceType resourceType = ResourceType.getValue(type);
         if (resourceType == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
