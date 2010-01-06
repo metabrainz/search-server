@@ -55,7 +55,7 @@ public class AnnotationWriter extends ResultsWriter {
         for (Result result : results.results) {
             MbDocument doc = result.doc;
             Annotation annotation= of.createAnnotation();
-
+            annotation.setName(doc.get(AnnotationIndexField.NAME));
             annotation.setText(doc.get(AnnotationIndexField.TEXT));
             annotation.setType(doc.get(AnnotationIndexField.TYPE));
             annotation.setEntity(doc.get(AnnotationIndexField.MBID));

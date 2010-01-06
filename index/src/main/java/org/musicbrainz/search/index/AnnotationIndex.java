@@ -171,10 +171,8 @@ public class AnnotationIndex extends DatabaseIndex {
         MbDocument doc = new MbDocument();
         doc.addField(AnnotationIndexField.MBID, rs.getString("gid"));
         doc.addField(AnnotationIndexField.NAME, rs.getString("name"));
-	doc.addField(AnnotationIndexField.TYPE, type.getName());
-	doc.addField(AnnotationIndexField.TEXT, rs.getString("text"));
-
+	    doc.addField(AnnotationIndexField.TYPE, type.getName());
+	    doc.addField(AnnotationIndexField.TEXT, rs.getString("text"));
         return doc.getLuceneDocument();
     }
-
 }
