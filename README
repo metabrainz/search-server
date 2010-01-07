@@ -117,10 +117,7 @@ in order to automatically build the freedb index as well:
 
 It is worth noting that if you want to build _just_ the freedb_index, you can specify
 
-      --indexes ""
-
-but if you do that you'll still need to specify all the database connection details, even though they 
-won't be used (this might be a bug -- we're looking into this).
+      --indexes freedb
 
 Building the search indexes will take some time -- even on a fast machine it will still take an hour.
 Once indexes are built, ensure that your tomcat instance has the permissions to access your data. 

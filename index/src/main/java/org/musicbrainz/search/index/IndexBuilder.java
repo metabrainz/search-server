@@ -152,13 +152,16 @@ public class IndexBuilder
         if(options.buildIndex("freedb")) {
 
             File dumpFile = new File(options.getFreeDBDump());
-            if (dumpFile != null && dumpFile.isFile()) {
-                clock.start();
-                buildFreeDBIndex(dumpFile, options);
-                clock.stop();
-                System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
-            } else {
-                System.out.println("  Can't build FreeDB index: invalid file");
+            //If they have set freedbdump file 
+            if (options.getFreeDBDump() != null && options.getFreeDBDump().length()!=0)  {
+                if( dumpFile.isFile()) {
+                    clock.start();
+                    buildFreeDBIndex(dumpFile, options);
+                    clock.stop();
+                    System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
+                } else {
+                    System.out.println("  Can't build FreeDB index: invalid file "+options.getFreeDBDump());
+                }
             }
         }
     }
@@ -334,8 +337,8 @@ class IndexBuilderOptions {
     public String getFreeDBDump() { return freeDBDump; }
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,recording,label,work,annotation,cdstub)")
-    private String indexes = "artist,label,release,recording,releasegroup,work,annotation,cdstub";
+    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,recording,label,work,annotation,cdstub,freedb)")
+    private String indexes = "artist,label,release,recording,releasegroup,work,annotation,cdstub,freedb";
     public ArrayList<String> selectedIndexes() { return new ArrayList<String>(Arrays.asList(indexes.split(","))); }
     public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
 
