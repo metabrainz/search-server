@@ -24,10 +24,9 @@ public enum AnnotationType {
     ARTIST(1, "artist"),
     RELEASE(2, "release"),
     LABEL(3, "label"),
-    TRACK(4, "track"),              //TODO need track for V1 but maybe recording for V2
+    RECORDING(4, "recording"),
     RELEASE_GROUP(5,"releasegroup"),
-    WORK(6,"work"),
-    ;
+    WORK(6,"work");
 
     private Integer dbId;
     private String name;
@@ -60,7 +59,7 @@ public enum AnnotationType {
     }
 
     public static int getMaxDbId() {
-        return TRACK.getDbId();
+        return WORK.getDbId();
     }
 
 

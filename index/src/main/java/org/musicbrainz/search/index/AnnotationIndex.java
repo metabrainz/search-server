@@ -115,7 +115,7 @@ public class AnnotationIndex extends DatabaseIndex {
             st.setInt(2, max);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                indexWriter.addDocument(documentFromResultSet(rs,AnnotationType.TRACK));
+                indexWriter.addDocument(documentFromResultSet(rs,AnnotationType.RECORDING));
             }
             st.close();
         }
