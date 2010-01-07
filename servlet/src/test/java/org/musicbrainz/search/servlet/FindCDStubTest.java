@@ -31,7 +31,7 @@ public class FindCDStubTest extends TestCase {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(CDStubIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
-        //A complete Annotation entry
+        
         {
             MbDocument doc = new MbDocument();
             doc.addField(CDStubIndexField.ARTIST, "Doo Doo");
@@ -45,7 +45,7 @@ public class FindCDStubTest extends TestCase {
         }
 
         writer.close();
-        ss = new AnnotationSearch(new IndexSearcher(ramDir, true));
+        ss = new CDStubSearch(new IndexSearcher(ramDir, true));
     }
 
 

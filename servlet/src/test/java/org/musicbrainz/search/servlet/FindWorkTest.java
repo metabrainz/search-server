@@ -48,7 +48,7 @@ public class FindWorkTest extends TestCase {
             writer.addDocument(doc.getLuceneDocument());
         }
         writer.close();
-        ss = new LabelSearch(new IndexSearcher(ramDir, true));
+        ss = new WorkSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testFindWorkById() throws Exception {
