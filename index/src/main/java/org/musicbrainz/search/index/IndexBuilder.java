@@ -175,7 +175,20 @@ public class IndexBuilder
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getName() + "_index";
         System.out.println("Started Building index: " + path + " at "+new Date());
-        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+
+        /* All addDocuments request are put on a queue to allow another query to be made to database without waiting
+         * for all added documents to be analysed, queue is serviced by available processer no of threads.
+         * If the max query outperforms the lucene analysis then analysis will switch to main thread because
+         * the pool queue size cannot be larger than the max number of documents returned from one query.
+         * Will get best results on multicpu systems accessing database on another system.
+         */
+        indexWriter = new ThreadedIndexWriter(FSDirectory.open(new File(path)),
+                index.getAnalyzer(),
+                true,
+                Runtime.getRuntime().availableProcessors(),
+                options.getDatabaseChunkSize(),
+                IndexWriter.MaxFieldLength.LIMITED);
+
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
         
