@@ -62,6 +62,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap,reader);
         StandardTokenizer tokenStream = new StandardTokenizer(Version.LUCENE_CURRENT,mappingCharFilter);
         TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
+        result = new ICUTransformFilter(result, Transliterator.getInstance("Traditional-Simplified"));
         result = new StandardFilter(result);
         result = new AccentFilter(result);
         result = new LowercaseFilter(result);
@@ -80,6 +81,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
             setPreviousTokenStream(streams);
             streams.tokenStream = new StandardTokenizer(Version.LUCENE_CURRENT,new MappingCharFilter(charConvertMap,reader));
             streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
+            streams.filteredTokenStream = new ICUTransformFilter(streams.filteredTokenStream, Transliterator.getInstance("Traditional-Simplified"));
             streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowercaseFilter(streams.filteredTokenStream);
