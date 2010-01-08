@@ -4,6 +4,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.TitleAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -19,7 +20,7 @@ public enum RecordingIndexField implements IndexField {
     ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
     ARTIST_SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED, new KeywordAnalyzer()),
     RELEASE_ID			("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    RELEASE				("release",		Field.Store.YES,	Field.Index.ANALYZED),
+    RELEASE				("release",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
     NUM_TRACKS_MEDIUM   ("tracksmedium",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     NUM_TRACKS          ("tracks",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     DURATION			("dur",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

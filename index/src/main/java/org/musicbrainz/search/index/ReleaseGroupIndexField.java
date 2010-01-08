@@ -43,13 +43,13 @@ public enum ReleaseGroupIndexField implements IndexField {
 	ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED),
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED),
+	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
 	TYPE			    ("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED),
+	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO)
     ;
-    
+
     private String name;
 	private Field.Store store;
 	private Field.Index index;

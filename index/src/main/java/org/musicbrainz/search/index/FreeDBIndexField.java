@@ -31,6 +31,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.TitleAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -38,7 +39,7 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 public enum FreeDBIndexField implements IndexField {
 
 	ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
-	TITLE		("title",		Field.Store.YES,	Field.Index.ANALYZED),
+	TITLE		("title",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
 	DISCID		("discid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
 	CATEGORY	("cat",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
 	YEAR		("year",		Field.Store.YES,	Field.Index.ANALYZED),

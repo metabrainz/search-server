@@ -22,6 +22,8 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
+import org.musicbrainz.search.analysis.TitleAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -29,8 +31,8 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 public enum CDStubIndexField implements IndexField {
 
     ARTIST          ("artist",      Field.Store.YES,    Field.Index.ANALYZED),
-    TITLE           ("title",       Field.Store.YES,    Field.Index.ANALYZED),
-    BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED),
+    TITLE           ("title",       Field.Store.YES,    Field.Index.ANALYZED, new TitleAnalyzer()),
+    BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
     COMMENT         ("comment",     Field.Store.YES,    Field.Index.ANALYZED),
     NUM_TRACKS      ("tracks",      Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     DISCID          ("discid",      Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),;
