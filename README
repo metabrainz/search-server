@@ -94,13 +94,13 @@ Build Indexes
 Now build indexes with these commands:
 
     cd /home/search 
-    java -Xmx512000000 -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata
+    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata
 
 This will build all of the indexes using upto 512mb of memory (but freedb) using all of the defaults for connecting
 to the database servers. If your database isn't on the same server and named according to the 
 defaults you will need to give the command line more options. To see the options execute this:
 
-    java -Xmx512000000 -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --help
+    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --help
 
 To also build the freedb indexes, download the latest freedb dump (in tar.bz2 format) from:
 
@@ -117,7 +117,7 @@ in order to automatically build the freedb index as well:
 
 It is worth noting that if you want to build _just_ the freedb_index, you can specify
 
-      --indexes freedb
+    --indexes freedb
 
 Building the search indexes will take some time -- even on a fast machine it will still take an hour.
 Once indexes are built, ensure that your tomcat instance has the permissions to access your data. 
