@@ -5,6 +5,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
+import org.musicbrainz.search.analysis.TitleAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -17,7 +18,7 @@ public enum ReleaseIndexField implements IndexField {
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    RELEASE			    ("release",		    Field.Store.YES,	Field.Index.ANALYZED),
+    RELEASE			    ("release",		    Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
     NUM_TRACKS		    ("tracks",		    Field.Store.NO,	    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     NUM_TRACKS_MEDIUM   ("tracksmedium",	Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     BARCODE			    ("barcode",		    Field.Store.YES,	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
