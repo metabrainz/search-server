@@ -286,7 +286,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
             assertEquals("track annotation newer", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
             assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
-            assertEquals("track", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
+            assertEquals("recording", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
 
         }
         ir.close();
