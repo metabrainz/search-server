@@ -10,13 +10,12 @@ import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
  * Fields created in Lucene Search Index
  */
 public enum ReleaseIndexField implements IndexField {
-    ARTIST              ("artist",	        Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_ID		    ("arid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST_NAME         ("artist_name",	    Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_SORTNAME	    ("sortname",	    Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_COMMENT      ("comment",		    Field.Store.YES,    Field.Index.NO),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
+    ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_SORTNAME	    ("sortname",	    Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     RELEASE			    ("release",		    Field.Store.YES,	Field.Index.ANALYZED),
     NUM_TRACKS		    ("tracks",		    Field.Store.NO,	    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
@@ -24,7 +23,7 @@ public enum ReleaseIndexField implements IndexField {
     BARCODE			    ("barcode",		    Field.Store.YES,	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
     CATALOG_NO		    ("catno",		    Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED),
-    DATE			    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    DATE			    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     NUM_DISCIDS         ("discids",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     NUM_DISCIDS_MEDIUM  ("discidsmedium",   Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

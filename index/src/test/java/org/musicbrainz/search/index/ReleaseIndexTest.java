@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 
@@ -365,8 +366,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(ReleaseIndexField.RELEASE_ID.getName()).stringValue());
-            assertEquals("Echo & The Bunnymen", doc.getField(ReleaseIndexField.ARTIST_NAME.getName()).stringValue());
-            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(ReleaseIndexField.ARTIST_ID.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseIndexField.TYPE.getName()).length);
             assertEquals("Single", doc.getField(ReleaseIndexField.TYPE.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseIndexField.STATUS.getName()).length);
@@ -379,68 +378,70 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-        /**
-         * @throws Exception
-         */
-        public void testIndexReleaseArtist() throws Exception {
-
-            addReleaseOne();
-            RAMDirectory ramDir = new RAMDirectory();
-            createIndex(ramDir);
-
-            IndexReader ir = IndexReader.open(ramDir, true);
-            assertEquals(1, ir.numDocs());
-            {
-                Document doc = ir.document(0);
-                assertEquals(1, doc.getFields(ReleaseIndexField.ARTIST_NAME.getName()).length);
-                assertEquals("Echo & The Bunnymen", doc.getField(ReleaseIndexField.ARTIST_NAME.getName()).stringValue());
-
-
-
-            }
-            ir.close();
-        }
-
-        /**
-         * @throws Exception
-         */
-        public void testIndexReleaseNumDiscs() throws Exception {
-
-            addReleaseOne();
-            RAMDirectory ramDir = new RAMDirectory();
-            createIndex(ramDir);
-
-            IndexReader ir = IndexReader.open(ramDir, true);
-            assertEquals(1, ir.numDocs());
-            {
-                Document doc = ir.document(0);
-                assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
-                assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
-                assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS.getName()).length);
-                assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS.getName()).stringValue()));
-
-            }
-            ir.close();
-        }
     /**
-         * @throws Exception
-         */
-        public void testIndexReleaseSortArtist() throws Exception {
+     * @throws Exception
+     */
+    public void testIndexReleaseArtist() throws Exception {
 
-            addReleaseOne();
-            RAMDirectory ramDir = new RAMDirectory();
-            createIndex(ramDir);
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
 
-            IndexReader ir = IndexReader.open(ramDir, true);
-            assertEquals(1, ir.numDocs());
-            {
-                Document doc = ir.document(0);
-                assertEquals(1, doc.getFields(ReleaseIndexField.ARTIST_SORTNAME.getName()).length);
-                assertEquals("Echo and The Bunnymen", doc.getField(ReleaseIndexField.ARTIST_SORTNAME.getName()).stringValue());
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            checkTerm(ir, ReleaseIndexField.ARTIST_NAME, "and");
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
 
-            }
-            ir.close();
+
         }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexReleaseNumDiscs() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
+            assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
+            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS.getName()).length);
+            assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS.getName()).stringValue()));
+
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIndexReleaseSortArtist() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Echo and The Bunnymen", ac.getNameCredit().get(0).getArtist().getSortName());
+        }
+        ir.close();
+    }
 
     /**
      * @throws Exception
@@ -647,7 +648,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
 
-
     /**
      * @throws Exception
      */
@@ -772,7 +772,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
-    
+
     /**
      * @throws Exception
      */
@@ -808,7 +808,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
 
-
     /**
      * @throws Exception
      */
@@ -834,7 +833,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         ir.close();
 
     }
-
 
 
 }

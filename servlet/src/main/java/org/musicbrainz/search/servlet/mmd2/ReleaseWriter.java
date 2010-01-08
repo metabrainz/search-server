@@ -31,6 +31,8 @@ package org.musicbrainz.search.servlet.mmd2;
 
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
+import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
@@ -132,31 +134,9 @@ public class ReleaseWriter extends ResultsWriter {
                 release.setLabelInfoList(labelInfoList);
             }
 
-            String[] artistIds = doc.getValues(ReleaseIndexField.ARTIST_ID);
-            String[] artistNames = doc.getValues(ReleaseIndexField.ARTIST_NAME);
-            String[] artistJoinPhrases = doc.getValues(ReleaseIndexField.ARTIST_JOINPHRASE);
-            String[] artistSortNames = doc.getValues(ReleaseIndexField.ARTIST_SORTNAME);
-            String[] artistCreditNames = doc.getValues(ReleaseIndexField.ARTIST_NAMECREDIT);
-
-            ArtistCredit ac = of.createArtistCredit();
-            for (int i = 0; i < artistIds.length; i++) {
-
-                Artist artist = of.createArtist();
-                artist.setId(artistIds[i]);
-                artist.setName(artistNames[i]);
-                artist.setSortName(artistSortNames[i]);
-                NameCredit nc = of.createNameCredit();
-                nc.setArtist(artist);
-                if (!artistJoinPhrases[i].equals("-")) {
-                    nc.setJoinphrase(artistJoinPhrases[i]);
-                }
-                if (!artistCreditNames[i].equals(artistNames[i])) {
-                    nc.setName(artistCreditNames[i]);
-                }
-                ac.getNameCredit().add(nc);
-                release.setArtistCredit(ac);
-            }
-
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
+            release.setArtistCredit(ac);
+            
             MediumList mediumList = of.createMediumList();
             String[] formats = doc.getValues(ReleaseIndexField.FORMAT);
             String[] numTracks = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);

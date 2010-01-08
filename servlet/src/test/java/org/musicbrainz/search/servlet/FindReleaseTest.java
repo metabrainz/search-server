@@ -6,8 +6,13 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.mmd2.Artist;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.NameCredit;
+import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.index.ReleaseIndexField;
@@ -36,6 +41,8 @@ public class FindReleaseTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
+        ObjectFactory of = new ObjectFactory();
+
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
 
@@ -48,8 +55,15 @@ public class FindReleaseTest extends TestCase {
         doc.addField(ReleaseIndexField.ARTIST, "Farming Incident");
         doc.addField(ReleaseIndexField.ARTIST_NAME, "Farming Incident");
         doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Farming Incident");
-        doc.addField(ReleaseIndexField.ARTIST_SORTNAME, "Incident, Farming");
-        doc.addField(ReleaseIndexField.ARTIST_JOINPHRASE, "-");
+        ArtistCredit ac = of.createArtistCredit();
+        NameCredit nc = of.createNameCredit();
+        Artist artist = of.createArtist();
+        artist.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        artist.setName("Farming Incident");
+        artist.setSortName("Incident, Farming");
+        nc.setArtist(artist);
+        ac.getNameCredit().add(nc);
+        doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
         //Medium 1
         doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 10);
@@ -91,15 +105,32 @@ public class FindReleaseTest extends TestCase {
         doc.addField(ReleaseIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
         doc.addField(ReleaseIndexField.ARTIST_ID, "99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
         doc.addField(ReleaseIndexField.ARTIST_NAME, "Erich Kunzel");
-        doc.addField(ReleaseIndexField.ARTIST_SORTNAME, "Kunzel, Eric");
-        doc.addField(ReleaseIndexField.ARTIST_JOINPHRASE, "and");
         doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Erich Kunzel");
 
         doc.addField(ReleaseIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
         doc.addField(ReleaseIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
-        doc.addField(ReleaseIndexField.ARTIST_SORTNAME, "Cincinnati Pops Orchestra, The");
-        doc.addField(ReleaseIndexField.ARTIST_JOINPHRASE, "-");
         doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
+
+        ac = of.createArtistCredit();
+        nc = of.createNameCredit();
+        artist = of.createArtist();
+        artist.setId("99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
+        artist.setName("Erich Kunzel");
+        artist.setSortName("Kunzel, Eric");
+        nc.setJoinphrase("and");
+        nc.setArtist(artist);
+        ac.getNameCredit().add(nc);
+
+        nc = of.createNameCredit();
+        artist = of.createArtist();
+        artist.setId("d8fbd94c-cd06-4e8b-a559-761ad969d07e");
+        artist.setName("The Cincinnati Pops Orchestra");
+        artist.setSortName("Cincinnati Pops Orchestra, The");
+        nc.setArtist(artist);
+        nc.setName("Cincinnati Pops");
+        ac.getNameCredit().add(nc);
+
+        doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
         doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 14);
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
@@ -124,7 +155,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals(2, doc.getFields(ReleaseIndexField.NUM_TRACKS_MEDIUM).length);
         assertEquals(2, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
@@ -156,7 +186,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
@@ -166,7 +195,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
 
     }
@@ -177,23 +205,8 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-
     }
-
-
-    public void testFindReleaseByArtistSortname() throws Exception {
-        Results res = ss.search("sortname:\"Incident, Farming\"", 0, 10);
-        assertEquals(1, res.totalHits);
-        Result result = res.results.get(0);
-        MbDocument doc = result.doc;
-        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
-        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-
-    }
-
 
     public void testFindReleaseByFormat() throws Exception {
         Results res = ss.search("format:Vinyl", 0, 10);
@@ -201,7 +214,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
 
     }
@@ -212,7 +224,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
@@ -222,7 +233,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
         assertEquals("07599273202", doc.get(ReleaseIndexField.BARCODE));
@@ -234,7 +244,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
         assertEquals("07599273202", doc.get(ReleaseIndexField.BARCODE));
@@ -247,7 +256,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -257,7 +265,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -271,7 +278,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -285,7 +291,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -299,7 +304,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -313,7 +317,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
@@ -326,7 +329,6 @@ public class FindReleaseTest extends TestCase {
          Result result = res.results.get(0);
          MbDocument doc = result.doc;
          assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-         assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
          assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
       }
 
@@ -339,7 +341,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -352,7 +353,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -365,7 +365,6 @@ public class FindReleaseTest extends TestCase {
            Result result = res.results.get(0);
            MbDocument doc = result.doc;
            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         }
 
@@ -378,7 +377,6 @@ public class FindReleaseTest extends TestCase {
            Result result = res.results.get(0);
            MbDocument doc = result.doc;
            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         }
      /**
@@ -391,7 +389,6 @@ public class FindReleaseTest extends TestCase {
          Result result = res.results.get(0);
          MbDocument doc = result.doc;
          assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-         assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
          assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
      }
 
@@ -402,7 +399,6 @@ public class FindReleaseTest extends TestCase {
             Result result = res.results.get(0);
             MbDocument doc = result.doc;
             assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-            assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
             assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         }
 
@@ -412,7 +408,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
     }
@@ -423,7 +418,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
     }
@@ -434,7 +428,6 @@ public class FindReleaseTest extends TestCase {
            Result result = res.results.get(0);
            MbDocument doc = result.doc;
            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
            assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
        }
@@ -445,7 +438,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
     }
@@ -456,7 +448,6 @@ public class FindReleaseTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
     }
@@ -466,7 +457,6 @@ public class FindReleaseTest extends TestCase {
            Result result = res.results.get(0);
            MbDocument doc = result.doc;
            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Farming Incident", doc.get(ReleaseIndexField.ARTIST_NAME));
            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
            assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
        }
@@ -478,7 +468,6 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseIndexField.RELEASE_ID));
         assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Erich Kunzel and Cincinnati Pops",doc.get(ReleaseGroupIndexField.ARTIST));
 
     }
 
@@ -489,7 +478,6 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseIndexField.RELEASE_ID));
         assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
-        assertEquals("Erich Kunzel and Cincinnati Pops",doc.get(ReleaseGroupIndexField.ARTIST));
     }
 
     
