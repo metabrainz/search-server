@@ -29,6 +29,8 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 import org.musicbrainz.mmd2.*;
+import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
@@ -72,29 +74,9 @@ public class WorkWriter extends ResultsWriter {
             }
 
 
-            String[] artistIds          = doc.getValues(WorkIndexField.ARTIST_ID);
-            String[] artistNames        = doc.getValues(WorkIndexField.ARTIST_NAME);
-            String[] artistJoinPhrases  = doc.getValues(WorkIndexField.ARTIST_JOINPHRASE);
-            String[] artistSortNames    = doc.getValues(WorkIndexField.ARTIST_SORTNAME);
-            String[] artistCreditNames  = doc.getValues(WorkIndexField.ARTIST_NAMECREDIT);
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
+            work.setArtistCredit(ac);
 
-            ArtistCredit ac = of.createArtistCredit();
-            for (int i = 0; i < artistIds.length; i++) {
-                Artist     artist   = of.createArtist();
-                artist.setId(artistIds[i]);
-                artist.setName(artistNames[i]);
-                artist.setSortName(artistSortNames[i]);
-                NameCredit nc = of.createNameCredit();
-                nc.setArtist(artist);
-                if(!artistJoinPhrases[i].equals("-")) {
-                    nc.setJoinphrase(artistJoinPhrases[i]);
-                }
-                if(!artistCreditNames[i].equals(artistNames[i])) {
-                    nc.setName(artistCreditNames[i]);
-                }
-                ac.getNameCredit().add(nc);
-                work.setArtistCredit(ac);
-            }
             workList.getWork().add(work);
         }
         workList.setCount(BigInteger.valueOf(results.totalHits));

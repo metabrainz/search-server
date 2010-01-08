@@ -10,13 +10,11 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
  * Fields created in Lucene Search Index
  */
 public enum WorkIndexField implements IndexField {
-    ARTIST              ("artist",	    Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_ID		    ("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST_NAME         ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_COMMENT      ("comment",		Field.Store.YES,    Field.Index.NO),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
+    ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     WORK_ID		        ("wid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     WORK			    ("work",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
     ISWC		        ("iswc",		Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),

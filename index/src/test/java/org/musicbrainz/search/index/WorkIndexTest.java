@@ -118,8 +118,6 @@ public class WorkIndexTest extends AbstractIndexTest {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
             assertEquals("Work", doc.getField(WorkIndexField.WORK.getName()).stringValue());
-            assertEquals(1, doc.getFields(WorkIndexField.ARTIST.getName()).length);
-            assertEquals("Echo & The Bunnymen", doc.getField(WorkIndexField.ARTIST.getName()).stringValue());
             assertEquals(1, doc.getFields(WorkIndexField.ISWC.getName()).length);
             assertEquals("T-101779304-1", doc.getField(WorkIndexField.ISWC.getName()).stringValue());
             assertEquals(0, doc.getFields(WorkIndexField.TYPE.getName()).length);

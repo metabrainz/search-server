@@ -25,6 +25,7 @@ import java.util.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -62,7 +63,7 @@ public class WorkIndex extends DatabaseIndex {
     @Override
     public void init() throws SQLException {
 
-        addPreparedStatement("ARTISTS",
+        addPreparedStatement("ARTISTCREDITS",
                         "SELECT w.id as wid, " +
                         "acn.position as pos, " +
                         "acn.joinphrase as joinphrase, " +
@@ -92,32 +93,21 @@ public class WorkIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-
-        //Artists
-        Map<Integer, List<ArtistWrapper>> artists = new HashMap<Integer, List<ArtistWrapper>>();
-        PreparedStatement st = getPreparedStatement("ARTISTS");
+        //Artist Credits
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int releaseGroupId = rs.getInt("wid");
-            List<ArtistWrapper> list;
-            if (!artists.containsKey(releaseGroupId)) {
-                list = new LinkedList<ArtistWrapper>();
-                artists.put(releaseGroupId, list);
-            } else {
-                list = artists.get(releaseGroupId);
-            }
-            ArtistWrapper aw = new ArtistWrapper();
-            aw.setArtistId(rs.getString("artistId"));
-            aw.setArtistName(rs.getString("artistName"));
-            aw.setArtistCreditName(rs.getString("artistCreditName"));
-            aw.setArtistSortName(rs.getString("artistSortName"));
-            aw.setArtistPos(rs.getInt("pos"));
-            aw.setArtistComment(rs.getString("comment"));
-            aw.setJoinPhrase(rs.getString("joinphrase"));
-            list.add(aw);
-        }
+        Map<Integer, ArtistCredit> artistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                     (rs,
+                      "wid",
+                      "artistId",
+                      "artistName",
+                      "artistSortName",
+                      "comment",
+                      "joinphrase",
+                      "artistCreditName");
 
         //Works
         st = getPreparedStatement("WORKS");
@@ -125,12 +115,12 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, artists));
+            indexWriter.addDocument(documentFromResultSet(rs, artistCredits));
         }
 
     }
 
-    public Document documentFromResultSet(ResultSet rs,Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs,Map<Integer, ArtistCredit> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("wid");
         doc.addField(WorkIndexField.WORK_ID, rs.getString("gid"));
@@ -138,20 +128,16 @@ public class WorkIndex extends DatabaseIndex {
         doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
 
-        if (artists.containsKey(id)) {
-            //For each artist credit
-            for (ArtistWrapper artist : artists.get(id)) {
-                 doc.addField(WorkIndexField.ARTIST_ID, artist.getArtistId());
-                //TODO in many cases these three values might be the same is user actually interested in searching
-                //by these variations, or do we just need for output
-                doc.addField(WorkIndexField.ARTIST_NAME, artist.getArtistName());
-                doc.addField(WorkIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                doc.addField(WorkIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                doc.addFieldOrHyphen(WorkIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                doc.addFieldOrHyphen(WorkIndexField.ARTIST_COMMENT, artist.getArtistComment());
-            }
-            doc.addField(WorkIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
-        }
+        ArtistCredit ac = artistCredits.get(id);
+        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+               (doc,
+                ac,
+                WorkIndexField.ARTIST,
+                WorkIndexField.ARTIST_NAMECREDIT,
+                WorkIndexField.ARTIST_ID,
+                WorkIndexField.ARTIST_NAME,
+                WorkIndexField.ARTIST_CREDIT);
+        
         return doc.getLuceneDocument();
     }
 

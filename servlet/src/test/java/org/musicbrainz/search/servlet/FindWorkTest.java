@@ -5,8 +5,14 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.mmd2.Artist;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.NameCredit;
+import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd2.WorkWriter;
 
@@ -29,6 +35,8 @@ public class FindWorkTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
+        ObjectFactory of = new ObjectFactory();
+
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         {
@@ -40,10 +48,17 @@ public class FindWorkTest extends TestCase {
             doc.addField(WorkIndexField.ARTIST, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
-            doc.addField(WorkIndexField.ARTIST_SORTNAME, "Beethoven, Ludwig van");
-            doc.addField(WorkIndexField.ARTIST_JOINPHRASE, "-");
             doc.addField(WorkIndexField.TYPE, "opera");
 
+            ArtistCredit ac = of.createArtistCredit();
+            NameCredit nc = of.createNameCredit();
+            Artist artist = of.createArtist();
+            artist.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
+            artist.setName("Ludwig van Beethoven");
+            artist.setSortName("Beethoven, Ludwig van");
+            nc.setArtist(artist);
+            ac.getNameCredit().add(nc);
+            doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
             writer.addDocument(doc.getLuceneDocument());
         }
