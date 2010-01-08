@@ -64,6 +64,13 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
 
             }
 
+            String code = doc.get(LabelIndexField.CODE);
+            if (code != null) {
+                label.setLabelCode(new BigInteger(code));
+
+            }
+
+
             String sortname = doc.get(LabelIndexField.SORTNAME);
             if (sortname != null) {
                 label.setSortName(sortname);

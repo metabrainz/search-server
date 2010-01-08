@@ -40,6 +40,7 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.LABEL, "Jockey Slut");
             doc.addField(LabelIndexField.SORTNAME, "Slut, Jockey");
             doc.addField(LabelIndexField.ALIAS, "Jockeys");
+            doc.addField(LabelIndexField.CODE, "1234");
             doc.addField(LabelIndexField.BEGIN, "1993");
             doc.addField(LabelIndexField.END, "2004");
             doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
@@ -226,6 +227,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("<alias>Jockeys</alias>"));
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
+        assertTrue(output.contains("<label-code>1234</label-code>"));
     }
 
     /**
@@ -250,5 +252,6 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("name\":\"Jockey Slut\""));
         assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
+        assertTrue(output.contains("\"label-code\":1234"));
     }
 }
