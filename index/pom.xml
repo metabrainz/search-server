@@ -41,6 +41,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.musicbrainz.mmd2</groupId>
+      <artifactId>mmd2</artifactId>
+      <version>2.0.0</version>
+    </dependency>  
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.4</version>
@@ -67,6 +72,16 @@
         <artifactId>icu4j</artifactId>
         <version>4.0.1</version>
     </dependency>
+     <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>2.1.12</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+      <version>1.1.4</version>
+    </dependency>  
    </dependencies>
    <build>
     <pluginManagement>
@@ -140,4 +155,44 @@
       </plugin>
     </plugins>
   </build>
+  <reporting>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.6.1</version>
+            <configuration>
+               <show>private</show>
+               <use>false</use>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-report-plugin</artifactId>
+
+         </plugin>
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>cobertura-maven-plugin</artifactId>
+           <configuration>
+             <formats>
+               <format>html</format>
+               <format>xml</format>
+             </formats>
+          </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <configuration>
+              <targetJdk>1.5</targetJdk>
+            </configuration>
+         </plugin>
+      </plugins>
+   </reporting>
 </project>

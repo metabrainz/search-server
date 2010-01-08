@@ -1,12 +1,32 @@
+/*
+ * MusicBrainz Search Server
+ * Copyright (C) 2009 Paul Taylor
+
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
-import org.musicbrainz.search.index.ReleaseGroupIndex;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Connection;
@@ -14,6 +34,7 @@ import java.sql.Statement;
 
 
 public class ReleaseGroupIndexTest extends AbstractIndexTest {
+
 
 
     public void setUp() throws Exception {
@@ -225,15 +246,18 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
             assertEquals("Crocodiles", doc.getField(ReleaseGroupIndexField.RELEASEGROUP.getName()).stringValue());
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()).stringValue());
-            assertEquals("Echo & The Bunnymen", doc.getField(ReleaseGroupIndexField.ARTIST_NAME.getName()).stringValue());
-            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(ReleaseGroupIndexField.ARTIST_ID.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASE.getName()).length);
             assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseGroupIndexField.RELEASE.getName()).stringValue());
+            checkTerm(ir,ReleaseGroupIndexField.ARTIST_NAME,"and");
+            checkTerm(ir,ReleaseGroupIndexField.ARTIST_ID,"ccd4879c-5e88-4385-b131-bf65296bf245");
+
 
         }
         ir.close();
 
     }
+
+
 
 
     public void testIndexReleaseGroupWithType() throws Exception {
@@ -264,8 +288,10 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(ReleaseGroupIndexField.ARTIST_SORTNAME.getName()).length);
-            assertEquals("Echo and The Bunnymen", doc.getField(ReleaseGroupIndexField.ARTIST_SORTNAME.getName()).stringValue());
+
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Echo and The Bunnymen",ac.getNameCredit().get(0).getArtist().getSortName());
         }
         ir.close();
 
@@ -332,19 +358,50 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(2, doc.getFields(ReleaseGroupIndexField.ARTIST_SORTNAME.getName()).length);
-            assertEquals("Kunzel, Eric",doc.getFields(ReleaseGroupIndexField.ARTIST_SORTNAME.getName())[0].stringValue());
-            assertEquals("Cincinnati Pops Orchestra, The",doc.getFields(ReleaseGroupIndexField.ARTIST_SORTNAME.getName())[1].stringValue());
-            assertEquals("Erich Kunzel",doc.getFields(ReleaseGroupIndexField.ARTIST_NAME.getName())[0].stringValue());
-            assertEquals("The Cincinnati Pops Orchestra",doc.getFields(ReleaseGroupIndexField.ARTIST_NAME.getName())[1].stringValue());
-            assertEquals("Erich Kunzel",doc.getFields(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName())[0].stringValue());
-            assertEquals("Cincinnati Pops",doc.getFields(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName())[1].stringValue());
-            assertEquals("99845d0c-f239-4051-a6b1-4b5e9f7ede0b",doc.getFields(ReleaseGroupIndexField.ARTIST_ID.getName())[0].stringValue());
-            assertEquals("d8fbd94c-cd06-4e8b-a559-761ad969d07e",doc.getFields(ReleaseGroupIndexField.ARTIST_ID.getName())[1].stringValue());
-            assertEquals("Erich Kunzel and Cincinnati Pops",doc.getFields(ReleaseGroupIndexField.ARTIST.getName())[0].stringValue());
+
+
+            TermEnum tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_NAME.getName(), ""));
+            assertEquals(ReleaseGroupIndexField.ARTIST_NAME.getName(),tr.term().field());
+            assertEquals(1,tr.docFreq());
+            assertEquals("cincinnati",tr.term().text());
+            tr.next();
+            assertEquals("erich",tr.term().text());
+            tr.next();
+            assertEquals("kunzel",tr.term().text());
+            tr.next();
+            assertEquals("orchestra",tr.term().text());
+            tr.next();
+            assertEquals("pops",tr.term().text());
+            tr.next();
+            assertEquals("the",tr.term().text());
+            
+            tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_ID.getName(), ""));
+            assertEquals(ReleaseGroupIndexField.ARTIST_ID.getName(),tr.term().field());
+            assertEquals(1,tr.docFreq());
+            assertEquals("99845d0c-f239-4051-a6b1-4b5e9f7ede0b",tr.term().text());
+            tr.next();
+            assertEquals("d8fbd94c-cd06-4e8b-a559-761ad969d07e",tr.term().text());
+            tr.next();
+
+            tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName(), ""));
+            assertEquals(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName(),tr.term().field());
+            assertEquals(1,tr.docFreq());
+            assertEquals("cincinnati",tr.term().text());
+            tr.next();
+            assertEquals("erich",tr.term().text());
+            tr.next();
+            assertEquals("kunzel",tr.term().text());
+            tr.next();
+            assertEquals("pops",tr.term().text());
+
             assertEquals("Epics",doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName())[0].stringValue());
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37",doc.getFields(ReleaseGroupIndexField.RELEASEGROUP_ID.getName())[0].stringValue());
 
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Erich Kunzel",ac.getNameCredit().get(0).getArtist().getName());
+            assertEquals("Cincinnati Pops",ac.getNameCredit().get(1).getName());
+            assertEquals("The Cincinnati Pops Orchestra",ac.getNameCredit().get(1).getArtist().getName());
         }
         ir.close();
 

@@ -30,6 +30,8 @@ package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
@@ -66,16 +68,14 @@ public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
                 releaseGroup.getType().add(StringUtils.capitalize(type));
             }
 
-            //Just add the first Artist (if there are more than one)
-            //TODO I don't like this, say they search on an artist that normally appears as second artists
-            //the results returned will show the artist they did not search for
-            //i.e http://localhost:8080/?type=release-group&query=artist:%22Cincinnati%20Pops%20Orchestra%22&fmt=xml&version=1
-            String artistName = doc.get(ReleaseGroupIndexField.ARTIST_NAME);
-            if (artistName != null) {
+            //Just add the first Artist (if there are more than one, this means that once releases get added with multiple
+            //name credits using this old interface isnt going to give very good results
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
+            if (ac.getNameCredit().size()>0) {
                 Artist artist = of.createArtist();
-                artist.setName(artistName);
-                artist.setId(doc.get(ReleaseGroupIndexField.ARTIST_ID));
-                artist.setSortName(doc.get(ReleaseGroupIndexField.ARTIST_SORTNAME));
+                artist.setName(ac.getNameCredit().get(0).getArtist().getName());
+                artist.setId(ac.getNameCredit().get(0).getArtist().getId());
+                artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
                 releaseGroup.setArtist(artist);
             }
             releaseGroupList.getReleaseGroup().add(releaseGroup);

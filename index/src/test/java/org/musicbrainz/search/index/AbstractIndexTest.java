@@ -1,7 +1,11 @@
 package org.musicbrainz.search.index;
 
 import junit.framework.TestCase;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -13,6 +17,22 @@ public abstract class AbstractIndexTest extends TestCase {
     protected Connection createConnection() throws Exception {
         Class.forName("org.h2.Driver");
         return DriverManager.getConnection("jdbc:h2:mem");
+    }
+
+    /** Check fisrt term of given field, terms are listed lexigrahically
+     *
+      * @param ir
+     * @param field
+     * @param value
+     * @throws java.io.IOException
+     */
+    protected void checkTerm(IndexReader ir,IndexField field,String value)throws IOException {
+        TermEnum tr = ir.terms(new Term(field.getName(), ""));
+        //Chck it managed to find one (we have to do this coz if it doesnt find any would return the next field)
+        assertEquals(field.getName(),tr.term().field());
+        assertEquals(1,tr.docFreq());
+        assertEquals(value,tr.term().text());
+
     }
 
     public void setup() throws Exception {

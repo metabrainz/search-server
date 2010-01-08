@@ -1,20 +1,29 @@
-/*
- * MusicBrainz Search Server
- * Copyright (C) 2009  Aurélien Mino
-
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+/* Copyright (c) 2009 Aurélien Mino
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the MusicBrainz project nor the names of the
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.musicbrainz.search.index;
@@ -25,6 +34,10 @@ import java.util.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.mmd2.Artist;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.NameCredit;
+import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -54,7 +67,7 @@ public class
 
     public int getNoOfRows(int maxId) throws SQLException {
         Statement st = dbConnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT count(*) FROM release_group WHERE id<="+maxId);
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM release_group WHERE id<=" + maxId);
         rs.next();
         return rs.getInt(1);
     }
@@ -63,12 +76,12 @@ public class
     public void init() throws SQLException {
         addPreparedStatement("RELEASES",
                 "SELECT DISTINCT release_group, release.gid as gid, n0.name as name " +
-                "FROM release " +
-                "LEFT JOIN release_name n0 ON release.name = n0.id " +
-                "WHERE release_group BETWEEN ? AND ?");
+                        "FROM release " +
+                        "LEFT JOIN release_name n0 ON release.name = n0.id " +
+                        "WHERE release_group BETWEEN ? AND ?");
 
-        addPreparedStatement("ARTISTS",
-                        "SELECT rg.id as releaseGroupId, " +
+        addPreparedStatement("ARTISTCREDITS",
+                "SELECT rg.id as releaseGroupId, " +
                         "acn.position as pos, " +
                         "acn.joinphrase as joinphrase, " +
                         "a.gid as artistId,  " +
@@ -86,7 +99,7 @@ public class
                         "order by rg.id,acn.position ");          //Order by pos so come in expected order
 
         addPreparedStatement("RELEASEGROUPS",
-                        "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
+                "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
                         "FROM release_group AS rg " +
                         "LEFT JOIN release_name n0 ON rg.name = n0.id " +
                         "LEFT JOIN release_group_type  ON rg.type = release_group_type.id " +
@@ -99,7 +112,7 @@ public class
 
         //Releases
         Map<Integer, List<ReleaseWrapper>> releases = new HashMap<Integer, List<ReleaseWrapper>>();
-        PreparedStatement st =getPreparedStatement("RELEASES");
+        PreparedStatement st = getPreparedStatement("RELEASES");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -118,30 +131,39 @@ public class
             list.add(rw);
         }
 
-        //Artists
-        Map<Integer, List<ArtistWrapper>> artists = new HashMap<Integer, List<ArtistWrapper>>();
-        st = getPreparedStatement("ARTISTS");
+        //Artist Credits
+        Map<Integer, ArtistCredit> artists = new HashMap<Integer, ArtistCredit>();
+        st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
+
+        ObjectFactory of = new ObjectFactory();
+        ArtistCredit ac;
         while (rs.next()) {
             int releaseGroupId = rs.getInt("releaseGroupId");
-            List<ArtistWrapper> list;
             if (!artists.containsKey(releaseGroupId)) {
-                list = new LinkedList<ArtistWrapper>();
-                artists.put(releaseGroupId, list);
+                ac = of.createArtistCredit();
+                artists.put(releaseGroupId, ac);
             } else {
-                list = artists.get(releaseGroupId);
+                ac = artists.get(releaseGroupId);
             }
-            ArtistWrapper aw = new ArtistWrapper();
-            aw.setArtistId(rs.getString("artistId"));
-            aw.setArtistName(rs.getString("artistName"));
-            aw.setArtistCreditName(rs.getString("artistCreditName"));
-            aw.setArtistSortName(rs.getString("artistSortName"));
-            aw.setArtistPos(rs.getInt("pos"));
-            aw.setArtistComment(rs.getString("comment"));
-            aw.setJoinPhrase(rs.getString("joinphrase"));
-            list.add(aw);
+            NameCredit nc = of.createNameCredit();
+            Artist artist = of.createArtist();
+            artist.setId(rs.getString("artistId"));
+            artist.setName(rs.getString("artistName"));
+            artist.setSortName(rs.getString("artistSortName"));
+            artist.setDisambiguation(rs.getString("comment"));
+            nc.setArtist(artist);
+            nc.setJoinphrase(rs.getString("joinphrase"));
+
+
+            String nameCredit = rs.getString("artistCreditName");
+            if(!nameCredit.equals(artist.getName()))
+            {
+                nc.setName(nameCredit);
+            }
+            ac.getNameCredit().add(nc);
         }
 
         //ReleaseGroups
@@ -155,7 +177,7 @@ public class
 
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<ReleaseWrapper>> releases, Map<Integer, List<ArtistWrapper>> artists) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<ReleaseWrapper>> releases, Map<Integer, ArtistCredit> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
@@ -170,19 +192,26 @@ public class
             }
         }
 
-        if (artists.containsKey(id)) {
-            //For each artist credit for this release
-            for (ArtistWrapper artist : artists.get(id)) {
-                 doc.addField(ReleaseGroupIndexField.ARTIST_ID, artist.getArtistId());
-                //TODO in many cases these three values might be the same is user actually interested in searching
-                //by these variations, or do we just need for output
-                doc.addField(ReleaseGroupIndexField.ARTIST_NAME, artist.getArtistName());
-                doc.addField(ReleaseGroupIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                doc.addFieldOrHyphen(ReleaseGroupIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                doc.addFieldOrHyphen(ReleaseGroupIndexField.ARTIST_COMMENT, artist.getArtistComment());
+        ArtistCredit ac = artistCredits.get(id);
+        if (ac!=null) {
+
+            //Search Fields
+            doc.addField(ReleaseGroupIndexField.ARTIST, ArtistCreditHelper.buildFullArtistCreditName(ac));
+            for(NameCredit nc:ac.getNameCredit()) {
+                if(nc.getName()!=null) {
+                    doc.addField(ReleaseGroupIndexField.ARTIST, nc.getName());
+                    doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, nc.getName());
+                }
+                else {
+                    doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, nc.getArtist().getName());
+                }
+                doc.addField(ReleaseGroupIndexField.ARTIST_ID, nc.getArtist().getId());
+                doc.addField(ReleaseGroupIndexField.ARTIST_NAME, nc.getArtist().getName());
             }
-            doc.addField(ReleaseGroupIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
+
+            //Display Field
+            doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
+
         }
         return doc.getLuceneDocument();
     }

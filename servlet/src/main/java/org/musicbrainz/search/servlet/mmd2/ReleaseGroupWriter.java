@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 import org.musicbrainz.mmd2.*;
+import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.MbDocument;
@@ -58,38 +59,15 @@ public class ReleaseGroupWriter extends ResultsWriter {
             String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
             if (name != null) {
                 releaseGroup.setTitle(name);
-
             }
 
             String type = doc.get(ReleaseGroupIndexField.TYPE);
             if(type!=null) {
                 releaseGroup.getType().add(type.toLowerCase((Locale.US)));
             }
-            
-            String[] artistIds          = doc.getValues(ReleaseGroupIndexField.ARTIST_ID);
-            String[] artistNames        = doc.getValues(ReleaseGroupIndexField.ARTIST_NAME);
-            String[] artistJoinPhrases  = doc.getValues(ReleaseGroupIndexField.ARTIST_JOINPHRASE);
-            String[] artistSortNames    = doc.getValues(ReleaseGroupIndexField.ARTIST_SORTNAME);
-            String[] artistCreditNames  = doc.getValues(ReleaseGroupIndexField.ARTIST_NAMECREDIT);
 
-            ArtistCredit ac = of.createArtistCredit();
-            for (int i = 0; i < artistIds.length; i++) {
-
-                Artist     artist   = of.createArtist();
-                artist.setId(artistIds[i]);
-                artist.setName(artistNames[i]);
-                artist.setSortName(artistSortNames[i]);
-                NameCredit nc = of.createNameCredit();
-                nc.setArtist(artist);
-                if(!artistJoinPhrases[i].equals("-")) {
-                    nc.setJoinphrase(artistJoinPhrases[i]);
-                }
-                if(!artistCreditNames[i].equals(artistNames[i])) {
-                    nc.setName(artistCreditNames[i]);
-                }
-                ac.getNameCredit().add(nc);
-                releaseGroup.setArtistCredit(ac);
-            }
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
+            releaseGroup.setArtistCredit(ac);
 
             String[] releaseIds          = doc.getValues(ReleaseIndexField.RELEASE_ID);
             String[] releaseNames        = doc.getValues(ReleaseIndexField.RELEASE);
