@@ -94,13 +94,13 @@ Build Indexes
 Now build indexes with these commands:
 
     cd /home/search 
-    java -jar index-1.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata 
+    java -Xmx512000000 -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata
 
-This will build all of the indexes (but freedb) using the all of the defaults for connecting
+This will build all of the indexes using upto 512mb of memory (but freedb) using all of the defaults for connecting
 to the database servers. If your database isn't on the same server and named according to the 
 defaults you will need to give the command line more options. To see the options execute this:
 
-    java -jar index-1.0-SNAPSHOT-jar-with-dependencies.jar --help
+    java -Xmx512000000 -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --help
 
 To also build the freedb indexes, download the latest freedb dump (in tar.bz2 format) from:
 
