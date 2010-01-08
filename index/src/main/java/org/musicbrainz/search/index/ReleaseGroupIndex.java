@@ -34,10 +34,8 @@ import java.util.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
-import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.NameCredit;
-import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -132,39 +130,20 @@ public class
         }
 
         //Artist Credits
-        Map<Integer, ArtistCredit> artists = new HashMap<Integer, ArtistCredit>();
         st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
-
-        ObjectFactory of = new ObjectFactory();
-        ArtistCredit ac;
-        while (rs.next()) {
-            int releaseGroupId = rs.getInt("releaseGroupId");
-            if (!artists.containsKey(releaseGroupId)) {
-                ac = of.createArtistCredit();
-                artists.put(releaseGroupId, ac);
-            } else {
-                ac = artists.get(releaseGroupId);
-            }
-            NameCredit nc = of.createNameCredit();
-            Artist artist = of.createArtist();
-            artist.setId(rs.getString("artistId"));
-            artist.setName(rs.getString("artistName"));
-            artist.setSortName(rs.getString("artistSortName"));
-            artist.setDisambiguation(rs.getString("comment"));
-            nc.setArtist(artist);
-            nc.setJoinphrase(rs.getString("joinphrase"));
-
-
-            String nameCredit = rs.getString("artistCreditName");
-            if(!nameCredit.equals(artist.getName()))
-            {
-                nc.setName(nameCredit);
-            }
-            ac.getNameCredit().add(nc);
-        }
+        Map<Integer, ArtistCredit> artistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                 (rs,
+                  "releaseGroupId",
+                  "artistId",
+                  "artistName",
+                  "artistSortName",
+                  "comment",
+                  "joinphrase",
+                  "artistCreditName");
 
         //ReleaseGroups
         st = getPreparedStatement("RELEASEGROUPS");
@@ -172,7 +151,7 @@ public class
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, releases, artists));
+            indexWriter.addDocument(documentFromResultSet(rs, releases, artistCredits));
         }
 
     }
@@ -193,26 +172,14 @@ public class
         }
 
         ArtistCredit ac = artistCredits.get(id);
-        if (ac!=null) {
-
-            //Search Fields
-            doc.addField(ReleaseGroupIndexField.ARTIST, ArtistCreditHelper.buildFullArtistCreditName(ac));
-            for(NameCredit nc:ac.getNameCredit()) {
-                if(nc.getName()!=null) {
-                    doc.addField(ReleaseGroupIndexField.ARTIST, nc.getName());
-                    doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, nc.getName());
-                }
-                else {
-                    doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, nc.getArtist().getName());
-                }
-                doc.addField(ReleaseGroupIndexField.ARTIST_ID, nc.getArtist().getId());
-                doc.addField(ReleaseGroupIndexField.ARTIST_NAME, nc.getArtist().getName());
-            }
-
-            //Display Field
-            doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
-
-        }
+        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+               (doc,
+                ac,
+                ReleaseGroupIndexField.ARTIST,
+                ReleaseGroupIndexField.ARTIST_NAMECREDIT,
+                ReleaseGroupIndexField.ARTIST_ID,
+                ReleaseGroupIndexField.ARTIST_NAME,
+                ReleaseGroupIndexField.ARTIST_CREDIT);
         return doc.getLuceneDocument();
     }
 

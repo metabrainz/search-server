@@ -172,42 +172,22 @@ public class ReleaseIndex extends DatabaseIndex {
             list.add(entry);
         }
 
+
         //Artist Credits
-        Map<Integer, ArtistCredit> artistCredits = new HashMap<Integer, ArtistCredit>();
         st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
-
-        ObjectFactory of = new ObjectFactory();
-        ArtistCredit ac;
-        while (rs.next()) {
-            int releaseId = rs.getInt("releaseId");
-            if (!artistCredits.containsKey(releaseId)) {
-                ac = of.createArtistCredit();
-                artistCredits.put(releaseId, ac);
-            } else {
-                ac = artistCredits.get(releaseId);
-            }
-            NameCredit nc = of.createNameCredit();
-            Artist artist = of.createArtist();
-            artist.setId(rs.getString("artistId"));
-            artist.setName(rs.getString("artistName"));
-            artist.setSortName(rs.getString("artistSortName"));
-            artist.setDisambiguation(rs.getString("comment"));
-            nc.setArtist(artist);
-            nc.setJoinphrase(rs.getString("joinphrase"));
-
-
-            String nameCredit = rs.getString("artistCreditName");
-            if(!nameCredit.equals(artist.getName()))
-            {
-                nc.setName(nameCredit);
-            }
-            ac.getNameCredit().add(nc);
-        }
-
-
+        Map<Integer, ArtistCredit> artistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                     (rs,
+                      "releaseId",
+                      "artistId",
+                      "artistName",
+                      "artistSortName",
+                      "comment",
+                      "joinphrase",
+                      "artistCreditName");
 
         st = getPreparedStatement("RELEASES");
         st.setInt(1, min);
@@ -269,25 +249,15 @@ public class ReleaseIndex extends DatabaseIndex {
         }
 
         ArtistCredit ac = artistCredits.get(id);
-        if (ac!=null) {
-
-            //Search Fields
-            doc.addField(ReleaseIndexField.ARTIST, ArtistCreditHelper.buildFullArtistCreditName(ac));
-            for(NameCredit nc:ac.getNameCredit()) {
-                if(nc.getName()!=null) {
-                    doc.addField(ReleaseIndexField.ARTIST, nc.getName());
-                    doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, nc.getName());
-                }
-                else {
-                    doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, nc.getArtist().getName());
-                }
-                doc.addField(ReleaseIndexField.ARTIST_ID, nc.getArtist().getId());
-                doc.addField(ReleaseIndexField.ARTIST_NAME, nc.getArtist().getName());
-            }
-
-            //Display Field
-            doc.addField(ReleaseIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
-        }
+        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+               (doc,
+                ac,
+                ReleaseIndexField.ARTIST,
+                ReleaseIndexField.ARTIST_NAMECREDIT,
+                ReleaseIndexField.ARTIST_ID,
+                ReleaseIndexField.ARTIST_NAME,
+                ReleaseIndexField.ARTIST_CREDIT);
+        
         return doc.getLuceneDocument();
     }
 
