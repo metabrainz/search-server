@@ -67,7 +67,7 @@ public class ReleaseWriter extends ResultsWriter {
             ReleaseGroup rg = of.createReleaseGroup();
             release.setReleaseGroup(rg);
             if (type != null) {
-                release.getReleaseGroup().getType().add(type.toLowerCase(Locale.US));
+                release.getReleaseGroup().setType(type.toLowerCase(Locale.US));
             }
 
             String status = doc.get(ReleaseIndexField.STATUS);

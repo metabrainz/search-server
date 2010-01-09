@@ -121,7 +121,7 @@ public class RecordingWriter extends ResultsWriter {
                     ReleaseGroup rg = of.createReleaseGroup();
                     release.setReleaseGroup(rg);
                     if (!releaseTypes[i].equals("-")) {
-                        release.getReleaseGroup().getType().add(releaseTypes[i].toLowerCase(Locale.US));
+                        release.getReleaseGroup().setType(releaseTypes[i].toLowerCase(Locale.US));
                     }
 
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();

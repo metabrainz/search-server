@@ -63,7 +63,7 @@ public class ReleaseGroupWriter extends ResultsWriter {
 
             String type = doc.get(ReleaseGroupIndexField.TYPE);
             if(type!=null) {
-                releaseGroup.getType().add(type.toLowerCase((Locale.US)));
+                releaseGroup.setType(type.toLowerCase((Locale.US)));
             }
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));

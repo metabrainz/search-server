@@ -337,7 +337,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"score\":\"100\""));
-        assertTrue(output.contains("\"type\":[\"album\"]"));
+        assertTrue(output.contains("\"type\":\"album\""));
         assertTrue(output.contains("title\":\"Gravitational Lenz\""));
         assertTrue(output.contains("\"length\":234000"));
         assertTrue(output.contains("\"isrc\":[\"123456789"));
