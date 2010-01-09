@@ -1,8 +1,8 @@
 package org.musicbrainz.search.index;
 
-import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
 
@@ -13,12 +13,11 @@ public enum RecordingIndexField implements IndexField {
 
     RECORDING_ID        ("rid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     RECORDING           ("recording",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_ID			("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST				("artist",		Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_NAME         ("artist_name",	Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.YES,	Field.Index.ANALYZED),
-    ARTIST_JOINPHRASE	("joinphrase",	    Field.Store.YES,	Field.Index.NO),       //Never Searched
-    ARTIST_SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED, new KeywordAnalyzer()),
+    ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID			("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     RELEASE				("release",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
     NUM_TRACKS_MEDIUM   ("tracksmedium",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

@@ -24,6 +24,7 @@ import java.io.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -72,7 +73,7 @@ public class RecordingIndex extends DatabaseIndex {
                            "WHERE recording BETWEEN ? AND ?  " +
                            "order by recording,id");
 
-        addPreparedStatement("ARTISTS",
+        addPreparedStatement("ARTISTCREDITS",
                   "SELECT re.id as recordingId, " +
                "acn.position as pos, " +
                "acn.joinphrase as joinphrase, " +
@@ -159,34 +160,24 @@ public class RecordingIndex extends DatabaseIndex {
      * @throws SQLException
      * @throws IOException
      */
-    private Map<Integer, List<ArtistWrapper>> loadArtists(int min, int max) throws SQLException, IOException{
+    private Map<Integer, ArtistCredit> loadArtists(int min, int max) throws SQLException, IOException{
 
         //Artists
-        Map<Integer, List<ArtistWrapper>> artistWrapper = new HashMap<Integer, List<ArtistWrapper>>();
-        PreparedStatement st = getPreparedStatement("ARTISTS");
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-           int recordingId = rs.getInt("recordingId");
-           List<ArtistWrapper> list;
-           if (!artistWrapper.containsKey(recordingId)) {
-               list = new LinkedList<ArtistWrapper>();
-               artistWrapper.put(recordingId, list);
-           } else {
-               list = artistWrapper.get(recordingId);
-           }
-           ArtistWrapper aw = new ArtistWrapper();
-           aw.setArtistId(rs.getString("artistId"));
-           aw.setArtistName(rs.getString("artistName"));
-           aw.setArtistCreditName(rs.getString("artistCreditName"));
-           aw.setArtistSortName(rs.getString("artistSortName"));
-           aw.setArtistPos(rs.getInt("pos"));
-           aw.setArtistComment(rs.getString("comment"));
-           aw.setJoinPhrase(rs.getString("joinphrase"));
-           list.add(aw);
-        }
-        return artistWrapper;
+        Map<Integer, ArtistCredit> artistCredits
+            = ArtistCreditHelper.completeArtistCreditFromDbResults
+                 (rs,
+                  "recordingId",
+                  "artistId",
+                  "artistName",
+                  "artistSortName",
+                  "comment",
+                  "joinphrase",
+                  "artistCreditName");
+        return artistCredits;
     }
 
     /**
@@ -235,7 +226,7 @@ public class RecordingIndex extends DatabaseIndex {
      * @param indexWriter
      * @param min
      * @param max
-     * @param artists
+     * @param artistCredits
      * @param tracks
      * @throws SQLException
      * @throws IOException
@@ -244,7 +235,7 @@ public class RecordingIndex extends DatabaseIndex {
                                 int min,
                                 int max,
                                 Map<Integer, List<String>> isrcs,
-                                Map<Integer, List<ArtistWrapper>> artists,
+                                Map<Integer, ArtistCredit> artistCredits,
                                 Map<Integer, List<TrackWrapper>> tracks) throws SQLException, IOException{
 
         PreparedStatement st = getPreparedStatement("RECORDINGS");
@@ -252,22 +243,22 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs,isrcs,artists,tracks));
+            indexWriter.addDocument(documentFromResultSet(rs,isrcs,artistCredits,tracks));
         }
 
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>>         isrcWrapper   = loadISRCs(min,max);
-        Map<Integer, List<ArtistWrapper>>  artistWrapper = loadArtists(min,max);
+        Map<Integer, ArtistCredit>         artistCredits = loadArtists(min,max);
         Map<Integer, List<TrackWrapper>>   trackWrapper  = loadTracks(min,max);
 
-        loadRecordings(indexWriter,min,max,isrcWrapper,artistWrapper,trackWrapper);
+        loadRecordings(indexWriter,min,max,isrcWrapper,artistCredits,trackWrapper);
     }
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<String>> isrcs,
-                                          Map<Integer, List<ArtistWrapper>> artists,
+                                          Map<Integer, ArtistCredit> artistCredits,
                                           Map<Integer, List<TrackWrapper>> tracks) throws SQLException {
 
         int id = rs.getInt("recordingId");
@@ -302,20 +293,15 @@ public class RecordingIndex extends DatabaseIndex {
             }
         }
 
-        if (artists.containsKey(id)) {
-            //For each credit artist for this recording
-            for (ArtistWrapper artist : artists.get(id)) {
-                doc.addField(RecordingIndexField.ARTIST_ID, artist.getArtistId());
-                doc.addField(RecordingIndexField.ARTIST_NAME, artist.getArtistName());
-                doc.addField(RecordingIndexField.ARTIST_SORTNAME, artist.getArtistSortName());
-                doc.addField(RecordingIndexField.ARTIST_NAMECREDIT, artist.getArtistCreditName());
-                doc.addFieldOrHyphen(RecordingIndexField.ARTIST_JOINPHRASE, artist.getJoinPhrase());
-                doc.addFieldOrHyphen(RecordingIndexField.ARTIST_COMMENT, artist.getArtistComment());
-            }
-
-            doc.addField(RecordingIndexField.ARTIST, ArtistWrapper.createFullArtistCredit(artists.get(id)));
-        }
-
+        ArtistCredit ac = artistCredits.get(id);
+        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+               (doc,
+                ac,
+                RecordingIndexField.ARTIST,
+                RecordingIndexField.ARTIST_NAMECREDIT,
+                RecordingIndexField.ARTIST_ID,
+                RecordingIndexField.ARTIST_NAME,
+                RecordingIndexField.ARTIST_CREDIT);
 
         return doc.getLuceneDocument();
     }

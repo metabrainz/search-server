@@ -29,11 +29,13 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.search.index.RecordingIndexField;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.RecordingIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
-import org.musicbrainz.mmd2.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -75,32 +77,10 @@ public class RecordingWriter extends ResultsWriter {
                 }
                 recording.setIsrcList(isrcList);
             }
-            
-            String[] artistIds          = doc.getValues(RecordingIndexField.ARTIST_ID);
-            String[] artistNames        = doc.getValues(RecordingIndexField.ARTIST_NAME);
-            String[] artistJoinPhrases  = doc.getValues(RecordingIndexField.ARTIST_JOINPHRASE);
-            String[] artistSortNames    = doc.getValues(RecordingIndexField.ARTIST_SORTNAME);
-            String[] artistCreditNames  = doc.getValues(RecordingIndexField.ARTIST_NAMECREDIT);
 
-            ArtistCredit ac = of.createArtistCredit();
-            for (int i = 0; i < artistIds.length; i++) {
-
-                Artist     artist   = of.createArtist();
-                artist.setId(artistIds[i]);
-                artist.setName(artistNames[i]);
-                artist.setSortName(artistSortNames[i]);
-                NameCredit nc = of.createNameCredit();
-                nc.setArtist(artist);
-                if(!artistJoinPhrases[i].equals("-")) {
-                    nc.setJoinphrase(artistJoinPhrases[i]);
-                }
-                if(!artistCreditNames[i].equals(artistNames[i])) {
-                    nc.setName(artistCreditNames[i]);
-                }
-                ac.getNameCredit().add(nc);
-                recording.setArtistCredit(ac);
-            }
-
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
+            recording.setArtistCredit(ac);
+                     
             String[] releaseNames  = doc.getValues(RecordingIndexField.RELEASE);
             String[] releaseIds    = doc.getValues(RecordingIndexField.RELEASE_ID);
             String[] releaseTypes  = doc.getValues(RecordingIndexField.RELEASE_TYPE);

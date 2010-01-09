@@ -28,17 +28,14 @@
 
 package org.musicbrainz.search.servlet.mmd1;
 
-import com.jthink.brainz.mmd.Artist;
-import com.jthink.brainz.mmd.Metadata;
-import com.jthink.brainz.mmd.ObjectFactory;
-import com.jthink.brainz.mmd.Release;
-import com.jthink.brainz.mmd.ReleaseList;
-import com.jthink.brainz.mmd.Track;
-import com.jthink.brainz.mmd.TrackList;
-import org.apache.lucene.util.NumericUtils;
+import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
-import org.musicbrainz.search.index.RecordingIndexField;
+import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.RecordingIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -75,13 +72,12 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
             }
 
 
-            String artistName = doc.get(RecordingIndexField.ARTIST);
-            if (artistName != null) {
-
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
+            if (ac.getNameCredit().size()>0) {
                 Artist artist = of.createArtist();
-                artist.setName(artistName);
-                artist.setId(doc.get(RecordingIndexField.ARTIST_ID));
-                artist.setSortName(doc.get(RecordingIndexField.ARTIST_SORTNAME));
+                artist.setName(ac.getNameCredit().get(0).getArtist().getName());
+                artist.setId(ac.getNameCredit().get(0).getArtist().getId());
+                artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
                 track.setArtist(artist);
             }
 

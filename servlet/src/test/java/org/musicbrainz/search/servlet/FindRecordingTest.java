@@ -6,8 +6,13 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.mmd2.Artist;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.NameCredit;
+import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
@@ -33,6 +38,8 @@ public class FindRecordingTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        ObjectFactory of = new ObjectFactory();
+
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
@@ -46,9 +53,15 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
         doc.addField(RecordingIndexField.ARTIST, "Farming Incident");
         doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
-        doc.addField(RecordingIndexField.ARTIST_NAMECREDIT, "Farming Incident");
-        doc.addField(RecordingIndexField.ARTIST_SORTNAME, "Incident, Farming");
-        doc.addField(RecordingIndexField.ARTIST_JOINPHRASE, "-");
+        ArtistCredit ac = of.createArtistCredit();
+        NameCredit nc = of.createNameCredit();
+        Artist artist = of.createArtist();
+        artist.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        artist.setName("Farming Incident");
+        artist.setSortName("Incident, Farming");
+        nc.setArtist(artist);
+        ac.getNameCredit().add(nc);
+        doc.addField(RecordingIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
         doc.addNumericField(RecordingIndexField.DURATION, 234000);
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
@@ -73,8 +86,6 @@ public class FindRecordingTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
         assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
         assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
@@ -90,8 +101,6 @@ public class FindRecordingTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
         assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
         assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
@@ -150,13 +159,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
-     public void testFindRecordingByArtistSortname() throws Exception {
-        Results res = ss.searchLucene("sortname:\"Incident, Farming\"", 0, 10);
-        assertEquals(1, res.totalHits);
-        Result result = res.results.get(0);
-        MbDocument doc = result.doc;
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
-    }
+
 
     public void testFindRecordingByReleaseType() throws Exception {
         Results res = ss.searchLucene("type:\"album\"", 0, 10);
@@ -209,8 +212,6 @@ public class FindRecordingTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
         assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
         assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
@@ -224,8 +225,6 @@ public class FindRecordingTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
         assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
         assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
@@ -240,8 +239,6 @@ public class FindRecordingTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
         assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
         assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
@@ -256,8 +253,6 @@ public class FindRecordingTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
         assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
-        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(RecordingIndexField.ARTIST_ID));
-        assertEquals("Farming Incident", doc.get(RecordingIndexField.ARTIST));
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
         assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
         assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));

@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.RecordingIndex;
 import org.musicbrainz.search.index.RecordingIndexField;
@@ -175,9 +176,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals("Do It Clean", doc.getField(RecordingIndexField.RECORDING.getName()).stringValue());
             assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(RecordingIndexField.RELEASE_ID.getName()).stringValue());
-            assertEquals("Echo & The Bunnymen", doc.getField(RecordingIndexField.ARTIST.getName()).stringValue());
-            assertEquals("Echo and The Bunnymen", doc.getField(RecordingIndexField.ARTIST_SORTNAME.getName()).stringValue());
-            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(RecordingIndexField.ARTIST_ID.getName()).stringValue());
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS_MEDIUM.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.DURATION.getName()).stringValue()));
@@ -225,10 +223,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.ARTIST_SORTNAME.getName()).length);
-            assertEquals("Echo and The Bunnymen", doc.getField(RecordingIndexField.ARTIST_SORTNAME.getName()).stringValue());
 
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Echo and The Bunnymen",ac.getNameCredit().get(0).getArtist().getSortName());
         }
         ir.close();
     }
@@ -270,11 +268,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.ARTIST_COMMENT.getName()).length);
-            assertEquals("-", doc.getField(RecordingIndexField.ARTIST_COMMENT.getName()).stringValue());
 
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertNull(ac.getNameCredit().get(0).getArtist().getDisambiguation());
         }
         ir.close();
     }
@@ -293,10 +290,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.ARTIST_COMMENT.getName()).length);
-            assertEquals("a comment", doc.getField(RecordingIndexField.ARTIST_COMMENT.getName()).stringValue());
 
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("a comment",ac.getNameCredit().get(0).getArtist().getDisambiguation());
         }
         ir.close();
     }
