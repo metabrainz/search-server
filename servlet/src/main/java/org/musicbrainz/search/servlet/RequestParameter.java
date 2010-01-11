@@ -35,13 +35,10 @@ public enum RequestParameter {
     LIMIT("limit"),
     MAX("max"),
     OFFSET("offset"),
-    TAGGER_PORT("tport"),
-    DURATION("dur"),
-    RELATIONSHIPS("rel"),
-    OLD_STYLE_LINK("mbt"),
     COUNT("count"),
     VERSION("version"),
-            ;
+    INIT("init"),
+    ;
     private String name;
 
     RequestParameter(String name) {

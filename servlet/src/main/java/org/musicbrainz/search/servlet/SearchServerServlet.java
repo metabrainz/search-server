@@ -101,6 +101,14 @@ public class SearchServerServlet extends HttpServlet {
         //Ensure encoding set to UTF8
         request.setCharacterEncoding(CHARSET);
 
+        //Force initialization of search server, if already open this forces a reopen of the indexes, this will pick up
+        //any modification to the index since they were originally opened
+        String init = request.getParameter(RequestParameter.INIT.getName());
+        if(init!=null) {
+            init();
+            return;
+        }
+
         //If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
         //parameter
         String count = request.getParameter(RequestParameter.COUNT.getName());
