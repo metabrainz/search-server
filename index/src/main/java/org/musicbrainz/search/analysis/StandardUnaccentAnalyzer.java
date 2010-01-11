@@ -52,6 +52,13 @@ public class StandardUnaccentAnalyzer extends Analyzer {
     private void setCharConvertMap() {
         charConvertMap = new NormalizeCharMap();
         charConvertMap.add("&","and");
+
+        //Hebrew chars converted to western cases so matches both
+        charConvertMap.add("\u05f3","'");
+        charConvertMap.add("\u05be","-");
+        charConvertMap.add("\u05f4","\"");
+                        
+
     }
 
     public StandardUnaccentAnalyzer() {
