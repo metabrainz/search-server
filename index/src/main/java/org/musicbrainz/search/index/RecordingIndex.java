@@ -91,9 +91,26 @@ public class RecordingIndex extends DatabaseIndex {
                "WHERE re.id BETWEEN ? AND ?  " +
                "order by re.id,acn.position ");
 
-        //TODO would it make sense to break this query at release and have two queries, (in theory we could actually
-        //use the existing releae index, but of course this is dependent on both being created which would reduce
-        //flexibilty)
+        /*
+          TODO would it make sense to break this query at release and then use release index,  this would make
+          recording dependent on release index being created already which would break flexibility but it would
+          improve the performance of recording because the query below could be simplified to
+
+          "SELECT tn.name as trackname, t.recording, t.position as trackposition,tl.trackcount, " +
+                m.position as mediumposition
+                "FROM track t " +
+                "INNER JOIN track_name tn " +
+                "ON t.name=tn.id " +
+                "INNER JOIN tracklist tl " +
+                "ON t.tracklist=tl.id " +
+                "INNER JOIN medium m " +
+                "ON m.tracklist=tl.id
+                "WHERE t.recording BETWEEN ? AND ?"
+
+          It would also make it easy to add numtracksrelease and tnumrelease because this info is already in release
+          index.
+
+         */
         addPreparedStatement("TRACKS",
                 "SELECT tn.name as trackname, t.recording, t.position as trackposition,tl.trackcount, " +
                 "r.gid as releaseid,rn.name as releasename,rgt.name as type,m.position as mediumposition,rs.name as status " +
@@ -292,9 +309,11 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, track.getReleaseStatus());
                 doc.addField(RecordingIndexField.RELEASE_ID, track.getReleaseId());
                 doc.addField(RecordingIndexField.RELEASE, track.getReleaseName());
+                
                 //Added to TRACK_OUTPUT for outputting xml, and to recording for searching
                 doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
                 doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
+
                 doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
 
             }
