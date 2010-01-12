@@ -70,12 +70,10 @@ public class FindCDStubTest extends TestCase {
         assertEquals(1, res.totalHits);
     }
 
-    /* TODO why doesn't this work
     public void testSearchByDiscId() throws Exception {
         Results res = ss.searchLucene("discid:qA87dKURKperVfmckD5b_xo8BO8-", 0, 10);
         assertEquals(1, res.totalHits);
     }
-    */
 
     public void testSearchByNumTracks() throws Exception {
         Results res = ss.searchLucene("tracks:2", 0, 10);
