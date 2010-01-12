@@ -169,7 +169,7 @@ public class AnnotationIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs,AnnotationType type) throws SQLException {
         MbDocument doc = new MbDocument();
-        doc.addField(AnnotationIndexField.MBID, rs.getString("gid"));
+        doc.addField(AnnotationIndexField.ENTITY, rs.getString("gid"));
         doc.addField(AnnotationIndexField.NAME, rs.getString("name"));
 	    doc.addField(AnnotationIndexField.TYPE, type.getName());
 	    doc.addField(AnnotationIndexField.TEXT, rs.getString("text"));

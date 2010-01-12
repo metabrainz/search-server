@@ -36,7 +36,7 @@ public class FindAnnotationTest extends TestCase {
             MbDocument doc = new MbDocument();
             doc.addField(AnnotationIndexField.TYPE, AnnotationType.RELEASE.getName());
             doc.addField(AnnotationIndexField.NAME, "Pieds nus sur la braise");
-            doc.addField(AnnotationIndexField.MBID, "bdb24cb5-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.ENTITY, "bdb24cb5-404b-4f60-bba4-7b730325ae47");
             doc.addField(AnnotationIndexField.TEXT, "EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-");
             writer.addDocument(doc.getLuceneDocument());
         }
@@ -65,13 +65,13 @@ public class FindAnnotationTest extends TestCase {
         assertEquals(0, res.totalHits);
     }
 
-    public void testSearchByMbid() throws Exception {
-        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
+    public void testSearchByEntity() throws Exception {
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
-    public void testSearchByMbidNoMatch() throws Exception {
-        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
+    public void testSearchByEntitydNoMatch() throws Exception {
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
@@ -96,7 +96,7 @@ public class FindAnnotationTest extends TestCase {
      */
     public void testOutputXml() throws Exception {
 
-        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
         org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -118,7 +118,7 @@ public class FindAnnotationTest extends TestCase {
 
     public void testOutputJson() throws Exception {
 
-        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
         org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
