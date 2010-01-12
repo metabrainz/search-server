@@ -65,22 +65,30 @@ public class SearchServerServlet extends HttpServlet {
 
     @Override
     public void init() {
+        init(false);
+    }
 
+    public void init(boolean useMMapDirectory)   {
         String indexDir = getServletConfig().getInitParameter("index_dir");
         log.info("Index dir = " + indexDir);
+        if(useMMapDirectory)  {
+            log.info("Index Type = MMapped Mode");
+        }
+        else {
+            log.info("Index Type = NFIO Mode");
+        }
         log.info("Max Heap = "+ ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
 
+
         try {
-            SearchServerFactory.init(indexDir);
+            SearchServerFactory.init(indexDir,useMMapDirectory);
             isServletInitialized = true;
         } catch (Exception e1) {
             initMessage = e1.getMessage();
             e1.printStackTrace(System.out);
             isServletInitialized = false;
         }
-
     }
-
 
 
     @Override
@@ -103,9 +111,10 @@ public class SearchServerServlet extends HttpServlet {
 
         //Force initialization of search server, if already open this forces a reopen of the indexes, this will pick up
         //any modification to the index since they were originally opened
+        //If specify mmap mode then MMappedDirectory used, should only be used on 64bit JVM or on small indexes
         String init = request.getParameter(RequestParameter.INIT.getName());
         if(init!=null) {
-            init();
+            init(init.equals("mmap"));
             return;
         }
 

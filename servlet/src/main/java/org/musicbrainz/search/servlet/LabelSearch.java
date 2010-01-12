@@ -1,12 +1,12 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.LabelIndex;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.LabelWriter;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
 
@@ -25,10 +25,15 @@ public class LabelSearch extends SearchServer {
 
     }
 
-    public LabelSearch(String indexDir) throws Exception {
+    public LabelSearch(String indexDir, boolean useMMapDirectory) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,new LabelIndex().getFilename());
+        if(useMMapDirectory) {
+            indexSearcher = createIndexSearcherFromMMapIndex(indexDir, new LabelIndex().getFilename());
+        }
+        else {
+            indexSearcher = createIndexSearcherFromFileIndex(indexDir, new LabelIndex().getFilename());
+        }
         this.setLastServerUpdatedDate();
     }
 

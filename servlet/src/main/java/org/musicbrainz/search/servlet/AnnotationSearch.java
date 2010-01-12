@@ -21,10 +21,14 @@ public class AnnotationSearch extends SearchServer {
         analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
     }
 
-    public AnnotationSearch(String indexDir) throws Exception {
+    public AnnotationSearch(String indexDir, boolean useMMapDirectory) throws Exception {
 
-        this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir, new AnnotationIndex().getFilename());
+        this();if(useMMapDirectory) {
+            indexSearcher = createIndexSearcherFromMMapIndex(indexDir, new AnnotationIndex().getFilename());
+        }
+        else {
+            indexSearcher = createIndexSearcherFromFileIndex(indexDir, new AnnotationIndex().getFilename());
+        }
         this.setLastServerUpdatedDate();
     }
 

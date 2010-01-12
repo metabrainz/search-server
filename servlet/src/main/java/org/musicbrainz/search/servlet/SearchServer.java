@@ -36,6 +36,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
@@ -71,9 +72,15 @@ public abstract class SearchServer {
 
     }
 
+    protected IndexSearcher createIndexSearcherFromMMapIndex(String indexDir,String indexName) throws Exception
+    {
+        return new IndexSearcher(IndexReader.open(new MMapDirectory(new File(indexDir + '/' + indexName + '/')), true));
+
+    }
+
     protected IndexSearcher createIndexSearcherFromFileIndex(String indexDir,String indexName) throws Exception
     {
-        return new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + '/' + indexName + '/'), null), true));
+        return new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + '/' + indexName + '/')), true));
 
     }
 

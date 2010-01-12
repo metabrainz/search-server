@@ -24,10 +24,15 @@ public class FreeDBSearch extends SearchServer {
         analyzer = new PerFieldEntityAnalyzer(FreeDBIndexField.class);
     }
 
-    public FreeDBSearch(String indexDir) throws Exception {
+    public FreeDBSearch(String indexDir, boolean useMMapDirectory) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,new FreeDBIndex().getFilename());
+        if(useMMapDirectory) {
+            indexSearcher = createIndexSearcherFromMMapIndex(indexDir, new FreeDBIndex().getFilename());
+        }
+        else {
+            indexSearcher = createIndexSearcherFromFileIndex(indexDir, new FreeDBIndex().getFilename());
+        }
         this.setLastServerUpdatedDate();
     }
 

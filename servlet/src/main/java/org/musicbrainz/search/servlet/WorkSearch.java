@@ -1,11 +1,11 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.WorkIndex;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd2.WorkWriter;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
 
@@ -20,10 +20,15 @@ public class WorkSearch extends SearchServer {
         analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
     }
 
-    public WorkSearch(String indexDir) throws Exception {
+    public WorkSearch(String indexDir, boolean useMMapDirectory) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,new WorkIndex().getFilename());
+        if(useMMapDirectory) {
+            indexSearcher = createIndexSearcherFromMMapIndex(indexDir, new WorkIndex().getFilename());
+        }
+        else {
+            indexSearcher = createIndexSearcherFromFileIndex(indexDir, new WorkIndex().getFilename());
+        }
         this.setLastServerUpdatedDate();
     }
 

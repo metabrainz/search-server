@@ -1,12 +1,12 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.ReleaseIndex;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.util.ArrayList;
 
@@ -22,10 +22,15 @@ public class ReleaseSearch extends SearchServer {
         analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
     }
 
-    public ReleaseSearch(String indexDir) throws Exception {
+    public ReleaseSearch(String indexDir, boolean useMMapDirectory) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,new ReleaseIndex().getFilename());
+        if(useMMapDirectory) {
+            indexSearcher = createIndexSearcherFromMMapIndex(indexDir, new ReleaseIndex().getFilename());
+        }
+        else {
+            indexSearcher = createIndexSearcherFromFileIndex(indexDir, new ReleaseIndex().getFilename());
+        }
         this.setLastServerUpdatedDate();
     }
 

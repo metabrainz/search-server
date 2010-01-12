@@ -24,10 +24,15 @@ public class ArtistSearch extends SearchServer {
     }
 
 
-    public ArtistSearch(String indexDir) throws Exception {
+    public ArtistSearch(String indexDir,boolean useMMapDirectory) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir, new ArtistIndex().getFilename());
+        if(useMMapDirectory) {
+            indexSearcher = createIndexSearcherFromMMapIndex(indexDir, new ArtistIndex().getFilename());
+        }
+        else {
+            indexSearcher = createIndexSearcherFromFileIndex(indexDir, new ArtistIndex().getFilename());
+        }
         this.setLastServerUpdatedDate();
     }
 
