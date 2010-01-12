@@ -87,7 +87,7 @@ public class RecordingWriter extends ResultsWriter {
             String[] trackNos      = doc.getValues(RecordingIndexField.TRACKNUM);
             String[] numTracks     = doc.getValues(RecordingIndexField.NUM_TRACKS_MEDIUM);
             String[] trackName     = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
-            String[] mediumPos     = doc.getValues(RecordingIndexField.MEDIUM_POS_OUTPUT);
+            String[] mediumPos     = doc.getValues(RecordingIndexField.POSITION);
 
             if(releaseNames.length>0)
             {

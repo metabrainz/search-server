@@ -31,10 +31,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.NameCredit;
-import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -149,7 +146,8 @@ public class ReleaseIndex extends DatabaseIndex {
         }
 
 
-        //Medium, NumTracks a release can be released on multiple mediums, and possibly involving mediums, i.e a release is on CD with
+        //Medium, NumTracks a release can be released on multiple mediums, and possibly involving different mediums,
+        //i.e a release is on CD with
         //a special 7" single included. We also need total tracks and discs ids per medium
         Map<Integer, List<List<String>>> mediums = new HashMap<Integer, List<List<String>>>();
         st = getPreparedStatement("MEDIUMS");

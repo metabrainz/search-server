@@ -180,7 +180,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.DURATION.getName()).stringValue()));
             assertEquals("1234568", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
-            
+            assertEquals("1", doc.getField(RecordingIndexField.POSITION.getName()).stringValue());
+
         }
         ir.close();
     }

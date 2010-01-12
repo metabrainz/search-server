@@ -26,10 +26,9 @@ public enum RecordingIndexField implements IndexField {
     QUANTIZED_DURATION	("qdur",		Field.Store.NO,	    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     TRACKNUM			("tnum",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     RELEASE_TYPE        ("type",        Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST_COMMENT      ("comment",		Field.Store.YES,    Field.Index.NO),
     TRACK_OUTPUT        ("trackoutoutput",		Field.Store.YES,	Field.Index.NO),    
     RECORDING_OUTPUT    ("recordingoutput",		Field.Store.YES,	Field.Index.NO),
-    MEDIUM_POS_OUTPUT   ("mediumposoutput",		Field.Store.YES,	Field.Index.NO),
+    POSITION            ("position",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ISRC    		    ("isrc",		    Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer());
 
     private String name;

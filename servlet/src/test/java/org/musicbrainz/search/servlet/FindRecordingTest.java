@@ -69,7 +69,7 @@ public class FindRecordingTest extends TestCase {
         doc.addNumericField(RecordingIndexField.TRACKNUM, 5);
         doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
-        doc.addField(RecordingIndexField.MEDIUM_POS_OUTPUT, "1");
+        doc.addField(RecordingIndexField.POSITION, "1");
         doc.addField(RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
         doc.addField(RecordingIndexField.ISRC, "123456789");
         doc.addField(RecordingIndexField.ISRC, "abcdefghi");
@@ -245,6 +245,18 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    public void testFindRecordingByPosition() throws Exception {
+        Results res = ss.searchLucene("position:1", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    }
 
     public void testFindRecordingByDefault() throws Exception {
         Results res = ss.searchLucene("\"Gravitational Lenz\"", 0, 10);

@@ -288,7 +288,7 @@ public class RecordingIndex extends DatabaseIndex {
                 //Added to TRACK_OUTPUT for outputting xml, and to recording for searching
                 doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
                 doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
-                doc.addField(RecordingIndexField.MEDIUM_POS_OUTPUT, String.valueOf(track.getMediumPosition()));
+                doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
 
             }
         }
