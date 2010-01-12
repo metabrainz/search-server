@@ -65,7 +65,7 @@ public class FindRecordingTest extends TestCase {
 
         doc.addNumericField(RecordingIndexField.DURATION, 234000);
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
-        doc.addNumericField(RecordingIndexField.NUM_TRACKS_MEDIUM,10);
+        doc.addNumericField(RecordingIndexField.NUM_TRACKS,10);
         doc.addNumericField(RecordingIndexField.TRACKNUM, 5);
         doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
@@ -177,7 +177,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
     public void testFindRecordingByNumberOfTracksOnMediumOnRelease() throws Exception {
-        Results res = ss.searchLucene("tracksmedium:10", 0, 10);
+        Results res = ss.searchLucene("tracks:10", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;

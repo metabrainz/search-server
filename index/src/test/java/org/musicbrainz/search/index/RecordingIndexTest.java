@@ -176,7 +176,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals("Do It Clean", doc.getField(RecordingIndexField.RECORDING.getName()).stringValue());
             assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(RecordingIndexField.RELEASE_ID.getName()).stringValue());
-            assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS_MEDIUM.getName()).stringValue()));
+            assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.DURATION.getName()).stringValue()));
             assertEquals("1234568", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());

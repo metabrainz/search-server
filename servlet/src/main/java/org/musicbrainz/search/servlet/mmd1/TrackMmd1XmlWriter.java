@@ -84,7 +84,7 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
 
             String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
             String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
-            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS_MEDIUM);
+            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
             String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
             String[] releases           = doc.getValues(RecordingIndexField.RELEASE);
 
