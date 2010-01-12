@@ -91,9 +91,12 @@ public class RecordingIndex extends DatabaseIndex {
                "WHERE re.id BETWEEN ? AND ?  " +
                "order by re.id,acn.position ");
 
+        //TODO would it make sense to break this query at release and have two queries, (in theory we could actually
+        //use the existing releae index, but of course this is dependent on both being created which would reduce
+        //flexibilty)
         addPreparedStatement("TRACKS",
                 "SELECT tn.name as trackname, t.recording, t.position as trackposition,tl.trackcount, " +
-                "r.gid as releaseid,rn.name as releasename,rgt.name as type,m.position as mediumposition " +
+                "r.gid as releaseid,rn.name as releasename,rgt.name as type,m.position as mediumposition,rs.name as status " +
                 "FROM track t " +
                 "INNER JOIN track_name tn " +
                 "ON t.name=tn.id " +
@@ -109,6 +112,8 @@ public class RecordingIndex extends DatabaseIndex {
                 "ON rg.type = rgt.id " +
                 "INNER JOIN release_name rn " +
                 "ON r.name=rn.id " +
+                "LEFT JOIN release_status rs " +
+                "ON r.status = rs.id " +
                 "WHERE t.recording BETWEEN ? AND ?");
 
         addPreparedStatement("RECORDINGS",
@@ -209,6 +214,7 @@ public class RecordingIndex extends DatabaseIndex {
            }
            TrackWrapper tw = new TrackWrapper();
            tw.setReleaseGroupType(rs.getString("type"));
+           tw.setReleaseStatus(rs.getString("status"));
            tw.setReleaseId(rs.getString("releaseid"));
            tw.setReleaseName(rs.getString("releasename"));
            tw.setTrackCount(rs.getInt("trackcount"));
@@ -283,6 +289,7 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
                 doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, track.getReleaseGroupType());
+                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, track.getReleaseStatus());
                 doc.addField(RecordingIndexField.RELEASE_ID, track.getReleaseId());
                 doc.addField(RecordingIndexField.RELEASE, track.getReleaseName());
                 //Added to TRACK_OUTPUT for outputting xml, and to recording for searching

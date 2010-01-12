@@ -84,6 +84,7 @@ public class RecordingWriter extends ResultsWriter {
             String[] releaseNames  = doc.getValues(RecordingIndexField.RELEASE);
             String[] releaseIds    = doc.getValues(RecordingIndexField.RELEASE_ID);
             String[] releaseTypes  = doc.getValues(RecordingIndexField.RELEASE_TYPE);
+            String[] releaseStatus = doc.getValues(RecordingIndexField.RELEASE_STATUS);
             String[] trackNos      = doc.getValues(RecordingIndexField.TRACKNUM);
             String[] numTracks     = doc.getValues(RecordingIndexField.NUM_TRACKS);
             String[] trackName     = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
@@ -97,6 +98,9 @@ public class RecordingWriter extends ResultsWriter {
                     Release release = of.createRelease();
                     release.setId(releaseIds[i]);
                     release.setTitle(releaseNames[i]);
+                    if (!releaseStatus[i].equals("-")) {
+                        release.setStatus(releaseStatus[i].toLowerCase(Locale.US));
+                    }
 
                     ReleaseGroup rg = of.createReleaseGroup();
                     release.setReleaseGroup(rg);

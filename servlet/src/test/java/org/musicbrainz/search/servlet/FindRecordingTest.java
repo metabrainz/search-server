@@ -71,6 +71,7 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
         doc.addField(RecordingIndexField.POSITION, "1");
         doc.addField(RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
+        doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
         doc.addField(RecordingIndexField.ISRC, "123456789");
         doc.addField(RecordingIndexField.ISRC, "abcdefghi");
 
@@ -258,6 +259,19 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    public void testFindRecordingByReleaseStatus() throws Exception {
+        Results res = ss.searchLucene("status:Official", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("Gravitational Lenz", doc.get(RecordingIndexField.RECORDING));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    }
+
     public void testFindRecordingByDefault() throws Exception {
         Results res = ss.searchLucene("\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -325,6 +339,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<isrc>123456789</isrc>"));
         assertTrue(output.contains("<isrc>abcdefghi</isrc>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
+        assertTrue(output.contains("<status>official</status>"));
 
     }
 
@@ -349,6 +364,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"length\":234000"));
         assertTrue(output.contains("\"isrc\":[\"123456789"));
         assertTrue(output.contains("\"position\":1"));
+        assertTrue(output.contains("\"status\":\"official\""));
 
     }
 

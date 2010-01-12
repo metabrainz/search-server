@@ -72,7 +72,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
                 "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
-                "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,null,1,1,1, 1, 1, 1, 1, null, null, 1)");
+                "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
         stmt.addBatch("INSERT INTO release_meta(id, lastupdate, dateadded, coverarturl, infourl, amazonasin,amazonstore) VALUES (491240, null,null,null,null,'123456789',null)");
         stmt.addBatch("INSERT INTO medium(id, tracklist, release, position, format, name, editpending) VALUES (1, 1, 491240, 1, 7, null, 1)");
         stmt.addBatch("INSERT INTO medium_cdtoc(id, medium, cdtoc, editpending) VALUES (1, 1, 1, 1)");
@@ -171,6 +171,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
+            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
+            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
             assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
             assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
             assertEquals("Do It Clean", doc.getField(RecordingIndexField.RECORDING.getName()).stringValue());
@@ -179,6 +181,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.DURATION.getName()).stringValue()));
+            assertEquals("Non-Album Tracks", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            assertEquals("Official", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
             assertEquals("1234568", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
             assertEquals("1", doc.getField(RecordingIndexField.POSITION.getName()).stringValue());
 
@@ -250,6 +254,29 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
             assertEquals("-", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+
+    /**
+     * Basic test of all fields
+     *
+     * @throws Exception
+     */
+    public void testNoReleaseStatus() throws Exception {
+
+        addTrackTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
+            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
+            assertEquals("-", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
         }
         ir.close();
     }

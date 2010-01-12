@@ -11,6 +11,7 @@ class TrackWrapper {
     private String  releaseId;
     private String  releaseName;
     private String  releaseGroupType;
+    private String  releaseStatus;
     private String  trackName;
     private int     mediumPosition;
 
@@ -68,5 +69,13 @@ class TrackWrapper {
 
     public void setMediumPosition(int mediumPosition) {
         this.mediumPosition = mediumPosition;
+    }
+
+    public String getReleaseStatus() {
+        return releaseStatus;
+    }
+
+    public void setReleaseStatus(String releaseStatus) {
+        this.releaseStatus = releaseStatus;
     }
 }
