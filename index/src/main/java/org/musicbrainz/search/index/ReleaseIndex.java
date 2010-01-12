@@ -223,6 +223,7 @@ public class ReleaseIndex extends DatabaseIndex {
 
         int trackCount = 0;
         int discCount = 0;
+        int mediumCount = 0;
         if (mediums.containsKey(id)) {
             for (List<String> entry : mediums.get(id)) {
                 String str;
@@ -235,8 +236,10 @@ public class ReleaseIndex extends DatabaseIndex {
                 int numDiscsOnMedium = Integer.parseInt(entry.get(2));
                 doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM,numDiscsOnMedium);
                 discCount+=numDiscsOnMedium;
-
+                mediumCount++;
             }
+            //Num of mediums on the release
+            doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,mediumCount);
 
             //Num Tracks over the whole release
             doc.addNumericField(ReleaseIndexField.NUM_TRACKS,trackCount);

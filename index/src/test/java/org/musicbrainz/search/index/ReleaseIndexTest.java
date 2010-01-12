@@ -773,6 +773,28 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+
+    /**
+        * @throws Exception
+        */
+       public void testIndexReleaseNumMediums() throws Exception {
+
+           addReleaseThree();
+           RAMDirectory ramDir = new RAMDirectory();
+           createIndex(ramDir);
+
+           IndexReader ir = IndexReader.open(ramDir, true);
+           assertEquals(1, ir.numDocs());
+           {
+               Document doc = ir.document(0);
+               assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+               assertEquals(1, doc.getFields(ReleaseIndexField.NUM_MEDIUMS.getName()).length);
+               assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_MEDIUMS.getName()).stringValue()));
+           }
+           ir.close();
+       }
+
+
     /**
      * @throws Exception
      */

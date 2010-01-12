@@ -20,6 +20,7 @@ public enum ReleaseIndexField implements IndexField {
     RELEASE			    ("release",		    Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
     NUM_TRACKS		    ("tracks",		    Field.Store.NO,	    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     NUM_TRACKS_MEDIUM   ("tracksmedium",	Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    NUM_MEDIUMS         ("mediums",	        Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     BARCODE			    ("barcode",		    Field.Store.YES,	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
     CATALOG_NO		    ("catno",		    Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED),
