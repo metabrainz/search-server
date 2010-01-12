@@ -38,6 +38,10 @@ public class WorkIndex extends DatabaseIndex {
         super(dbConnection);
     }
 
+    public WorkIndex() {
+        }
+
+
     public String getName() {
         return "work";
     }

@@ -34,12 +34,17 @@ import java.sql.*;
 
 public class LabelIndex extends DatabaseIndex {
 
+
     private Pattern stripLabelCodeOfLeadingZeroes;
 
     public LabelIndex(Connection dbConnection) {
         super(dbConnection);
         stripLabelCodeOfLeadingZeroes = Pattern.compile("^0+");
     }
+
+    public LabelIndex() {
+        }
+
 
     public String getName() {
         return "label";

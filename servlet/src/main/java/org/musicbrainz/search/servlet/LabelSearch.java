@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
+import org.musicbrainz.search.index.LabelIndex;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.LabelWriter;
@@ -27,7 +28,7 @@ public class LabelSearch extends SearchServer {
     public LabelSearch(String indexDir) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,"label_index");
+        indexSearcher = createIndexSearcherFromFileIndex(indexDir,new LabelIndex().getFilename());
         this.setLastServerUpdatedDate();
     }
 

@@ -19,6 +19,10 @@ public class AnnotationIndex extends DatabaseIndex {
 		super(dbConnection);
 	}
 
+    public AnnotationIndex(){
+    }
+
+
 	public String getName() {
 		return "annotation";
 	}

@@ -56,6 +56,7 @@ public class IndexBuilder
 	// PostgreSQL schema that holds MB data
 	protected static final String DB_SCHEMA = "musicbrainz";
 
+
     public static void main(String[] args) throws SQLException, IOException
     {
 
@@ -176,7 +177,7 @@ public class IndexBuilder
     private static void buildDatabaseIndex(DatabaseIndex index, IndexBuilderOptions options) throws IOException, SQLException
     {
         IndexWriter indexWriter;
-        String path = options.getIndexesDir() + index.getName() + "_index";
+        String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Started Building index: " + path + " at "+new Date());
 
         /* All addDocuments request are put on a queue to allow another query to be made to database without waiting
@@ -236,7 +237,7 @@ public class IndexBuilder
         index.setDumpFile(dumpFile);
 
         IndexWriter indexWriter;
-        String path = options.getIndexesDir() + index.getName() + "_index";
+        String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
         indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer() , true, IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);

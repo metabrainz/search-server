@@ -5,6 +5,7 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.Version;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.CDStubIndex;
 import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.servlet.mmd2.CDStubWriter;
 
@@ -25,7 +26,7 @@ public class CDStubSearch extends SearchServer {
     public CDStubSearch(String indexDir) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir, "cdstub_index");
+        indexSearcher = createIndexSearcherFromFileIndex(indexDir, new CDStubIndex().getFilename());
         this.setLastServerUpdatedDate();
     }
 

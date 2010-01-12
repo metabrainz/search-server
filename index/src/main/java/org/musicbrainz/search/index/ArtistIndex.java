@@ -38,6 +38,9 @@ public class ArtistIndex extends DatabaseIndex {
 		super(dbConnection);
     }
 
+    public ArtistIndex() {
+    }
+
 	public String getName() {
         return "artist";
     }

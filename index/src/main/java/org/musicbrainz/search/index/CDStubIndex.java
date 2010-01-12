@@ -30,6 +30,9 @@ import java.sql.*;
 
 public class CDStubIndex extends DatabaseIndex {
 
+    public CDStubIndex() {
+    }
+
     public CDStubIndex(Connection dbConnection) {
         super(dbConnection);
     }

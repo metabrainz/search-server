@@ -23,8 +23,27 @@ import org.apache.lucene.analysis.Analyzer;
 
 public interface Index {
 
+    /**
+     * The common name of the index
+     *
+     * @return
+     */
     public String getName();
-    
+
+    /** The filename of the index
+     *
+     * @return
+     */
+    public String getFilename();
+
+    /**
+     * The analyzer used to analyse the index
+     *
+     * @return
+     */
     public Analyzer getAnalyzer();
+
+
+
 
 }

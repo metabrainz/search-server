@@ -48,6 +48,10 @@ public class
         super(dbConnection);
     }
 
+    public ReleaseGroupIndex() {
+        super();
+    }
+
     public String getName() {
         return "releasegroup";
     }

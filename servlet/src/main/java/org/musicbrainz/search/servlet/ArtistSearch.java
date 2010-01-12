@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
+import org.musicbrainz.search.index.ArtistIndex;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ArtistWriter;
@@ -26,7 +27,7 @@ public class ArtistSearch extends SearchServer {
     public ArtistSearch(String indexDir) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,"artist_index");
+        indexSearcher = createIndexSearcherFromFileIndex(indexDir, new ArtistIndex().getFilename());
         this.setLastServerUpdatedDate();
     }
 

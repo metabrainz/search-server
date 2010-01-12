@@ -4,6 +4,7 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.Version;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.AnnotationIndex;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
 
@@ -23,7 +24,7 @@ public class AnnotationSearch extends SearchServer {
     public AnnotationSearch(String indexDir) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir, "annotation_index");
+        indexSearcher = createIndexSearcherFromFileIndex(indexDir, new AnnotationIndex().getFilename());
         this.setLastServerUpdatedDate();
     }
 

@@ -5,6 +5,7 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.util.Version;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.FreeDBIndex;
 import org.musicbrainz.search.index.FreeDBIndexField;
 import org.musicbrainz.search.servlet.mmd2.FreeDBWriter;
 
@@ -26,7 +27,7 @@ public class FreeDBSearch extends SearchServer {
     public FreeDBSearch(String indexDir) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,"freedb_index");
+        indexSearcher = createIndexSearcherFromFileIndex(indexDir,new FreeDBIndex().getFilename());
         this.setLastServerUpdatedDate();
     }
 

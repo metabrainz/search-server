@@ -46,7 +46,14 @@ import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-public class FreeDBIndex {
+public class FreeDBIndex implements Index {
+
+    public FreeDBIndex() {
+    }
+
+    /* This is appended to the getName() method of each index to create the index folder  */
+    private static final String INDEX_SUFFIX = "_index";
+
 
 	protected static String[] CATEGORIES = {"data", "folk", "jazz", "misc", "rock", "country", 
 		"blues", "newage", "reggae", "classical", "soundtrack"};
@@ -69,7 +76,11 @@ public class FreeDBIndex {
     public String getName() {
 		return "freedb";
 	}
-	
+
+    public String getFilename() {
+        return getName() + INDEX_SUFFIX;
+    }
+
 	public void indexData(IndexWriter indexWriter) throws IOException {
 		
 		// Create the archive input stream from the dump, assuming it's a tar.bz2 file

@@ -32,12 +32,24 @@ import org.apache.lucene.index.IndexWriter;
  */
 public abstract class DatabaseIndex implements Index {
 
+    /* This is appended to the getName() method of each index to create the index folder  */
+    private static final String INDEX_SUFFIX = "_index";
+
+    public String getFilename() {
+        return getName() + INDEX_SUFFIX;
+    }
+
     protected HashMap<String, PreparedStatement> preparedStatements;
     protected Connection dbConnection;
 
-    public DatabaseIndex(Connection dbConnection) {
+
+    protected DatabaseIndex(Connection dbConnection) {
         this.preparedStatements = new HashMap<String, PreparedStatement>();
         this.dbConnection = dbConnection;
+    }
+
+    protected DatabaseIndex() {
+
     }
 
     public PreparedStatement addPreparedStatement(String identifier, String SQL) throws SQLException {

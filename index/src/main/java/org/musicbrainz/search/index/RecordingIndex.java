@@ -36,11 +36,17 @@ import java.util.LinkedList;
 
 public class RecordingIndex extends DatabaseIndex {
 
+
+
     private final static int QUANTIZED_DURATION = 2000;
    
     public RecordingIndex(Connection dbConnection) {
         super(dbConnection);
     }
+
+    public RecordingIndex() {
+        }
+
 
     public String getName() {
         return "recording";

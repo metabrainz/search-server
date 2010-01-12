@@ -46,6 +46,10 @@ public class ReleaseIndex extends DatabaseIndex {
         super(dbConnection);
     }
 
+    public ReleaseIndex() {
+    }
+
+
     public Analyzer getAnalyzer() {
         return new PerFieldEntityAnalyzer(ReleaseIndexField.class);
     }

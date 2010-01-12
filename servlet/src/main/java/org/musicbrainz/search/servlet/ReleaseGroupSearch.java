@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
+import org.musicbrainz.search.index.ReleaseGroupIndex;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
@@ -24,7 +25,7 @@ public class ReleaseGroupSearch extends SearchServer{
     public ReleaseGroupSearch(String indexDir) throws Exception {
 
         this();
-        indexSearcher = createIndexSearcherFromFileIndex(indexDir,"releasegroup_index");
+        indexSearcher = createIndexSearcherFromFileIndex(indexDir,new ReleaseGroupIndex().getFilename());
         this.setLastServerUpdatedDate();
     }
 
