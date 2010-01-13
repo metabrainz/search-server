@@ -40,10 +40,10 @@ public enum FreeDBIndexField implements IndexField {
 
 	ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
 	TITLE		("title",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
-	DISCID		("discid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-	CATEGORY	("cat",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-	YEAR		("year",		Field.Store.YES,	Field.Index.ANALYZED),
-	TRACKS		("tracks",		Field.Store.YES,	Field.Index.ANALYZED),;
+	DISCID		("discid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	CATEGORY	("cat",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	YEAR		("year",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS),
+	TRACKS		("tracks",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS),;
 
 	private String name;
 	private Field.Store store;

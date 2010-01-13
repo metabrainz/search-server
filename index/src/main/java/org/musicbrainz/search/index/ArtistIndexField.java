@@ -12,15 +12,15 @@ import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 public enum ArtistIndexField implements IndexField {
 
     ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
-    BEGIN		("begin",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    BEGIN		("begin",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COMMENT		("comment",		Field.Store.YES,	Field.Index.ANALYZED),
-    TYPE		("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    GENDER      ("gender",      Field.Store.YES,    Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
-    COUNTRY     ("country",     Field.Store.YES,    Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    TYPE		("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    GENDER      ("gender",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    COUNTRY     ("country",     Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
 
 
     ;

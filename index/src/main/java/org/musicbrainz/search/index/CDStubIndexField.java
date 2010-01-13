@@ -32,10 +32,10 @@ public enum CDStubIndexField implements IndexField {
 
     ARTIST          ("artist",      Field.Store.YES,    Field.Index.ANALYZED),
     TITLE           ("title",       Field.Store.YES,    Field.Index.ANALYZED, new TitleAnalyzer()),
-    BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
+    BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
     COMMENT         ("comment",     Field.Store.YES,    Field.Index.ANALYZED),
-    NUM_TRACKS      ("tracks",      Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    DISCID          ("discid",      Field.Store.YES,    Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),;
+    NUM_TRACKS      ("tracks",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    DISCID          ("discid",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),;
 
     private String name;
     private Field.Store store;
