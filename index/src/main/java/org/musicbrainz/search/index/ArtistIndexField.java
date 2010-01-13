@@ -11,7 +11,7 @@ import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
  */
 public enum ArtistIndexField implements IndexField {
 
-    ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
