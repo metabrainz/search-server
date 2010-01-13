@@ -4,13 +4,14 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
  */
 public enum ArtistIndexField implements IndexField {
 
-    ALIAS		("alias",		Field.Store.YES,		Field.Index.ANALYZED),
+    ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),

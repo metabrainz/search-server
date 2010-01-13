@@ -31,7 +31,9 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
+import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -39,13 +41,13 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
 public enum ReleaseGroupIndexField implements IndexField {
 
 	ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED),
-	ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+	ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
 	TYPE			    ("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
+	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED, new TitleWithPosGapAnalyzer()),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO)
     ;

@@ -3,6 +3,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
 
 /**
@@ -14,7 +15,7 @@ public enum LabelIndexField implements IndexField {
     LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED),
     COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),
     CODE		("code",		Field.Store.YES, 	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
-    ALIAS		("alias",		Field.Store.YES, 	Field.Index.ANALYZED),
+    ALIAS		("alias",		Field.Store.YES, 	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     BEGIN		("begin",		Field.Store.YES, 	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

@@ -4,6 +4,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
 
@@ -12,9 +13,9 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
  */
 public enum ReleaseIndexField implements IndexField {
     ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED),
-    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED),
+    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     RELEASE			    ("release",		    Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
@@ -23,7 +24,7 @@ public enum ReleaseIndexField implements IndexField {
     NUM_MEDIUMS         ("mediums",	        Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     BARCODE			    ("barcode",		    Field.Store.YES,	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
     CATALOG_NO		    ("catno",		    Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
-    LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED),
+    LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     DATE			    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     NUM_DISCIDS         ("discids",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
