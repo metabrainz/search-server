@@ -149,8 +149,10 @@ public class ReleaseWriter extends ResultsWriter {
             for (int i = 0; i < formats.length; i++) {
 
                 Medium medium = of.createMedium();
-                medium.setFormat(formats[i].toLowerCase(Locale.US));
 
+                if(!formats[i].toLowerCase(Locale.US).equals("-")) {
+                    medium.setFormat(formats[i].toLowerCase(Locale.US));
+                }
                 org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
                 trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
                 medium.setTrackList(trackList);
