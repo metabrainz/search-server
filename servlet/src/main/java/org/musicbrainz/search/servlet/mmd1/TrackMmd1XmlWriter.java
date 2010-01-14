@@ -60,7 +60,7 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
             
             track.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
-            String name = doc.get(RecordingIndexField.RECORDING);
+            String name = doc.get(RecordingIndexField.RECORDING_OUTPUT);
 
             if (name != null) {
                 track.setTitle(name);
@@ -84,7 +84,7 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
 
             String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
             String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
-            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
+            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
             String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
             String[] releases           = doc.getValues(RecordingIndexField.RELEASE);
 

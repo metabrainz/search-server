@@ -14,7 +14,7 @@ import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
 public enum RecordingIndexField implements IndexField {
 
     RECORDING_ID        ("rid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    RECORDING           ("recording",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    RECORDING           ("recording",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
@@ -31,7 +31,8 @@ public enum RecordingIndexField implements IndexField {
     TRACK_OUTPUT        ("trackoutoutput",		Field.Store.YES,	Field.Index.NO),    
     RECORDING_OUTPUT    ("recordingoutput",		Field.Store.YES,	Field.Index.NO),
     POSITION            ("position",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ISRC    		    ("isrc",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer());
+    ISRC    		    ("isrc",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    NUM_TRACKS_RELEASE  ("tracksrelease",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer());
 
     private String name;
 	private Field.Store store;

@@ -36,8 +36,10 @@ public class RecordingQueryParser extends QueryParser {
                 (term.field() == RecordingIndexField.DURATION.getName()) ||
                         (term.field() == RecordingIndexField.QUANTIZED_DURATION.getName()) ||
                         (term.field() == RecordingIndexField.TRACKNUM.getName()) ||
-                        (term.field() == RecordingIndexField.NUM_TRACKS.getName())
-                ) {
+                        (term.field() == RecordingIndexField.NUM_TRACKS.getName()) ||
+                        (term.field() == RecordingIndexField.NUM_TRACKS_RELEASE.getName())
+                                                )
+                {
             try
             {
                 int number = Integer.parseInt(term.text());

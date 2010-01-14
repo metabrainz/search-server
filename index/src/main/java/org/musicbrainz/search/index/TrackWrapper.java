@@ -1,17 +1,12 @@
 package org.musicbrainz.search.index;
 
-import java.util.List;
-
 /**
- * Track Details for use by Recordings 
+ * Track Details for use by Recording Index
  */
 class TrackWrapper {
     private int     trackPosition;
     private int     trackCount;
-    private String  releaseId;
-    private String  releaseName;
-    private String  releaseGroupType;
-    private String  releaseStatus;
+    private int     releaseId;
     private String  trackName;
     private int     mediumPosition;
 
@@ -31,29 +26,14 @@ class TrackWrapper {
         this.trackCount = trackCount;
     }
 
-    public String getReleaseId() {
+    public int getReleaseId() {
         return releaseId;
     }
 
-    public void setReleaseId(String releaseId) {
+    public void setReleaseId(int releaseId) {
         this.releaseId = releaseId;
     }
 
-    public String getReleaseName() {
-        return releaseName;
-    }
-
-    public void setReleaseName(String releaseName) {
-        this.releaseName = releaseName;
-    }
-
-    public String getReleaseGroupType() {
-        return releaseGroupType;
-    }
-
-    public void setReleaseGroupType(String releaseGroupType) {
-        this.releaseGroupType = releaseGroupType;
-    }
 
     public String getTrackName() {
         return trackName;
@@ -71,11 +51,4 @@ class TrackWrapper {
         this.mediumPosition = mediumPosition;
     }
 
-    public String getReleaseStatus() {
-        return releaseStatus;
-    }
-
-    public void setReleaseStatus(String releaseStatus) {
-        this.releaseStatus = releaseStatus;
-    }
 }

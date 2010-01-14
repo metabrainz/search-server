@@ -167,7 +167,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(2, doc.getFields(RecordingIndexField.RECORDING.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
@@ -175,11 +174,11 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
             assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
             assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
-            assertEquals("Do It Clean", doc.getField(RecordingIndexField.RECORDING.getName()).stringValue());
             assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(RecordingIndexField.RELEASE_ID.getName()).stringValue());
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
+            assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.DURATION.getName()).stringValue()));
             assertEquals("Non-Album Tracks", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
             assertEquals("Official", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());

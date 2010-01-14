@@ -81,14 +81,15 @@ public class RecordingWriter extends ResultsWriter {
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
             recording.setArtistCredit(ac);
                      
-            String[] releaseNames  = doc.getValues(RecordingIndexField.RELEASE);
-            String[] releaseIds    = doc.getValues(RecordingIndexField.RELEASE_ID);
-            String[] releaseTypes  = doc.getValues(RecordingIndexField.RELEASE_TYPE);
-            String[] releaseStatus = doc.getValues(RecordingIndexField.RELEASE_STATUS);
-            String[] trackNos      = doc.getValues(RecordingIndexField.TRACKNUM);
-            String[] numTracks     = doc.getValues(RecordingIndexField.NUM_TRACKS);
-            String[] trackName     = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
-            String[] mediumPos     = doc.getValues(RecordingIndexField.POSITION);
+            String[] releaseNames       = doc.getValues(RecordingIndexField.RELEASE);
+            String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
+            String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
+            String[] releaseStatus      = doc.getValues(RecordingIndexField.RELEASE_STATUS);
+            String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
+            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
+            String[] trackName          = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
+            String[] mediumPos          = doc.getValues(RecordingIndexField.POSITION);
+            String[] numTracksRelease   = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
 
             if(releaseNames.length>0)
             {
@@ -119,6 +120,7 @@ public class RecordingWriter extends ResultsWriter {
                     medium.setTrackList(releaseTrackList);
                     
                     MediumList mediumList = of.createMediumList();
+                    mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracksRelease[i])));
                     mediumList.getMedium().add(medium);
                     release.setMediumList(mediumList);
                     releaseList.getRelease().add(release);
