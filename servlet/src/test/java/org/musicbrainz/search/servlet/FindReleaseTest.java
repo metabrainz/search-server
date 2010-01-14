@@ -156,7 +156,6 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals(2, doc.getFields(ReleaseIndexField.NUM_TRACKS_MEDIUM).length);
         assertEquals(2, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
         assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
         assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
@@ -552,10 +551,10 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<country>gb</country>"));
         assertTrue(output.contains("<format>vinyl</format>"));
         assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
-
+        assertTrue(output.contains("<track-count>17</track-count>"));
         assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
         assertTrue(output.contains("<catalog-number>WRATHCD25</catalog-number>"));
-
+        assertTrue(output.contains("<medium-list count=\"2\">"));
     }
 
     public void testOutputJson() throws Exception {
@@ -580,6 +579,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("\"script\":\"latn\""));
         assertTrue(output.contains("\"barcode\":\"07599273202\""));
         assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
+        assertTrue(output.contains("\"track-count\":17"));
 
     }
 }

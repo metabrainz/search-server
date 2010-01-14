@@ -136,11 +136,16 @@ public class ReleaseWriter extends ResultsWriter {
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
             release.setArtistCredit(ac);
-            
+
+            String numTracksOnRelease = doc.get(ReleaseIndexField.NUM_TRACKS);
+
             MediumList mediumList = of.createMediumList();
-            String[] formats = doc.getValues(ReleaseIndexField.FORMAT);
-            String[] numTracks = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
-            String[] numDiscIds = doc.getValues(ReleaseIndexField.NUM_DISCIDS_MEDIUM);
+            mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracksOnRelease)));
+
+
+            String[] formats          = doc.getValues(ReleaseIndexField.FORMAT);
+            String[] numTracks        = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
+            String[] numDiscIds       = doc.getValues(ReleaseIndexField.NUM_DISCIDS_MEDIUM);
             for (int i = 0; i < formats.length; i++) {
 
                 Medium medium = of.createMedium();
@@ -156,6 +161,8 @@ public class ReleaseWriter extends ResultsWriter {
 
                 mediumList.getMedium().add(medium);
             }
+            mediumList.setCount(BigInteger.valueOf(formats.length));
+
             release.setMediumList(mediumList);
             releaseList.getRelease().add(release);
         }
