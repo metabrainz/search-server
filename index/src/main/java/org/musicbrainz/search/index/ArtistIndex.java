@@ -119,7 +119,8 @@ public class ArtistIndex extends DatabaseIndex {
     	
         MbDocument doc = new MbDocument();
         int artistId = rs.getInt("id");
-        doc.addField(ArtistIndexField.ARTIST_ID, rs.getString("gid"));
+        String artistGuid = rs.getString("gid");
+        doc.addField(ArtistIndexField.ARTIST_ID, artistGuid);
         doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
         doc.addField(ArtistIndexField.SORTNAME, rs.getString("sortname"));
 
@@ -141,11 +142,14 @@ public class ArtistIndex extends DatabaseIndex {
         doc.addNonEmptyField(ArtistIndexField.COUNTRY, rs.getString("country"));
         doc.addNonEmptyField(ArtistIndexField.GENDER, rs.getString("gender"));
 
+
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {
             	doc.addField(ArtistIndexField.ALIAS, alias);
             }
         }
+
+        ArtistBoostDoc.boost(artistGuid,doc);
         return doc.getLuceneDocument();
     }
 
