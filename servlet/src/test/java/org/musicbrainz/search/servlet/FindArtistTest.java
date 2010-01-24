@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
@@ -34,7 +35,8 @@ public class FindArtistTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-
+        writer.setSimilarity(new MusicbrainzSimilarity());
+                
         //General Purpose Artist
         {
             MbDocument doc = new MbDocument();

@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.LabelIndex;
 import org.musicbrainz.search.index.LabelIndexField;
@@ -34,6 +35,8 @@ public class LabelSearch extends SearchServer {
         else {
             indexSearcher = createIndexSearcherFromFileIndex(indexDir, new LabelIndex().getFilename());
         }
+
+        indexSearcher.setSimilarity(new MusicbrainzSimilarity());
         this.setLastServerUpdatedDate();
     }
 
@@ -42,6 +45,7 @@ public class LabelSearch extends SearchServer {
 
         this();
         indexSearcher = searcher;
+        indexSearcher.setSimilarity(new MusicbrainzSimilarity());
     }
 
        @Override

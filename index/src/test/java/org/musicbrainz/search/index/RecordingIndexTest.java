@@ -27,7 +27,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         RecordingIndex li = new RecordingIndex(createConnection());
-        li.init();
+        li.init(writer);
         li.indexData(writer, 0, Integer.MAX_VALUE);
         li.destroy();
         writer.close();

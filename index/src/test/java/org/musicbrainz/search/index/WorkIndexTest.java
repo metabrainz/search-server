@@ -21,7 +21,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         WorkIndex ci = new WorkIndex(createConnection());
-        ci.init();
+        ci.init(writer);
         ci.indexData(writer, 0, Integer.MAX_VALUE);
         ci.destroy();
         writer.close();

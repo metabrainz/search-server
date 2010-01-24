@@ -23,6 +23,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
@@ -65,7 +66,10 @@ public class ArtistIndex extends DatabaseIndex {
     }
 
      @Override
-    public void init() throws SQLException {
+    public void init(IndexWriter indexWriter) throws SQLException {
+
+        indexWriter.setSimilarity(new MusicbrainzSimilarity());
+
         //TODO playground also adds artist credits (artist refer to something different in particular release
         //as an alias, should we do this ? 
         addPreparedStatement("ALIASES","SELECT artist_alias.artist as artist, n.name as alias " +

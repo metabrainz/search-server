@@ -61,7 +61,7 @@ public class CDStubIndex extends DatabaseIndex {
     }
 
     @Override
-    public void init() throws SQLException {
+    public void init(IndexWriter indexWriter) throws SQLException {
         addPreparedStatement("CDSTUBS",
                 "SELECT release_raw.title, release_raw.artist, barcode, comment, discid, count(track_raw.id) as tracks " +
                 "FROM release_raw " +

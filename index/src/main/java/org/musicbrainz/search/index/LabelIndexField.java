@@ -11,11 +11,11 @@ import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
  */
 public enum LabelIndexField implements IndexField {
 
-    LABEL_ID	("laid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    LABEL_ID	("laid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED),
     COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),
     CODE		("code",		Field.Store.YES, 	Field.Index.ANALYZED, new StripLeadingZeroAnalyzer()),
-    ALIAS		("alias",		Field.Store.YES, 	Field.Index.ANALYZED_NO_NORMS, new StandardUnaccentWithPosGapAnalyzer()),
+    ALIAS		("alias",		Field.Store.YES, 	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     BEGIN		("begin",		Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),

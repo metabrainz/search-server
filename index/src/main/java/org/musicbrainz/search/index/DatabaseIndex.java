@@ -66,7 +66,7 @@ public abstract class DatabaseIndex implements Index {
         return dbConnection;
     }
 
-    public void init() throws SQLException {
+    public void init(IndexWriter indexWriter) throws SQLException {
     }
     
     public void destroy() throws SQLException {

@@ -73,7 +73,7 @@ public class ReleaseIndex extends DatabaseIndex {
     }
 
     @Override
-    public void init() throws SQLException {
+    public void init(IndexWriter indexWriter) throws SQLException {
        addPreparedStatement("LABELINFOS",
                "SELECT rl.release as releaseId, ln.name as label, catno " +
                 "FROM release_label rl " +

@@ -35,7 +35,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -75,7 +74,7 @@ public class
     }
 
     @Override
-    public void init() throws SQLException {
+    public void init(IndexWriter indexWriter) throws SQLException {
         addPreparedStatement("RELEASES",
                 "SELECT DISTINCT release_group, release.gid as gid, n0.name as name " +
                         "FROM release " +

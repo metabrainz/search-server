@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.LabelType;
@@ -33,7 +34,8 @@ public class FindLabelTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(LabelIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-
+        writer.setSimilarity(new MusicbrainzSimilarity());
+                
         {
             MbDocument doc = new MbDocument();
             doc.addField(LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");

@@ -70,7 +70,7 @@ public class RecordingIndex extends DatabaseIndex {
     String releases;
     String releasesGroupBy;
 
-    public void init() throws SQLException {
+    public void init(IndexWriter indexWriter) throws SQLException {
         addPreparedStatement("ISRCS",
                 "SELECT recording as recordingId, " +
                 "isrc " +

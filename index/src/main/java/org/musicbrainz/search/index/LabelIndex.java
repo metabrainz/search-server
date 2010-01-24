@@ -28,6 +28,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
@@ -43,15 +44,14 @@ public class LabelIndex extends DatabaseIndex {
     }
 
     public LabelIndex() {
-        }
+    }
 
 
     public String getName() {
         return "label";
     }
 
-    public Analyzer getAnalyzer()
-    {
+    public Analyzer getAnalyzer() {
         return new PerFieldEntityAnalyzer(LabelIndexField.class);
     }
 
@@ -64,31 +64,34 @@ public class LabelIndex extends DatabaseIndex {
 
     public int getNoOfRows(int maxId) throws SQLException {
         Statement st = dbConnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT count(*) FROM label WHERE id<="+maxId);
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM label WHERE id<=" + maxId);
         rs.next();
         return rs.getInt(1);
     }
 
     @Override
-       public void init() throws SQLException {
-           addPreparedStatement("ALIASES","SELECT label_alias.label as label, n.name as alias " +
-        		"FROM label_alias " +
-        		" JOIN label_name n ON (label_alias.name = n.id) " +
-        		"WHERE label BETWEEN ? AND ?");
+    public void init(IndexWriter indexWriter) throws SQLException {
+
+        indexWriter.setSimilarity(new MusicbrainzSimilarity());
+
+        addPreparedStatement("ALIASES", "SELECT label_alias.label as label, n.name as alias " +
+                "FROM label_alias " +
+                " JOIN label_name n ON (label_alias.name = n.id) " +
+                "WHERE label BETWEEN ? AND ?");
 
 
-           addPreparedStatement("LABELS",
-                   "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
-                "	label_type.name as type, begindate_year, begindate_month, begindate_day, " +
-                "	enddate_year, enddate_month, enddate_day, " +
-                "	comment, labelcode, lower(isocode) as country " +
-                "FROM label " +
-                " LEFT JOIN label_name n0 ON label.name = n0.id " +
-                " LEFT JOIN label_name n1 ON label.sortname = n1.id " +
-                " LEFT JOIN label_type ON label.type = label_type.id " +
-                " LEFT JOIN country ON label.country = country.id " +
-                "WHERE label.id BETWEEN ? AND ?");
-       }
+        addPreparedStatement("LABELS",
+                "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
+                        "	label_type.name as type, begindate_year, begindate_month, begindate_day, " +
+                        "	enddate_year, enddate_month, enddate_day, " +
+                        "	comment, labelcode, lower(isocode) as country " +
+                        "FROM label " +
+                        " LEFT JOIN label_name n0 ON label.name = n0.id " +
+                        " LEFT JOIN label_name n1 ON label.sortname = n1.id " +
+                        " LEFT JOIN label_type ON label.type = label_type.id " +
+                        " LEFT JOIN country ON label.country = country.id " +
+                        "WHERE label.id BETWEEN ? AND ?");
+    }
 
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
@@ -112,13 +115,13 @@ public class LabelIndex extends DatabaseIndex {
             list.add(rs.getString("alias"));
         }
 
-        
+
         // Get labels
         st = getPreparedStatement("LABELS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
-        
+
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, aliases));
         }
@@ -133,8 +136,8 @@ public class LabelIndex extends DatabaseIndex {
         doc.addField(LabelIndexField.SORTNAME, rs.getString("sortname"));
 
         //Allows you to search for labels of Unknown type
-        String type=rs.getString("type");
-        if(type!=null) {
+        String type = rs.getString("type");
+        if (type != null) {
             doc.addField(LabelIndexField.TYPE, type);
         } else {
             doc.addField(LabelIndexField.TYPE, LabelType.UNKNOWN.getName());
@@ -142,13 +145,13 @@ public class LabelIndex extends DatabaseIndex {
 
         doc.addNonEmptyField(LabelIndexField.COMMENT, rs.getString("comment"));
         doc.addNonEmptyField(LabelIndexField.COUNTRY, rs.getString("country"));
-        
-        doc.addNonEmptyField(LabelIndexField.BEGIN, 
-        	Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
 
-        doc.addNonEmptyField(LabelIndexField.END, 
-            Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
-        
+        doc.addNonEmptyField(LabelIndexField.BEGIN,
+                Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
+
+        doc.addNonEmptyField(LabelIndexField.END,
+                Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
+
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
             Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);

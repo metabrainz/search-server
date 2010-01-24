@@ -65,7 +65,7 @@ public class WorkIndex extends DatabaseIndex {
     }
 
     @Override
-    public void init() throws SQLException {
+    public void init(IndexWriter indexWriter) throws SQLException {
 
         addPreparedStatement("ARTISTCREDITS",
                         "SELECT w.id as wid, " +

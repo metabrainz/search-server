@@ -29,21 +29,27 @@
 
 package org.musicbrainz.search.index;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-import java.util.Date;
-
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.document.Field;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.apache.commons.lang.time.StopWatch;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Properties;
 
 public class IndexBuilder
 {
@@ -195,8 +201,8 @@ public class IndexBuilder
 
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
-        
-        index.init();
+
+        index.init(indexWriter);
         int maxId = index.getMaxId();
         if (options.isTest() && options.getTestIndexSize() < maxId)
             maxId = options.getTestIndexSize();
