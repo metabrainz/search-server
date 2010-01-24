@@ -62,6 +62,16 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(2,16153,3,0);");
         stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(3,16153,4,0);");
 
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (5,'Bunnymen Orchestra',1)");
+        stmt.addBatch("INSERT INTO artist_credit_name(" +
+                "    artist_credit, position, artist,name, joinphrase)" +
+                "    VALUES (1, 0, 16153, 5, null)");
+
+        //This is same as alias, so should be ignored
+        stmt.addBatch("INSERT INTO artist_credit_name(" +
+                "    artist_credit, position, artist,name, joinphrase)" +
+                "    VALUES (1, 0, 16153, 3, null)");
+
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
                    " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
         stmt.executeBatch();
@@ -216,7 +226,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
 
 
     /**
-     * Checks fields are indexed correctly for artist with alias (the aliases are not stored)
+     * Checks fields are indexed correctly for artist with alias and artistCredit (the aliases are not stored)
      *
      * @throws Exception
      */
@@ -230,7 +240,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(3, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
+            assertEquals(4, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
             assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
             assertEquals(1, doc.getFields(ArtistIndexField.ARTIST_ID.getName()).length);
             assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);

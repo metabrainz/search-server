@@ -28,10 +28,7 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ArtistIndex extends DatabaseIndex {
 
@@ -70,12 +67,16 @@ public class ArtistIndex extends DatabaseIndex {
 
         indexWriter.setSimilarity(new MusicbrainzSimilarity());
 
-        //TODO playground also adds artist credits (artist refer to something different in particular release
-        //as an alias, should we do this ? 
-        addPreparedStatement("ALIASES","SELECT artist_alias.artist as artist, n.name as alias " +
+        addPreparedStatement("ALIASES",
+                "SELECT artist_alias.artist as artist, n.name as alias " +
         		"FROM artist_alias " +
         		" JOIN artist_name n ON (artist_alias.name = n.id) " +
-        		"WHERE artist BETWEEN ? AND ?");
+        		"WHERE artist BETWEEN ? AND ? " +
+                "UNION " +
+                "SELECT artist as artist, n.name as alias " +
+                " FROM artist_credit_name " +
+                " JOIN artist_name n ON n.id = artist_credit_name.name " +
+ 	            " WHERE artist BETWEEN ? AND ? ");
 
 
         addPreparedStatement("ARTISTS",
@@ -93,16 +94,18 @@ public class ArtistIndex extends DatabaseIndex {
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
+        Map<Integer, Set<String>> aliases = new HashMap<Integer, Set<String>>();
         PreparedStatement st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
+        st.setInt(3, min);
+        st.setInt(4, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int artistId = rs.getInt("artist");
-            List<String> list;
+            Set<String> list;
             if (!aliases.containsKey(artistId)) {
-                list = new LinkedList<String>();
+                list = new HashSet<String>();
                 aliases.put(artistId, list);
             } else {
                 list = aliases.get(artistId);
@@ -119,7 +122,7 @@ public class ArtistIndex extends DatabaseIndex {
         }
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs, Map<Integer, Set<String>> aliases) throws SQLException {
     	
         MbDocument doc = new MbDocument();
         int artistId = rs.getInt("id");
