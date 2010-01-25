@@ -209,7 +209,7 @@ public class IndexBuilder
         int j = 0;
         while (j < maxId) {
             System.out.print("  Indexing " + j + "..." + (j + options.getDatabaseChunkSize()) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
-            index.indexData(indexWriter, j, j + options.getDatabaseChunkSize());
+            index.indexData(indexWriter, j, j + options.getDatabaseChunkSize() - 1);
             j += options.getDatabaseChunkSize();
         }
 

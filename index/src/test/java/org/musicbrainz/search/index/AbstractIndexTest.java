@@ -16,7 +16,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
     protected Connection createConnection() throws Exception {
         Class.forName("org.h2.Driver");
-        return DriverManager.getConnection("jdbc:h2:mem");
+        return DriverManager.getConnection("jdbc:h2:mem:tests;MODE=PostgreSQL");
     }
 
     /** Check fisrt term of given field, terms are listed lexigrahically
