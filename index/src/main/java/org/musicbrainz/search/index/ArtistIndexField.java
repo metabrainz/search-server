@@ -21,6 +21,8 @@ public enum ArtistIndexField implements IndexField {
     TYPE		("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     GENDER      ("gender",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     COUNTRY     ("country",     Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
 
 
     ;

@@ -48,6 +48,11 @@ public class FindArtistTest extends TestCase {
             doc.addField(ArtistIndexField.COMMENT, "the real one");
             doc.addField(ArtistIndexField.COUNTRY, "af");
             doc.addField(ArtistIndexField.GENDER, "male");
+            doc.addField(ArtistIndexField.TAG, "thrash");
+            doc.addField(ArtistIndexField.TAGCOUNT, "5");
+            doc.addField(ArtistIndexField.TAG, "goth");
+            doc.addField(ArtistIndexField.TAGCOUNT, "11");
+
             writer.addDocument(doc.getLuceneDocument());
         }
 
@@ -174,6 +179,15 @@ public class FindArtistTest extends TestCase {
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
     }
 
+    public void testFindArtistByTag() throws Exception {
+        Results res = ss.searchLucene("tag:Thrash", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+    }
+
     public void testFindArtistByDefaultField() throws Exception {
 
         //Matches on name field without it being specified
@@ -265,6 +279,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
         assertTrue(output.contains("<country>af</country>"));
         assertTrue(output.contains("<gender>male</gender>"));
+        assertTrue(output.contains("thrash</tag>"));
         assertFalse(output.contains("alias"));
         assertFalse(output.contains("disambugation"));
     }
@@ -341,6 +356,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("\"life-span\":{\"begin\":\"1999-04\"}"));
         assertTrue(output.contains("\"country\":\"af\""));
         assertTrue(output.contains("\"gender\":\"male\""));
+        assertTrue(output.contains("\"tag\":[\"thrash\",\"goth\"]"));
     }
 
     public void testOutputJsonMultiple() throws Exception {

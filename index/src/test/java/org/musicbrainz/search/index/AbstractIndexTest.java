@@ -45,6 +45,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 Statement stmt = conn.createStatement();
                 stmt.addBatch("DROP TABLE country");
 
+                stmt.addBatch("DROP TABLE tag");
+
                 stmt.addBatch("DROP TABLE artist");
                 stmt.addBatch("DROP TABLE artist_alias");
                 stmt.addBatch("DROP TABLE artist_name");
@@ -52,11 +54,14 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE artist_credit");
                 stmt.addBatch("DROP TABLE artist_credit_name");
                 stmt.addBatch("DROP TABLE gender");
+                stmt.addBatch("DROP TABLE artist_tag");
+
 
                 stmt.addBatch("DROP TABLE label");
                 stmt.addBatch("DROP TABLE label_alias");
                 stmt.addBatch("DROP TABLE label_name");
                 stmt.addBatch("DROP TABLE label_type");
+                stmt.addBatch("DROP TABLE label_tag");
 
                 stmt.addBatch("DROP TABLE release");
                 stmt.addBatch("DROP TABLE release_meta");
@@ -134,6 +139,12 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name character varying(100) NOT NULL" +
                 ")");
 
+        stmt.addBatch("CREATE TABLE tag" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL," +
+                "  refcount integer NOT NULL DEFAULT 0," +
+                ")");
     }
 
     protected void setupArtistTables(Statement stmt) throws Exception {
@@ -192,6 +203,13 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL" +
                 ")");
+
+        stmt.addBatch("CREATE TABLE artist_tag" +
+                "(" +
+                "  artist integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
+                ")");
     }
 
     protected void setupLabelTables(Statement stmt) throws Exception {
@@ -229,6 +247,13 @@ public abstract class AbstractIndexTest extends TestCase {
         stmt.addBatch("CREATE TABLE label_type (" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE label_tag" +
+                "(" +
+                "  label integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
                 ")");
     }
 

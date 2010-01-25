@@ -90,6 +90,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
             " VALUES (76834,2, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe',3,null, null, null, null, null, 0)");
 
+        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'Goth', 2);");
+        stmt.addBatch("INSERT INTO artist_tag(artist, tag, count)VALUES (76834, 1, 10)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -411,6 +413,29 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
             assertEquals("Siobhan Lynch", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
             assertEquals("Lynch, Siobhan", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+
+    /**
+     * Checks fields with different sort name to name is indexed correctly
+     *
+     * @throws Exception
+     */
+    public void testIndexArtistWithTag() throws Exception {
+
+        addArtistThree();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.TAG.getName()).length);
+            assertEquals("Goth", doc.getField(ArtistIndexField.TAG.getName()).stringValue());
         }
         ir.close();
     }
