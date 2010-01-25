@@ -78,6 +78,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE release_group_type");
+                stmt.addBatch("DROP TABLE release_group_tag");
 
                 stmt.addBatch("DROP TABLE track_name");
                 stmt.addBatch("DROP TABLE track");
@@ -375,6 +376,13 @@ public abstract class AbstractIndexTest extends TestCase {
         stmt.addBatch("CREATE TABLE release_group_type (" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_group_tag" +
+                "(" +
+                "  release_group integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
                 ")");
     }
 

@@ -223,6 +223,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
                 "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
                 "  VALUES (1,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1,1,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
 
+        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'punk', 2);");
+        stmt.addBatch("INSERT INTO release_group_tag(release_group, tag, count)VALUES (1, 1, 10)");
+
         stmt.executeBatch();
         stmt.close();
         conn.close();
@@ -297,6 +300,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
 
     }
+
 
     /**
      * Checks record with type = null is set to unknown
@@ -406,6 +410,24 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
 
 
+    }
+
+
+     public void testIndexReleaseGroupWithTag() throws Exception {
+
+        addReleaseGroupFour();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.TAG.getName()).length);
+            assertEquals("punk", doc.getField(ReleaseGroupIndexField.TAG.getName()).stringValue());
+        }
+        ir.close();
     }
 
 }

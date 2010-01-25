@@ -35,6 +35,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -75,6 +76,15 @@ public class
 
     @Override
     public void init(IndexWriter indexWriter) throws SQLException {
+
+        addPreparedStatement("TAGS",
+                 " SELECT release_group_tag.release_group, tag.name as tag, release_group_tag.count as count" +
+                         " FROM release_group_tag " +
+                         " INNER JOIN tag " +
+                         " ON tag=id" +
+                         " WHERE release_group between ? AND ?");
+
+
         addPreparedStatement("RELEASES",
                 "SELECT DISTINCT release_group, release.gid as gid, n0.name as name " +
                         "FROM release " +
@@ -111,12 +121,20 @@ public class
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        //Releases
-        Map<Integer, List<ReleaseWrapper>> releases = new HashMap<Integer, List<ReleaseWrapper>>();
-        PreparedStatement st = getPreparedStatement("RELEASES");
+
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release_group");
+
+        //Releases
+        Map<Integer, List<ReleaseWrapper>> releases = new HashMap<Integer, List<ReleaseWrapper>>();
+        st = getPreparedStatement("RELEASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
         while (rs.next()) {
             int rgId = rs.getInt("release_group");
             List<ReleaseWrapper> list;
@@ -154,12 +172,15 @@ public class
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, releases, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, releases, artistCredits));
         }
 
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<ReleaseWrapper>> releases, Map<Integer, ArtistCredit> artistCredits) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<Tag>> tags,
+                                          Map<Integer, List<ReleaseWrapper>> releases,
+                                          Map<Integer, ArtistCredit> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
@@ -183,6 +204,14 @@ public class
                 ReleaseGroupIndexField.ARTIST_ID,
                 ReleaseGroupIndexField.ARTIST_NAME,
                 ReleaseGroupIndexField.ARTIST_CREDIT);
+
+         if (tags.containsKey(id)) {
+            for (Tag tag : tags.get(id)) {
+                doc.addField(LabelIndexField.TAG, tag.getContent());
+                doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
+            }
+        }
+
         return doc.getLuceneDocument();
     }
 

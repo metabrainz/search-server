@@ -11,6 +11,7 @@ import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
@@ -46,6 +47,8 @@ public class FindReleaseGroupTest extends TestCase {
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
         doc.addField(ReleaseGroupIndexField.RELEASE_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c46");
         doc.addField(ReleaseGroupIndexField.RELEASE, "secret");
+        doc.addField(ReleaseGroupIndexField.TAG, "indie");
+        doc.addField(ReleaseGroupIndexField.TAGCOUNT, "101");
 
         doc.addField(ReleaseGroupIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
         doc.addField(ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
@@ -237,7 +240,16 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
 
     }
-    
+
+    public void testFindReleaseGroupByTag() throws Exception {
+        Results res = ss.searchLucene("tag:indie", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+    }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release-group/?type=xml&query=%22Nobody%27s%20Twisting%20Your%20Arm%22
@@ -295,6 +307,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("type=\"single\""));
         assertTrue(output.contains("release-list count=\"1\""));
         assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title></release>"));
+        assertTrue(output.contains("indie</tag>"));
 
 
     }
@@ -389,6 +402,7 @@ public class FindReleaseGroupTest extends TestCase {
         String output = sw.toString();
         assertTrue(output.contains("\"score\":\"100\""));
         assertTrue(output.contains("\"score\":\"43\""));
+        assertTrue(output.contains("\"tag\":[\"indie\"]"));
     }
 
 }

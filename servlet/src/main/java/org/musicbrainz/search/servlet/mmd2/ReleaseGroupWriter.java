@@ -30,6 +30,7 @@ package org.musicbrainz.search.servlet.mmd2;
 
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.MbDocument;
@@ -69,8 +70,8 @@ public class ReleaseGroupWriter extends ResultsWriter {
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
             releaseGroup.setArtistCredit(ac);
 
-            String[] releaseIds          = doc.getValues(ReleaseIndexField.RELEASE_ID);
-            String[] releaseNames        = doc.getValues(ReleaseIndexField.RELEASE);
+            String[] releaseIds          = doc.getValues(ReleaseGroupIndexField.RELEASE_ID);
+            String[] releaseNames        = doc.getValues(ReleaseGroupIndexField.RELEASE);
             ReleaseList releaseList = of.createReleaseList();
             releaseList.setCount(BigInteger.valueOf(releaseIds.length));
             for(int i =0; i< releaseIds.length; i++) {
@@ -81,6 +82,20 @@ public class ReleaseGroupWriter extends ResultsWriter {
             }
             releaseGroup.setReleaseList(releaseList);
             releaseGroupList.getReleaseGroup().add(releaseGroup);
+
+            String[] tags       = doc.getValues(ReleaseGroupIndexField.TAG);
+            String[] tagCounts  = doc.getValues(ReleaseGroupIndexField.TAGCOUNT);
+            if(tags.length>0)
+            {
+                TagList tagList = of.createTagList();
+                for(int i = 0;i<tags.length;i++) {
+                    Tag tag = of.createTag();
+                    tag.setContent(tags[i]);
+                    //tag.setCount(new BigInteger(tagCounts[i]));   TODO breaks json
+                    tagList.getTag().add(tag);
+                }
+                releaseGroup.setTagList(tagList);
+            }
         }
         releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));
         releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
