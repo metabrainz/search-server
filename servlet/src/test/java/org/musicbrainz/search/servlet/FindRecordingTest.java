@@ -287,6 +287,10 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    public void testNumericRangeQuery() throws Exception {
+           Results res = ss.searchLucene("tracks:[1 TO 10]", 0, 10);
+           assertEquals(1, res.totalHits);
+    }
 
     public void testOutputAsMmd1Xml() throws Exception {
 

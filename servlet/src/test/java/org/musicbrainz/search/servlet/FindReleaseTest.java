@@ -92,6 +92,7 @@ public class FindReleaseTest extends TestCase {
         doc.addField(ReleaseIndexField.CATALOG_NO, "LP001");
         doc.addField(ReleaseIndexField.LABEL, "Major Records");
 
+        doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,2);
 
         writer.addDocument(doc.getLuceneDocument());
 
@@ -141,6 +142,8 @@ public class FindReleaseTest extends TestCase {
 
         doc.addField(ReleaseIndexField.COUNTRY, "us");
         doc.addField(ReleaseIndexField.DATE, "2003-09-23");
+        doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,1);
+
         writer.addDocument(doc.getLuceneDocument());
 
         writer.close();
@@ -479,6 +482,15 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
     }
 
+    public void testFindReleaseByNumberofMediums() throws Exception {
+           Results res = ss.searchLucene("mediums:2", 0, 10);
+           assertEquals(1, res.totalHits);
+       }
+
+    public void testNumericRangeQuery() throws Exception {
+           Results res = ss.searchLucene("tracksmedium:[7 TO 17]", 0, 10);
+           assertEquals(2, res.totalHits);
+       }
     
     /**
      * Tests get same results as

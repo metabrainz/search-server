@@ -112,7 +112,8 @@ public class RecordingQueryParser extends QueryParser {
                 (field.equals(RecordingIndexField.DURATION.getName())) ||
                 (field.equals(RecordingIndexField.QUANTIZED_DURATION.getName())) ||
                 (field.equals(RecordingIndexField.TRACKNUM.getName())) ||
-                (field.equals(RecordingIndexField.NUM_TRACKS.getName()))
+                (field.equals(RecordingIndexField.NUM_TRACKS.getName())) ||
+                (field.equals(RecordingIndexField.NUM_TRACKS_RELEASE.getName()))
             )
         {
             part1 = NumericUtils.intToPrefixCoded(Integer.parseInt(part1));

@@ -5,6 +5,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.*;
@@ -52,6 +53,7 @@ public class ReleaseQueryParser extends QueryParser {
         } else if(
                 (term.field() == ReleaseIndexField.NUM_TRACKS.getName())||
                 (term.field() == ReleaseIndexField.NUM_TRACKS_MEDIUM.getName())||
+                (term.field() == ReleaseIndexField.NUM_MEDIUMS.getName())||
                 (term.field() == ReleaseIndexField.NUM_DISCIDS.getName()) ||
                 (term.field() == ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName())
                 ){
@@ -68,5 +70,37 @@ public class ReleaseQueryParser extends QueryParser {
             return super.newTermQuery(term);
 
         }
+    }
+
+     /**
+     *
+     * Convert Numeric Fields
+     *
+     * @param field
+     * @param part1
+     * @param part2
+     * @param inclusive
+     * @return
+     */
+    @Override
+    public Query newRangeQuery(String field,
+                               String part1,
+                               String part2,
+                               boolean inclusive) {
+
+        if (
+                (field.equals(ReleaseIndexField.NUM_TRACKS.getName())) ||
+                (field.equals(ReleaseIndexField.NUM_TRACKS_MEDIUM.getName())) ||
+                (field.equals(ReleaseIndexField.NUM_MEDIUMS.getName())) ||
+                (field.equals(ReleaseIndexField.NUM_DISCIDS.getName())) ||
+                (field.equals(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()))
+            )
+        {
+            part1 = NumericUtils.intToPrefixCoded(Integer.parseInt(part1));
+            part2 = NumericUtils.intToPrefixCoded(Integer.parseInt(part2));
+        }
+        TermRangeQuery query = (TermRangeQuery)
+                super.newRangeQuery(field, part1, part2,inclusive);
+        return query;
     }
 }
