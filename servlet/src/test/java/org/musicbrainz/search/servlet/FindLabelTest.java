@@ -8,6 +8,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.LabelType;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
@@ -47,6 +48,9 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.END, "2004");
             doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
             doc.addField(LabelIndexField.COUNTRY, "GB");
+            doc.addField(ArtistIndexField.TAG, "dance");
+            doc.addField(ArtistIndexField.TAGCOUNT, "22");
+
             writer.addDocument(doc.getLuceneDocument());
         }
 
@@ -58,6 +62,7 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.BEGIN, "1979");
             doc.addField(LabelIndexField.CODE, "5807");
             doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+
             writer.addDocument(doc.getLuceneDocument());
         }
 
@@ -177,6 +182,15 @@ public class FindLabelTest extends TestCase {
         assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("4AD", doc.get(LabelIndexField.LABEL));
     }
+
+     public void testFindArtistByTag() throws Exception {
+        Results res = ss.searchLucene("tag:dance", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+    }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/label/?type=xml&query=%22Jockey%20Slut%22
@@ -230,6 +244,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
         assertTrue(output.contains("<label-code>1234</label-code>"));
+        assertTrue(output.contains("dance</tag>"));
     }
 
     /**
@@ -255,5 +270,6 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"label-code\":1234"));
+        assertTrue(output.contains("\"tag\":[\"dance\"]"));
     }
 }

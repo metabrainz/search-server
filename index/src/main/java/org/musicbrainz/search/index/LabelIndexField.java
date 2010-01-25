@@ -20,7 +20,10 @@ public enum LabelIndexField implements IndexField {
     BEGIN		("begin",		Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COMMENT		("comment",		Field.Store.YES, 	Field.Index.ANALYZED),
-    TYPE		("type",		Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),;
+    TYPE		("type",		Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO)
+    ;
 
     private String name;
 	private Field.Store store;

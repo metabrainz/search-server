@@ -30,8 +30,8 @@ package org.musicbrainz.search.servlet.mmd2;
 
 
 import org.musicbrainz.mmd2.*;
-import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -106,6 +106,21 @@ public class LabelWriter extends ResultsWriter {
                 }
                 label.setAliasList(aliasList);
             }
+
+            String[] tags       = doc.getValues(LabelIndexField.TAG);
+            String[] tagCounts  = doc.getValues(LabelIndexField.TAGCOUNT);
+            if(tags.length>0)
+            {
+                TagList tagList = of.createTagList();
+                for(int i = 0;i<tags.length;i++) {
+                    Tag tag = of.createTag();
+                    tag.setContent(tags[i]);
+                    //tag.setCount(new BigInteger(tagCounts[i]));   TODO breaks json
+                    tagList.getTag().add(tag);
+                }
+                label.setTagList(tagList);
+            }
+
             
             labelList.getLabel().add(label);
 

@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
@@ -74,6 +75,15 @@ public class LabelIndex extends DatabaseIndex {
 
         indexWriter.setSimilarity(new MusicbrainzSimilarity());
 
+
+        addPreparedStatement("TAGS",
+                " SELECT label_tag.label, tag.name as tag, label_tag.count as count" +
+                        " FROM label_tag " +
+                        " INNER JOIN tag " +
+                        " ON tag=id" +
+                        " WHERE label between ? AND ?");
+
+
         addPreparedStatement("ALIASES", "SELECT label_alias.label as label, n.name as alias " +
                 "FROM label_alias " +
                 " JOIN label_name n ON (label_alias.name = n.id) " +
@@ -96,12 +106,19 @@ public class LabelIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        // Get labels aliases
-        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = getPreparedStatement("ALIASES");
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"label");
+
+        // Get labels aliases
+        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
+        st = getPreparedStatement("ALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
         while (rs.next()) {
             int labelId = rs.getInt("label");
 
@@ -123,11 +140,13 @@ public class LabelIndex extends DatabaseIndex {
         rs = st.executeQuery();
 
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<Tag>> tags,
+                                          Map<Integer, List<String>> aliases) throws SQLException {
 
         MbDocument doc = new MbDocument();
         int labelId = rs.getInt("id");
@@ -163,6 +182,14 @@ public class LabelIndex extends DatabaseIndex {
                 doc.addField(LabelIndexField.ALIAS, alias);
             }
         }
+
+        if (tags.containsKey(labelId)) {
+            for (Tag tag : tags.get(labelId)) {
+                doc.addField(LabelIndexField.TAG, tag.getContent());
+                doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
+            }
+        }
+
         return doc.getLuceneDocument();
     }
 

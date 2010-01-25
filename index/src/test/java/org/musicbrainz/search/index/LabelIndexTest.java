@@ -103,6 +103,10 @@ public class LabelIndexTest extends AbstractIndexTest {
 					"	null, null, null, null, null, null)");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (3, 2)");
 
+        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'Goth', 2);");
+        stmt.addBatch("INSERT INTO label_tag(label, tag, count)VALUES (3, 1, 10)");
+
+
         stmt.executeBatch();
         stmt.close();
         conn.close();
@@ -358,6 +362,28 @@ public class LabelIndexTest extends AbstractIndexTest {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
             assertEquals("Original Production", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * Checks fields with different sort name to name is indexed correctly
+     *
+     * @throws Exception
+     */
+    public void testIndexLabelWithTag() throws Exception {
+
+        addLabelThree();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(LabelIndexField.LABEL.getName()).length);
+            assertEquals(1, doc.getFields(LabelIndexField.TAG.getName()).length);
+            assertEquals("Goth", doc.getField(LabelIndexField.TAG.getName()).stringValue());
         }
         ir.close();
     }
