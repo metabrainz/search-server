@@ -146,6 +146,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO recording(id, gid, name, artist_credit, length, comment, editpending)"
                 + "VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1,1,33000, null,1)");
         stmt.addBatch("INSERT INTO track_name(id, name, refcount)VALUES (1, 'Do It Clean', 1) ");
+        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'punk', 2);");
+        stmt.addBatch("INSERT INTO recording_tag(recording, tag, count)VALUES (1, 1, 10)");
+
         stmt.executeBatch();
         stmt.close();
         conn.close();
@@ -321,6 +324,26 @@ public class RecordingIndexTest extends AbstractIndexTest {
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
             assertEquals("a comment",ac.getNameCredit().get(0).getArtist().getDisambiguation());
+        }
+        ir.close();
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    public void testTag() throws Exception {
+
+        addTrackTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals("punk", doc.getField(RecordingIndexField.TAG.getName()).stringValue());
+
         }
         ir.close();
     }

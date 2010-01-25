@@ -32,6 +32,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
@@ -127,6 +128,21 @@ public class RecordingWriter extends ResultsWriter {
                 }
                 recording.setReleaseList(releaseList);
             }
+
+            String[] tags       = doc.getValues(RecordingIndexField.TAG);
+            String[] tagCounts  = doc.getValues(RecordingIndexField.TAGCOUNT);
+            if(tags.length>0)
+            {
+                TagList tagList = of.createTagList();
+                for(int i = 0;i<tags.length;i++) {
+                    Tag tag = of.createTag();
+                    tag.setContent(tags[i]);
+                    //tag.setCount(new BigInteger(tagCounts[i]));   TODO breaks json
+                    tagList.getTag().add(tag);
+                }
+                recording.setTagList(tagList);
+            }
+
             recordingList.getRecording().add(recording);
         }
         recordingList.setCount(BigInteger.valueOf(results.totalHits));

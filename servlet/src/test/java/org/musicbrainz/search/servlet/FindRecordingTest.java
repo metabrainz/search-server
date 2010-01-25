@@ -14,6 +14,7 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
+import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
@@ -75,6 +76,9 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
         doc.addField(RecordingIndexField.ISRC, "123456789");
         doc.addField(RecordingIndexField.ISRC, "abcdefghi");
+
+        doc.addField(RecordingIndexField.TAG, "indie");
+        doc.addField(RecordingIndexField.TAGCOUNT, "101");
 
         writer.addDocument(doc.getLuceneDocument());
         writer.close();
@@ -150,7 +154,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
-    /** Searches recording field, whihc should include names of associated tracks) */
+    /** Searches recording field, which should include names of associated tracks) */
     public void testFindRecordingByTrackName() throws Exception {
         Results res = ss.searchLucene("recording:\"Gravitational Lens\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -211,6 +215,15 @@ public class FindRecordingTest extends TestCase {
     public void testFindRecordingByNonNumericDuration() throws Exception {
         Results res = ss.searchLucene("dur:fred", 0, 10);
         assertEquals(0, res.totalHits);
+    }
+
+
+    public void testFindRecordingByTag() throws Exception {
+        Results res = ss.searchLucene("tag:indie", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
     public void testFindRecordingByDurationRange() throws Exception {
@@ -346,6 +359,8 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
         assertTrue(output.contains("<status>official</status>"));
         assertTrue(output.contains("<track-count>10</track-count>"));
+        assertTrue(output.contains("indie</tag>"));
+        
 
     }
 
@@ -372,6 +387,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"position\":1"));
         assertTrue(output.contains("\"status\":\"official\""));
         assertTrue(output.contains("\"track-count\":10"));
+        assertTrue(output.contains("\"tag\":[\"indie\"]"));
 
     }
 

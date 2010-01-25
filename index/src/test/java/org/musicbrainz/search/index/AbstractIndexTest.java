@@ -83,6 +83,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE track_name");
                 stmt.addBatch("DROP TABLE track");
                 stmt.addBatch("DROP TABLE recording");
+                stmt.addBatch("DROP TABLE recording_tag");
                 stmt.addBatch("DROP TABLE isrc");
 
                 stmt.addBatch("DROP TABLE annotation");
@@ -416,6 +417,13 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  comment character varying(255)," +
                 "  editpending integer NOT NULL DEFAULT 0," +
                 "  CONSTRAINT recording_pkey PRIMARY KEY (id)" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE recording_tag" +
+                "(" +
+                "  recording integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
                 ")");
 
         stmt.addBatch("CREATE TABLE isrc" +

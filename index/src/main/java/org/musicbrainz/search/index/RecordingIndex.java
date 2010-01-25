@@ -71,6 +71,14 @@ public class RecordingIndex extends DatabaseIndex {
     String releasesGroupBy;
 
     public void init(IndexWriter indexWriter) throws SQLException {
+
+        addPreparedStatement("TAGS",
+                 " SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count" +
+                 " FROM recording_tag " +
+                 " INNER JOIN tag " +
+                 " ON tag=id" +
+                 " WHERE recording between ? AND ?");
+
         addPreparedStatement("ISRCS",
                 "SELECT recording as recordingId, " +
                 "isrc " +
@@ -136,6 +144,25 @@ public class RecordingIndex extends DatabaseIndex {
                 "INNER JOIN track_name tn " +
                 "ON re.name=tn.id " +
                 "WHERE re.id BETWEEN ? AND ?");
+    }
+
+    /**
+     * Get tag information
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer,List<Tag>> loadTags(int min, int max) throws SQLException, IOException {
+
+        PreparedStatement st = getPreparedStatement("TAGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"recording");
+        return tags;
     }
 
     /**
@@ -340,6 +367,7 @@ public class RecordingIndex extends DatabaseIndex {
     private void loadRecordings(IndexWriter indexWriter,
                                 int min,
                                 int max,
+                                Map<Integer,List<Tag>> tags,
                                 Map<Integer, List<String>> isrcs,
                                 Map<Integer, ArtistCredit> artistCredits,
                                 Map<Integer, List<TrackWrapper>> tracks,
@@ -350,20 +378,22 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, isrcs, artistCredits, tracks, releases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, isrcs, artistCredits, tracks, releases));
         }
 
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+        Map<Integer,List<Tag>> tags = loadTags(min, max);
         Map<Integer, List<String>> isrcWrapper = loadISRCs(min, max);
         Map<Integer, ArtistCredit> artistCredits = loadArtists(min, max);
         Map<Integer, List<TrackWrapper>> trackWrapper = loadTracks(min, max);
         Map<Integer, Release> releases = loadReleases(trackWrapper);
-        loadRecordings(indexWriter, min, max, isrcWrapper, artistCredits, trackWrapper,releases);
+        loadRecordings(indexWriter, min, max, tags, isrcWrapper, artistCredits, trackWrapper,releases);
     }
 
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, List<Tag>> tags,
                                           Map<Integer, List<String>> isrcs,
                                           Map<Integer, ArtistCredit> artistCredits,
                                           Map<Integer, List<TrackWrapper>> tracks,
@@ -419,6 +449,13 @@ public class RecordingIndex extends DatabaseIndex {
                         RecordingIndexField.ARTIST_ID,
                         RecordingIndexField.ARTIST_NAME,
                         RecordingIndexField.ARTIST_CREDIT);
+
+        if (tags.containsKey(id)) {
+            for (Tag tag : tags.get(id)) {
+                doc.addField(RecordingIndexField.TAG, tag.getContent());
+                doc.addField(RecordingIndexField.TAGCOUNT, tag.getCount().toString());
+            }
+        }
 
         return doc.getLuceneDocument();
     }
