@@ -1,5 +1,8 @@
 package org.musicbrainz.search.analysis;
 
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.queryParser.QueryParser;
@@ -14,90 +17,135 @@ import org.apache.lucene.analysis.Token;
 
 import junit.framework.TestCase;
 import com.ibm.icu.text.Transliterator;
+import org.apache.lucene.util.Version;
 
 import java.io.StringReader;
 
 
 public class Issue1006Test extends TestCase {
 
-    /** Tests word is preserved and identified as alpahnumeric
+    /**
+     * Tests word is preserved and identified as alpahnumeric
      *
      * @throws Exception
      */
     public void testKatakanaHiraganaTokenizer() throws Exception {
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(new StringReader("ゲーム"));
-            Token t;
-            while((t =tokenizer.next())!=null)
-            {
-                System.out.println(t.toString());
-                assertEquals("(ゲーム,0,3,type=<ALPHANUM>)",t.toString());
+            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲーム"));
+            TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
+            TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
+            while (tokenizer.incrementToken()) {
+                assertEquals("<ALPHANUM>", type.type());
+                assertEquals("ゲーム", term.term());
+                assertEquals(0, offset.startOffset());
+                assertEquals(3, offset.endOffset());
+
+
             }
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(new StringReader("ゲエム"));
-            Token t;
-            while((t =tokenizer.next())!=null)
-            {
-                System.out.println(t.toString());
-                assertEquals("(ゲエム,0,3,type=<ALPHANUM>)",t.toString());
+            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲエム"));
+            TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
+            TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
+
+            while (tokenizer.incrementToken()) {
+
+
+                assertEquals("<ALPHANUM>", type.type());
+                assertEquals("ゲエム", term.term());
+                assertEquals(0, offset.startOffset());
+                assertEquals(3, offset.endOffset());
+
             }
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(new StringReader("げえむ"));
-            Token t;
-            while((t =tokenizer.next())!=null)
-            {
-                System.out.println(t.toString());
-                assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
+            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("げえむ"));
+            TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
+            TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
+
+            while (tokenizer.incrementToken()) {
+
+                assertEquals("<ALPHANUM>", type.type());
+                assertEquals("げえむ", term.term());
+                assertEquals(0, offset.startOffset());
+                assertEquals(3, offset.endOffset());
             }
         }
     }
 
-    /** Test ICU Transformer converts as expected
+    /**
+     * Test ICU Transformer converts as expected
      *
      * @throws Exception
      */
     public void testKatakanaHiraganaEquivalenceFilter() throws Exception {
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(new StringReader("ゲーム"));
+
+            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲーム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
-            Token t;
-            while((t =result.next())!=null)
-            {
-                System.out.println(t.toString());
-                assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
+
+            TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
+            TypeAttribute type = (TypeAttribute) result.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = (OffsetAttribute) result.addAttribute(OffsetAttribute.class);
+
+            while (result.incrementToken()) {
+
+                assertEquals("<ALPHANUM>", type.type());
+                assertEquals("げえむ", term.term());
+                assertEquals(0, offset.startOffset());
+                assertEquals(3, offset.endOffset());
             }
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(new StringReader("ゲエム"));
+
+            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲエム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
-            Token t;
-            while((t =result.next())!=null)
-            {
-                System.out.println(t.toString());
-                assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
+
+            TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
+            TypeAttribute type = (TypeAttribute) result.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = (OffsetAttribute) result.addAttribute(OffsetAttribute.class);
+
+            while (result.incrementToken()) {
+
+                assertEquals("<ALPHANUM>", type.type());
+                assertEquals("げえむ", term.term());
+                assertEquals(0, offset.startOffset());
+                assertEquals(3, offset.endOffset());
             }
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(new StringReader("げえむ"));
+
+            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("げえむ"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
-            Token t;
-            while((t =result.next())!=null)
-            {
-                System.out.println(t.toString());
-                assertEquals("(げえむ,0,3,type=<ALPHANUM>)",t.toString());
+
+            TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
+            TypeAttribute type = (TypeAttribute) result.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = (OffsetAttribute) result.addAttribute(OffsetAttribute.class);
+
+            while (result.incrementToken()) {
+
+                assertEquals("<ALPHANUM>", type.type());
+                assertEquals("げえむ", term.term());
+                assertEquals(0, offset.startOffset());
+                assertEquals(3, offset.endOffset());
             }
         }
+
+        
     }
 
-    /** Test filter is being used for indexing and searching */
+    /**
+     * Test filter is being used for indexing and searching
+     */
     public void testKatakanaHiraganaEquivalence() throws Exception {
 
         Analyzer analyzer = new StandardUnaccentAnalyzer();
@@ -121,24 +169,23 @@ public class Issue1006Test extends TestCase {
         writer.close();
 
 
-
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(dir, true);
         {
-            Query q = new QueryParser("name", analyzer).parse("ゲーム");
-            System.out.println(q);
-            assertEquals(3, searcher.search(q,10).totalHits);
+            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("ゲーム");
+            //System.out.println(q);
+            assertEquals(3, searcher.search(q, 10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("ゲエム");
-            System.out.println(q);
-            assertEquals(3, searcher.search(q,10).totalHits);
+            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("ゲエム");
+            //System.out.println(q);
+            assertEquals(3, searcher.search(q, 10).totalHits);
         }
 
         {
-            Query q = new QueryParser("name", analyzer).parse("げえむ");
-            System.out.println(q);
-            assertEquals(3, searcher.search(q,10).totalHits);
+            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("げえむ");
+            //System.out.println(q);
+            assertEquals(3, searcher.search(q, 10).totalHits);
         }
 
     }

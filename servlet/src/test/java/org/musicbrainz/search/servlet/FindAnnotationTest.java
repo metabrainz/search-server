@@ -1,20 +1,19 @@
 package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
-import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.velocity.app.Velocity;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.index.Index;
+import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.AnnotationType;
-
+import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Date;
 
 /**
  * Test retrieving Annotations entries from index and Outputting as Html
@@ -29,19 +28,18 @@ public class FindAnnotationTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        SearchServerServlet.setUpVelocity();
-        Velocity.init();
         RAMDirectory ramDir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
-
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
+        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+               
         //A complete Annotation entry
         {
-            Document doc = new Document();
-            Index.addFieldToDocument(doc, AnnotationIndexField.TYPE, AnnotationType.RELEASE.getName());
-            Index.addFieldToDocument(doc, AnnotationIndexField.NAME, "Pieds nus sur la braise");
-            Index.addFieldToDocument(doc, AnnotationIndexField.MBID, "bdb24cb5-404b-4f60-bba4-7b730325ae47");
-            Index.addFieldToDocument(doc, AnnotationIndexField.TEXT, "EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-");
-            writer.addDocument(doc);
+            MbDocument doc = new MbDocument();
+            doc.addField(AnnotationIndexField.TYPE, AnnotationType.RELEASE.getName());
+            doc.addField(AnnotationIndexField.NAME, "Pieds nus sur la braise");
+            doc.addField(AnnotationIndexField.ENTITY, "bdb24cb5-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.TEXT, "EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-");
+            writer.addDocument(doc.getLuceneDocument());
         }
 
         writer.close();
@@ -68,13 +66,13 @@ public class FindAnnotationTest extends TestCase {
         assertEquals(0, res.totalHits);
     }
 
-    public void testSearchByMbid() throws Exception {
-        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
+    public void testSearchByEntity() throws Exception {
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
-    public void testSearchByMbidNoMatch() throws Exception {
-        Results res = ss.searchLucene("mbid:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
+    public void testSearchByEntitydNoMatch() throws Exception {
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
@@ -94,38 +92,51 @@ public class FindAnnotationTest extends TestCase {
         assertEquals(1, res.totalHits);
     }
 
+/**
+     * @throws Exception
+     */
+    public void testOutputXml() throws Exception {
 
-    public void testOutputAsHtml() throws Exception {
-
-        Results res = ss.searchLucene("DiscID", 0, 1);
-        ResultsWriter writer = new AnnotationHtmlWriter();
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
         pr.close();
 
         String output = sw.toString();
-        //System.out.println(output);
-        assertTrue(output.contains("<a href=\"/release/bdb24cb5-404b-4f60-bba4-7b730325ae47.html\">Pieds nus sur la braise</a>"));
-        assertTrue(output.contains("<td>%WIKIBEGIN%EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-%WIKIEND%</td>"));
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("score=\"100\""));
+        assertTrue(output.contains("<name>Pieds nus sur la braise</name>"));
+        assertTrue(output.contains("type=\"release\""));
+        assertTrue(output.contains("<entity>bdb24cb5-404b-4f60-bba4-7b730325ae47</entity>"));
+        assertTrue(output.contains("<text>EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-</text>"));
+
     }
 
+    public void testOutputJson() throws Exception {
 
-
-    public void testHtmlWritingPerformance() throws Exception {
-        Results res = ss.searchLucene("DiscID", 0, 10);
-        assertEquals(1, res.totalHits);
-
-        Date start = new Date();
-        ResultsWriter writer = new AnnotationHtmlWriter();
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        for (int i = 0; i < 1000; i++) {
-            writer.write(pr, res);
-        }
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
         pr.close();
-        Date end = new Date();
-        System.out.println("HTML - Time Taken: " + (end.getTime() - start.getTime()) + "ms");
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"score\":\"100\","));
+        assertTrue(output.contains("\"name\":\"Pieds nus sur la braise\""));
+        assertTrue(output.contains("\"type\":\"release\""));
+        assertTrue(output.contains("\"entity\":\"bdb24cb5-404b-4f60-bba4-7b730325ae47\""));
+        assertTrue(output.contains("\"text\":\"EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-\""));
+
     }
 
 }

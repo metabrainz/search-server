@@ -7,15 +7,16 @@ public class SearchServerFactory {
 
     static private EnumMap<ResourceType, SearchServer> search = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
 
-    public static void init(String indexDir) throws Exception {
-        search.put(ResourceType.ARTIST, new ArtistSearch(indexDir));
-        search.put(ResourceType.LABEL, new LabelSearch(indexDir));
-        search.put(ResourceType.RELEASE, new ReleaseSearch(indexDir));
-        search.put(ResourceType.RELEASE_GROUP, new ReleaseGroupSearch(indexDir));
-        search.put(ResourceType.TRACK, new TrackSearch(indexDir));
-        search.put(ResourceType.FREEDB, new FreeDBSearch(indexDir));
-        search.put(ResourceType.CDSTUB, new CDStubSearch(indexDir));
-        search.put(ResourceType.ANNOTATION, new AnnotationSearch(indexDir));
+    public static void init(String indexDir,boolean useMMapDirectory) throws Exception {
+        search.put(ResourceType.ARTIST, new ArtistSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.LABEL, new LabelSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.RELEASE, new ReleaseSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.RELEASE_GROUP, new ReleaseGroupSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.RECORDING, new RecordingSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.WORK, new WorkSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.ANNOTATION, new AnnotationSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.FREEDB, new FreeDBSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.CDSTUB, new CDStubSearch(indexDir, useMMapDirectory));
     }
 
     /**

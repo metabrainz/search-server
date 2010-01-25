@@ -29,33 +29,38 @@
 
 package org.musicbrainz.search.index;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.apache.commons.lang.time.StopWatch;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.util.NumericUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.apache.commons.lang.time.StopWatch;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Properties;
 
 public class IndexBuilder
 {
-    // Number of rows to process for each database 'chunk'
-    private static final int IDS_PER_CHUNK = 10000;
 
-    // Number of rows to process in 'test' mode
-    private static final int MAX_TEST_ID = 50000;
 
     // Lucene parameters
     private static final int MAX_BUFFERED_DOCS = 10000;
     private static final int MERGE_FACTOR = 3000;
+
+	// PostgreSQL schema that holds MB data
+	protected static final String DB_SCHEMA = "musicbrainz";
 
 
     public static void main(String[] args) throws SQLException, IOException
@@ -109,6 +114,7 @@ public class IndexBuilder
             props.setProperty("user", options.getMainDatabaseUser());
             props.setProperty("password", options.getMainDatabasePassword());
             mainDbConn = DriverManager.getConnection(url, props);
+            prepareDbConnection(mainDbConn);
 
             // Connect to raw database
             url = "jdbc:postgresql://" + options.getRawDatabaseHost() + "/" + options.getRawDatabaseName();
@@ -116,23 +122,25 @@ public class IndexBuilder
             props.setProperty("user", options.getRawDatabaseUser());
             props.setProperty("password", options.getRawDatabasePassword());
             rawDbConn = DriverManager.getConnection(url, props);
+            prepareDbConnection(rawDbConn);
         }
     
         StopWatch clock = new StopWatch();
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+
 
         // MusicBrainz data indexing
-        Index[] indexes = {
+        DatabaseIndex[] indexes = {
                 new ArtistIndex(mainDbConn),
                 new ReleaseIndex(mainDbConn),
                 new ReleaseGroupIndex(mainDbConn),
-                new TrackIndex(mainDbConn),
+                new RecordingIndex(mainDbConn),
                 new LabelIndex(mainDbConn),
+                new WorkIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
-                new CDStubIndex(rawDbConn),
+                new CDStubIndex(rawDbConn), //Note different db
         };
 
-        for (Index index : indexes) {
+        for (DatabaseIndex index : indexes) {
 
             // Check if this index should be built
             if (!options.buildIndex(index.getName())) {
@@ -141,7 +149,7 @@ public class IndexBuilder
             }
 
             clock.start();
-            buildDatabaseIndex(index, analyzer, options);
+            buildDatabaseIndex(index, options);
             clock.stop();
             System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
             clock.reset();
@@ -151,13 +159,16 @@ public class IndexBuilder
         if(options.buildIndex("freedb")) {
 
             File dumpFile = new File(options.getFreeDBDump());
-            if (dumpFile != null && dumpFile.isFile()) {
-                clock.start();
-                buildFreeDBIndex(dumpFile, analyzer, options);
-                clock.stop();
-                System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
-            } else {
-                System.out.println("  Can't build FreeDB index: invalid file");
+            //If they have set freedbdump file 
+            if (options.getFreeDBDump() != null && options.getFreeDBDump().length()!=0)  {
+                if( dumpFile.isFile()) {
+                    clock.start();
+                    buildFreeDBIndex(dumpFile, options);
+                    clock.stop();
+                    System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
+                } else {
+                    System.out.println("  Can't build FreeDB index: invalid file "+options.getFreeDBDump());
+                }
             }
         }
     }
@@ -165,34 +176,58 @@ public class IndexBuilder
     /**
      * Build an index from database
      * 
-     * @param dumpFile FreeDB dump file
      * @param options
      * @throws IOException 
      * @throws SQLException 
      */
-    private static void buildDatabaseIndex(Index index, Analyzer analyzer, IndexBuilderOptions options) throws IOException, SQLException
+    private static void buildDatabaseIndex(DatabaseIndex index, IndexBuilderOptions options) throws IOException, SQLException
     {
         IndexWriter indexWriter;
-        String path = options.getIndexesDir() + index.getName() + "_index";
-        System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.getDirectory(path), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        String path = options.getIndexesDir() + index.getFilename();
+        System.out.println("Started Building index: " + path + " at "+new Date());
+
+        /* All addDocuments request are put on a queue to allow another query to be made to database without waiting
+         * for all added documents to be analysed, queue is serviced by available processer no of threads.
+         * If the max query outperforms the lucene analysis then analysis will switch to main thread because
+         * the pool queue size cannot be larger than the max number of documents returned from one query.
+         * Will get best results on multicpu systems accessing database on another system.
+         */
+        indexWriter = new ThreadedIndexWriter(FSDirectory.open(new File(path)),
+                index.getAnalyzer(),
+                true,
+                Runtime.getRuntime().availableProcessors(),
+                options.getDatabaseChunkSize(),
+                IndexWriter.MaxFieldLength.LIMITED);
+
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
+        index.init(indexWriter);
         int maxId = index.getMaxId();
-        if (options.isTest() && MAX_TEST_ID < maxId)
-            maxId = MAX_TEST_ID;
+        if (options.isTest() && options.getTestIndexSize() < maxId)
+            maxId = options.getTestIndexSize();
         int j = 0;
         while (j < maxId) {
-            System.out.print("  Indexing " + j + "..." + (j + IDS_PER_CHUNK) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
-            index.indexData(indexWriter, j, j + IDS_PER_CHUNK - 1);
-            j += IDS_PER_CHUNK;
+            System.out.print("  Indexing " + j + "..." + (j + options.getDatabaseChunkSize()) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
+            index.indexData(indexWriter, j, j + options.getDatabaseChunkSize() - 1);
+            j += options.getDatabaseChunkSize();
         }
 
+        index.destroy();
         addMetaFieldsToIndex(indexWriter);
-        System.out.println("\n  Optimizing");
+        System.out.println("\n  Started Optimizing at "+new Date());
         indexWriter.optimize();
         indexWriter.close();
+
+        //For debugging to check sql is not creating too few/many rows
+        if(true) {
+            int dbRows = index.getNoOfRows(maxId);
+            IndexReader reader = IndexReader.open(FSDirectory.open(new File(path)),true);
+            System.out.println("  Indexed "+dbRows+" rows, creating "+(reader.maxDoc() - 1)+" lucene documents");
+            reader.close();
+        }
+        System.out.println("\n  Completed Optimizing at "+new Date());
+
     }
     
     /**
@@ -202,15 +237,15 @@ public class IndexBuilder
      * @param options
      * @throws IOException 
      */
-    private static void buildFreeDBIndex(File dumpFile, Analyzer analyzer, IndexBuilderOptions options) throws IOException
+    private static void buildFreeDBIndex(File dumpFile, IndexBuilderOptions options) throws IOException
     {
         FreeDBIndex index = new FreeDBIndex();
         index.setDumpFile(dumpFile);
 
         IndexWriter indexWriter;
-        String path = options.getIndexesDir() + index.getName() + "_index";
+        String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.getDirectory(path), analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer() , true, IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
@@ -237,9 +272,27 @@ public class IndexBuilder
         indexWriter.addDocument(doc);
     }    
     
+    /**
+     * Prepare a database connection, and set its default Postgres schema
+     * 
+     * @param connection
+     * @throws SQLException 
+     */
+    private static void prepareDbConnection(Connection connection) throws SQLException
+    {
+		Statement st = connection.createStatement();
+        //Forces Query Analyser to take advantage of indexes when they exist, this works round the problem with the
+        //explain sometimes deciding to do full table scans when building recording index causing query to run unacceptably slow.
+        st.executeUpdate("SET enable_seqscan = off");
+		st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
+    }
+    
 }
 
 class IndexBuilderOptions {
+
+    private static final int MAX_TEST_ID = 50000;
+    private static final int IDS_PER_CHUNK = 50000;
 
     // Main database connection parameters
 
@@ -291,8 +344,8 @@ class IndexBuilderOptions {
     public String getFreeDBDump() { return freeDBDump; }
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,track,label,annotation,cdstub,freedb)")
-    private String indexes = "artist,label,release,track,releasegroup,annotation,cdstub";
+    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,recording,label,work,annotation,cdstub,freedb)")
+    private String indexes = "artist,label,release,recording,releasegroup,work,annotation,cdstub,freedb";
     public ArrayList<String> selectedIndexes() { return new ArrayList<String>(Arrays.asList(indexes.split(","))); }
     public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
 
@@ -304,5 +357,13 @@ class IndexBuilderOptions {
     @Option(name="--help", usage="Print this usage information.")
     private boolean help = false;
     public boolean isHelp() { return help; }
+
+    @Option(name="--testindexsize", aliases = { "-b" }, usage="The number of rows to index when using the test option. (default: -10000)")
+    private int testIndexSize = MAX_TEST_ID;
+    public int getTestIndexSize() { return testIndexSize; }
+
+    @Option(name="--chunksize", aliases = { "-c" }, usage="Chunk Size, The number of rows to return in each SQL query. (default: -10000)")
+    private int databaseChunkSize = IDS_PER_CHUNK;
+    public int getDatabaseChunkSize() { return databaseChunkSize; }
 
 }

@@ -7,6 +7,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.document.*;
 import org.apache.lucene.queryParser.*;
+import org.apache.lucene.util.Version;
 
 public class AccentFilterTest extends TestCase {
 
@@ -21,70 +22,106 @@ public class AccentFilterTest extends TestCase {
     protected void setUp() throws Exception {
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         Document doc = new Document();
-        doc.add(new Field("name", "test", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "test", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
         doc = new Document();
-        doc.add(new Field("name", "t\u00E9st", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "ŃåᴊıÃšņ", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
         doc = new Document();
-        doc.add(new Field("name", "\u00e1bc\u00e1ef", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "tést", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
         doc = new Document();
-        doc.add(new Field("name", "qwe 1", Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("name", "qwe 2", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "ábcáef", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
         doc = new Document();
-        doc.add(new Field("name", "qwee 2", Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "qwe 1", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "qwe 2", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+
+        doc = new Document();
+        doc.add(new Field("name", "qwee 2", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+
+
+        //
         writer.close();
     }
 
     public void testSearchUnaccented() throws Exception {
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("test");
-        Hits hits = searcher.search(q);
-        assertEquals(2, hits.length());
-        assertEquals("test", hits.doc(0).getField("name").stringValue());
-        assertEquals("t\u00E9st", hits.doc(1).getField("name").stringValue());
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("test");
+        TopDocs docs = searcher.search(q,10);
+        assertEquals(2, docs.totalHits);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals("test", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("tést", searcher.doc(scoredocs[1].doc).getField("name").stringValue());
     }
 
     public void testSearchAccented() throws Exception {
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("t\u00E9st");
-        Hits hits = searcher.search(q);
-        assertEquals(2, hits.length());
-        assertEquals("test", hits.doc(0).getField("name").stringValue());
-        assertEquals("t\u00E9st", hits.doc(1).getField("name").stringValue());
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("tést");
+        TopDocs docs = searcher.search(q,10);
+        assertEquals(2, docs.totalHits);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals("test", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("tést", searcher.doc(scoredocs[1].doc).getField("name").stringValue());
     }
 
     public void testSearchAccented2() throws Exception {
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("abcaef");
-        Hits hits = searcher.search(q);
-        assertEquals(1, hits.length());
-        assertEquals("\u00e1bc\u00e1ef", hits.doc(0).getField("name").stringValue());
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("abcaef");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("ábcáef", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
+                /*
+    public void testSearchAccented3() throws Exception {
 
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser("name", analyzer).parse("NaJiAsn");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("ŃåᴊıÃšņ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+
+        searcher = new IndexSearcher(dir,true);
+        q = new QueryParser("name", analyzer).parse("ŃåᴊıÃšņ");
+        docs = searcher.search(q,10);
+        scoredocs = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        assertEquals("ŃåᴊıÃšņ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+    }             */
+
+
+    /**
+     * Only one doc matches (even though two terms within doc that match)
+     * @throws Exception
+     */
     public void testSearchQe() throws Exception {
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("qwe");
-        Hits hits = searcher.search(q);
-        assertEquals(1, hits.length());
-        Document doc = hits.doc(0);
-        String[] values = doc.getValues("name");
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("qwe");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        String[] values = searcher.doc(scoredocs[0].doc).getValues("name");
         assertEquals("qwe 1", values[0]);
         assertEquals("qwe 2", values[1]);
     }
 
     public void testSearchQe2() throws Exception {
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("qwee");
-        Hits hits = searcher.search(q);
-        assertEquals(1, hits.length());
-        Document doc = hits.doc(0);
-        String[] values = doc.getValues("name");
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("qwee");
+        TopDocs docs = searcher.search(q,10);
+        ScoreDoc scoredocs[] = docs.scoreDocs;
+        assertEquals(1, docs.totalHits);
+        String[] values =searcher.doc(scoredocs[0].doc).getValues("name");
         assertEquals("qwee 2", values[0]);
         assertEquals("aaa", values[1]);
         assertEquals("aaa", values[2]);

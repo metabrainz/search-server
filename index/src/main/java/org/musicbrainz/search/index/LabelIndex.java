@@ -26,22 +26,34 @@ import java.util.regex.Matcher;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
 
-public class LabelIndex extends Index {
+public class LabelIndex extends DatabaseIndex {
+
 
     private Pattern stripLabelCodeOfLeadingZeroes;
 
     public LabelIndex(Connection dbConnection) {
         super(dbConnection);
         stripLabelCodeOfLeadingZeroes = Pattern.compile("^0+");
-
-
     }
+
+    public LabelIndex() {
+    }
+
 
     public String getName() {
         return "label";
+    }
+
+    public Analyzer getAnalyzer() {
+        return new PerFieldEntityAnalyzer(LabelIndexField.class);
     }
 
     public int getMaxId() throws SQLException {
@@ -51,12 +63,62 @@ public class LabelIndex extends Index {
         return rs.getInt(1);
     }
 
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM label WHERE id<=" + maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    @Override
+    public void init(IndexWriter indexWriter) throws SQLException {
+
+        indexWriter.setSimilarity(new MusicbrainzSimilarity());
+
+
+        addPreparedStatement("TAGS",
+                " SELECT label_tag.label, tag.name as tag, label_tag.count as count" +
+                        " FROM label_tag " +
+                        " INNER JOIN tag " +
+                        " ON tag=id" +
+                        " WHERE label between ? AND ?");
+
+
+        addPreparedStatement("ALIASES", "SELECT label_alias.label as label, n.name as alias " +
+                "FROM label_alias " +
+                " JOIN label_name n ON (label_alias.name = n.id) " +
+                "WHERE label BETWEEN ? AND ?");
+
+
+        addPreparedStatement("LABELS",
+                "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
+                        "	label_type.name as type, begindate_year, begindate_month, begindate_day, " +
+                        "	enddate_year, enddate_month, enddate_day, " +
+                        "	comment, labelcode, lower(isocode) as country " +
+                        "FROM label " +
+                        " LEFT JOIN label_name n0 ON label.name = n0.id " +
+                        " LEFT JOIN label_name n1 ON label.sortname = n1.id " +
+                        " LEFT JOIN label_type ON label.type = label_type.id " +
+                        " LEFT JOIN country ON label.country = country.id " +
+                        "WHERE label.id BETWEEN ? AND ?");
+    }
+
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = dbConnection.prepareStatement("SELECT ref as label, name as alias FROM labelalias WHERE ref BETWEEN ? AND ?");
+
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"label");
+
+        // Get labels aliases
+        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
+        st = getPreparedStatement("ALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
         while (rs.next()) {
             int labelId = rs.getInt("label");
 
@@ -69,61 +131,66 @@ public class LabelIndex extends Index {
             }
             list.add(rs.getString("alias"));
         }
-        st.close();
-        st = dbConnection.prepareStatement(
-                "SELECT label.id, gid, label.name, sortname, type, begindate, enddate, resolution, labelcode, lower(isocode) as country " +
-                        "FROM label LEFT JOIN country ON label.country=country.id WHERE label.id BETWEEN ? AND ?");
+
+
+        // Get labels
+        st = getPreparedStatement("LABELS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
-        while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases));
 
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
-        st.close();
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<Tag>> tags,
+                                          Map<Integer, List<String>> aliases) throws SQLException {
 
-        Document doc = new Document();
+        MbDocument doc = new MbDocument();
         int labelId = rs.getInt("id");
-        addFieldToDocument(doc, LabelIndexField.LABEL_ID, rs.getString("gid"));
-        addFieldToDocument(doc, LabelIndexField.LABEL, rs.getString("name"));
-        addFieldToDocument(doc, LabelIndexField.SORTNAME, rs.getString("sortname"));
-        addFieldToDocument(doc, LabelIndexField.TYPE, LabelType.getByDbId(rs.getInt("type")).getName());
+        doc.addField(LabelIndexField.LABEL_ID, rs.getString("gid"));
+        doc.addField(LabelIndexField.LABEL, rs.getString("name"));
+        doc.addField(LabelIndexField.SORTNAME, rs.getString("sortname"));
 
-        String begin = rs.getString("begindate");
-        if (begin != null && !begin.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.BEGIN, normalizeDate(begin));
+        //Allows you to search for labels of Unknown type
+        String type = rs.getString("type");
+        if (type != null) {
+            doc.addField(LabelIndexField.TYPE, type);
+        } else {
+            doc.addField(LabelIndexField.TYPE, LabelType.UNKNOWN.getName());
         }
 
-        String end = rs.getString("enddate");
-        if (end != null && !end.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.END, normalizeDate(end));
-        }
+        doc.addNonEmptyField(LabelIndexField.COMMENT, rs.getString("comment"));
+        doc.addNonEmptyField(LabelIndexField.COUNTRY, rs.getString("country"));
 
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.COMMENT, comment);
-        }
+        doc.addNonEmptyField(LabelIndexField.BEGIN,
+                Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
+
+        doc.addNonEmptyField(LabelIndexField.END,
+                Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
 
         String labelcode = rs.getString("labelcode");
         if (labelcode != null && !labelcode.isEmpty()) {
             Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
-            addFieldToDocument(doc, LabelIndexField.CODE, m.replaceFirst(""));
-        }
-
-        String country = rs.getString("country");
-        if (country != null && !country.isEmpty()) {
-            addFieldToDocument(doc, LabelIndexField.COUNTRY, country);
+            doc.addField(LabelIndexField.CODE, m.replaceFirst(""));
         }
 
         if (aliases.containsKey(labelId)) {
             for (String alias : aliases.get(labelId)) {
-                addFieldToDocument(doc, LabelIndexField.ALIAS, alias);
+                doc.addField(LabelIndexField.ALIAS, alias);
             }
         }
-        return doc;
+
+        if (tags.containsKey(labelId)) {
+            for (Tag tag : tags.get(labelId)) {
+                doc.addField(LabelIndexField.TAG, tag.getContent());
+                doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
+            }
+        }
+
+        return doc.getLuceneDocument();
     }
 
 }

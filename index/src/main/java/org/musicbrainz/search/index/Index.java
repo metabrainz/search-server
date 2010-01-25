@@ -19,32 +19,31 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.apache.lucene.analysis.Analyzer;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
+public interface Index {
 
-public abstract class Index {
+    /**
+     * The common name of the index
+     *
+     * @return
+     */
+    public String getName();
 
-	protected Connection dbConnection;
-	
-	public Index(Connection dbConnection) {
-		this.dbConnection = dbConnection;
-	}
-	
-	public abstract int getMaxId() throws SQLException;
-    public abstract String getName();
-	public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
+    /** The filename of the index
+     *
+     * @return
+     */
+    public String getFilename();
 
-	protected static String normalizeDate(String date) {
-		return date.replace("-00", "");
-	}
-	
-	public static void addFieldToDocument(Document doc, IndexField field, String value) {
-		doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
-	}
+    /**
+     * The analyzer used to analyse the index
+     *
+     * @return
+     */
+    public Analyzer getAnalyzer();
+
+
+
 
 }

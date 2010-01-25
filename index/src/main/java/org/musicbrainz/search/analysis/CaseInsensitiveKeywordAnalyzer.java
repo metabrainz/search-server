@@ -19,7 +19,7 @@ public class CaseInsensitiveKeywordAnalyzer extends Analyzer {
     public TokenStream tokenStream(String fieldName,
                                    final Reader reader) {
         TokenStream result = new KeywordTokenizer(reader);
-        result = new LowerCaseFilter(result);
+        result = new LowercaseFilter(result);
         return result;
     }
 
@@ -36,7 +36,7 @@ public class CaseInsensitiveKeywordAnalyzer extends Analyzer {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
             streams.tokenStream = new KeywordTokenizer(reader);
-            streams.filteredTokenStream = new LowerCaseFilter(streams.tokenStream);
+            streams.filteredTokenStream = new LowercaseFilter(streams.tokenStream);
         } else  {
             streams.tokenStream.reset(reader);
         }
@@ -44,3 +44,4 @@ public class CaseInsensitiveKeywordAnalyzer extends Analyzer {
     }
 
 }
+

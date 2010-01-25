@@ -29,7 +29,7 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.velocity.app.Velocity;
+import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -39,9 +39,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.logging.Logger;
-import java.util.EnumMap;
 import java.lang.management.ManagementFactory;
+import java.util.logging.Logger;
 
 public class SearchServerServlet extends HttpServlet {
 
@@ -52,8 +51,11 @@ public class SearchServerServlet extends HttpServlet {
     final static int MAX_MATCHES_LIMIT = 100;
 
 
-    final static String RESPONSE_XML = "xml";
-    final static String RESPONSE_HTML = "html";
+    public final static String RESPONSE_XML    = "xml";
+    public final static String RESPONSE_JSON   = "json";
+
+    final static String WS_VERSION_1 = "1";
+    final static String WS_VERSION_2 = "2";
 
     final static String CHARSET = "UTF-8";
 
@@ -63,31 +65,31 @@ public class SearchServerServlet extends HttpServlet {
 
     @Override
     public void init() {
+        init(false);
+    }
 
+    public void init(boolean useMMapDirectory)   {
         String indexDir = getServletConfig().getInitParameter("index_dir");
         log.info("Index dir = " + indexDir);
+        if(useMMapDirectory)  {
+            log.info("Index Type = MMapped Mode");
+        }
+        else {
+            log.info("Index Type = NFIO Mode");
+        }
         log.info("Max Heap = "+ ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
-        // Setup Velocity and Search server
-        setUpVelocity();
+
 
         try {
-            Velocity.init();
-            SearchServerFactory.init(indexDir);
+            SearchServerFactory.init(indexDir,useMMapDirectory);
             isServletInitialized = true;
         } catch (Exception e1) {
             initMessage = e1.getMessage();
             e1.printStackTrace(System.out);
             isServletInitialized = false;
         }
-
     }
 
-    public static void setUpVelocity() {
-        Velocity.setProperty("resource.loader", "class");
-        Velocity.setProperty("class.resource.loader.class", org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader.class.getName());
-        Velocity.setProperty("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
-        Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM, new VelocityLogChute());
-    }
 
     @Override
     public void destroy() {
@@ -107,7 +109,16 @@ public class SearchServerServlet extends HttpServlet {
         //Ensure encoding set to UTF8
         request.setCharacterEncoding(CHARSET);
 
-        //If we receive Count Parameter then we just return a count imediately, the options are the same as for the type
+        //Force initialization of search server, if already open this forces a reopen of the indexes, this will pick up
+        //any modification to the index since they were originally opened
+        //If specify mmap mode then MMappedDirectory used, should only be used on 64bit JVM or on small indexes
+        String init = request.getParameter(RequestParameter.INIT.getName());
+        if(init!=null) {
+            init(init.equals("mmap"));
+            return;
+        }
+
+        //If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
         //parameter
         String count = request.getParameter(RequestParameter.COUNT.getName());
         if(count!=null) {
@@ -132,11 +143,12 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
 
-        //TEMPORARY FIX mb_server uses release_group instead of release-group
-        if (type.equals("release_group"))
+        //V1 Compatability
+        if(type.equals("track"))
         {
-            type=ResourceType.RELEASE_GROUP.getName();
+            type=ResourceType.RECORDING.getName();
         }
+
         ResourceType resourceType = ResourceType.getValue(type);
         if (resourceType == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
@@ -151,10 +163,15 @@ public class SearchServerServlet extends HttpServlet {
 
 
 
-        //Default to html if not provided
+        //Default to xml if not provided
         String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
         if (responseFormat == null || responseFormat.isEmpty()) {
-            responseFormat = RESPONSE_HTML;
+            responseFormat = RESPONSE_XML;
+        }
+
+        String responseVersion = request.getParameter(RequestParameter.VERSION.getName());
+        if (responseVersion == null || responseVersion.isEmpty()) {
+            responseVersion = WS_VERSION_2;
         }
 
         Integer offset = DEFAULT_OFFSET;
@@ -182,74 +199,30 @@ public class SearchServerServlet extends HttpServlet {
             }
         }
 
-        EnumMap<RequestParameter, String> extraInfoMap = new EnumMap<RequestParameter, String>(RequestParameter.class);
-        switch (resourceType) {
-            case RELEASE: {
-                String tport = request.getParameter(RequestParameter.TAGGER_PORT.getName());
-                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
-                if (tport != null) {
-                    extraInfoMap.put(RequestParameter.TAGGER_PORT, tport);
-                    String duration = request.getParameter(RequestParameter.DURATION.getName());
-                    if (duration != null) {
-                        extraInfoMap.put(RequestParameter.DURATION, duration);
-                    }
-                } else if (rel != null) {
-                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
-                }
-            }
-            break;
-
-            case TRACK: {
-                String tport = request.getParameter(RequestParameter.TAGGER_PORT.getName());
-                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
-                String oldLink = request.getParameter(RequestParameter.OLD_STYLE_LINK.getName());
-
-                if (tport != null) {
-                    extraInfoMap.put(RequestParameter.TAGGER_PORT, tport);
-                    String duration = request.getParameter(RequestParameter.DURATION.getName());
-                    if (duration != null) {
-                        extraInfoMap.put(RequestParameter.DURATION, duration);
-                    }
-                } else if (oldLink != null) {
-                    extraInfoMap.put(RequestParameter.OLD_STYLE_LINK, oldLink);
-                } else if (rel != null) {
-                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
-                }
-            }
-            break;
-
-            case ARTIST: {
-                String rel = request.getParameter(RequestParameter.RELATIONSHIPS.getName());
-                if (rel != null) {
-                    extraInfoMap.put(RequestParameter.RELATIONSHIPS, rel);
-                }
-            }
-            break;
-        }
 
         // Make the search
         try {
 
             SearchServer searchServer = SearchServerFactory.getSearchServer(resourceType);
             Results results = searchServer.search(query, offset, limit);
-
-            //TODO Doesnt seem right to throw this exception, but it is currently expected by mb_server when have no results
-            if (results.results.size() == 0) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, ErrorMessage.NO_MATCHES.getMsg(query));
-                return;
-            }
-
-            ResultsWriter writer = searchServer.getWriter(responseFormat);
+            org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
 
             if (writer == null) {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));
                 return;
             }
             response.setCharacterEncoding(CHARSET);
-            response.setContentType(writer.getMimeType());
+            if(responseFormat.equals(RESPONSE_XML)) {
+                response.setContentType(writer.getMimeType());
+            }
+            else {
+                response.setContentType(((ResultsWriter)writer).getJsonMimeType());
+            }
+
             PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-            writer.write(out, results, extraInfoMap);
+            writer.write(out, results,responseFormat);
             out.close();
+
         }
         catch (ParseException pe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));

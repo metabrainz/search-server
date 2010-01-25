@@ -28,40 +28,40 @@
 
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MetaIndexField;
+import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
+import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
-import java.io.IOException;
 import java.io.File;
-import java.util.List;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
-import java.text.SimpleDateFormat;
 
 public abstract class SearchServer {
 
-    private Analyzer analyzer;
-    protected XmlWriter xmlWriter;
-    protected HtmlWriter htmlWriter;
-    protected QueryMangler queryMangler;
+    protected PerFieldAnalyzerWrapper analyzer;
+    protected ResultsWriter resultsWriter;
+    protected Mmd1XmlWriter mmd1XmlWriter;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
     protected Date          serverLastUpdatedDate;
-    protected String        htmlLastUpdated;
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz",Locale.US);
     protected AtomicInteger    searchCount = new AtomicInteger();
 
@@ -69,12 +69,18 @@ public abstract class SearchServer {
 
 
     protected SearchServer() {
-        analyzer = new StandardUnaccentAnalyzer();
+
+    }
+
+    protected IndexSearcher createIndexSearcherFromMMapIndex(String indexDir,String indexName) throws Exception
+    {
+        return new IndexSearcher(IndexReader.open(new MMapDirectory(new File(indexDir + '/' + indexName + '/')), true));
+
     }
 
     protected IndexSearcher createIndexSearcherFromFileIndex(String indexDir,String indexName) throws Exception
     {
-        return new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + '/' + indexName + '/'), null), true));
+        return new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + '/' + indexName + '/')), true));
 
     }
 
@@ -94,7 +100,6 @@ public abstract class SearchServer {
             serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(indexSearcher.getIndexReader().document(indexSearcher.getIndexReader().maxDoc()-1)
                     .getField(MetaIndexField.META.getName()).stringValue()));
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            htmlWriter.setLastUpdated(dateFormat.format(serverLastUpdatedDate));
         }
         catch(Exception e) {
             System.out.println(e);
@@ -107,16 +112,12 @@ public abstract class SearchServer {
     }
 
 
-    public QueryMangler getQueryMangler() {
-        return queryMangler;
+    public org.musicbrainz.search.servlet.mmd2.ResultsWriter getXmlWriter() {
+        return resultsWriter;
     }
 
-    public XmlWriter getXmlWriter() {
-        return xmlWriter;
-    }
-
-    public HtmlWriter getHtmlWriter() {
-        return htmlWriter;
+    public Mmd1XmlWriter getXmlV1Writer() {
+        return mmd1XmlWriter;
     }
 
     public List<String> getSearchFields() {
@@ -128,11 +129,12 @@ public abstract class SearchServer {
     }
 
 
-    public ResultsWriter getWriter(String fmt) {
-        if (SearchServerServlet.RESPONSE_XML.equals(fmt)) {
+    public org.musicbrainz.search.servlet.ResultsWriter getWriter(String fmt, String version) {
+        if(SearchServerServlet.WS_VERSION_1.equals(version)) {
+            return getXmlV1Writer();
+        }
+        else {
             return getXmlWriter();
-        } else {
-            return getHtmlWriter();
         }
     }
 
@@ -148,9 +150,6 @@ public abstract class SearchServer {
      */
     public Results search(String query, int offset, int limit) throws IOException, ParseException {
 
-        if (getQueryMangler() != null) {
-            query = getQueryMangler().mangleQuery(query);
-        }
         return searchLucene(query, offset, limit);
     }
 
@@ -183,18 +182,12 @@ public abstract class SearchServer {
     }
 
     /**
-     * Get Query Parser for parsing queries for this resourcetype
+     * Get Query Parser for parsing queries for this resourcetype , QueryParser  is not thread safe so always
+     * get a new instance;
      *
      * @return
      */
-    private QueryParser getParser() {
-        if (getSearchFields().size() > 1) {
-            return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
-        } else {
-            return new QueryParser(defaultFields.get(0), analyzer);
-
-        }
-    }
+    protected abstract QueryParser getParser();
 
     /**
      * Process results of search

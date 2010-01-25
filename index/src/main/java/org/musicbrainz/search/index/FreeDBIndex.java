@@ -42,8 +42,18 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-public class FreeDBIndex {
+public class FreeDBIndex implements Index {
+
+    public FreeDBIndex() {
+    }
+
+    /* This is appended to the getName() method of each index to create the index folder  */
+    private static final String INDEX_SUFFIX = "_index";
+
 
 	protected static String[] CATEGORIES = {"data", "folk", "jazz", "misc", "rock", "country", 
 		"blues", "newage", "reggae", "classical", "soundtrack"};
@@ -58,10 +68,19 @@ public class FreeDBIndex {
 		this.dumpFile = dumpFile;
 	}
 
-	public String getName() {
+    public Analyzer getAnalyzer()
+    {
+        return new PerFieldEntityAnalyzer(FreeDBIndexField.class);
+    }
+    
+    public String getName() {
 		return "freedb";
 	}
-	
+
+    public String getFilename() {
+        return getName() + INDEX_SUFFIX;
+    }
+
 	public void indexData(IndexWriter indexWriter) throws IOException {
 		
 		// Create the archive input stream from the dump, assuming it's a tar.bz2 file
@@ -97,7 +116,7 @@ public class FreeDBIndex {
 	}
 	
 	protected Document documentFromFreeDBEntry(String category, byte[] content) throws IOException {
-		Document doc = new Document();
+	        MbDocument doc = new MbDocument();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(content)));
 		
 		String title = "";
@@ -132,13 +151,15 @@ public class FreeDBIndex {
 			return null;
 		}
 		
-		Index.addFieldToDocument(doc, FreeDBIndexField.ARTIST, artist);
-		Index.addFieldToDocument(doc, FreeDBIndexField.TITLE, release);
-		Index.addFieldToDocument(doc, FreeDBIndexField.DISCID, discid);
-		Index.addFieldToDocument(doc, FreeDBIndexField.CATEGORY, category);
-		Index.addFieldToDocument(doc, FreeDBIndexField.YEAR, year);
-		Index.addFieldToDocument(doc, FreeDBIndexField.TRACKS, numTracks.toString());
+		doc.addField(FreeDBIndexField.ARTIST, artist);
+		doc.addField(FreeDBIndexField.TITLE, release);
+		doc.addField(FreeDBIndexField.DISCID, discid);
+		doc.addField(FreeDBIndexField.CATEGORY, category);
+		doc.addField(FreeDBIndexField.YEAR, year);
+
+        //TODO should really index as number
+		doc.addField(FreeDBIndexField.TRACKS, numTracks.toString());
 		
-		return doc;
+		return doc.getLuceneDocument();
 	}
 }

@@ -20,6 +20,10 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
+import org.musicbrainz.search.analysis.TitleAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -27,20 +31,26 @@ import org.apache.lucene.document.Field;
 public enum CDStubIndexField implements IndexField {
 
     ARTIST          ("artist",      Field.Store.YES,    Field.Index.ANALYZED),
-    TITLE           ("title",       Field.Store.YES,    Field.Index.ANALYZED),
-    BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED),
+    TITLE           ("title",       Field.Store.YES,    Field.Index.ANALYZED, new TitleAnalyzer()),
+    BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
     COMMENT         ("comment",     Field.Store.YES,    Field.Index.ANALYZED),
-    NUM_TRACKS      ("tracks",      Field.Store.YES,    Field.Index.NOT_ANALYZED),
-    DISCID          ("discid",      Field.Store.YES,    Field.Index.NOT_ANALYZED),;
+    NUM_TRACKS      ("tracks",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    DISCID          ("discid",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),;
 
     private String name;
     private Field.Store store;
     private Field.Index index;
+    private Analyzer analyzer;
 
     private CDStubIndexField(String name, Field.Store store, Field.Index index) {
         this.name = name;
         this.store = store;
         this.index = index;
+    }
+    
+    private CDStubIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
+        this(name, store, index);
+        this.analyzer = analyzer;
     }
 
     public String getName() {
@@ -54,5 +64,11 @@ public enum CDStubIndexField implements IndexField {
     public Field.Index getIndex() {
         return index;
     }
+
+
+    public Analyzer getAnalyzer() {
+        return analyzer;
+    }
+
 
 }

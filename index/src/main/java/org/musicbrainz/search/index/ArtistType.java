@@ -24,17 +24,17 @@ public enum ArtistType {
     PERSON(1, "person"),
     GROUP(2, "group"),;
 
-    private Integer dbId;
+    private Integer searchId;
 
     private String name;
 
     ArtistType(Integer dbId, String name) {
-        this.dbId = dbId;
+        this.searchId = dbId;
         this.name = name;
     }
 
-    public Integer getDbId() {
-        return dbId;
+    public Integer getSearchId() {
+        return searchId;
     }
 
 
@@ -42,17 +42,17 @@ public enum ArtistType {
         return name;
     }
 
-    public static ArtistType getByDbId(int id) {
+    public static ArtistType getBySearchId(int id) {
         return ArtistType.values()[id];
     }
 
 
-    public static int getMinDbId() {
-        return UNKNOWN.getDbId();
+    public static int getMinSearchId() {
+        return UNKNOWN.getSearchId();
     }
 
-    public static int getMaxDbId() {
-        return GROUP.getDbId();
+    public static int getMaxSearchId() {
+        return GROUP.getSearchId();
     }
 
 }

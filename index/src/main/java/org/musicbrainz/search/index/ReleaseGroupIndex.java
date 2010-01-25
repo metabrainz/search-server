@@ -1,20 +1,29 @@
-/*
- * MusicBrainz Search Server
- * Copyright (C) 2009  Aurélien Mino
-
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+/* Copyright (c) 2009 Aurélien Mino
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the MusicBrainz project nor the names of the
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.musicbrainz.search.index;
@@ -24,84 +33,188 @@ import java.util.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.*;
 
-public class ReleaseGroupIndex extends Index {
+public class
+        ReleaseGroupIndex extends DatabaseIndex {
 
-	public ReleaseGroupIndex(Connection dbConnection) {
-		super(dbConnection);
-	}
+    public ReleaseGroupIndex(Connection dbConnection) {
+        super(dbConnection);
+    }
 
-	public String getName() {
-		return "releasegroup";
-	}
+    public ReleaseGroupIndex() {
+        super();
+    }
 
-	public int getMaxId() throws SQLException {
-		Statement st = dbConnection.createStatement();
-		ResultSet rs = st.executeQuery("SELECT MAX(id) FROM release_group");
-		rs.next();
-		return rs.getInt(1);
-	}
+    public String getName() {
+        return "releasegroup";
+    }
 
-	public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+    public Analyzer getAnalyzer() {
+        return new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
+    }
 
-		Map<Integer, List<String>> releases = new HashMap<Integer, List<String>>();
-		PreparedStatement st = dbConnection.prepareStatement(
-				"SELECT DISTINCT release_group, name " +
-					"FROM album " + 
-					"WHERE release_group BETWEEN ? AND ?");
-		st.setInt(1, min);
-		st.setInt(2, max);
-		ResultSet rs = st.executeQuery();
-		while (rs.next()) {
-			int rgId = rs.getInt("release_group");
-			List<String> list;
-			if (!releases.containsKey(rgId)) {
-				list = new LinkedList<String>();
-				releases.put(rgId, list);
-			} else {
-				list = releases.get(rgId);
-			}
-			list.add(rs.getString("name"));
-		}
-		st.close();
+    public int getMaxId() throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM release_group");
+        rs.next();
+        return rs.getInt(1);
+    }
 
-		st = dbConnection.prepareStatement(
-				"SELECT rg.id, rg.gid, rg.name, rg.type, " +
-					"artist.gid as artist_gid, artist.name as artist_name, resolution " +
-					"FROM release_group AS rg " +
-					"JOIN artist ON rg.artist=artist.id " +
-					"WHERE rg.id BETWEEN ? AND ?");
-		st.setInt(1, min);
-		st.setInt(2, max);
-		rs = st.executeQuery();
-		while (rs.next()) {
-			indexWriter.addDocument(documentFromResultSet(rs, releases));
-		}
-		st.close();
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM release_group WHERE id<=" + maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
 
-	}
+    @Override
+    public void init(IndexWriter indexWriter) throws SQLException {
 
-	public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> releases) throws SQLException {
-		Document doc = new Document();
-		int rgId = rs.getInt("id");
-		addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
-		addFieldToDocument(doc, ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
-		addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_ID, rs.getString("artist_gid"));
-		addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST, rs.getString("artist_name"));
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-        	addFieldToDocument(doc, ReleaseGroupIndexField.ARTIST_COMMENT, comment);
+        addPreparedStatement("TAGS",
+                 " SELECT release_group_tag.release_group, tag.name as tag, release_group_tag.count as count" +
+                         " FROM release_group_tag " +
+                         " INNER JOIN tag " +
+                         " ON tag=id" +
+                         " WHERE release_group between ? AND ?");
+
+
+        addPreparedStatement("RELEASES",
+                "SELECT DISTINCT release_group, release.gid as gid, n0.name as name " +
+                        "FROM release " +
+                        "LEFT JOIN release_name n0 ON release.name = n0.id " +
+                        "WHERE release_group BETWEEN ? AND ?");
+
+        addPreparedStatement("ARTISTCREDITS",
+                "SELECT rg.id as releaseGroupId, " +
+                        "acn.position as pos, " +
+                        "acn.joinphrase as joinphrase, " +
+                        "a.gid as artistId,  " +
+                        "a.comment as comment, " +
+                        "an.name as artistName, " +
+                        "an2.name as artistCreditName, " +
+                        "an3.name as artistSortName " +
+                        "FROM release_group AS rg " +
+                        "INNER JOIN artist_credit_name acn ON rg.artist_credit=acn.artist_credit " +
+                        "INNER JOIN artist a ON a.id=acn.artist " +
+                        "INNER JOIN artist_name an on a.name=an.id " +
+                        "INNER JOIN artist_name an2 on acn.name=an2.id " +
+                        "INNER JOIN artist_name an3 on a.sortname=an3.id " +
+                        "WHERE rg.id BETWEEN ? AND ?  " +
+                        "order by rg.id,acn.position ");          //Order by pos so come in expected order
+
+        addPreparedStatement("RELEASEGROUPS",
+                "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
+                        "FROM release_group AS rg " +
+                        "LEFT JOIN release_name n0 ON rg.name = n0.id " +
+                        "LEFT JOIN release_group_type  ON rg.type = release_group_type.id " +
+                        "WHERE rg.id BETWEEN ? AND ?" +
+                        "order by rg.id");
+    }
+
+
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+
+
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release_group");
+
+        //Releases
+        Map<Integer, List<ReleaseWrapper>> releases = new HashMap<Integer, List<ReleaseWrapper>>();
+        st = getPreparedStatement("RELEASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int rgId = rs.getInt("release_group");
+            List<ReleaseWrapper> list;
+            if (!releases.containsKey(rgId)) {
+                list = new LinkedList<ReleaseWrapper>();
+                releases.put(rgId, list);
+            } else {
+                list = releases.get(rgId);
+            }
+            ReleaseWrapper rw = new ReleaseWrapper();
+            rw.setReleaseId(rs.getString("gid"));
+            rw.setReleaseName(rs.getString("name"));
+            list.add(rw);
         }
-        addFieldToDocument(doc, ReleaseGroupIndexField.TYPE, ReleaseGroupType.getByDbId(rs.getInt("type")).getName());
 
-		if (releases.containsKey(rgId)) {
-			for (String release : releases.get(rgId)) {
-				addFieldToDocument(doc, ReleaseGroupIndexField.RELEASES, release);
-			}
-		}
-		return doc;
-	}
+        //Artist Credits
+        st = getPreparedStatement("ARTISTCREDITS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        Map<Integer, ArtistCredit> artistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                 (rs,
+                  "releaseGroupId",
+                  "artistId",
+                  "artistName",
+                  "artistSortName",
+                  "comment",
+                  "joinphrase",
+                  "artistCreditName");
+
+        //ReleaseGroups
+        st = getPreparedStatement("RELEASEGROUPS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs, tags, releases, artistCredits));
+        }
+
+    }
+
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<Tag>> tags,
+                                          Map<Integer, List<ReleaseWrapper>> releases,
+                                          Map<Integer, ArtistCredit> artistCredits) throws SQLException {
+        MbDocument doc = new MbDocument();
+        int id = rs.getInt("id");
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
+        doc.addNonEmptyField(ReleaseGroupIndexField.TYPE, rs.getString("type"));
+
+        //Add each release name within this release group
+        if (releases.containsKey(id)) {
+            for (ReleaseWrapper release : releases.get(id)) {
+                doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE, release.getReleaseName());
+                doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
+            }
+        }
+
+        ArtistCredit ac = artistCredits.get(id);
+        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+               (doc,
+                ac,
+                ReleaseGroupIndexField.ARTIST,
+                ReleaseGroupIndexField.ARTIST_NAMECREDIT,
+                ReleaseGroupIndexField.ARTIST_ID,
+                ReleaseGroupIndexField.ARTIST_NAME,
+                ReleaseGroupIndexField.ARTIST_CREDIT);
+
+         if (tags.containsKey(id)) {
+            for (Tag tag : tags.get(id)) {
+                doc.addField(LabelIndexField.TAG, tag.getContent());
+                doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
+            }
+        }
+
+        return doc.getLuceneDocument();
+    }
 
 }
+
+

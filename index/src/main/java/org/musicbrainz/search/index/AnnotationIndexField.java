@@ -20,15 +20,17 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.analysis.Analyzer;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
  */
 public enum AnnotationIndexField implements IndexField {
 
-	MBID	("mbid",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
+	ENTITY("entity",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
 	NAME	("name",	Field.Store.YES,	Field.Index.ANALYZED),
-	TYPE	("type",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
+	TYPE	("type",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
 	TEXT	("text",	Field.Store.YES,	Field.Index.ANALYZED);
 
 	private String name;
@@ -52,5 +54,11 @@ public enum AnnotationIndexField implements IndexField {
 	public Field.Index getIndex() {
 		return index;
 	}
+
+
+    public Analyzer getAnalyzer()
+    {
+        return new PerFieldEntityAnalyzer(LabelIndexField.class);
+    }
 
 }

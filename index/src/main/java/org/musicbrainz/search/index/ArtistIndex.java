@@ -19,22 +19,33 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.*;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+
+import java.io.IOException;
+import java.sql.*;
 import java.util.*;
 
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Document;
+public class ArtistIndex extends DatabaseIndex {
 
-import java.sql.*;
+    public ArtistIndex(Connection dbConnection) throws SQLException {
+        super(dbConnection);
+    }
 
-public class ArtistIndex extends Index {
+    public ArtistIndex() {
+    }
 
-    public ArtistIndex(Connection dbConnection) {
-		super(dbConnection);
-	}
-
-	public String getName() {
+    public String getName() {
         return "artist";
+    }
+
+    public Analyzer getAnalyzer() {
+        return new PerFieldEntityAnalyzer(ArtistIndexField.class);
     }
 
     public int getMaxId() throws SQLException {
@@ -44,66 +55,134 @@ public class ArtistIndex extends Index {
         return rs.getInt(1);
     }
 
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM artist WHERE id<=" + maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    @Override
+    public void init(IndexWriter indexWriter) throws SQLException {
+
+        indexWriter.setSimilarity(new MusicbrainzSimilarity());
+
+        addPreparedStatement("TAGS",
+                " SELECT artist_tag.artist, tag.name as tag, artist_tag.count as count" +
+                        " FROM artist_tag " +
+                        " INNER JOIN tag " +
+                        " ON tag=id" +
+                        " WHERE artist between ? AND ?");
+
+        addPreparedStatement("ALIASES",
+                "SELECT artist_alias.artist as artist, n.name as alias " +
+                        "FROM artist_alias " +
+                        " JOIN artist_name n ON (artist_alias.name = n.id) " +
+                        "WHERE artist BETWEEN ? AND ? " +
+                        "UNION " +
+                        "SELECT artist as artist, n.name as alias " +
+                        " FROM artist_credit_name " +
+                        " JOIN artist_name n ON n.id = artist_credit_name.name " +
+                        " WHERE artist BETWEEN ? AND ? ");
+
+
+        addPreparedStatement("ARTISTS",
+                "SELECT artist.id, gid, n0.name as name, n1.name as sortname, " +
+                        "	lower(artist_type.name) as type, begindate_year, begindate_month, begindate_day, " +
+                        "	enddate_year, enddate_month, enddate_day, " +
+                        "	comment, lower(isocode) as country, lower(gender.name) as gender " +
+                        "FROM artist " +
+                        " LEFT JOIN artist_name n0 ON artist.name = n0.id " +
+                        " LEFT JOIN artist_name n1 ON artist.sortname = n1.id " +
+                        " LEFT JOIN artist_type ON artist.type = artist_type.id " +
+                        " LEFT JOIN country ON artist.country = country.id " +
+                        " LEFT JOIN gender ON artist.gender=gender.id " +
+                        "WHERE artist.id BETWEEN ? AND ?");
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        PreparedStatement st = dbConnection.prepareStatement("SELECT ref as artist, name as alias FROM artistalias WHERE ref BETWEEN ? AND ?");
+
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"artist");
+
+        //Aliases (and Artist Credits)
+        Map<Integer, Set<String>> aliases = new HashMap<Integer, Set<String>>();
+        st = getPreparedStatement("ALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        st.setInt(3, min);
+        st.setInt(4, max);
+        rs = st.executeQuery();
         while (rs.next()) {
             int artistId = rs.getInt("artist");
-            List<String> list;
+            Set<String> list;
             if (!aliases.containsKey(artistId)) {
-                list = new LinkedList<String>();
+                list = new HashSet<String>();
                 aliases.put(artistId, list);
             } else {
                 list = aliases.get(artistId);
             }
             list.add(rs.getString("alias"));
         }
-        st.close();
-        st = dbConnection.prepareStatement(
-                "SELECT id, gid, name, sortname, type, begindate, enddate, resolution " +
-                        "FROM artist WHERE id BETWEEN ? AND ?");
+
+        st = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
-        st.close();
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<String>> aliases) throws SQLException {
-    	
-        Document doc = new Document();
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<Tag>> tags,
+                                          Map<Integer, Set<String>> aliases) throws SQLException {
+
+        MbDocument doc = new MbDocument();
         int artistId = rs.getInt("id");
-        addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, rs.getString("gid"));
-        addFieldToDocument(doc, ArtistIndexField.ARTIST, rs.getString("name"));
-        addFieldToDocument(doc, ArtistIndexField.SORTNAME, rs.getString("sortname"));
-        addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.getByDbId(rs.getInt("type")).getName());
+        String artistGuid = rs.getString("gid");
+        doc.addField(ArtistIndexField.ARTIST_ID, artistGuid);
+        doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
+        doc.addField(ArtistIndexField.SORTNAME, rs.getString("sortname"));
 
-        String begin = rs.getString("begindate");
-        if (begin != null && !begin.isEmpty()) {
-        	addFieldToDocument(doc, ArtistIndexField.BEGIN, normalizeDate(begin));
+        //Allows you to search for artists of unknown type
+        String type = rs.getString("type");
+        if (type != null) {
+            doc.addField(ArtistIndexField.TYPE, type);
+        } else {
+            doc.addField(ArtistIndexField.TYPE, ArtistType.UNKNOWN.getName());
         }
 
-        String end = rs.getString("enddate");
-        if (end != null && !end.isEmpty()) {
-        	addFieldToDocument(doc, ArtistIndexField.END, normalizeDate(end));
-        }
+        doc.addNonEmptyField(ArtistIndexField.BEGIN,
+                Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
 
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-        	addFieldToDocument(doc, ArtistIndexField.COMMENT, comment);
-        }
+        doc.addNonEmptyField(ArtistIndexField.END,
+                Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
+
+        doc.addNonEmptyField(ArtistIndexField.COMMENT, rs.getString("comment"));
+        doc.addNonEmptyField(ArtistIndexField.COUNTRY, rs.getString("country"));
+        doc.addNonEmptyField(ArtistIndexField.GENDER, rs.getString("gender"));
+
 
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {
-            	addFieldToDocument(doc, ArtistIndexField.ALIAS, alias);
+                doc.addField(ArtistIndexField.ALIAS, alias);
             }
         }
-        return doc;
+
+        if (tags.containsKey(artistId)) {
+            for (Tag tag : tags.get(artistId)) {
+                doc.addField(ArtistIndexField.TAG, tag.getContent());
+                doc.addField(ArtistIndexField.TAGCOUNT, tag.getCount().toString());
+            }
+        }
+
+        ArtistBoostDoc.boost(artistGuid, doc);
+        return doc.getLuceneDocument();
     }
 
 }

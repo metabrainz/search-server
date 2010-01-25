@@ -1,49 +1,57 @@
-/*
- * MusicBrainz Search Server
- * Copyright (C) 2009  Lukas Lalinsky
-
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+/* Copyright (c) 2009 Aurélien Mino
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the MusicBrainz project nor the names of the
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.sql.*;
+import java.util.*;
 
-public class ReleaseIndex extends Index {
+public class ReleaseIndex extends DatabaseIndex {
 
-    private Pattern stripBarcodeOfLeadingZeroes;
 
     public ReleaseIndex(Connection dbConnection) {
         super(dbConnection);
+    }
 
-        stripBarcodeOfLeadingZeroes = Pattern.compile("^0+");
+    public ReleaseIndex() {
+    }
+
+
+    public Analyzer getAnalyzer() {
+        return new PerFieldEntityAnalyzer(ReleaseIndexField.class);
     }
 
     public String getName() {
@@ -52,153 +60,210 @@ public class ReleaseIndex extends Index {
 
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM album");
+        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM release");
         rs.next();
         return rs.getInt(1);
     }
 
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM release WHERE id<="+maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    @Override
+    public void init(IndexWriter indexWriter) throws SQLException {
+       addPreparedStatement("LABELINFOS",
+               "SELECT rl.release as releaseId, ln.name as label, catno " +
+                "FROM release_label rl " +
+                "LEFT JOIN label l ON rl.label=l.id " +
+                "LEFT JOIN label_name ln ON l.name = ln.id " +
+                "WHERE rl.release BETWEEN ? AND ?");
+
+        addPreparedStatement("MEDIUMS",
+              "SELECT m.release as releaseId, mf.name as format,tr.trackcount as numTracksOnMedium, count(mc.id) as discidsOnMedium " +
+                "FROM medium m " +
+                "LEFT JOIN medium_format mf ON m.format=mf.id " +
+                "LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
+                "LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
+                "WHERE m.release BETWEEN ? AND ? " +
+                "GROUP BY m.release,m.id,mf.name,tr.trackcount");
+
+         addPreparedStatement("ARTISTCREDITS",
+                "SELECT r.id as releaseId, " +
+                "acn.position as pos, " +
+                "acn.joinphrase as joinphrase, " +
+                "a.gid as artistId,  " +
+                "a.comment as comment, " +
+                "an.name as artistName, " +
+                "an2.name as artistCreditName, " +
+                "an3.name as artistSortName " +
+                "FROM release AS r " +
+                "INNER JOIN artist_credit_name acn ON r.artist_credit=acn.artist_credit " +
+                "INNER JOIN artist a ON a.id=acn.artist " +
+                "INNER JOIN artist_name an on a.name=an.id " +
+                "INNER JOIN artist_name an2 on acn.name=an2.id " +
+                "INNER JOIN artist_name an3 on a.sortname=an3.id " +
+                "WHERE r.id BETWEEN ? AND ?  " +
+                "order by r.id,acn.position ");
+
+         addPreparedStatement("RELEASES",
+                "SELECT rl.id, rl.gid, rn.name as name, " +
+                "barcode,lower(country.isocode) as country, " +
+                "date_year, date_month, date_day,rgt.name as type,rm.amazonasin, " +
+                "language.isocode_3t as language, script.isocode as script,rs.name as status " +
+                "FROM release rl " +
+                "INNER JOIN release_meta rm ON rl.id = rm.id " +
+                "INNER JOIN release_group rg ON rg.id = rl.release_group " +
+                "LEFT JOIN release_group_type rgt  ON rg.type = rgt.id " +
+                "LEFT JOIN country ON rl.country=country.id " +
+                "LEFT JOIN release_name rn ON rl.name = rn.id " +
+                "LEFT JOIN release_status rs ON rl.status = rs.id " +
+                "LEFT JOIN language ON rl.language=language.id " +
+                "LEFT JOIN script ON rl.script=script.id " +
+                "WHERE rl.id BETWEEN ? AND ?");
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-        Map<Integer, List<List<String>>> events = new HashMap<Integer, List<List<String>>>();
-        PreparedStatement st = dbConnection.prepareStatement(
-                "SELECT album, lower(isocode) as country, releasedate, label.name as label, catno, barcode, format " +
-                        "FROM release " +
-                        "LEFT JOIN country ON release.country=country.id " +
-                        "LEFT JOIN label ON release.label=label.id " +
-                        "WHERE album BETWEEN ? AND ?");
+
+        //A particular release can have multiple catalognos, labels when released as an imprint, typically used
+        //by major labels
+        Map<Integer, List<List<String>>> labelInfo = new HashMap<Integer, List<List<String>>>();
+        PreparedStatement st = getPreparedStatement("LABELINFOS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            int albumId = rs.getInt("album");
+            int releaseId = rs.getInt("releaseId");
             List<List<String>> list;
-            if (!events.containsKey(albumId)) {
+            if (!labelInfo.containsKey(releaseId)) {
                 list = new LinkedList<List<String>>();
-                events.put(albumId, list);
+                labelInfo.put(releaseId, list);
             } else {
-                list = events.get(albumId);
+                list = labelInfo.get(releaseId);
             }
-            List<String> entry = new ArrayList<String>(5);
-            entry.add(rs.getString("country"));
-            entry.add(rs.getString("releasedate"));
+            List<String> entry = new ArrayList<String>(2);
             entry.add(rs.getString("label"));
             entry.add(rs.getString("catno"));
-            entry.add(rs.getString("barcode"));
-            entry.add(rs.getString("format"));
             list.add(entry);
         }
-        st.close();
-        st = dbConnection.prepareStatement(
-                "SELECT album.id, album.gid, album.name, " +
-                        "artist.gid as artist_gid, artist.name as artist_name,resolution, " +
-                        "attributes, tracks, discids, asin, " +
-                        "language.isocode_3t as language, script.isocode as script " +
-                        "FROM album " +
-                        "JOIN albummeta ON album.id=albummeta.id " +
-                        "JOIN artist ON album.artist=artist.id " +
-                        "LEFT JOIN language ON album.language=language.id " +
-                        "LEFT JOIN script ON album.script=script.id " +
-                        "WHERE album.id BETWEEN ? AND ?");
+
+
+        //Medium, NumTracks a release can be released on multiple mediums, and possibly involving different mediums,
+        //i.e a release is on CD with
+        //a special 7" single included. We also need total tracks and discs ids per medium
+        Map<Integer, List<List<String>>> mediums = new HashMap<Integer, List<List<String>>>();
+        st = getPreparedStatement("MEDIUMS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, events));
+            int releaseId = rs.getInt("releaseId");
+            List<List<String>> list;
+            if (!mediums.containsKey(releaseId)) {
+                list = new LinkedList<List<String>>();
+                mediums.put(releaseId, list);
+            } else {
+                list = mediums.get(releaseId);
+            }
+            List<String> entry = new ArrayList<String>(3);
+            entry.add(rs.getString("format"));
+            entry.add(String.valueOf(rs.getInt("numTracksOnMedium")));
+            entry.add(String.valueOf(rs.getInt("discIdsOnMedium")));
+            list.add(entry);
         }
-        st.close();
+
+
+        //Artist Credits
+        st = getPreparedStatement("ARTISTCREDITS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        Map<Integer, ArtistCredit> artistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                     (rs,
+                      "releaseId",
+                      "artistId",
+                      "artistName",
+                      "artistSortName",
+                      "comment",
+                      "joinphrase",
+                      "artistCreditName");
+
+        st = getPreparedStatement("RELEASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs, labelInfo, mediums,artistCredits));
+        }
     }
 
-    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<List<String>>> events) throws SQLException {
-        Document doc = new Document();
-        int albumId = rs.getInt("id");
-        addFieldToDocument(doc, ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
-        addFieldToDocument(doc, ReleaseIndexField.RELEASE, rs.getString("name"));
-        addFieldToDocument(doc, ReleaseIndexField.ARTIST_ID, rs.getString("artist_gid"));
-        addFieldToDocument(doc, ReleaseIndexField.ARTIST, rs.getString("artist_name"));
-        String comment = rs.getString("resolution");
-        if (comment != null && !comment.isEmpty()) {
-        	addFieldToDocument(doc, ReleaseIndexField.ARTIST_COMMENT, comment);
-        }
-        addFieldToDocument(doc, ReleaseIndexField.NUM_TRACKS, rs.getString("tracks"));
-        addFieldToDocument(doc, ReleaseIndexField.NUM_DISC_IDS, rs.getString("discids"));
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<List<String>>> labelInfo,
+                                          Map<Integer,List<List<String>>> mediums,
+                                          Map<Integer, ArtistCredit> artistCredits) throws SQLException {
+        MbDocument doc = new MbDocument();
+        int id = rs.getInt("id");
+        doc.addField(ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
+        doc.addField(ReleaseIndexField.RELEASE, rs.getString("name"));
+        doc.addNonEmptyField(ReleaseIndexField.TYPE, rs.getString("type"));
+        doc.addNonEmptyField(ReleaseIndexField.STATUS, rs.getString("status"));
+        doc.addNonEmptyField(ReleaseIndexField.COUNTRY, rs.getString("country"));
+        doc.addNonEmptyField(ReleaseIndexField.DATE,
+                Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
+        doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
+        doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazonasin"));
+        doc.addNonEmptyField(ReleaseIndexField.LANGUAGE, rs.getString("language"));
+        doc.addNonEmptyField(ReleaseIndexField.SCRIPT, rs.getString("script"));
 
-        Object[] attributes = (Object[]) rs.getArray("attributes").getArray();
-        for(int i=1;i<attributes.length;i++)
-        {
-            int nextVal = (Integer) attributes[i];
-            if (nextVal >= ReleaseType.getMinDbId() && nextVal <= ReleaseType.getMaxDbId()) {
-                addFieldToDocument(doc, ReleaseIndexField.TYPE, ReleaseType.getByDbId(nextVal).getName());
-                break;
+        if (labelInfo.containsKey(id)) {
+            for (List<String> entry : labelInfo.get(id)) {
+                doc.addFieldOrHyphen(ReleaseIndexField.LABEL, entry.get(0));
+                doc.addFieldOrHyphen(ReleaseIndexField.CATALOG_NO, entry.get(1));
             }
         }
 
-        for(int i=1;i<attributes.length;i++)
-        {
-            int nextVal = (Integer) attributes[i];
-            if (nextVal >= ReleaseStatus.getMinDbId() && nextVal <= ReleaseStatus.getMaxDbId()) {
-                addFieldToDocument(doc, ReleaseIndexField.STATUS, ReleaseStatus.getByDbId(nextVal).getName());
-                break;
-            }
-        }
-
-        String asin = rs.getString("asin");
-        if (asin != null && !asin.isEmpty()) {
-            addFieldToDocument(doc, ReleaseIndexField.AMAZON_ID, asin);
-        }
-        String language = rs.getString("language");
-        if (language != null && !language.isEmpty()) {
-            addFieldToDocument(doc, ReleaseIndexField.LANGUAGE, language);
-        }
-        String script = rs.getString("script");
-        if (script != null && !script.isEmpty()) {
-            addFieldToDocument(doc, ReleaseIndexField.SCRIPT, script);
-        }
-
-        if (events.containsKey(albumId)) {
-            for (List<String> entry : events.get(albumId)) {
+        int trackCount = 0;
+        int discCount = 0;
+        int mediumCount = 0;
+        if (mediums.containsKey(id)) {
+            for (List<String> entry : mediums.get(id)) {
                 String str;
                 str = entry.get(0);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                addFieldToDocument(doc, ReleaseIndexField.COUNTRY, str);
+                doc.addFieldOrHyphen(ReleaseIndexField.FORMAT, str);
+                int numTracksOnMedium = Integer.parseInt(entry.get(1));
+                doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM,numTracksOnMedium);
+                trackCount+=numTracksOnMedium;
 
-                str = entry.get(1);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                addFieldToDocument(doc, ReleaseIndexField.DATE, normalizeDate(str));
-
-                str = entry.get(2);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                addFieldToDocument(doc, ReleaseIndexField.LABEL, str);
-
-                str = entry.get(3);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                addFieldToDocument(doc, ReleaseIndexField.CATALOG_NO, str);
-
-                str = entry.get(4);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                Matcher m = stripBarcodeOfLeadingZeroes.matcher(str);
-                addFieldToDocument(doc, ReleaseIndexField.BARCODE, m.replaceFirst(""));
-
-                str = entry.get(5);
-                if (str == null || str.isEmpty()) {
-                    str = "-";
-                }
-                else {
-                    str = ReleaseFormat.getByDbId(Integer.parseInt(str)).getName();
-                }
-                addFieldToDocument(doc, ReleaseIndexField.FORMAT,str);
-
+                int numDiscsOnMedium = Integer.parseInt(entry.get(2));
+                doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM,numDiscsOnMedium);
+                discCount+=numDiscsOnMedium;
+                mediumCount++;
             }
+            //Num of mediums on the release
+            doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,mediumCount);
+
+            //Num Tracks over the whole release
+            doc.addNumericField(ReleaseIndexField.NUM_TRACKS,trackCount);
+
+            //Num Discs over the whole release
+            doc.addNumericField(ReleaseIndexField.NUM_DISCIDS,discCount);
+
         }
-        return doc;
+
+        ArtistCredit ac = artistCredits.get(id);
+        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+               (doc,
+                ac,
+                ReleaseIndexField.ARTIST,
+                ReleaseIndexField.ARTIST_NAMECREDIT,
+                ReleaseIndexField.ARTIST_ID,
+                ReleaseIndexField.ARTIST_NAME,
+                ReleaseIndexField.ARTIST_CREDIT);
+        
+        return doc.getLuceneDocument();
     }
 
 }

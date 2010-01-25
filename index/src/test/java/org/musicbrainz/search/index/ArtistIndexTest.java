@@ -4,9 +4,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.index.ArtistIndex;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -20,9 +21,12 @@ public class ArtistIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        IndexWriter writer = new IndexWriter(ramDir, new StandardUnaccentAnalyzer(), true, IndexWriter.MaxFieldLength.LIMITED);
+        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
+        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ArtistIndex ai = new ArtistIndex(createConnection());
+        ai.init(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);
+        ai.destroy();
         writer.close();
 
     }
@@ -33,8 +37,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO artist(id,name, gid, modpending, sortname, page, resolution, begindate,enddate,type,quality,modpending_qual)" +
-                "    VALUES (521316, 'Farming Incident', '4302e264-1cf0-4d1f-aca7-2a6f89e34b36',0, 'Farming Incident', 237615439,null, '1999-04-00', null, 2, -1, 0)");
+
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Farming Incident',1)");
+        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending,gender,country)" +
+            " VALUES (521316,1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36',1,null, 1999,4, null, 2, 0,1,1)");
+        stmt.addBatch("INSERT INTO country( id, isocode, name)VALUES (1,'AF','Afghanistan')");
 
         stmt.executeBatch();
         stmt.close();
@@ -46,18 +53,27 @@ public class ArtistIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO artistalias(id, ref, name, timesused, modpending, lastused)" +
-                "    VALUES (19892, 16153, 'Echo & The Bunnyman', 0, 0, '1970-01-01 01:00:00')");
-        stmt.addBatch("INSERT INTO artistalias(id, ref, name, timesused, modpending, lastused)" +
-                "    VALUES (20050, 16153, 'Echo and The Bunnymen', 0, 0, '1970-01-01 01:00:00')");
-        stmt.addBatch("INSERT INTO artistalias(id, ref, name, timesused, modpending, lastused)" +
-                "    VALUES (20051, 16153, 'Echo & The Bunnymen', 0, 0, '1970-01-01 01:00:00')");
-        stmt.addBatch("INSERT INTO artistalias(id, ref, name, timesused, modpending, lastused)" +
-                "    VALUES (5703, 16153, 'Echo And The Bunnymen', 536, 0, '2005-09-21 06:42:15')");
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Echo & The Bunnymen',1)");
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Echo and The Bunnymen',1)");
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Echo & The Bunnyman',1)");
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (4,'Echo And The Bunnymen',1)");
 
-        stmt.addBatch("INSERT INTO artist(id,name, gid, modpending, sortname, page, resolution, begindate,enddate,type,quality,modpending_qual)" +
-                "    VALUES (16153, 'Echo & The Bunnymen', 'ccd4879c-5e88-4385-b131-bf65296bf245',0, 'Echo & The Bunnymen', 205832224,'a comment', '1978-00-00','1995-00-00', 2, -1, 0)");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(1,16153,2,0);");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(2,16153,3,0);");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(3,16153,4,0);");
 
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (5,'Bunnymen Orchestra',1)");
+        stmt.addBatch("INSERT INTO artist_credit_name(" +
+                "    artist_credit, position, artist,name, joinphrase)" +
+                "    VALUES (1, 0, 16153, 5, null)");
+
+        //This is same as alias, so should be ignored
+        stmt.addBatch("INSERT INTO artist_credit_name(" +
+                "    artist_credit, position, artist,name, joinphrase)" +
+                "    VALUES (1, 0, 16153, 3, null)");
+
+        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
+                   " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -67,9 +83,15 @@ public class ArtistIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO artist(id,name, gid, modpending, sortname, page, resolution, begindate,enddate,type,quality,modpending_qual)" +
-                "    VALUES (76834, 'Siobhan Lynch', 'ae8707b6-684c-4d4a-95c5-d117970a6dfe',0, 'Lynch, Siobhan', 463966496,null, null, null, null, -1, 0)");
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Farming Incident',1)");
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Siobhan Lynch',1)");
+        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Lynch, Siobhan',1)");
 
+        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
+            " VALUES (76834,2, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe',3,null, null, null, null, null, 0)");
+
+        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'Goth', 2);");
+        stmt.addBatch("INSERT INTO artist_tag(artist, tag, count)VALUES (76834, 1, 10)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -143,8 +165,70 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    public void testIndexArtistWithCountry() throws Exception {
+
+            addArtistOne();
+            RAMDirectory ramDir = new RAMDirectory();
+            createIndex(ramDir);
+
+            IndexReader ir = IndexReader.open(ramDir, true);
+            assertEquals(1, ir.numDocs());
+            {
+                Document doc = ir.document(0);
+                assertEquals(1, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
+                assertEquals("af", doc.getField(ArtistIndexField.COUNTRY.getName()).stringValue());
+            }
+            ir.close();
+        }
+
+    public void testIndexArtistWithNoCountry() throws Exception {
+
+            addArtistTwo();
+            RAMDirectory ramDir = new RAMDirectory();
+            createIndex(ramDir);
+
+            IndexReader ir = IndexReader.open(ramDir, true);
+            assertEquals(1, ir.numDocs());
+            {
+                Document doc = ir.document(0);
+                assertEquals(0, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
+             }
+            ir.close();
+        }
+    public void testIndexArtistWithGender() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ArtistIndexField.GENDER.getName()).length);
+            assertEquals("male", doc.getField(ArtistIndexField.GENDER.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    public void testIndexArtistWithNoGender() throws Exception {
+
+        addArtistTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(0, doc.getFields(ArtistIndexField.GENDER.getName()).length);
+        }
+        ir.close();
+    }
+
+
     /**
-     * Checks fields are indexed correctly for artist with alias (the aliases are not stored)
+     * Checks fields are indexed correctly for artist with alias and artistCredit (the aliases are not stored)
      *
      * @throws Exception
      */
@@ -158,7 +242,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals(0, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
+            assertEquals(4, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
             assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
             assertEquals(1, doc.getFields(ArtistIndexField.ARTIST_ID.getName()).length);
             assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
@@ -334,7 +418,30 @@ public class ArtistIndexTest extends AbstractIndexTest {
     }
 
 
+    /**
+     * Checks fields with different sort name to name is indexed correctly
+     *
+     * @throws Exception
+     */
+    public void testIndexArtistWithTag() throws Exception {
+
+        addArtistThree();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.TAG.getName()).length);
+            assertEquals("Goth", doc.getField(ArtistIndexField.TAG.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+
     public void testGetTypeByDbId () throws Exception {        
-        assertEquals(ArtistType.PERSON,ArtistType.getByDbId(1));
+        assertEquals(ArtistType.PERSON,ArtistType.getBySearchId(1));
     }
 }

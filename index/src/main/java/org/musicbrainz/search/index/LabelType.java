@@ -30,34 +30,34 @@ public enum LabelType {
     REISSUE_PROD(6, "reissue prod."),
     PUBLISHER(7, "publisher"),;
 
-    private Integer dbId;
+    private Integer searchId;
     private String name;
 
-    LabelType(Integer dbId, String name) {
-        this.dbId = dbId;
+    LabelType(Integer searchId, String name) {
+        this.searchId = searchId;
         this.name = name;
     }
 
 
-    public Integer getDbId() {
-        return dbId;
+    public Integer getSearchId() {
+        return searchId;
     }
 
     public String getName() {
         return name;
     }
 
-    public static LabelType getByDbId(int id) {
+    public static LabelType getBySearchId(int id) {
         return LabelType.values()[id];
     }
 
 
-    public static int getMinDbId() {
-        return UNKNOWN.getDbId();
+    public static int getMinSearchId() {
+        return UNKNOWN.getSearchId();
     }
 
-    public static int getMaxDbId() {
-        return PUBLISHER.getDbId();
+    public static int getMaxSearchId() {
+        return PUBLISHER.getSearchId();
     }
 }
 

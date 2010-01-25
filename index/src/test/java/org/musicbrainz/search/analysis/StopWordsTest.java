@@ -3,14 +3,15 @@ package org.musicbrainz.search.analysis;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 
 import java.util.HashSet;
 
@@ -27,35 +28,35 @@ public class StopWordsTest extends TestCase
 
      public void testUnableToFindStopWordsWithStandardAnalyser() throws Exception {
 
-        Analyzer analyzer = new StandardAnalyzer();
+        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
         RAMDirectory dir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         Document doc = new Document();
-        doc.add(new Field("name", "that", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "that", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("that");
-        Hits hits = searcher.search(q);
-        assertEquals(0, hits.length());
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("that");
+        TopDocs docs = searcher.search(q,null,100);
+        assertEquals(0, docs.totalHits);
 
     }
 
     public void testAbleToFindStopWordsWithStandardAnalyserIfNoStopWords() throws Exception {
 
-        Analyzer analyzer = new StandardAnalyzer(new HashSet());
+        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT,new HashSet());
         RAMDirectory dir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         Document doc = new Document();
-        doc.add(new Field("name", "that", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "that", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("that");
-        Hits hits = searcher.search(q);
-        assertEquals(1, hits.length());
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("that");
+        TopDocs docs = searcher.search(q,null,100);
+        assertEquals(1, docs.totalHits);
     }
 
      public void testAbleToFindStopWords() throws Exception {
@@ -64,14 +65,14 @@ public class StopWordsTest extends TestCase
         RAMDirectory dir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         Document doc = new Document();
-        doc.add(new Field("name", "that", Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("name", "that", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir);
-        Query q = new QueryParser("name", analyzer).parse("that");
-        Hits hits = searcher.search(q);
-        assertEquals(1, hits.length());
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("that");
+        TopDocs docs = searcher.search(q,null,100);
+        assertEquals(1, docs.totalHits);
 
     }
 }

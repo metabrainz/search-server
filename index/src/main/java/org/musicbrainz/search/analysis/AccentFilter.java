@@ -29,32 +29,39 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+
+import java.io.IOException;
 
 /**
  * A filter that replaces accented characters by their unaccented equivalents.
  */
 public class AccentFilter extends TokenFilter {
-    
+
     private char[] output = new char[256];
     private int outputPos;
 
+    private TermAttribute termAttr;
+
     public AccentFilter(TokenStream input) {
         super(input);
+        termAttr = (TermAttribute) addAttribute(TermAttribute.class);
     }
 
-	@Override
-    public final Token next(Token result) throws java.io.IOException {
-        result = input.next(result);
-        if (result != null) {
-            final char[] buffer = result.termBuffer();
-            final int length = result.termLength();
-            if (removeAccents(buffer, length))
-                result.setTermBuffer(output, 0, outputPos);
-            return result;
+    @Override
+    public boolean incrementToken() throws IOException {
+        if (!input.incrementToken())
+            return false;
+
+        final char[] buffer = termAttr.termBuffer();
+        final int length    = termAttr.termLength();
+        if (removeAccents(buffer, length))  {
+            termAttr.setTermBuffer(output, 0, outputPos);
         }
-        return null;
+        return true;
     }
-    
+
     protected final boolean removeAccents(char[] input, int length) {
         final int maxSizeNeeded = 2 * length;
         int size = output.length;
@@ -65,7 +72,7 @@ public class AccentFilter extends TokenFilter {
         outputPos = 0;
 
         for (int i = 0; i < length; i++) {
-            int c = (int)input[i];
+            int c = (int) input[i];
 
             int block = UnaccentIndexes.indexes[c >> UnaccentData.BLOCK_SHIFT];
             int position = c & UnaccentData.BLOCK_MASK;
@@ -73,19 +80,19 @@ public class AccentFilter extends TokenFilter {
             short[] positions = UnaccentPositions.positions[block];
             int unacPosition = positions[position];
             int unacLength = positions[position + 1] - unacPosition;
-            
+
             if (unacLength > 0) {
                 // allocate a new char array, if necessary
                 if (size != output.length)
                     output = new char[size];
                 // copy front of the input
                 if (inputPos < i) {
-					System.arraycopy(input, inputPos, output, outputPos, i - inputPos);
+                    System.arraycopy(input, inputPos, output, outputPos, i - inputPos);
                     outputPos += i - inputPos;
                 }
                 // copy unaccented data
                 System.arraycopy(UnaccentData.data[block], unacPosition,
-                                 output, outputPos, unacLength);
+                        output, outputPos, unacLength);
                 outputPos += unacLength;
                 inputPos = i + 1;
             }
