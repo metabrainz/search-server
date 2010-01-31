@@ -17,7 +17,6 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Date;
 
 /**
  * Test retrieving artist from index and Outputting as Xml

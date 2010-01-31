@@ -29,7 +29,6 @@
 package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.Metadata;
-import org.musicbrainz.search.servlet.RequestParameter;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.ResultsWriter;
 
@@ -39,8 +38,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import java.util.EnumMap;
 
 public abstract class Mmd1XmlWriter extends ResultsWriter {
 

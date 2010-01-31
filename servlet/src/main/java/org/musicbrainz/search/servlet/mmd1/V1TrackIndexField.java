@@ -1,9 +1,5 @@
 package org.musicbrainz.search.servlet.mmd1;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-
 /**
  * Fields search for in V1 Track
  */

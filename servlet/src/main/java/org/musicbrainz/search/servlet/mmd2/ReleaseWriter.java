@@ -32,7 +32,6 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.ArtistCreditHelper;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
@@ -95,8 +94,6 @@ public class ReleaseWriter extends ResultsWriter {
                 release.setAsin(asin);
             }
 
-
-
             TextRepresentation tr = of.createTextRepresentation();
             String script = doc.get(ReleaseIndexField.SCRIPT);
             if (script != null) {
@@ -112,20 +109,28 @@ public class ReleaseWriter extends ResultsWriter {
                 release.setTextRepresentation(tr);
             }
 
-            String[] labels = doc.getValues(ReleaseIndexField.LABEL);
+            String[] labelNames = doc.getValues(ReleaseIndexField.LABEL);
             //Releases can only have multiple label/catno combinations
-            if (labels.length > 0) {
+            if (labelNames.length > 0) {
                 LabelInfoList labelInfoList = of.createLabelInfoList();
                 String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
-                for (int i = 0; i < labels.length; i++) {
+                String[] labelIds = doc.getValues(ReleaseIndexField.LABEL_ID);
+                for (int i = 0; i < labelNames.length; i++) {
                     LabelInfo labelInfo = of.createLabelInfo();
 
-                    if (!labels[i].equals("-")) {
+                    if (!labelNames[i].equals("-") || !labelIds[i].equals("-")) {
                         Label label = of.createLabel();
-                        label.setName(labels[i]);
                         labelInfo.setLabel(label);
+                    
+                        if (!labelNames[i].equals("-")) {
+                            label.setName(labelNames[i]);
+                        }
+                        
+                        if (!labelIds[i].equals("-")) {
+                            label.setId(labelIds[i]);
+                        }
                     }
-
+                    
                     if (!catnos[i].equals("-")) {
                         labelInfo.setCatalogNumber(catnos[i]);
                     }

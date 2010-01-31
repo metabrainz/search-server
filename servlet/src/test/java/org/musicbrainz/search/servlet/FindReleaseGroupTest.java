@@ -11,7 +11,6 @@ import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
-import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;

@@ -30,9 +30,6 @@ package org.musicbrainz.search.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
 
 public abstract class ResultsWriter {
 
