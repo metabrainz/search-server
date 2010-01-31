@@ -35,11 +35,8 @@ import java.sql.Statement;
 
 public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
-
-
     public void setUp() throws Exception {
         super.setup();
-
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
@@ -50,9 +47,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         li.indexData(writer, 0, Integer.MAX_VALUE);
         li.destroy();
         writer.close();
-
     }
-
 
     /**
      * @throws Exception
@@ -63,28 +58,26 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Echo & The Bunnymen',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Echo and The Bunnymen',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Echo & The Bunnyman',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (4,'Echo And The Bunnymen',1)");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'Echo & The Bunnyman')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (4, 'Echo And The Bunnymen')");
 
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(1,16153,2,0);");
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(2,16153,3,0);");
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(3,16153,4,0);");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (1, 16153, 2)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
                 " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',2,'a comment', 1978,null, 1995, 2, 0)");
 
-        stmt.addBatch("INSERT INTO artist_credit( " +
-                " id, artistcount, refcount) " +
-                " VALUES (1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit (id, artistcount, refcount) VALUES (1, 1, 1)");
 
         stmt.addBatch("INSERT INTO artist_credit_name(" +
                 "    artist_credit, position, artist,name, joinphrase)" +
                 "    VALUES (1, 0, 16153, 1, null)");
 
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (1, 'Crocodiles', 0)");
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (2, 'Crocodiles (bonus disc)', 0)");
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
         stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
                 "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0)");
 
@@ -97,7 +90,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         conn.close();
     }
 
-
     /**
      * No Type
      *
@@ -109,28 +101,26 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Echo & The Bunnymen',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Echo and The Bunnymen',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Echo & The Bunnyman',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (4,'Echo And The Bunnymen',1)");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'Echo & The Bunnyman')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (4, 'Echo And The Bunnymen')");
 
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(1,16153,2,0);");
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(2,16153,3,0);");
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(3,16153,4,0);");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (1, 16153, 2)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
                 " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
 
-        stmt.addBatch("INSERT INTO artist_credit( " +
-                " id, artistcount, refcount) " +
-                " VALUES (1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit (id, artistcount, refcount) VALUES (1, 1, 1)");
 
         stmt.addBatch("INSERT INTO artist_credit_name(" +
                 "    artist_credit, position, artist,name, joinphrase)" +
                 "    VALUES (1, 0, 16153, 1, null)");
 
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (1, 'Crocodiles', 0)");
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (2, 'Crocodiles (bonus disc)', 0)");
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
 
         stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
                 "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, null, null, 0);");
@@ -156,22 +146,21 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         Statement stmt = conn.createStatement();
 
 
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Echo & The Bunnymen',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Echo and The Bunnymen',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'Echo & The Bunnyman',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (4,'Echo And The Bunnymen',1)");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'Echo & The Bunnyman')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (4, 'Echo And The Bunnymen')");
 
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(1,16153,2,0);");
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(2,16153,3,0);");
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, editpending) VALUES(3,16153,4,0);");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (1, 16153, 2)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
                 " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
 
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (1, 'Crocodiles', 0)");
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (2, 'Crocodiles (Bonus disc)', 0)");
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (3, 'Crocodiles (Special disc)', 0)");
-
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (Bonus disc)')");
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (3, 'Crocodiles (Special disc)')");
 
         stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
                 "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0);");
@@ -198,11 +187,11 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (1,'Erich Kunzel',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (2,'Kunzel, Eric',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (3,'The Cincinnati Pops Orchestra',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (4,'Cincinnati Pops Orchestra, The',1)");
-        stmt.addBatch("INSERT INTO artist_name(id,name,refcount) values (5,'Cincinnati Pops',1)");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Erich Kunzel')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Kunzel, Eric')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'The Cincinnati Pops Orchestra')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (4, 'Cincinnati Pops Orchestra, The')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (5, 'Cincinnati Pops')");
 
         stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
                 " VALUES (1,1, '99845d0c-f239-4051-a6b1-4b5e9f7ede0b',2,'a comment', 1978,null, 1995, 2, 0)");
@@ -215,15 +204,15 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
                 "    VALUES (1, 0, 1, 1, 'and')");
         stmt.addBatch("INSERT INTO artist_credit_name( artist_credit, position, artist,name, joinphrase)" +
                 "    VALUES (1, 1, 2, 5, null)");
-        stmt.addBatch("INSERT INTO release_name(id,name, refcount)VALUES (1, 'Epics', 0)");
-        stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
+        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Epics')");
+        stmt.addBatch("INSERT INTO release_group (id, gid,name,artist_credit,type,comment,editpending)" +
                 "    VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0)");
 
         stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
                 "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
                 "  VALUES (1,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1,1,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
 
-        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'punk', 2);");
+        stmt.addBatch("INSERT INTO tag (id, name, refcount) VALUES (1, 'punk', 2)");
         stmt.addBatch("INSERT INTO release_group_tag(release_group, tag, count)VALUES (1, 1, 10)");
 
         stmt.executeBatch();

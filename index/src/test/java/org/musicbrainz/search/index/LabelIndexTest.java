@@ -15,7 +15,6 @@ import java.sql.Statement;
 
 public class LabelIndexTest extends AbstractIndexTest {
 
-
     public void setUp() throws Exception {
         super.setup();
     }
@@ -30,7 +29,6 @@ public class LabelIndexTest extends AbstractIndexTest {
         writer.close();
     }
 
-
     /**
      * Some fields populated has alias, but no country
      *
@@ -42,8 +40,8 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
         stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
 					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
@@ -68,9 +66,9 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 		
-		stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (38, 'CA','Canada')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
+	stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (38, 'CA','Canada')");
+	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
+	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
 		
         stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
 					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
@@ -93,9 +91,9 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 		
-		stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (1, 'AF','Afghanistan')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+	stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (1, 'AF','Afghanistan')");
+	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
         stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
 					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +

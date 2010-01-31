@@ -192,8 +192,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE artist_name (" +
                 "  id serial NOT NULL," +
-                "  name character varying(255) NOT NULL," +
-                "  refcount integer DEFAULT 0" +
+                "  name character varying(255) NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_type (" +
@@ -242,8 +241,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE label_name (" +
                 "  id serial NOT NULL," +
-                "  name character varying(255) NOT NULL," +
-                "  refcount integer DEFAULT 0" +
+                "  name character varying(255) NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE label_type (" +
@@ -282,8 +280,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE release_name (" +
                 "  id serial NOT NULL," +
-                "  name character varying(255) NOT NULL," +
-                "  refcount integer DEFAULT 0" +
+                "  name character varying(255) NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE release_status (" +
@@ -391,9 +388,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE track_name (" +
                 "  id serial NOT NULL," +
-                "  name character varying NOT NULL," +
-                "  refcount integer DEFAULT 0," +
-                "  CONSTRAINT track_name_pkey PRIMARY KEY (id)" +
+                "  name character varying NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE track (" +
@@ -535,9 +530,7 @@ public abstract class AbstractIndexTest extends TestCase {
         
         stmt.addBatch("CREATE TABLE work_name (" +
                 "  id serial NOT NULL," +
-                "  name character varying NOT NULL," +
-                "  refcount integer DEFAULT 0," +
-                "  CONSTRAINT work_name_pkey PRIMARY KEY (id)" +
+                "  name character varying NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE work_type (" +
