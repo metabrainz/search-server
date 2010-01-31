@@ -43,7 +43,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.index.ArtistCreditHelper;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
@@ -112,20 +111,28 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             String barcode = doc.get(ReleaseIndexField.BARCODE);
             String format = doc.get(ReleaseIndexField.FORMAT);
 
-            String[] labels = doc.getValues(ReleaseIndexField.LABEL);
+            String[] labelNames = doc.getValues(ReleaseIndexField.LABEL);
             //Now releases can only have multiple labe;/catno combinations but MMDv1
             //expects country,date,barcode and format to also be part of each release event.
-            if (labels.length > 0) {
+            if (labelNames.length > 0) {
                 ReleaseEventList eventList = of.createReleaseEventList();
                 String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
+                String[] labelIds = doc.getValues(ReleaseIndexField.LABEL_ID);
 
-                for (int i = 0; i < labels.length; i++) {
+                for (int i = 0; i < labelNames.length; i++) {
                     Event event = of.createEvent();
 
-                    if (!labels[i].equals("-")) {
+                    if (!labelNames[i].equals("-") || !labelIds[i].equals("-")) {
                         Label label = of.createLabel();
-                        label.setName(labels[i]);
                         event.setLabel(label);
+                        
+                        if (!labelNames[i].equals("-")) {
+                            label.setName(labelNames[i]);
+                        }
+                        
+                        if (!labelIds[i].equals("-")) {
+                            label.setId(labelIds[i]);
+                        }
                     }
 
                     if (!catnos[i].equals("-")) {

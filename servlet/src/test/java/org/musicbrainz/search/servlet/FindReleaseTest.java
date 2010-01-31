@@ -17,7 +17,6 @@ import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
 
 import java.io.PrintWriter;
@@ -88,9 +87,11 @@ public class FindReleaseTest extends TestCase {
         //Multiples allowed of these
         doc.addField(ReleaseIndexField.CATALOG_NO, "WRATHCD25");
         doc.addField(ReleaseIndexField.LABEL, "Wrath Records");
+        doc.addField(ReleaseIndexField.LABEL_ID, "-");
 
         doc.addField(ReleaseIndexField.CATALOG_NO, "LP001");
         doc.addField(ReleaseIndexField.LABEL, "Major Records");
+        doc.addField(ReleaseIndexField.LABEL_ID, "c1dfaf9c-d498-4f6c-b040-f7714315fcea");
 
         doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,2);
 
@@ -483,10 +484,15 @@ public class FindReleaseTest extends TestCase {
     }
 
     public void testFindReleaseByNumberofMediums() throws Exception {
-           Results res = ss.searchLucene("mediums:2", 0, 10);
-           assertEquals(1, res.totalHits);
-       }
+        Results res = ss.searchLucene("mediums:2", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
 
+    public void testFindReleaseByLabelId() throws Exception {
+        Results res = ss.searchLucene("labelid:c1dfaf9c-d498-4f6c-b040-f7714315fcea", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
+    
     public void testNumericRangeQuery() throws Exception {
            Results res = ss.searchLucene("tracksmedium:[7 TO 17]", 0, 10);
            assertEquals(2, res.totalHits);
@@ -565,6 +571,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
         assertTrue(output.contains("<track-count>17</track-count>"));
         assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
+        assertTrue(output.contains("<label id=\"c1dfaf9c-d498-4f6c-b040-f7714315fcea\"><name>Major Records</name></label>"));
         assertTrue(output.contains("<catalog-number>WRATHCD25</catalog-number>"));
         assertTrue(output.contains("<medium-list count=\"2\">"));
     }
