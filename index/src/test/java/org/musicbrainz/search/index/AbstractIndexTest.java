@@ -26,12 +26,12 @@ public abstract class AbstractIndexTest extends TestCase {
      * @param value
      * @throws java.io.IOException
      */
-    protected void checkTerm(IndexReader ir,IndexField field,String value)throws IOException {
+    protected void checkTerm(IndexReader ir, IndexField field, String value) throws IOException {
         TermEnum tr = ir.terms(new Term(field.getName(), ""));
-        //Chck it managed to find one (we have to do this coz if it doesnt find any would return the next field)
-        assertEquals(field.getName(),tr.term().field());
-        assertEquals(1,tr.docFreq());
-        assertEquals(value,tr.term().text());
+        //Check it managed to find one (we have to do this because if it doesn't find any would return the next field)
+        assertEquals(field.getName(), tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals(value, tr.term().text());
 
     }
 
@@ -145,7 +145,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL," +
-                "  refcount integer NOT NULL DEFAULT 0," +
+                "  refcount integer NOT NULL DEFAULT 0" +
                 ")");
     }
 
@@ -209,7 +209,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(" +
                 "  artist integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL," +
+                "  count integer NOT NULL" +
                 ")");
     }
 
@@ -253,7 +253,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(" +
                 "  label integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL," +
+                "  count integer NOT NULL" +
                 ")");
     }
 
@@ -330,14 +330,12 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  medium integer NOT NULL," +
                 "  cdtoc integer NOT NULL," +
-                "  editpending integer NOT NULL DEFAULT 0," +
-                "  CONSTRAINT medium_cdtoc_pkey PRIMARY KEY (id)" +
+                "  editpending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE tracklist (" +
                 "  id serial NOT NULL," +
-                "  trackcount integer NOT NULL DEFAULT 0," +
-                "  CONSTRAINT tracklist_pkey PRIMARY KEY (id)" +
+                "  trackcount integer NOT NULL DEFAULT 0" +
                 ")");
         
         stmt.addBatch("CREATE TABLE language (" +
@@ -346,8 +344,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  isocode_3b character(3) NOT NULL," +
                 "  isocode_2 character(2)," +
                 "  name character varying(100) NOT NULL," +
-                "  frequency integer NOT NULL DEFAULT 0," +
-                "  CONSTRAINT language_pkey PRIMARY KEY (id)" +
+                "  frequency integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE script (" +
@@ -380,7 +377,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(" +
                 "  release_group integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL," +
+                "  count integer NOT NULL" +
                 ")");
     }
 
@@ -399,8 +396,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +
-                "  editpending integer NOT NULL DEFAULT 0," +
-                "  CONSTRAINT track_pkey PRIMARY KEY (id)" +
+                "  editpending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE recording (" +
@@ -410,26 +406,24 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +
                 "  comment character varying(255)," +
-                "  editpending integer NOT NULL DEFAULT 0," +
-                "  CONSTRAINT recording_pkey PRIMARY KEY (id)" +
+                "  editpending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE recording_tag" +
                 "(" +
                 "  recording integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL," +
+                "  count integer NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE isrc" +
-                    "(" +
-                    "  id serial NOT NULL," +
-                    "  recording integer NOT NULL," +
-                    "  isrc character(12) NOT NULL," +
-                    "  source smallint," +
-                    "  editpending integer NOT NULL DEFAULT 0," +
-                    "  CONSTRAINT isrc_pkey PRIMARY KEY (id)" +
-                    ")");
+                "(" +
+                "  id serial NOT NULL," +
+                "  recording integer NOT NULL," +
+                "  isrc character(12) NOT NULL," +
+                "  source smallint," +
+                "  editpending integer NOT NULL DEFAULT 0" +
+                ")");
     }
 
     protected void setupAnnotationTables(Statement stmt) throws Exception {
@@ -440,44 +434,37 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  editor integer NOT NULL," +
                 "  text text," +
                 "  changelog character varying(255), " +
-                "  created timestamp," +
-                "  CONSTRAINT annotation_pkey PRIMARY KEY (id)" +
+                "  created timestamp" +
                 ")" );
 
         stmt.addBatch("CREATE TABLE artist_annotation (" +
                 "  artist integer NOT NULL," +
-                "  annotation integer NOT NULL," +
-                "  CONSTRAINT artist_annotation_pkey PRIMARY KEY (artist, annotation)" +
+                "  annotation integer NOT NULL" +
                 ")");
         
         stmt.addBatch("CREATE TABLE label_annotation (" +
                 "  label integer NOT NULL," +
-                "  annotation integer NOT NULL," +
-                "  CONSTRAINT label_annotation_pkey PRIMARY KEY (label, annotation)" +
+                "  annotation integer NOT NULL" +
                 ")");
         
         stmt.addBatch("CREATE TABLE recording_annotation (" +
                 "  recording integer NOT NULL," +
-                "  annotation integer NOT NULL," +
-                "  CONSTRAINT recording_annotation_pkey PRIMARY KEY (recording, annotation)" +
+                "  annotation integer NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE release_annotation (" +
                 "  release integer NOT NULL," +
-                "  annotation integer NOT NULL," +
-                "  CONSTRAINT release_annotation_pkey PRIMARY KEY (release, annotation)" +
+                "  annotation integer NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE release_group_annotation (" +
                 "  release_group integer NOT NULL," +
-                "  annotation integer NOT NULL," +
-                "  CONSTRAINT release_group_annotation_pkey PRIMARY KEY (release_group, annotation)" +
+                "  annotation integer NOT NULL" +
                 ")");
         
         stmt.addBatch("CREATE TABLE work_annotation (" +
                 "  work integer NOT NULL," +
-                "  annotation integer NOT NULL," +
-                "  CONSTRAINT work_annotation_pkey PRIMARY KEY (work, annotation)" +
+                "  annotation integer NOT NULL" +
                 ")");
     }
 
@@ -524,8 +511,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  type integer," +
                 "  iswc character(15)," +
                 "  comment character varying(255)," +
-                "  editpending integer NOT NULL DEFAULT 0," +
-                "  CONSTRAINT work_pkey PRIMARY KEY (id)" +
+                "  editpending integer NOT NULL DEFAULT 0" +
                 ")");
         
         stmt.addBatch("CREATE TABLE work_name (" +
