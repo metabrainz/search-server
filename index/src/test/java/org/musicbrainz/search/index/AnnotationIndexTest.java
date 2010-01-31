@@ -18,14 +18,15 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
     public void setUp() throws Exception {
         super.setup();
-
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        AnnotationIndex li = new AnnotationIndex(createConnection());
-        li.indexData(writer, 0, Integer.MAX_VALUE);
+        AnnotationIndex ai = new AnnotationIndex(createConnection());
+        ai.init(writer);
+        ai.indexData(writer, 0, Integer.MAX_VALUE);
+        ai.destroy();
         writer.close();
     }
 
