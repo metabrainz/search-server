@@ -30,7 +30,6 @@ package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 
 import java.io.IOException;
 

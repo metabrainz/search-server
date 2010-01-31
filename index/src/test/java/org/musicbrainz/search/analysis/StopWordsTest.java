@@ -45,7 +45,7 @@ public class StopWordsTest extends TestCase
 
     public void testAbleToFindStopWordsWithStandardAnalyserIfNoStopWords() throws Exception {
 
-        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT,new HashSet());
+        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT, new HashSet());
         RAMDirectory dir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         Document doc = new Document();

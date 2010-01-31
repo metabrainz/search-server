@@ -29,14 +29,6 @@
 
 package org.musicbrainz.search.analysis;
 
-import com.ibm.icu.text.Transliterator;
-import org.apache.lucene.analysis.*;
-import org.apache.lucene.util.Version;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.util.regex.Pattern;
-
 /**
  * Sets position gap of one for field, should only be used when field is added
  * multiple times within one document

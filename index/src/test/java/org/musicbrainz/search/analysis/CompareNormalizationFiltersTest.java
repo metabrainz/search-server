@@ -7,7 +7,6 @@ import java.io.StringReader;
 import java.io.IOException;
 
 import com.ibm.icu.text.Normalizer;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 /**

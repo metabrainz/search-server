@@ -2,11 +2,7 @@ package org.musicbrainz.search.analysis;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;

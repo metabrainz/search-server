@@ -13,7 +13,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.Token;
 
 import junit.framework.TestCase;
 import com.ibm.icu.text.Transliterator;
