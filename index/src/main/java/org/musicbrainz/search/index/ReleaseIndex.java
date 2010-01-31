@@ -75,7 +75,7 @@ public class ReleaseIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter) throws SQLException {
        addPreparedStatement("LABELINFOS",
-               "SELECT rl.release as releaseId, ln.name as label, catno " +
+               "SELECT rl.release as releaseId, l.gid as labelId, ln.name as labelName, catno " +
                " FROM release_label rl " +
                "  LEFT JOIN label l ON rl.label=l.id " +
                "  LEFT JOIN label_name ln ON l.name = ln.id " +
@@ -143,8 +143,9 @@ public class ReleaseIndex extends DatabaseIndex {
             } else {
                 list = labelInfo.get(releaseId);
             }
-            List<String> entry = new ArrayList<String>(2);
-            entry.add(rs.getString("label"));
+            List<String> entry = new ArrayList<String>(3);
+            entry.add(rs.getString("labelId"));
+            entry.add(rs.getString("labelName"));
             entry.add(rs.getString("catno"));
             list.add(entry);
         }
@@ -220,8 +221,9 @@ public class ReleaseIndex extends DatabaseIndex {
 
         if (labelInfo.containsKey(id)) {
             for (List<String> entry : labelInfo.get(id)) {
-                doc.addFieldOrHyphen(ReleaseIndexField.LABEL, entry.get(0));
-                doc.addFieldOrHyphen(ReleaseIndexField.CATALOG_NO, entry.get(1));
+                doc.addFieldOrHyphen(ReleaseIndexField.LABEL_ID, entry.get(0));
+                doc.addFieldOrHyphen(ReleaseIndexField.LABEL, entry.get(1));
+                doc.addFieldOrHyphen(ReleaseIndexField.CATALOG_NO, entry.get(2));
             }
         }
 

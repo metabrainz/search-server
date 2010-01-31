@@ -756,6 +756,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("1970-01-01", doc.getField(ReleaseIndexField.DATE.getName()).stringValue());
             assertEquals("ECHO1", doc.getField(ReleaseIndexField.CATALOG_NO.getName()).stringValue());
             assertEquals("korova", doc.getField(ReleaseIndexField.LABEL.getName()).stringValue());
+            assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(ReleaseIndexField.LABEL_ID.getName()).stringValue());
             assertEquals("Vinyl", doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
         }
         ir.close();
