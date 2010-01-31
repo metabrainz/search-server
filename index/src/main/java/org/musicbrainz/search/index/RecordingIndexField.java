@@ -5,7 +5,6 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
-import org.musicbrainz.search.analysis.TitleAnalyzer;
 import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
 
 /**

@@ -77,30 +77,30 @@ public class LabelIndex extends DatabaseIndex {
 
 
         addPreparedStatement("TAGS",
-                " SELECT label_tag.label, tag.name as tag, label_tag.count as count" +
-                        " FROM label_tag " +
-                        " INNER JOIN tag " +
-                        " ON tag=id" +
-                        " WHERE label between ? AND ?");
+                "SELECT label_tag.label, tag.name as tag, label_tag.count as count " +
+                " FROM label_tag " +
+                "  INNER JOIN tag ON tag=id " +
+                " WHERE label between ? AND ?");
 
 
-        addPreparedStatement("ALIASES", "SELECT label_alias.label as label, n.name as alias " +
-                "FROM label_alias " +
-                " JOIN label_name n ON (label_alias.name = n.id) " +
-                "WHERE label BETWEEN ? AND ?");
+        addPreparedStatement("ALIASES", 
+                "SELECT label_alias.label as label, n.name as alias " +
+                " FROM label_alias " +
+                "  JOIN label_name n ON (label_alias.name = n.id) " +
+                " WHERE label BETWEEN ? AND ?");
 
 
         addPreparedStatement("LABELS",
                 "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
-                        "	label_type.name as type, begindate_year, begindate_month, begindate_day, " +
-                        "	enddate_year, enddate_month, enddate_day, " +
-                        "	comment, labelcode, lower(isocode) as country " +
-                        "FROM label " +
-                        " LEFT JOIN label_name n0 ON label.name = n0.id " +
-                        " LEFT JOIN label_name n1 ON label.sortname = n1.id " +
-                        " LEFT JOIN label_type ON label.type = label_type.id " +
-                        " LEFT JOIN country ON label.country = country.id " +
-                        "WHERE label.id BETWEEN ? AND ?");
+                "  label_type.name as type, begindate_year, begindate_month, begindate_day, " +
+                "  enddate_year, enddate_month, enddate_day, " +
+                "  comment, labelcode, lower(isocode) as country " +
+                " FROM label " +
+                "  LEFT JOIN label_name n0 ON label.name = n0.id " +
+                "  LEFT JOIN label_name n1 ON label.sortname = n1.id " +
+                "  LEFT JOIN label_type ON label.type = label_type.id " +
+                "  LEFT JOIN country ON label.country = country.id " +
+                " WHERE label.id BETWEEN ? AND ?");
     }
 
 

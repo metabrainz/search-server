@@ -73,77 +73,64 @@ public class RecordingIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter) throws SQLException {
 
         addPreparedStatement("TAGS",
-                 " SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count" +
+                 "SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count " +
                  " FROM recording_tag " +
-                 " INNER JOIN tag " +
-                 " ON tag=id" +
+                 "  INNER JOIN tag ON tag=id " +
                  " WHERE recording between ? AND ?");
 
         addPreparedStatement("ISRCS",
-                "SELECT recording as recordingId, " +
-                "isrc " +
-                "FROM isrc " +
-                "WHERE recording BETWEEN ? AND ?  " +
-                "order by recording,id");
+                "SELECT recording as recordingId, isrc " +
+                " FROM isrc " +
+                " WHERE recording BETWEEN ? AND ?  " +
+                " ORDER BY recording, id");
 
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT re.id as recordingId, " +
-                "acn.position as pos, " +
-                "acn.joinphrase as joinphrase, " +
-                "a.gid as artistId,  " +
-                "a.comment as comment, " +
-                "an.name as artistName, " +
-                "an2.name as artistCreditName, " +
-                "an3.name as artistSortName " +
-                "FROM recording AS re " +
-                "INNER JOIN artist_credit_name acn ON re.artist_credit=acn.artist_credit " +
-                "INNER JOIN artist a ON a.id=acn.artist " +
-                "INNER JOIN artist_name an on a.name=an.id " +
-                "INNER JOIN artist_name an2 on acn.name=an2.id " +
-                "INNER JOIN artist_name an3 on a.sortname=an3.id " +
-                "WHERE re.id BETWEEN ? AND ?  " +
-                "order by re.id,acn.position ");
+                "  acn.position as pos, " +
+                "  acn.joinphrase as joinphrase, " +
+                "  a.gid as artistId,  " +
+                "  a.comment as comment, " +
+                "  an.name as artistName, " +
+                "  an2.name as artistCreditName, " +
+                "  an3.name as artistSortName " +
+                " FROM recording AS re " +
+                "  INNER JOIN artist_credit_name acn ON re.artist_credit=acn.artist_credit " +
+                "  INNER JOIN artist a ON a.id=acn.artist " +
+                "  INNER JOIN artist_name an ON a.name=an.id " +
+                "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
+                "  INNER JOIN artist_name an3 ON a.sortname=an3.id " +
+                " WHERE re.id BETWEEN ? AND ?  " +
+                " ORDER BY re.id, acn.position ");
 
         addPreparedStatement("TRACKS",
-                "SELECT tn.name as trackname, t.recording, t.position as trackposition,tl.trackcount, " +
-                "m.release as releaseid,m.position as mediumposition " +
-                "FROM track t " +
-                "INNER JOIN track_name tn " +
-                "ON t.name=tn.id " +
-                "INNER JOIN tracklist tl " +
-                "ON t.tracklist=tl.id " +
-                "INNER JOIN medium m " +
-                "ON m.tracklist=tl.id " +
-                "WHERE t.recording BETWEEN ? AND ?");
+                "SELECT tn.name as trackname, t.recording, t.position as trackposition, tl.trackcount, " +
+                "  m.release as releaseid, m.position as mediumposition " +
+                " FROM track t " +
+                "  INNER JOIN track_name tn ON t.name=tn.id " +
+                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
+                "  INNER JOIN medium m ON m.tracklist=tl.id " +
+                " WHERE t.recording BETWEEN ? AND ?");
 
         releases =
                 "SELECT " +
-                "r.id as releaseKey, r.gid as releaseid, rn.name as releasename, rgt.name as type,"+
-                "rs.name as status, sum(tr.trackcount) as tracks " +
-                "FROM release r " +
-                "INNER JOIN release_group rg " +
-                "ON rg.id = r.release_group " +
-                "INNER JOIN medium m " +
-                "ON m.release=r.id " +
-                "LEFT JOIN tracklist tr " +
-                "ON m.tracklist=tr.id " +
-                "LEFT JOIN release_group_type rgt " +
-                "ON rg.type = rgt.id " +
-                "INNER JOIN release_name rn " +
-                "ON r.name=rn.id " +
-                "LEFT JOIN release_status rs " +
-                "ON r.status = rs.id " +
-                "WHERE r.id in " ;
+                "  r.id as releaseKey, r.gid as releaseid, rn.name as releasename, rgt.name as type, "+
+                "  rs.name as status, sum(tr.trackcount) as tracks " +
+                " FROM release r " +
+                "  INNER JOIN release_group rg ON rg.id = r.release_group " +
+                "  INNER JOIN medium m ON m.release=r.id " +
+                "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
+                "  LEFT JOIN release_group_type rgt ON rg.type = rgt.id " +
+                "  INNER JOIN release_name rn ON r.name=rn.id " +
+                "  LEFT JOIN release_status rs ON r.status = rs.id " +
+                " WHERE r.id in " ;
 
-
-        releasesGroupBy =  "GROUP BY r.id, r.gid, rn.name, rgt.name, rs.name";
+        releasesGroupBy =  " GROUP BY r.id, r.gid, rn.name, rgt.name, rs.name";
 
         addPreparedStatement("RECORDINGS",
-                "SELECT re.id as recordingId,re.gid as trackid,re.length as duration,tn.name as trackname " +
-                "FROM recording re " +
-                "INNER JOIN track_name tn " +
-                "ON re.name=tn.id " +
-                "WHERE re.id BETWEEN ? AND ?");
+                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname " +
+                " FROM recording re " +
+                "  INNER JOIN track_name tn ON re.name=tn.id " +
+                " WHERE re.id BETWEEN ? AND ?");
     }
 
     /**
@@ -288,7 +275,7 @@ public class RecordingIndex extends DatabaseIndex {
 
     }
 
-    /** Fill in paramters of the release statement
+    /** Fill in parameters of the release statement
      *
      * @param stmt
      * @param releaseKeys
@@ -321,11 +308,10 @@ public class RecordingIndex extends DatabaseIndex {
             for(TrackWrapper track  : recording) {
                 releaseKeys.add(track.getReleaseId());
             }
-
         }
 
-        PreparedStatement stmt =createReleaseStatement(releaseKeys.size());
-        useReleaseStatement(stmt,releaseKeys);
+        PreparedStatement stmt = createReleaseStatement(releaseKeys.size());
+        useReleaseStatement(stmt, releaseKeys);
         ResultSet rs = stmt.executeQuery();
         Map<Integer, Release> releases = new HashMap<Integer, Release>();
         Release release;
@@ -338,7 +324,7 @@ public class RecordingIndex extends DatabaseIndex {
                 release = releases.get(releaseKey);
             }
 
-            MediumList  ml  = of.createMediumList();
+            MediumList ml = of.createMediumList();
             ReleaseGroup rg = of.createReleaseGroup();
             release.setId(rs.getString("releaseId"));
             release.setTitle(rs.getString("releasename"));
@@ -384,7 +370,7 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-        Map<Integer,List<Tag>> tags = loadTags(min, max);
+        Map<Integer, List<Tag>> tags = loadTags(min, max);
         Map<Integer, List<String>> isrcWrapper = loadISRCs(min, max);
         Map<Integer, ArtistCredit> artistCredits = loadArtists(min, max);
         Map<Integer, List<TrackWrapper>> trackWrapper = loadTracks(min, max);
@@ -404,7 +390,7 @@ public class RecordingIndex extends DatabaseIndex {
         MbDocument doc = new MbDocument();
         doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
         String recordingName = rs.getString("trackname");
-        doc.addNonEmptyField(RecordingIndexField.RECORDING,recordingName );         //Search
+        doc.addNonEmptyField(RecordingIndexField.RECORDING, recordingName);         //Search
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);

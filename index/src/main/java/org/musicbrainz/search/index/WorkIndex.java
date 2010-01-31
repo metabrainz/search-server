@@ -69,29 +69,29 @@ public class WorkIndex extends DatabaseIndex {
 
         addPreparedStatement("ARTISTCREDITS",
                         "SELECT w.id as wid, " +
-                        "acn.position as pos, " +
-                        "acn.joinphrase as joinphrase, " +
-                        "a.gid as artistId,  " +
-                        "a.comment as comment, " +
-                        "an.name as artistName, " +
-                        "an2.name as artistCreditName, " +
-                        "an3.name as artistSortName " +
-                        "FROM work AS w " +
-                        "INNER JOIN artist_credit_name acn ON w.artist_credit=acn.artist_credit " +
-                        "INNER JOIN artist a ON a.id=acn.artist " +
-                        "INNER JOIN artist_name an on a.name=an.id " +
-                        "INNER JOIN artist_name an2 on acn.name=an2.id " +
-                        "INNER JOIN artist_name an3 on a.sortname=an3.id " +
-                        "WHERE w.id BETWEEN ? AND ?  " +
-                        "order by w.id,acn.position ");          //Order by pos so come in expected order
+                        "  acn.position as pos, " +
+                        "  acn.joinphrase as joinphrase, " +
+                        "  a.gid as artistId,  " +
+                        "  a.comment as comment, " +
+                        "  an.name as artistName, " +
+                        "  an2.name as artistCreditName, " +
+                        "  an3.name as artistSortName " +
+                        " FROM work AS w " +
+                        "  INNER JOIN artist_credit_name acn ON w.artist_credit=acn.artist_credit " +
+                        "  INNER JOIN artist a ON a.id=acn.artist " +
+                        "  INNER JOIN artist_name an ON a.name=an.id " +
+                        "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
+                        "  INNER JOIN artist_name an3 ON a.sortname=an3.id " +
+                        " WHERE w.id BETWEEN ? AND ?  " +
+                        " ORDER BY w.id, acn.position");          //Order by pos so come in expected order
 
         addPreparedStatement("WORKS",
                         "SELECT w.id as wid, w.gid, wn.name as name, lower(wt.name) as type, iswc " +
-                        "FROM work AS w " +
-                        "LEFT JOIN work_name wn ON w.name = wn.id " +
-                        "LEFT JOIN work_type wt ON w.type = wt.id " +
-                        "WHERE w.id BETWEEN ? AND ? " +
-                        "order by w.id");
+                        " FROM work AS w " +
+                        "  LEFT JOIN work_name wn ON w.name = wn.id " +
+                        "  LEFT JOIN work_type wt ON w.type = wt.id " +
+                        " WHERE w.id BETWEEN ? AND ? " +
+                        " ORDER BY w.id");
     }
 
 

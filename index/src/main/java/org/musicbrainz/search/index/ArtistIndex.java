@@ -68,36 +68,35 @@ public class ArtistIndex extends DatabaseIndex {
         indexWriter.setSimilarity(new MusicbrainzSimilarity());
 
         addPreparedStatement("TAGS",
-                " SELECT artist_tag.artist, tag.name as tag, artist_tag.count as count" +
-                        " FROM artist_tag " +
-                        " INNER JOIN tag " +
-                        " ON tag=id" +
-                        " WHERE artist between ? AND ?");
+                "SELECT artist_tag.artist, tag.name as tag, artist_tag.count as count " +
+                " FROM artist_tag " +
+                "  INNER JOIN tag ON tag=id " +
+                " WHERE artist between ? AND ?");
 
         addPreparedStatement("ALIASES",
                 "SELECT artist_alias.artist as artist, n.name as alias " +
-                        "FROM artist_alias " +
-                        " JOIN artist_name n ON (artist_alias.name = n.id) " +
-                        "WHERE artist BETWEEN ? AND ? " +
-                        "UNION " +
-                        "SELECT artist as artist, n.name as alias " +
-                        " FROM artist_credit_name " +
-                        " JOIN artist_name n ON n.id = artist_credit_name.name " +
-                        " WHERE artist BETWEEN ? AND ? ");
+                " FROM artist_alias " +
+                "  JOIN artist_name n ON (artist_alias.name = n.id) " +
+                " WHERE artist BETWEEN ? AND ? " +
+                "UNION " +
+                "SELECT artist as artist, n.name as alias " +
+                " FROM artist_credit_name " +
+                "  JOIN artist_name n ON n.id = artist_credit_name.name " +
+                " WHERE artist BETWEEN ? AND ? ");
 
 
         addPreparedStatement("ARTISTS",
                 "SELECT artist.id, gid, n0.name as name, n1.name as sortname, " +
-                        "	lower(artist_type.name) as type, begindate_year, begindate_month, begindate_day, " +
-                        "	enddate_year, enddate_month, enddate_day, " +
-                        "	comment, lower(isocode) as country, lower(gender.name) as gender " +
-                        "FROM artist " +
-                        " LEFT JOIN artist_name n0 ON artist.name = n0.id " +
-                        " LEFT JOIN artist_name n1 ON artist.sortname = n1.id " +
-                        " LEFT JOIN artist_type ON artist.type = artist_type.id " +
-                        " LEFT JOIN country ON artist.country = country.id " +
-                        " LEFT JOIN gender ON artist.gender=gender.id " +
-                        "WHERE artist.id BETWEEN ? AND ?");
+                "  lower(artist_type.name) as type, begindate_year, begindate_month, begindate_day, " +
+                "  enddate_year, enddate_month, enddate_day, " +
+                "  comment, lower(isocode) as country, lower(gender.name) as gender " +
+                " FROM artist " +
+                "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
+                "  LEFT JOIN artist_name n1 ON artist.sortname = n1.id " +
+                "  LEFT JOIN artist_type ON artist.type = artist_type.id " +
+                "  LEFT JOIN country ON artist.country = country.id " +
+                "  LEFT JOIN gender ON artist.gender=gender.id " +
+                " WHERE artist.id BETWEEN ? AND ?");
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {

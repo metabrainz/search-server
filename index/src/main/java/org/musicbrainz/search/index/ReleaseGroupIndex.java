@@ -78,44 +78,43 @@ public class
     public void init(IndexWriter indexWriter) throws SQLException {
 
         addPreparedStatement("TAGS",
-                 " SELECT release_group_tag.release_group, tag.name as tag, release_group_tag.count as count" +
-                         " FROM release_group_tag " +
-                         " INNER JOIN tag " +
-                         " ON tag=id" +
-                         " WHERE release_group between ? AND ?");
+                 "SELECT release_group_tag.release_group, tag.name as tag, release_group_tag.count as count " +
+                 " FROM release_group_tag " +
+                 "  INNER JOIN tag ON tag=id " +
+                 " WHERE release_group between ? AND ?");
 
 
         addPreparedStatement("RELEASES",
                 "SELECT DISTINCT release_group, release.gid as gid, n0.name as name " +
-                        "FROM release " +
-                        "LEFT JOIN release_name n0 ON release.name = n0.id " +
-                        "WHERE release_group BETWEEN ? AND ?");
+                " FROM release " +
+                "  LEFT JOIN release_name n0 ON release.name = n0.id " +
+                " WHERE release_group BETWEEN ? AND ?");
 
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT rg.id as releaseGroupId, " +
-                        "acn.position as pos, " +
-                        "acn.joinphrase as joinphrase, " +
-                        "a.gid as artistId,  " +
-                        "a.comment as comment, " +
-                        "an.name as artistName, " +
-                        "an2.name as artistCreditName, " +
-                        "an3.name as artistSortName " +
-                        "FROM release_group AS rg " +
-                        "INNER JOIN artist_credit_name acn ON rg.artist_credit=acn.artist_credit " +
-                        "INNER JOIN artist a ON a.id=acn.artist " +
-                        "INNER JOIN artist_name an on a.name=an.id " +
-                        "INNER JOIN artist_name an2 on acn.name=an2.id " +
-                        "INNER JOIN artist_name an3 on a.sortname=an3.id " +
-                        "WHERE rg.id BETWEEN ? AND ?  " +
-                        "order by rg.id,acn.position ");          //Order by pos so come in expected order
+                "  acn.position as pos, " +
+                "  acn.joinphrase as joinphrase, " +
+                "  a.gid as artistId,  " +
+                "  a.comment as comment, " +
+                "  an.name as artistName, " +
+                "  an2.name as artistCreditName, " +
+                "  an3.name as artistSortName " +
+                " FROM release_group AS rg " +
+                "  INNER JOIN artist_credit_name acn ON rg.artist_credit=acn.artist_credit " +
+                "  INNER JOIN artist a ON a.id=acn.artist " +
+                "  INNER JOIN artist_name an ON a.name=an.id " +
+                "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
+                "  INNER JOIN artist_name an3 ON a.sortname=an3.id " +
+                " WHERE rg.id BETWEEN ? AND ?  " +
+                " ORDER BY rg.id, acn.position ");          //Order by pos so come in expected order
 
         addPreparedStatement("RELEASEGROUPS",
                 "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
-                        "FROM release_group AS rg " +
-                        "LEFT JOIN release_name n0 ON rg.name = n0.id " +
-                        "LEFT JOIN release_group_type  ON rg.type = release_group_type.id " +
-                        "WHERE rg.id BETWEEN ? AND ?" +
-                        "order by rg.id");
+                " FROM release_group AS rg " +
+                "  LEFT JOIN release_name n0 ON rg.name = n0.id " +
+                "  LEFT JOIN release_group_type ON rg.type = release_group_type.id " +
+                " WHERE rg.id BETWEEN ? AND ?" +
+                " ORDER BY rg.id");
     }
 
 

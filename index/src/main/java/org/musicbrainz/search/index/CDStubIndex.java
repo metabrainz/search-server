@@ -64,11 +64,11 @@ public class CDStubIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter) throws SQLException {
         addPreparedStatement("CDSTUBS",
                 "SELECT release_raw.title, release_raw.artist, barcode, comment, discid, count(track_raw.id) as tracks " +
-                "FROM release_raw " +
-                "JOIN cdtoc_raw ON release_raw.id = cdtoc_raw.release " +
-                "JOIN track_raw ON track_raw.release = release_raw.id " +
-                "WHERE release_raw.id BETWEEN ? AND ? " +
-                "GROUP BY release_raw.title, release_raw.id, release_raw.artist, barcode, comment, discid");
+                " FROM release_raw " +
+                "  JOIN cdtoc_raw ON release_raw.id = cdtoc_raw.release " +
+                "  JOIN track_raw ON track_raw.release = release_raw.id " +
+                " WHERE release_raw.id BETWEEN ? AND ? " +
+                " GROUP BY release_raw.title, release_raw.id, release_raw.artist, barcode, comment, discid");
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
