@@ -67,23 +67,20 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',2,'a comment', 1978,null, 1995, 2, 0)");
-
-        stmt.addBatch("INSERT INTO artist_credit (id, artistcount, refcount) VALUES (1, 1, 1)");
-
-        stmt.addBatch("INSERT INTO artist_credit_name(" +
-                "    artist_credit, position, artist,name, joinphrase)" +
-                "    VALUES (1, 0, 16153, 1, null)");
+        stmt.addBatch("INSERT INTO artist (id,name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 2, 'a comment', 1978, null, 1995, 2)");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase) " +
+                " VALUES (1, 0, 16153, 1, null)");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
-        stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
-                "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0)");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type, comment)" +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null)");
 
-        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
-                "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
-                "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
+        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging, country, " +
+                "  language, script, date_year, date_month, date_day, barcode, comment) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1, null, null)");
 
         stmt.executeBatch();
         stmt.close();
@@ -110,24 +107,21 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
-
-        stmt.addBatch("INSERT INTO artist_credit (id, artistcount, refcount) VALUES (1, 1, 1)");
-
-        stmt.addBatch("INSERT INTO artist_credit_name(" +
-                "    artist_credit, position, artist,name, joinphrase)" +
-                "    VALUES (1, 0, 16153, 1, null)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+                " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, null, 1995, 2)");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist,name, joinphrase) " +
+                " VALUES (1, 0, 16153, 1, null)");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
 
-        stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
-                "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, null, null, 0);");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type, comment)" +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, null, null);");
 
-        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
-                "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
-                "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
+                "  language, script, date_year, date_month, date_day,barcode, comment) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1, null, null)");
 
         stmt.executeBatch();
         stmt.close();
@@ -155,23 +149,26 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',1,'a comment', 1978,null, 1995, 2, 0)");
-
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, null, 1995, 2)");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist,name, joinphrase) " +
+                " VALUES (1, 0, 16153, 1, null)");
+        
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (Bonus disc)')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (3, 'Crocodiles (Special disc)')");
 
-        stmt.addBatch("INSERT INTO release_group( id, gid,name,artist_credit,type,comment,editpending)" +
-                "    VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0);");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type, comment)" +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null);");
 
-        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
-                "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
-                "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
+                "  language, script, date_year, date_month, date_day, barcode, comment) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1, null, null)");
 
-        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
-                "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
-                "  VALUES (491241,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 3, 1,491240,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging,country, " +
+                "  language, script, date_year, date_month, date_day, barcode, comment) " +
+                " VALUES (491241, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 3, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1, null, null)");
 
         stmt.executeBatch();
         stmt.close();
@@ -192,28 +189,29 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'The Cincinnati Pops Orchestra')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (4, 'Cincinnati Pops Orchestra, The')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (5, 'Cincinnati Pops')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (6, 'Erich Kunzel and Kunzel, Eric')");
 
-        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                " VALUES (1,1, '99845d0c-f239-4051-a6b1-4b5e9f7ede0b',2,'a comment', 1978,null, 1995, 2, 0)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+                " VALUES (1, 1, '99845d0c-f239-4051-a6b1-4b5e9f7ede0b', 2, 'a comment', 1978, null, 1995, 2)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+                " VALUES (2, 3, 'd8fbd94c-cd06-4e8b-a559-761ad969d07e', 4, 'a comment', 1978, null, 1995, 2)");
 
-        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                    " VALUES (2,3, 'd8fbd94c-cd06-4e8b-a559-761ad969d07e',4,'a comment', 1978,null, 1995, 2, 0)");
-
-        stmt.addBatch("INSERT INTO artist_credit( id, artistcount, refcount) VALUES (1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name( artist_credit, position, artist,name, joinphrase)" +
-                "    VALUES (1, 0, 1, 1, 'and')");
-        stmt.addBatch("INSERT INTO artist_credit_name( artist_credit, position, artist,name, joinphrase)" +
-                "    VALUES (1, 1, 2, 5, null)");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 6, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase)" +
+                " VALUES (1, 0, 1, 1, ' and ')");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase)" +
+                " VALUES (1, 1, 2, 5, null)");
+        
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Epics')");
-        stmt.addBatch("INSERT INTO release_group (id, gid,name,artist_credit,type,comment,editpending)" +
-                "    VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null, 0)");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type, comment)" +
+                "    VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, null)");
 
-        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging,country, " +
-                "language, script, date_year, date_month, date_day,barcode, comment, editpending) " +
-                "  VALUES (1,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1,1,1,1,1,1, 1, 1, 1, 1, null, null, 1)");
+        stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging, country, " +
+                "  language, script, date_year, date_month, date_day, barcode, comment) " +
+                " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, null, null)");
 
         stmt.addBatch("INSERT INTO tag (id, name, refcount) VALUES (1, 'punk', 2)");
-        stmt.addBatch("INSERT INTO release_group_tag(release_group, tag, count)VALUES (1, 1, 10)");
+        stmt.addBatch("INSERT INTO release_group_tag (release_group, tag, count) VALUES (1, 1, 10)");
 
         stmt.executeBatch();
         stmt.close();
@@ -352,49 +350,48 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(0);
 
-
             TermEnum tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_NAME.getName(), ""));
-            assertEquals(ReleaseGroupIndexField.ARTIST_NAME.getName(),tr.term().field());
-            assertEquals(1,tr.docFreq());
-            assertEquals("cincinnati",tr.term().text());
+            assertEquals(ReleaseGroupIndexField.ARTIST_NAME.getName(), tr.term().field());
+            assertEquals(1, tr.docFreq());
+            assertEquals("cincinnati", tr.term().text());
             tr.next();
-            assertEquals("erich",tr.term().text());
+            assertEquals("erich", tr.term().text());
             tr.next();
-            assertEquals("kunzel",tr.term().text());
+            assertEquals("kunzel", tr.term().text());
             tr.next();
-            assertEquals("orchestra",tr.term().text());
+            assertEquals("orchestra", tr.term().text());
             tr.next();
-            assertEquals("pops",tr.term().text());
+            assertEquals("pops", tr.term().text());
             tr.next();
-            assertEquals("the",tr.term().text());
+            assertEquals("the", tr.term().text());
             
             tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_ID.getName(), ""));
-            assertEquals(ReleaseGroupIndexField.ARTIST_ID.getName(),tr.term().field());
-            assertEquals(1,tr.docFreq());
-            assertEquals("99845d0c-f239-4051-a6b1-4b5e9f7ede0b",tr.term().text());
+            assertEquals(ReleaseGroupIndexField.ARTIST_ID.getName(), tr.term().field());
+            assertEquals(1, tr.docFreq());
+            assertEquals("99845d0c-f239-4051-a6b1-4b5e9f7ede0b", tr.term().text());
             tr.next();
-            assertEquals("d8fbd94c-cd06-4e8b-a559-761ad969d07e",tr.term().text());
+            assertEquals("d8fbd94c-cd06-4e8b-a559-761ad969d07e", tr.term().text());
             tr.next();
 
             tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName(), ""));
-            assertEquals(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName(),tr.term().field());
-            assertEquals(1,tr.docFreq());
-            assertEquals("cincinnati",tr.term().text());
+            assertEquals(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName(), tr.term().field());
+            assertEquals(1, tr.docFreq());
+            assertEquals("cincinnati", tr.term().text());
             tr.next();
-            assertEquals("erich",tr.term().text());
+            assertEquals("erich", tr.term().text());
             tr.next();
-            assertEquals("kunzel",tr.term().text());
+            assertEquals("kunzel", tr.term().text());
             tr.next();
-            assertEquals("pops",tr.term().text());
+            assertEquals("pops", tr.term().text());
 
-            assertEquals("Epics",doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName())[0].stringValue());
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37",doc.getFields(ReleaseGroupIndexField.RELEASEGROUP_ID.getName())[0].stringValue());
+            assertEquals("Epics", doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName())[0].stringValue());
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFields(ReleaseGroupIndexField.RELEASEGROUP_ID.getName())[0].stringValue());
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
-            assertEquals("Erich Kunzel",ac.getNameCredit().get(0).getArtist().getName());
-            assertEquals("Cincinnati Pops",ac.getNameCredit().get(1).getName());
-            assertEquals("The Cincinnati Pops Orchestra",ac.getNameCredit().get(1).getArtist().getName());
+            assertEquals("Erich Kunzel", ac.getNameCredit().get(0).getArtist().getName());
+            assertEquals("Cincinnati Pops", ac.getNameCredit().get(1).getName());
+            assertEquals("The Cincinnati Pops Orchestra", ac.getNameCredit().get(1).getArtist().getName());
         }
         ir.close();
 

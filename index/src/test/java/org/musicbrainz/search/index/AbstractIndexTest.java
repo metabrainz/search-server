@@ -171,6 +171,7 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE artist_credit (" +
                 "  id serial NOT NULL," +
+                "  name integer NOT NULL," +
                 "  artistcount integer NOT NULL," +
                 "  refcount integer DEFAULT 0" +
                 ")");
