@@ -246,7 +246,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("type=\"Group\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
-        assertTrue(output.contains("<sort-name>Farming Incident</sort-name>"));
+        assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("<life-span begin=\"1999-04\""));
         assertFalse(output.contains("end"));
         assertFalse(output.contains("alias"));

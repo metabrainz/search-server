@@ -74,7 +74,7 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
 
             String sortname = doc.get(ArtistIndexField.SORTNAME);
             if (sortname != null) {
-                artist.setSortName(name);
+                artist.setSortName(sortname);
 
             }
 
