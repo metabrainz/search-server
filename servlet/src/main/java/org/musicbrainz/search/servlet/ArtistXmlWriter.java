@@ -36,7 +36,6 @@ import com.jthink.brainz.mmd.ObjectFactory;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.index.ArtistIndexField;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -72,7 +71,7 @@ public class ArtistXmlWriter extends XmlWriter {
 
             String sortname = doc.get(ArtistIndexField.SORTNAME);
             if (sortname != null) {
-                artist.setSortName(name);
+                artist.setSortName(sortname);
 
             }
 

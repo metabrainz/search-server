@@ -59,7 +59,7 @@ public class FindArtistTest extends TestCase {
             Document doc = new Document();
             Index.addFieldToDocument(doc, ArtistIndexField.ARTIST_ID, "ccd4879c-5e88-4385-b131-bf65296bf245");
             Index.addFieldToDocument(doc, ArtistIndexField.ARTIST, "Echo & The Bunnymen");
-            Index.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Echo & The Bunnymen");
+            Index.addFieldToDocument(doc, ArtistIndexField.SORTNAME, "Echo & Bunnymen, The");
             Index.addFieldToDocument(doc, ArtistIndexField.BEGIN, "1978");
             Index.addFieldToDocument(doc, ArtistIndexField.TYPE, ArtistType.GROUP.getName());
             Index.addFieldToDocument(doc, ArtistIndexField.ALIAS, "Echo And The Bunnymen");
@@ -167,7 +167,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
         assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST));
         assertEquals("1978", doc.get(ArtistIndexField.BEGIN));
-        assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME));
+        assertEquals("Echo & Bunnymen, The", doc.get(ArtistIndexField.SORTNAME));
         assertEquals("group", doc.get(ArtistIndexField.TYPE));
     }
 
@@ -182,7 +182,7 @@ public class FindArtistTest extends TestCase {
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
             assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST));
             assertEquals("1978", doc.get(ArtistIndexField.BEGIN));
-            assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME));
+            assertEquals("Echo & Bunnymen, The", doc.get(ArtistIndexField.SORTNAME));
             assertEquals("group", doc.get(ArtistIndexField.TYPE));
         }
 
@@ -195,7 +195,7 @@ public class FindArtistTest extends TestCase {
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
             assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.ARTIST));
             assertEquals("1978", doc.get(ArtistIndexField.BEGIN));
-            assertEquals("Echo & The Bunnymen", doc.get(ArtistIndexField.SORTNAME));
+            assertEquals("Echo & Bunnymen, The", doc.get(ArtistIndexField.SORTNAME));
             assertEquals("group", doc.get(ArtistIndexField.TYPE));
         }
 
