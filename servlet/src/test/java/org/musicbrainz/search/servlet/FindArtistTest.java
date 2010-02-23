@@ -49,7 +49,7 @@ public class FindArtistTest extends TestCase {
             doc.addField(ArtistIndexField.GENDER, "male");
             doc.addField(ArtistIndexField.TAG, "thrash");
             doc.addField(ArtistIndexField.TAGCOUNT, "5");
-            doc.addField(ArtistIndexField.TAG, "goth");
+            doc.addField(ArtistIndexField.TAG, "güth");
             doc.addField(ArtistIndexField.TAGCOUNT, "11");
 
             writer.addDocument(doc.getLuceneDocument());
@@ -278,7 +278,8 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
         assertTrue(output.contains("<country>af</country>"));
         assertTrue(output.contains("<gender>male</gender>"));
-        assertTrue(output.contains("thrash</tag>"));
+        assertTrue(output.contains("<tag>thrash</tag>"));
+        assertTrue(output.contains("<tag>güth</tag>"));
         assertFalse(output.contains("alias"));
         assertFalse(output.contains("disambugation"));
     }
@@ -355,7 +356,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("\"life-span\":{\"begin\":\"1999-04\"}"));
         assertTrue(output.contains("\"country\":\"af\""));
         assertTrue(output.contains("\"gender\":\"male\""));
-        assertTrue(output.contains("\"tag\":[\"thrash\",\"goth\"]"));
+        assertTrue(output.contains("\"tag\":[\"thrash\",\"güth\"]"));
     }
 
     public void testOutputJsonMultiple() throws Exception {
