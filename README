@@ -41,7 +41,7 @@ and setup Java Home directory in your profile (not needed on ubuntu):
 
     export JAVA_HOME="/usr/bin/java"
 
-To build you need to install Maven, if you havent already got it. Download
+To build you need to install Maven, if you haven't already got it. Download
 it from:
 
     http://maven.apache.org/download.html
@@ -49,6 +49,15 @@ it from:
 
 Check out and build server code
 -------------------------------
+
+If you haven't already done so, check out the mmd-schema repository using Subversion as follows:
+
+    svn co http://svn.musicbrainz.org/mmd-schema/trunk mmd-schema
+
+Then build and install the model:
+
+    cd mmd-schema
+    mvn install
 
 If you haven't already done so, check out the server source code using Subversion via:
 
@@ -73,7 +82,7 @@ locations can be overridden by editing ... /webapps/ROOT/WEB-INF/web.xml so that
 
 But, it is suggested that you use the default location. Then, copy the index builder jar into /home/search:
 
-    cp /home/search/searchserver/index/target/index-1.0-SNAPSHOT-jar-with-dependencies.jar /home/search
+    cp /home/search/searchserver/index/target/index-2.0-SNAPSHOT-jar-with-dependencies.jar /home/search
 
 Then unjar the search server webapp into the ROOT directory under webapps for your tomcat installation.
 Automatic deployment of search apps didn't work so well in practice, so it is recommended that you 
@@ -91,31 +100,30 @@ Now you can start tomcat again.
 Build Indexes
 -------------
 
-Now build indexes with these commands:
-
-    cd /home/search 
-    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata
-
-This will build all of the indexes using upto 512mb of memory (but freedb) using all of the defaults for connecting
-to the database servers. If your database isn't on the same server and named according to the 
-defaults you will need to give the command line more options. To see the options execute this:
-
-    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --help
-
-To also build the freedb indexes, download the latest freedb dump (in tar.bz2 format) from:
+Download the latest freedb dump (in tar.bz2 format) from:
 
     http://www.freedb.org/en/download__database.10.html
 
 The file you download should be a complete dump and should look like this:
 
-    freedb-complete-20090901.tar.bz2 
+    freedb-complete-20090901.tar.bz2
 
-Place the downloaded file into /home/search. Then you can add the following command line arguments
-in order to automatically build the freedb index as well:
+Place the downloaded file into /home/search.
 
-    --freedb-dump /home/search/<freedb tar.bz2 file>
+Now build indexes with these commands:
 
-It is worth noting that if you want to build _just_ the freedb_index, you can specify
+    cd /home/search 
+    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata
+         -freedb-dump /home/search/<freedb tar.bz2 file>
+
+This will build all of the indexes using upto 512mb of memory using all of the defaults for connecting
+to the database servers. If your database isn't on the same server and named according to the 
+defaults you will need to give the command line more options. To see the options execute this:
+
+    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --help
+
+Usually you will want to build the freedb index at a different time to the other indexes so you can also
+build it separately. If you want to build just the freedb_index, you can specify
 
     --indexes freedb
 
@@ -139,7 +147,7 @@ safe to turn this off. For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat6 
 Next, configure Tomcat with the max heap memory you want to use for Search Server. This is 
 very important because by default it will only use a maximum of 32MB, adding
 the following to your profile sets up Tomcat with 512MB. It is currently recommended to
-to give tomcat half of your available ram (if running a standlone production system).
+to give tomcat half of your available ram (if running a standalone production system).
 
 Also configure Tomcat to run with file encoding UTF-8, otherwise it will use the default which 
 will vary from platform to platform. To accomplish both, set the JAVA_OPTS like this:
@@ -183,8 +191,39 @@ Testing the Search Server
 
 You can now lookup search for resources with a url like:
 
-    http://localhost:80/ws/1/artist/?query=%22fred%22&fmt=html
+    http://localhost:80/ws/2/artist/?query=fred
 
-for HTML results. To get XML:
+For compatability with Webservice version 1 use:
 
-    http://localhost:80/ws/1/artist/?query=%22fred%22&fmt=xml
+    http://localhost:80/ws/1/artist/?query=fred
+
+You can also get the results in JSON format using a url like:
+
+    http://localhost:80/ws/2/artist/?query=fred&fmt=json
+
+
+Server administration
+---------------------
+
+If you have built new indexes you can inform the search server of the new indexes without restarting it using
+
+    http://localhost:80/?init=true
+
+You can also access the indexes using the mapped mode which may give performance improvements
+
+    http://localhost:80/?init=mmap
+
+The number of queries done against any index since the servlet was started can be obtained using the count parameter
+and index name
+
+    http://localhost:80/?count=artist
+
+
+Troubleshooting
+---------------
+
+The search url is a mapping you can also use the underlying url directly as follows:
+
+     http://localhost:80/?type=artist&query=fred
+
+     
