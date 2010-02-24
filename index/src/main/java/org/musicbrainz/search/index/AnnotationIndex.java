@@ -105,7 +105,6 @@ public class AnnotationIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, type));
         }
-        st.close();
     }
     
     public Document documentFromResultSet(ResultSet rs, AnnotationType type) throws SQLException {
