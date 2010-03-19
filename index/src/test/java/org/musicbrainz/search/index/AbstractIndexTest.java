@@ -19,7 +19,7 @@ public abstract class AbstractIndexTest extends TestCase {
         return DriverManager.getConnection("jdbc:h2:mem:tests;MODE=PostgreSQL");
     }
 
-    /** Check fisrt term of given field, terms are listed lexigrahically
+    /** Check first term of given field, terms are listed lexigrahically
      *
       * @param ir
      * @param field
@@ -250,8 +250,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name character varying(255) NOT NULL" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE label_tag" +
-                "(" +
+        stmt.addBatch("CREATE TABLE label_tag (" +
                 "  label integer NOT NULL," +
                 "  tag integer NOT NULL," +
                 "  count integer NOT NULL" +

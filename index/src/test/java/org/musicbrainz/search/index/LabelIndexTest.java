@@ -1,13 +1,11 @@
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
-import org.musicbrainz.search.index.LabelIndex;
-import org.musicbrainz.search.index.LabelIndexField;
 
 import java.sql.Connection;
 import java.sql.Statement;
