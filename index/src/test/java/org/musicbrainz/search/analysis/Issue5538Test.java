@@ -10,6 +10,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 /** Test that analyser treats No.x and No. x the same (where x can be any number) , because both forms are found
  * in the database.
@@ -29,12 +30,12 @@ public class Issue5538Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("\"no. 11\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"no. 11\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("\"no.11\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"no.11\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

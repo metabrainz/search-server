@@ -17,6 +17,7 @@ import org.apache.lucene.analysis.Tokenizer;
 import junit.framework.TestCase;
 import com.ibm.icu.text.Transliterator;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.io.StringReader;
 
@@ -31,7 +32,7 @@ public class Issue1006Test extends TestCase {
     public void testKatakanaHiraganaTokenizer() throws Exception {
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲーム"));
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
             TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -46,7 +47,7 @@ public class Issue1006Test extends TestCase {
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲエム"));
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
             TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -63,7 +64,7 @@ public class Issue1006Test extends TestCase {
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("げえむ"));
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
             TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -87,7 +88,7 @@ public class Issue1006Test extends TestCase {
 
         {
 
-            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲーム"));
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
@@ -105,7 +106,7 @@ public class Issue1006Test extends TestCase {
 
         {
 
-            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("ゲエム"));
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
@@ -123,7 +124,7 @@ public class Issue1006Test extends TestCase {
 
         {
 
-            Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("げえむ"));
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
@@ -170,19 +171,19 @@ public class Issue1006Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir, true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("ゲーム");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ゲーム");
             //System.out.println(q);
             assertEquals(3, searcher.search(q, 10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("ゲエム");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ゲエム");
             //System.out.println(q);
             assertEquals(3, searcher.search(q, 10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("げえむ");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("げえむ");
             //System.out.println(q);
             assertEquals(3, searcher.search(q, 10).totalHits);
         }

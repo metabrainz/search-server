@@ -8,6 +8,7 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.FreeDBIndex;
 import org.musicbrainz.search.index.FreeDBIndexField;
 import org.musicbrainz.search.servlet.mmd2.FreeDBWriter;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.util.ArrayList;
 
@@ -46,6 +47,6 @@ public class FreeDBSearch extends SearchServer {
 
     @Override
     protected QueryParser getParser() {
-     return new MultiFieldQueryParser(Version.LUCENE_CURRENT,defaultFields.toArray(new String[0]), analyzer);
+     return new MultiFieldQueryParser(LuceneVersion.LUCENE_VERSION, defaultFields.toArray(new String[0]), analyzer);
   }
 }

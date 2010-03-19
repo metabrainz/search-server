@@ -40,6 +40,7 @@ import java.io.Reader;
 
 import com.ibm.icu.text.Transliterator;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 /**
  * Filters StandardTokenizer with StandardFilter, ICUTransformFilter, AccentFilter, LowerCaseFilter
@@ -67,7 +68,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
 
     public TokenStream tokenStream(String fieldName, Reader reader) {
         CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap,reader);
-        StandardTokenizer tokenStream = new StandardTokenizer(Version.LUCENE_CURRENT,mappingCharFilter);
+        StandardTokenizer tokenStream = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, mappingCharFilter);
         TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         result = new ICUTransformFilter(result, Transliterator.getInstance("Traditional-Simplified"));
         result = new StandardFilter(result);
@@ -86,7 +87,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         if (streams == null) {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
-            streams.tokenStream = new StandardTokenizer(Version.LUCENE_CURRENT,new MappingCharFilter(charConvertMap,reader));
+            streams.tokenStream = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new MappingCharFilter(charConvertMap, reader));
             streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
             streams.filteredTokenStream = new ICUTransformFilter(streams.filteredTokenStream, Transliterator.getInstance("Traditional-Simplified"));
             streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);

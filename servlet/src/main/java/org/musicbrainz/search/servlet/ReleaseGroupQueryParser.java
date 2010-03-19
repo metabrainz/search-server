@@ -8,6 +8,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.LuceneVersion;
 
 
 /**
@@ -17,7 +18,7 @@ import org.musicbrainz.search.index.ReleaseGroupIndexField;
 public class ReleaseGroupQueryParser extends QueryParser {
 
     public ReleaseGroupQueryParser(String field, Analyzer a) {
-        super(Version.LUCENE_CURRENT,field, a);
+        super(LuceneVersion.LUCENE_VERSION, field, a);
     }
 
     protected Query newTermQuery(Term term) {

@@ -39,6 +39,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 
 /** Test that analyser matches simplified chinese to tradiotional and vice versa because when indexed traditional
@@ -60,12 +61,12 @@ public class Issue4827Test extends TestCase {
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
 
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("ארלס"+"\u05f3"+"צ");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"\u05f3"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("ארלס"+"'"+"צ");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"'"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
@@ -86,12 +87,12 @@ public class Issue4827Test extends TestCase {
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
 
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("ארלס"+"\u05f3"+"צ");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"\u05f3"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("ארלס"+"'"+"צ");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"'"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

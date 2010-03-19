@@ -39,6 +39,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 
 /** Test that analyser matches simplified chinese to tradiotional and vice versa because when indexed traditional
@@ -59,12 +60,12 @@ public class Issue5523Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("寧夏");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("寧夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("宁夏");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("宁夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -81,12 +82,12 @@ public class Issue5523Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("寧夏");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("寧夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("宁夏");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("宁夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -103,12 +104,12 @@ public class Issue5523Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("曲");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("曲");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("麯");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("麯");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

@@ -11,6 +11,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.io.StringReader;
 
@@ -24,7 +25,7 @@ public class AmpersandTest extends TestCase {
 
         int count = 0;
 
-        Tokenizer tokenizer = new StandardTokenizer(Version.LUCENE_CURRENT,new StringReader("Platinum & Gold"));
+        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("Platinum & Gold"));
         while (tokenizer.incrementToken()) {
             count++;
         }
@@ -50,13 +51,13 @@ public class AmpersandTest extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir, true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("\"Platinum & Gold\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"Platinum & Gold\"");
             System.out.println(q);
             assertEquals(1, searcher.search(q, 10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT, "name", analyzer).parse("\"Platinum and Gold\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"Platinum and Gold\"");
             System.out.println(q);
             assertEquals(1, searcher.search(q, 10).totalHits);
         }

@@ -10,6 +10,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 
 public class Issue4775Test extends TestCase {
@@ -29,27 +30,27 @@ public class Issue4775Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("Oreilly");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Oreilly");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("Theres");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Theres");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("there's");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("there's");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("There");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("There");
             assertEquals(0, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("it's'");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("it's'");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -70,17 +71,17 @@ public class Issue4775Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("res");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("res");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("R.E.S.");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S.");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("R.E.S");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

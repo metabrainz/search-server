@@ -11,6 +11,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 
 public class Issue3309Test extends TestCase {
@@ -26,7 +27,7 @@ public class Issue3309Test extends TestCase {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("R.E.S");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S");
         TopDocs docs = searcher.search(q,10);
         assertEquals(1, docs.totalHits);
     }
@@ -42,7 +43,7 @@ public class Issue3309Test extends TestCase {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("R.E.S.");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S.");
         TopDocs docs = searcher.search(q,10);
         assertEquals(1, docs.totalHits);
     }

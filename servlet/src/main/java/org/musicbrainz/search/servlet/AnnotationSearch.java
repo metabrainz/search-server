@@ -7,6 +7,7 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.AnnotationIndex;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.util.ArrayList;
 
@@ -42,7 +43,7 @@ public class AnnotationSearch extends SearchServer {
 
     @Override
     protected QueryParser getParser() {
-     return new QueryParser(Version.LUCENE_CURRENT,defaultFields.get(0), analyzer);
+     return new QueryParser(LuceneVersion.LUCENE_VERSION, defaultFields.get(0), analyzer);
   }
 
 

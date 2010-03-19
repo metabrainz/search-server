@@ -12,6 +12,7 @@ import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.V1TrackIndexField;
+import org.musicbrainz.search.LuceneVersion;
 
 
 /**
@@ -21,7 +22,7 @@ import org.musicbrainz.search.servlet.mmd1.V1TrackIndexField;
 public class RecordingQueryParser extends QueryParser {
 
     public RecordingQueryParser(String field, Analyzer a) {
-        super(Version.LUCENE_CURRENT,field, a);
+        super(LuceneVersion.LUCENE_VERSION, field, a);
     }
 
     /**

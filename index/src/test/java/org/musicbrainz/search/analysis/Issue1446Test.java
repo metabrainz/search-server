@@ -12,6 +12,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.queryParser.QueryParser;
 import junit.framework.TestCase;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 public class Issue1446Test extends TestCase {
 
@@ -32,7 +33,7 @@ public class Issue1446Test extends TestCase {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("ア");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ア");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -50,7 +51,7 @@ public class Issue1446Test extends TestCase {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("ョ");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ョ");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -67,7 +68,7 @@ public class Issue1446Test extends TestCase {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("え");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("え");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -85,7 +86,7 @@ public class Issue1446Test extends TestCase {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("っ");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("っ");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);

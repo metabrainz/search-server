@@ -39,6 +39,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 
 /** Test that analyser treats No.x and No. x the same (where x can be any number) , because both forms are found
@@ -61,7 +62,7 @@ public class IssueSearch22Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("\"pay income tax return\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"pay income tax return\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
@@ -81,7 +82,7 @@ public class IssueSearch22Test extends TestCase {
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
-            Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("\"pay income tax return\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"pay income tax return\"");
             assertEquals(0, searcher.search(q,10).totalHits);
         }
 

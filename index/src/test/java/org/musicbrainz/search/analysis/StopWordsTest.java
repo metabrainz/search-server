@@ -12,6 +12,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.util.HashSet;
 
@@ -28,7 +29,7 @@ public class StopWordsTest extends TestCase
 
      public void testUnableToFindStopWordsWithStandardAnalyser() throws Exception {
 
-        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+        Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION);
         RAMDirectory dir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         Document doc = new Document();
@@ -37,7 +38,7 @@ public class StopWordsTest extends TestCase
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("that");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("that");
         TopDocs docs = searcher.search(q,null,100);
         assertEquals(0, docs.totalHits);
 
@@ -45,7 +46,7 @@ public class StopWordsTest extends TestCase
 
     public void testAbleToFindStopWordsWithStandardAnalyserIfNoStopWords() throws Exception {
 
-        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT, new HashSet());
+        Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION, new HashSet());
         RAMDirectory dir = new RAMDirectory();
         IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         Document doc = new Document();
@@ -54,7 +55,7 @@ public class StopWordsTest extends TestCase
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("that");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("that");
         TopDocs docs = searcher.search(q,null,100);
         assertEquals(1, docs.totalHits);
     }
@@ -70,7 +71,7 @@ public class StopWordsTest extends TestCase
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(dir,true);
-        Query q = new QueryParser(Version.LUCENE_CURRENT,"name", analyzer).parse("that");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("that");
         TopDocs docs = searcher.search(q,null,100);
         assertEquals(1, docs.totalHits);
 

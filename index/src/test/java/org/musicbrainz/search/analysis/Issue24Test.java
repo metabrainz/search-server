@@ -40,6 +40,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 
 /**
@@ -88,7 +89,7 @@ public class Issue24Test extends TestCase {
 
             IndexSearcher searcher = new IndexSearcher(dir, true);
             {
-                Query q = new QueryParser(Version.LUCENE_CURRENT, "artist", analyzer).parse("alias:rod");
+                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod");
 
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
@@ -140,7 +141,7 @@ public class Issue24Test extends TestCase {
             IndexSearcher searcher = new IndexSearcher(dir, true);
             searcher.setSimilarity(new MusicbrainzSimilarity());
             {
-                Query q = new QueryParser(Version.LUCENE_CURRENT, "artist", analyzer).parse("alias:rod");
+                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod");
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
                 System.out.println("With Fix: Diff "+((topDocs.scoreDocs[0].score / topDocs.scoreDocs[1].score) * 100 - 100) +"%");
@@ -185,7 +186,7 @@ public class Issue24Test extends TestCase {
 
             IndexSearcher searcher = new IndexSearcher(dir, true);
             {
-                Query q = new QueryParser(Version.LUCENE_CURRENT, "artist", analyzer).parse("artist:queen OR alias:queen");
+                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:queen OR alias:queen");
                 
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
@@ -223,7 +224,7 @@ public class Issue24Test extends TestCase {
             IndexSearcher searcher = new IndexSearcher(dir, true);
             searcher.setSimilarity(new MusicbrainzSimilarity());
             {
-                Query q = new QueryParser(Version.LUCENE_CURRENT, "artist", analyzer).parse("artist:queen OR alias:queen");
+                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:queen OR alias:queen");
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
                 System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);

@@ -6,12 +6,13 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.Version;
 import org.musicbrainz.search.index.*;
+import org.musicbrainz.search.LuceneVersion;
 
 public class LabelQueryParser extends MultiFieldQueryParser {
 
     public LabelQueryParser(java.lang.String[] strings, org.apache.lucene.analysis.Analyzer analyzer)
     {
-        super(Version.LUCENE_CURRENT,strings,analyzer);
+        super(LuceneVersion.LUCENE_VERSION, strings, analyzer);
     }
 
      protected Query newTermQuery(Term term) {
