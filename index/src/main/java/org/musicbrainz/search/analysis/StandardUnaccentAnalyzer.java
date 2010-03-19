@@ -28,19 +28,12 @@
 
 package org.musicbrainz.search.analysis;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.CharFilter;
-import org.apache.lucene.analysis.MappingCharFilter;
-import org.apache.lucene.analysis.NormalizeCharMap;
-
+import com.ibm.icu.text.Transliterator;
+import org.apache.lucene.analysis.*;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
 import java.io.Reader;
-
-import com.ibm.icu.text.Transliterator;
-import org.apache.lucene.util.Version;
-import org.musicbrainz.search.LuceneVersion;
 
 /**
  * Filters StandardTokenizer with StandardFilter, ICUTransformFilter, AccentFilter, LowerCaseFilter
@@ -48,17 +41,12 @@ import org.musicbrainz.search.LuceneVersion;
  */
 public class StandardUnaccentAnalyzer extends Analyzer {
 
-    private NormalizeCharMap charConvertMap;
+    protected NormalizeCharMap charConvertMap;
 
-    private void setCharConvertMap() {
+    protected void setCharConvertMap() {
         charConvertMap = new NormalizeCharMap();
-        charConvertMap.add("&","and");
-
-        //Hebrew chars converted to western cases so matches both
-        charConvertMap.add("\u05f3","'");
-        charConvertMap.add("\u05be","-");
-        charConvertMap.add("\u05f4","\"");
-                        
+        AmpersandToAndMappingHelper.addToMap(charConvertMap);
+        HebrewCharMappingHelper.addToMap(charConvertMap);
 
     }
 

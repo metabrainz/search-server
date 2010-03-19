@@ -30,7 +30,6 @@ package org.musicbrainz.search.analysis;
 
 import com.ibm.icu.text.Transliterator;
 import org.apache.lucene.analysis.*;
-import org.apache.lucene.util.Version;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
@@ -55,11 +54,8 @@ public class TitleAnalyzer extends Analyzer {
 
     private void setCharConvertMap() {
         charConvertMap = new NormalizeCharMap();
-        charConvertMap.add("&", "and");
-        //Hebrew chars converted to western cases so matches both
-        charConvertMap.add("\u05f3","'");
-        charConvertMap.add("\u05be","-");
-        charConvertMap.add("\u05f4","\"");
+        AmpersandToAndMappingHelper.addToMap(charConvertMap);
+        HebrewCharMappingHelper.addToMap(charConvertMap);
     }
 
     public TitleAnalyzer() {
