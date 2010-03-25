@@ -72,8 +72,9 @@ public class RecordingWriter extends ResultsWriter {
             if(isrcs.length>0) {
                 IsrcList isrcList = of.createIsrcList();
                 for (int i = 0; i < isrcs.length; i++) {
-
-                    isrcList.getIsrc().add(isrcs[i]);
+                    Isrc isrc = of.createIsrc();
+                    isrc.setId(isrcs[i]);
+                    isrcList.getIsrc().add(isrc);
                 }
                 recording.setIsrcList(isrcList);
             }

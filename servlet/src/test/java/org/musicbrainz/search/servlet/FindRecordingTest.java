@@ -353,8 +353,8 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("count=\"10\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("count=\"1\""));
-        assertTrue(output.contains("<isrc>123456789</isrc>"));
-        assertTrue(output.contains("<isrc>abcdefghi</isrc>"));
+        assertTrue(output.contains("<isrc id=\"123456789\"/>"));
+        assertTrue(output.contains("<isrc id=\"abcdefghi\"/>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
         assertTrue(output.contains("<status>official</status>"));
         assertTrue(output.contains("<track-count>10</track-count>"));
@@ -382,7 +382,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"type\":\"album\""));
         assertTrue(output.contains("title\":\"Gravitational Lenz\""));
         assertTrue(output.contains("\"length\":234000"));
-        assertTrue(output.contains("\"isrc\":[\"123456789"));
+        assertTrue(output.contains("\"isrc\":[{\"id\":\"123456789"));
         assertTrue(output.contains("\"position\":1"));
         assertTrue(output.contains("\"status\":\"official\""));
         assertTrue(output.contains("\"track-count\":10"));
