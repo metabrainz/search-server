@@ -62,6 +62,7 @@ public class SearchServerServlet extends HttpServlet {
     private boolean isServletInitialized = false;
 
     private String initMessage = null;
+    private static final String MUSICBRAINZ_SEARCH_WEBPAGE = "http://www.musicbrainz.org/search.html";
 
     @Override
     public void init() {
@@ -133,6 +134,13 @@ public class SearchServerServlet extends HttpServlet {
             response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
             response.getOutputStream().println(searchServerCount.getCount());
             response.getOutputStream().close();
+            return;
+        }
+
+        //If they have entered nothing, redirect to them the Musicbrainz Search Page
+        if(request.getParameterMap().size()==0)
+        {
+            response.sendRedirect(MUSICBRAINZ_SEARCH_WEBPAGE);
             return;
         }
 
