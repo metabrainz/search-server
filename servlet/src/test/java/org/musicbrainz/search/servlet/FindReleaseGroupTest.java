@@ -399,9 +399,11 @@ public class FindReleaseGroupTest extends TestCase {
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
         pr.close();
         String output = sw.toString();
+        System.out.println("Json is" + output);
+
         assertTrue(output.contains("\"score\":\"100\""));
         assertTrue(output.contains("\"score\":\"43\""));
-        assertTrue(output.contains("\"tag\":[\"indie\"]"));
+        assertTrue(output.contains("\"tag\":[{\"count\":101,\"$\":\"indie\"}"));
     }
 
 }

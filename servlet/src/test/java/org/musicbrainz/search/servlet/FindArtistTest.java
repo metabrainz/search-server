@@ -278,8 +278,8 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
         assertTrue(output.contains("<country>af</country>"));
         assertTrue(output.contains("<gender>male</gender>"));
-        assertTrue(output.contains("<tag>thrash</tag>"));
-        assertTrue(output.contains("<tag>güth</tag>"));
+        assertTrue(output.contains("thrash</tag>"));
+        assertTrue(output.contains("güth</tag>"));
         assertFalse(output.contains("alias"));
         assertFalse(output.contains("disambugation"));
     }
@@ -356,7 +356,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("\"life-span\":{\"begin\":\"1999-04\"}"));
         assertTrue(output.contains("\"country\":\"af\""));
         assertTrue(output.contains("\"gender\":\"male\""));
-        assertTrue(output.contains("\"tag\":[\"thrash\",\"güth\"]"));
+        assertTrue(output.contains("\"tag\":[{\"count\":5,\"$\":\"thrash\"},{\"count\":11,\"$\":\"güth\"}"));
     }
 
     public void testOutputJsonMultiple() throws Exception {

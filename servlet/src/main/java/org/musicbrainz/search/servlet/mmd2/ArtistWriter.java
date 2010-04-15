@@ -127,7 +127,7 @@ public class ArtistWriter extends ResultsWriter {
                 for(int i = 0;i<tags.length;i++) {
                     Tag tag = of.createTag();
                     tag.setContent(tags[i]);
-                    //tag.setCount(new BigInteger(tagCounts[i]));   TODO breaks json
+                    tag.setCount(new BigInteger(tagCounts[i]));
                     tagList.getTag().add(tag);
                 }
                 artist.setTagList(tagList);
