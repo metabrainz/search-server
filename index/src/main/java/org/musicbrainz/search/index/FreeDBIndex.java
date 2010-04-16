@@ -49,12 +49,10 @@ public class FreeDBIndex implements Index {
     private int failedCount=0;
     private int utfCount =0;
     private int iso8859Count =0;
-    private int cp1252Count =0;
 
 
     private CharsetDecoder utf8Decoder;
     private CharsetDecoder iso8859Decoder;
-    private CharsetDecoder cp1252Decoder;
 
     private void initDecoders() {
 
@@ -145,7 +143,6 @@ public class FreeDBIndex implements Index {
 
         System.out.println("  No of UTF8 entries " + utfCount);
         System.out.println("  No of ISO-8859-1 entries " + iso8859Count);
-        System.out.println("  No of CPC-1252 entries " + cp1252Count);
         System.out.println("  No of empty entries " + emptyCount);
         System.out.println("  No of failed entries " + failedCount);
 
