@@ -17,6 +17,7 @@ public class SearchServerFactory {
         search.put(ResourceType.ANNOTATION, new AnnotationSearch(indexDir, useMMapDirectory));
         search.put(ResourceType.FREEDB, new FreeDBSearch(indexDir, useMMapDirectory));
         search.put(ResourceType.CDSTUB, new CDStubSearch(indexDir, useMMapDirectory));
+        search.put(ResourceType.TAG, new TagSearch(indexDir, useMMapDirectory));
     }
 
     /**

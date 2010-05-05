@@ -175,7 +175,7 @@ public class ArtistIndex extends DatabaseIndex {
 
         if (tags.containsKey(artistId)) {
             for (Tag tag : tags.get(artistId)) {
-                doc.addField(ArtistIndexField.TAG, tag.getContent());
+                doc.addField(ArtistIndexField.TAG, tag.getName());
                 doc.addField(ArtistIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }

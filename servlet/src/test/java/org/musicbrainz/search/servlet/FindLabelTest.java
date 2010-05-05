@@ -244,7 +244,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
         assertTrue(output.contains("<label-code>1234</label-code>"));
-        assertTrue(output.contains("dance</tag>"));
+        assertTrue(output.contains("dance</name>"));
     }
 
     /**
@@ -270,6 +270,6 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"label-code\":1234"));
-        assertTrue(output.contains("tag-list\":{\"tag\":[{\"count\":22,\"$\":\"dance\"}"));
+        assertTrue(output.contains("tag-list\":{\"tag\":[{\"count\":22,\"name\":\"dance\"}"));
     }
 }

@@ -438,7 +438,7 @@ public class RecordingIndex extends DatabaseIndex {
 
         if (tags.containsKey(id)) {
             for (Tag tag : tags.get(id)) {
-                doc.addField(RecordingIndexField.TAG, tag.getContent());
+                doc.addField(RecordingIndexField.TAG, tag.getName());
                 doc.addField(RecordingIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }

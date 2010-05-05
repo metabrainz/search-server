@@ -137,6 +137,7 @@ public class IndexBuilder
                 new LabelIndex(mainDbConn),
                 new WorkIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
+                new TagIndex(mainDbConn),
                 new CDStubIndex(rawDbConn), //Note different db
         };
 
@@ -344,8 +345,8 @@ class IndexBuilderOptions {
     public String getFreeDBDump() { return freeDBDump; }
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,recording,label,work,annotation,cdstub,freedb)")
-    private String indexes = "artist,label,release,recording,releasegroup,work,annotation,cdstub,freedb";
+    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,recording,label,work,tag,annotation,cdstub,freedb)")
+    private String indexes = "artist,label,release,recording,releasegroup,work,tag,annotation,cdstub,freedb";
     public ArrayList<String> selectedIndexes() { return new ArrayList<String>(Arrays.asList(indexes.split(","))); }
     public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
 

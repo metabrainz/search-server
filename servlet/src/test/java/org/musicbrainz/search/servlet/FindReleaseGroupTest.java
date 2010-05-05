@@ -306,7 +306,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("type=\"single\""));
         assertTrue(output.contains("release-list count=\"1\""));
         assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title></release>"));
-        assertTrue(output.contains("indie</tag>"));
+        assertTrue(output.contains("indie</name>"));
 
 
     }
@@ -403,7 +403,7 @@ public class FindReleaseGroupTest extends TestCase {
 
         assertTrue(output.contains("\"score\":\"100\""));
         assertTrue(output.contains("\"score\":\"43\""));
-        assertTrue(output.contains("\"tag\":[{\"count\":101,\"$\":\"indie\"}"));
+        assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
     }
 
 }

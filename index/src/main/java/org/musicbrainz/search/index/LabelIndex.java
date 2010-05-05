@@ -185,7 +185,7 @@ public class LabelIndex extends DatabaseIndex {
 
         if (tags.containsKey(labelId)) {
             for (Tag tag : tags.get(labelId)) {
-                doc.addField(LabelIndexField.TAG, tag.getContent());
+                doc.addField(LabelIndexField.TAG, tag.getName());
                 doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }

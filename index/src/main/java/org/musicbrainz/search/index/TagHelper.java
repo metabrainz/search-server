@@ -56,7 +56,7 @@ public class TagHelper {
             }
 
             Tag tag = of.createTag();
-            tag.setContent(rs.getString("tag"));
+            tag.setName(rs.getString("tag"));
             tag.setCount(BigInteger.valueOf(rs.getInt("count")));
             tagList.add(tag);
         }

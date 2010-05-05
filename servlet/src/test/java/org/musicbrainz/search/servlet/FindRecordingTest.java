@@ -358,7 +358,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
         assertTrue(output.contains("<status>official</status>"));
         assertTrue(output.contains("<track-count>10</track-count>"));
-        assertTrue(output.contains("indie</tag>"));
+        assertTrue(output.contains("indie</name>"));
         
 
     }
@@ -386,7 +386,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"position\":1"));
         assertTrue(output.contains("\"status\":\"official\""));
         assertTrue(output.contains("\"track-count\":10"));
-        assertTrue(output.contains("\"tag\":[{\"count\":101,\"$\":\"indie\"}"));
+        assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
 
     }
 

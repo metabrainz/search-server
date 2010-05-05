@@ -14,6 +14,7 @@ public enum ResourceType {
     FREEDB("freedb"),
     ANNOTATION("annotation"),
     WORK("work"),
+    TAG("tag"),
     ;
 
     private String name;

@@ -122,6 +122,7 @@ public abstract class AbstractIndexTest extends TestCase {
             setupAnnotationTables(stmt);
             setupCDStubTables(stmt);
             setupWorkTables(stmt);
+            setupTagTables(stmt);
             insertReferenceData(stmt);
             
             stmt.executeBatch();
@@ -524,7 +525,12 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name character varying(255) NOT NULL" +
                 ")");
     }
-    
+
+    protected void setupTagTables(Statement stmt) throws Exception {
+
+
+    }
+
     protected void insertReferenceData(Statement stmt) throws Exception {
 
         stmt.addBatch("INSERT INTO gender (id, name) VALUES " + 

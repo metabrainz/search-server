@@ -206,7 +206,7 @@ public class
 
          if (tags.containsKey(id)) {
             for (Tag tag : tags.get(id)) {
-                doc.addField(LabelIndexField.TAG, tag.getContent());
+                doc.addField(LabelIndexField.TAG, tag.getName());
                 doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }
