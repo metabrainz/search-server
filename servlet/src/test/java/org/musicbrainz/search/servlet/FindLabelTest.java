@@ -194,7 +194,7 @@ public class FindLabelTest extends TestCase {
      * Tests get same results as
      * http://musicbrainz.org/ws/1/label/?type=xml&query=%22Jockey%20Slut%22
      *
-     * @throws Exception
+     * @throws Exception exeption
      */
     public void testOutputAsMmd1Xml() throws Exception {
 
@@ -220,7 +220,7 @@ public class FindLabelTest extends TestCase {
      * Tests get same results as
      * http://musicbrainz.org/ws/1/label/?type=xml&query=%22Jockey%20Slut%22
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testOutputAsXml() throws Exception {
 
@@ -247,7 +247,7 @@ public class FindLabelTest extends TestCase {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testOutputJson() throws Exception {
 

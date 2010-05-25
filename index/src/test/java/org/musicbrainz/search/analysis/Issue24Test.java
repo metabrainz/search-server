@@ -159,7 +159,7 @@ public class Issue24Test extends TestCase {
      * Without fix, a search on both artist and alias will be distorted by number of aliases - we want to simplify so it
      * is more of a boolean match, a match on an alias field should act as you would expect to act if there was just one alias
      * and there was a match
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testAliasesPreferredToArtistHandling() throws Exception {
 

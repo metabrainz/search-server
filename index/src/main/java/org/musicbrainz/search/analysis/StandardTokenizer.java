@@ -220,26 +220,4 @@ public final class StandardTokenizer extends Tokenizer {
     super.reset(reader);
     reset();
   }
-
-  /**
-   * Prior to https://issues.apache.org/jira/browse/LUCENE-1068, StandardTokenizer mischaracterized as acronyms tokens like www.abc.com
-   * when they should have been labeled as hosts instead.
-   * @return true if StandardTokenizer now returns these tokens as Hosts, otherwise false
-   *
-   * @deprecated Remove in 3.X and make true the only valid value
-   */
-  public boolean isReplaceInvalidAcronym() {
-    return replaceInvalidAcronym;
-  }
-
-  /**
-   *
-   * @param replaceInvalidAcronym Set to true to replace mischaracterized acronyms as HOST.
-   * @deprecated Remove in 3.X and make true the only valid value
-   *
-   * See https://issues.apache.org/jira/browse/LUCENE-1068
-   */
-  public void setReplaceInvalidAcronym(boolean replaceInvalidAcronym) {
-    this.replaceInvalidAcronym = replaceInvalidAcronym;
-  }
 }

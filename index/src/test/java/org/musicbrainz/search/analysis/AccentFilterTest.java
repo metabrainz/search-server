@@ -106,7 +106,7 @@ public class AccentFilterTest extends TestCase {
 
     /**
      * Only one doc matches (even though two terms within doc that match)
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testSearchQe() throws Exception {
         IndexSearcher searcher = new IndexSearcher(dir,true);

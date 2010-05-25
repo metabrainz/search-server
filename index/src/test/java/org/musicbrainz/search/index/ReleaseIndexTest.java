@@ -34,7 +34,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * Minimum plus type and status
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addReleaseOne() throws Exception {
         Connection conn = createConnection();
@@ -78,7 +78,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * No Release Type
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addReleaseTwo() throws Exception {
         Connection conn = createConnection();
@@ -121,7 +121,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * No Release Status
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addReleaseThree() throws Exception {
         Connection conn = createConnection();
@@ -166,7 +166,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * All Basic Fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addReleaseFour() throws Exception {
         Connection conn = createConnection();
@@ -213,7 +213,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * All Basic Fields Plus Release Events
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addReleaseFive() throws Exception {
         Connection conn = createConnection();
@@ -269,56 +269,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
 
     /**
-     * All Basic Fields Plus Release Events
-     *
-     * @throws Exception
-     */
-    private void addReleaseSix() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
-
-        Statement stmt = conn.createStatement();
-
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'Echo & The Bunnyman')");
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (4, 'Echo And The Bunnymen')");
-
-        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (1, 16153, 2)");
-        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
-        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
-
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
-                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, null, 1995, 2)");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase) " +
-                " VALUES (1, 0, 16153, 1, null)");
-
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
-        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type, comment)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, null, null)");
-
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
-                "  language, script, date_year, date_month, date_day, barcode, comment) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 221, 1, 28, 1, 1, 1, null, null)");
-        stmt.addBatch("INSERT INTO language (id, isocode_3t, isocode_3b, isocode_2, name, frequency) " +
-        	" VALUES (1, 'eng', 'eng', 'en', 'English', 1)");
-        stmt.addBatch("INSERT INTO script (id, isocode, isonumber, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
-        stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (221, 'GB', 'United Kingdom')");
-        stmt.addBatch("INSERT INTO release_meta (id, lastupdate, dateadded, coverarturl, infourl, amazonasin, amazonstore) " +
-        	" VALUES (491240, null, null, null, null, '123456789', null)");
-
-        stmt.executeBatch();
-        stmt.close();
-        conn.close();
-    }
-
-
-    /**
      * Basic test of all fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseMinPlusTypeAndStatusFields() throws Exception {
 
@@ -344,7 +297,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseArtist() throws Exception {
 
@@ -365,7 +318,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNumDiscs() throws Exception {
 
@@ -386,7 +339,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseSortArtist() throws Exception {
 
@@ -406,7 +359,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoType() throws Exception {
 
@@ -425,7 +378,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoLanguage() throws Exception {
 
@@ -444,7 +397,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testIndexReleaseNoScript() throws Exception {
@@ -464,7 +417,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoFormat() throws Exception {
 
@@ -484,7 +437,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoBarcode() throws Exception {
 
@@ -503,7 +456,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoLabel() throws Exception {
 
@@ -522,7 +475,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoCatalogNo() throws Exception {
 
@@ -541,7 +494,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoCountry() throws Exception {
 
@@ -560,7 +513,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoDate() throws Exception {
 
@@ -579,7 +532,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNoStatus() throws Exception {
 
@@ -598,7 +551,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseLanguage() throws Exception {
 
@@ -618,7 +571,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseASIN() throws Exception {
 
@@ -638,7 +591,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testIndexReleaseScript() throws Exception {
@@ -659,7 +612,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseFormat() throws Exception {
         addReleaseFive();
@@ -678,7 +631,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseDiscIds() throws Exception {
 
@@ -698,7 +651,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexReleaseNumTracks() throws Exception {
 
@@ -718,7 +671,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testIndexFullReleaseEvent() throws Exception {
@@ -751,7 +704,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testIndexNoLabelInfo() throws Exception {

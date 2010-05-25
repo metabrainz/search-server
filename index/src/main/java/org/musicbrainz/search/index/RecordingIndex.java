@@ -141,11 +141,12 @@ public class RecordingIndex extends DatabaseIndex {
     /**
      * Get puids for the recordings
      *
-     * @param min
-     * @param max
+     * @param min min recording id
+     * @param max max recording id
      * @return
      * @throws SQLException
      * @throws IOException
+     * @return A map of matches
      */
     private Map<Integer, List<String>> loadPuids(int min, int max) throws SQLException, IOException {
 
@@ -174,11 +175,12 @@ public class RecordingIndex extends DatabaseIndex {
     /**
      * Get tag information
      *
-     * @param min
-     * @param max
+     * @param min min recording id
+     * @param max max recording id
      * @return
      * @throws SQLException
      * @throws IOException
+     * @return A map of matches
      */
     private Map<Integer,List<Tag>> loadTags(int min, int max) throws SQLException, IOException {
 
@@ -193,9 +195,9 @@ public class RecordingIndex extends DatabaseIndex {
     /**
      * Get ISRC Information for the recordings
      *
-     * @param min
-     * @param max
-     * @return
+     * @param min min recording id
+     * @param max max recording id
+     * @return map of matches
      * @throws SQLException
      * @throws IOException
      */
@@ -225,11 +227,12 @@ public class RecordingIndex extends DatabaseIndex {
     /**
      * Get Artist Information for the recordings
      *
-     * @param min
-     * @param max
+     * @param min min recording id
+     * @param max max recoridng id
      * @return
-     * @throws SQLException
-     * @throws IOException
+     * @throws SQLException if sql problem
+     * @throws IOException  if io exception
+     * @return A map of matches
      */
     private Map<Integer, ArtistCredit> loadArtists(int min, int max) throws SQLException, IOException {
 
@@ -261,6 +264,7 @@ public class RecordingIndex extends DatabaseIndex {
      * @return
      * @throws SQLException
      * @throws IOException
+     * @return A map of matches
      */
     private Map<Integer, List<TrackWrapper>> loadTracks(int min, int max) throws SQLException, IOException {
 
@@ -334,6 +338,7 @@ public class RecordingIndex extends DatabaseIndex {
      * @return
      * @throws SQLException
      * @throws IOException
+     * @return A map of matches
      */
     private Map<Integer, Release>  loadReleases
             (Map<Integer, List<TrackWrapper>> tracks) throws SQLException, IOException {
@@ -376,18 +381,22 @@ public class RecordingIndex extends DatabaseIndex {
         return releases;
     }
 
+
     /**
-     * Load basic recording info
+     * Load recordings
      *
      * @param indexWriter
-     * @param min
-     * @param max
+     * @param min min recording id
+     * @param max max recording id
+     * @param puids
+     * @param tags
+     * @param isrcs
      * @param artistCredits
      * @param tracks
-     * @throws SQLException
-     * @throws IOException
+     * @param releases
+     * @throws SQLException if SQL problem
+     * @throws IOException if IO problem
      */
-
     private void loadRecordings(IndexWriter indexWriter,
                                 int min,
                                 int max,

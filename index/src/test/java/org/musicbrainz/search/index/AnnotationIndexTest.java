@@ -30,7 +30,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addReleaseAnnotation() throws Exception {
         Connection conn = createConnection();
@@ -54,7 +54,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     }
 
      /**
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addReleaseGroupAnnotation() throws Exception {
         Connection conn = createConnection();
@@ -78,7 +78,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
 
      /**
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addArtistAnnotation() throws Exception {
         Connection conn = createConnection();
@@ -104,7 +104,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     }
 
       /**
-     * @throws Exception
+     * @throws Exception  exception
      */
     private void addLabelAnnotation() throws Exception {
         Connection conn = createConnection();
@@ -133,7 +133,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     }
 
       /**
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addRecordingAnnotation() throws Exception {
         Connection conn = createConnection();
@@ -161,7 +161,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     /**
      * Basic test for Release Annotation
      *
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testReleaseIndexAnnotationFields() throws Exception {
@@ -188,7 +188,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      /**
      * Basic test for Release Group Annotation
      *
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testReleaseGroupIndexAnnotationFields() throws Exception {
@@ -215,7 +215,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
        /**
      * Basic test for Artist Annotation
      *
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testArtistIndexAnnotationFields() throws Exception {
@@ -242,7 +242,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
        /**
      * Basic test for Label Annotation
      *
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testLabelIndexAnnotationFields() throws Exception {
@@ -269,7 +269,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     /**
      * Basic test for Recording Annotation
      *
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testRecordingIndexAnnotationFields() throws Exception {

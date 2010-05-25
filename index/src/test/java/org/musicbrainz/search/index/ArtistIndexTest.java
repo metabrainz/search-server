@@ -96,7 +96,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks fields are indexed correctly for artist with no alias
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexArtistWithNoAlias() throws Exception {
 
@@ -226,7 +226,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks fields are indexed correctly for artist with alias and artistCredit (the aliases are not stored)
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexArtistWithAlias() throws Exception {
 
@@ -260,7 +260,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks zeroes are removed from date
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testBeginDate() throws Exception {
 
@@ -281,7 +281,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks zeroes are removed from date
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testEndDate() throws Exception {
 
@@ -302,7 +302,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks record with type = null is set to unknown
      *
-     * @throws Exception
+     * @throws Exception  exception
      */
     public void testIndexArtistWithNoType() throws Exception {
 
@@ -324,7 +324,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks record with comment = null is not indexed
      *
-     * @throws Exception
+     * @throws Exception  exception
      */
     public void testIndexArtistWithNoComment() throws Exception {
 
@@ -345,7 +345,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks record with begin date = null is not indexed
      *
-     * @throws Exception
+     * @throws Exception  exception
      */
     public void testIndexArtistWithNoBeginDate() throws Exception {
 
@@ -366,7 +366,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks record with end date = null is not indexed
      *
-     * @throws Exception
+     * @throws Exception  exception
      */
     public void testIndexArtistWithNoEndDate() throws Exception {
 
@@ -393,7 +393,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks fields with different sort name to name is indexed correctly
      *
-     * @throws Exception
+     * @throws Exception  exception
      */
     public void testIndexArtistWithDifferentSortName() throws Exception {
 
@@ -417,7 +417,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     /**
      * Checks fields with different sort name to name is indexed correctly
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexArtistWithTag() throws Exception {
 

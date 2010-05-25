@@ -133,7 +133,7 @@ import java.io.IOException;
  * When a {@link TokenFilter} modifies text, it might cause text to become
  * denormalized. There are a number of ways this can happen, even concatenation
  * of two normalized chunks of text can produce a denormalized result. For
- * example, although the {@link ICUCaseFoldingFilter} respects both canonical
+ * example, although the ICUCaseFoldingFilter respects both canonical
  * and compatibility equivalence, it does not preserve normalization forms. By
  * the first rule above, because it respects canonical equivalence, the
  * ICUNormalizationFilter need not be invoked before it for normalization form
@@ -173,7 +173,7 @@ public final class ICUNormalizationFilter extends TokenFilter {
   public ICUNormalizationFilter(TokenStream input, Normalizer.Mode mode) {
     super(input);
     this.mode = mode;
-    termAtt = (TermAttribute) addAttribute(TermAttribute.class);
+    termAtt =  addAttribute(TermAttribute.class);
   }
 
   public boolean incrementToken() throws IOException {

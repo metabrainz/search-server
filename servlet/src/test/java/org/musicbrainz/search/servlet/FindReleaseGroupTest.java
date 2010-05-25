@@ -252,7 +252,7 @@ public class FindReleaseGroupTest extends TestCase {
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release-group/?type=xml&query=%22Nobody%27s%20Twisting%20Your%20Arm%22
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testOutputAsAsMmd1Xml() throws Exception {
 
@@ -280,7 +280,7 @@ public class FindReleaseGroupTest extends TestCase {
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release-group/?type=xml&query=%22Nobody%27s%20Twisting%20Your%20Arm%22
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testOutputAsAsXml() throws Exception {
 
@@ -315,7 +315,7 @@ public class FindReleaseGroupTest extends TestCase {
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release-group/?type=xml&query=%22Nobody%27s%20Twisting%20Your%20Arm%22
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testOutputAsAsMmd1Xml2() throws Exception {
 
@@ -340,7 +340,7 @@ public class FindReleaseGroupTest extends TestCase {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testOutputAsAsXml2() throws Exception {
 

@@ -132,7 +132,7 @@ public class FindFreeDBTest extends TestCase {
     }
 
     /**
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testOutputXml() throws Exception {
 

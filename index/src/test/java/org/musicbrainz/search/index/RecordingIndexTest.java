@@ -34,7 +34,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     /**
      * All Basic Fields Plus Release Events
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addTrackOne() throws Exception {
         Connection conn = createConnection();
@@ -93,7 +93,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     /**
      * All Basic Fields Plus Release Events
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     private void addTrackTwo() throws Exception {
         Connection conn = createConnection();
@@ -146,7 +146,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     /**
      * Basic test of all fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexRecording() throws Exception {
 
@@ -182,7 +182,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
      /**
      * Basic test of all fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testReleaseType() throws Exception {
 
@@ -204,7 +204,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
      /**
      * Basic test of all fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testArtistSortname() throws Exception {
 
@@ -227,7 +227,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     /**
      * Basic test of all fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testNoReleaseType() throws Exception {
 
@@ -249,7 +249,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     /**
      * Basic test of all fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testNoReleaseStatus() throws Exception {
 
@@ -270,7 +270,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
      /**
      *
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testNoArtistComment() throws Exception {
@@ -293,7 +293,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
      /**
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testArtistComment() throws Exception {
 
@@ -315,7 +315,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
     /**
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testTag() throws Exception {
 
@@ -334,7 +334,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
     /**
      *
-     * @throws Exception
+     * @throws Exception exception
      */
 
     public void testTrackName() throws Exception {
@@ -359,7 +359,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
      /**
      * Basic test of all fields
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testISRC() throws Exception {
 
@@ -380,7 +380,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
     /**
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testNoISRC() throws Exception {
 
@@ -400,7 +400,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     /**
      * Test gives puid
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testPuid() throws Exception {
 
@@ -421,7 +421,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 /**
      * Test no puid
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testNoPuid() throws Exception {
 

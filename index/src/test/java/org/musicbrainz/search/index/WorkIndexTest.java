@@ -176,7 +176,7 @@ public class WorkIndexTest extends AbstractIndexTest {
     /**
      * Checks fields with different sort name to name is indexed correctly
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     public void testIndexWorkWithTag() throws Exception {
 
