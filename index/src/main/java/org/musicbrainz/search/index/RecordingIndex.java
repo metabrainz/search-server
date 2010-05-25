@@ -19,15 +19,14 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.*;
-
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;

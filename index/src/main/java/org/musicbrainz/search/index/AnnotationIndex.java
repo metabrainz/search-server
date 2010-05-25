@@ -1,18 +1,14 @@
 package org.musicbrainz.search.index;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.EnumMap;
-
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.EnumMap;
 
 public class AnnotationIndex extends DatabaseIndex {
 

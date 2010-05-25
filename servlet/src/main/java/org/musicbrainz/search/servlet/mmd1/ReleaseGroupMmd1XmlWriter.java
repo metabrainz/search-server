@@ -31,9 +31,9 @@ package org.musicbrainz.search.servlet.mmd1;
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
-import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 

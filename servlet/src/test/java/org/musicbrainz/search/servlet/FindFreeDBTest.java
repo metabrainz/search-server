@@ -8,7 +8,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.FreeDBIndexField;
-import org.musicbrainz.search.servlet.mmd2.*;
+import org.musicbrainz.search.servlet.mmd2.FreeDBWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.PrintWriter;

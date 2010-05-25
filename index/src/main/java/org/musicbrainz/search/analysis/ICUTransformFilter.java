@@ -17,20 +17,13 @@ package org.musicbrainz.search.analysis;
  * limitations under the License.
  */
 
-import java.io.IOException;
-
+import com.ibm.icu.text.*;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-
-
 import org.apache.lucene.util.ArrayUtil;
 
-import com.ibm.icu.text.Replaceable;
-import com.ibm.icu.text.RuleBasedTransliterator; // only used for optimizing the transform, see below
-import com.ibm.icu.text.Transliterator;
-import com.ibm.icu.text.UTF16;
-import com.ibm.icu.text.UnicodeSet;
+import java.io.IOException;
 
 /**
  * A {@link TokenFilter} that transforms text with ICU.

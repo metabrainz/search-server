@@ -6,10 +6,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 
 import java.io.IOException;
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.sql.BatchUpdateException;
 
 
 public abstract class AbstractIndexTest extends TestCase {

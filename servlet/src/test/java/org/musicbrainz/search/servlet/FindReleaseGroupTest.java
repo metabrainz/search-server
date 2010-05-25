@@ -17,7 +17,6 @@ import org.musicbrainz.search.index.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 

@@ -1,13 +1,16 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.*;
-import org.apache.lucene.analysis.*;
-import org.apache.lucene.store.*;
-import org.apache.lucene.index.*;
-import org.apache.lucene.search.*;
-import org.apache.lucene.document.*;
-import org.apache.lucene.queryParser.*;
-import org.apache.lucene.util.Version;
+import junit.framework.TestCase;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.LuceneVersion;
 
 public class AccentFilterTest extends TestCase {

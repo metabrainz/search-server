@@ -20,8 +20,6 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 
-import org.musicbrainz.search.servlet.ErrorMessage;
-
 public class ErrorMessageTest extends TestCase {
 
 

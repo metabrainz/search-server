@@ -5,10 +5,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.util.Version;
-import org.musicbrainz.search.index.ReleaseGroupType;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.LuceneVersion;
+import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.ReleaseGroupType;
 
 
 /**

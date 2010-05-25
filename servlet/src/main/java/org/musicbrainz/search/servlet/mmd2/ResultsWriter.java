@@ -29,19 +29,20 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
+import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.api.json.JSONJAXBContext;
+import com.sun.jersey.api.json.JSONMarshaller;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.musicbrainz.mmd2.Metadata;
-import org.musicbrainz.search.servlet.*;
+import org.musicbrainz.search.servlet.ErrorMessage;
+import org.musicbrainz.search.servlet.Results;
+import org.musicbrainz.search.servlet.SearchServerServlet;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import com.sun.jersey.api.json.JSONJAXBContext;
-import com.sun.jersey.api.json.JSONMarshaller;
-import com.sun.jersey.api.json.JSONConfiguration;
 
 public abstract class ResultsWriter extends org.musicbrainz.search.servlet.ResultsWriter {
 

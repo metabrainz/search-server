@@ -7,9 +7,10 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.NumericUtils;
-import org.apache.lucene.util.Version;
-import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.LuceneVersion;
+import org.musicbrainz.search.index.ReleaseGroupType;
+import org.musicbrainz.search.index.ReleaseIndexField;
+import org.musicbrainz.search.index.ReleaseStatus;
 
 
 /**

@@ -1,15 +1,13 @@
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
-import org.musicbrainz.search.index.RecordingIndex;
-import org.musicbrainz.search.index.RecordingIndexField;
 
 import java.sql.Connection;
 import java.sql.Statement;

@@ -8,11 +8,10 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.LabelType;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.*;
+import org.musicbrainz.search.servlet.mmd2.LabelWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

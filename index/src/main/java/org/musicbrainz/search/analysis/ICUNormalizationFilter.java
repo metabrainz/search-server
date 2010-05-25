@@ -17,16 +17,14 @@ package  org.musicbrainz.search.analysis;
  * limitations under the License.
  */
 
-import java.io.IOException;
-
+import com.ibm.icu.text.Normalizer;
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.lucene.util.ArrayUtil;
 
-import org.apache.lucene.analysis.ASCIIFoldingFilter; // for javadoc only, example of a filter that does not respect canonical equivalence.
-
-import com.ibm.icu.text.Normalizer;
+import java.io.IOException;
 
 /**
  * A {@link TokenFilter} that performs Unicode text normalization.

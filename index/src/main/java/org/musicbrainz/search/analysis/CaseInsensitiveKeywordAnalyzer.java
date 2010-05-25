@@ -1,9 +1,11 @@
 package org.musicbrainz.search.analysis;
 
-import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordTokenizer;
+import org.apache.lucene.analysis.TokenStream;
 
-import java.io.Reader;
 import java.io.IOException;
+import java.io.Reader;
 
 
 /**

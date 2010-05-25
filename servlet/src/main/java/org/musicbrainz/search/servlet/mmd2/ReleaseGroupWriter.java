@@ -29,12 +29,11 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 import org.musicbrainz.mmd2.*;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
-import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
-
 
 import java.io.IOException;
 import java.math.BigInteger;

@@ -1,13 +1,12 @@
 package org.musicbrainz.search.analysis;
 
+import com.ibm.icu.text.Normalizer;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.*;
-
-import java.io.StringReader;
-import java.io.IOException;
-
-import com.ibm.icu.text.Normalizer;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * Compare FIlters

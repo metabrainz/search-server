@@ -1,9 +1,6 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.util.Version;
 import org.musicbrainz.search.LuceneVersion;
 
 

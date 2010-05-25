@@ -29,7 +29,8 @@
 
 package org.musicbrainz.search.index;
 
-import org.musicbrainz.mmd2.*;
+import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.mmd2.Tag;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;

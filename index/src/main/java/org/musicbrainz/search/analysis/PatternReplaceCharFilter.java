@@ -20,13 +20,13 @@
 
 package org.musicbrainz.search.analysis;
 
+import org.apache.lucene.analysis.BaseCharFilter;
+import org.apache.lucene.analysis.CharStream;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.lucene.analysis.BaseCharFilter;
-import org.apache.lucene.analysis.CharStream;
 
 /**
  * CharFilter that uses a regular expression for the target of replace string.

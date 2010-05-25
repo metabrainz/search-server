@@ -28,18 +28,20 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.*;
-import java.util.*;
-
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
+import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class
         ReleaseGroupIndex extends DatabaseIndex {

@@ -19,13 +19,13 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.index.IndexWriter;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
-
-import org.apache.lucene.index.IndexWriter;
 
 /**
  * An abstract Index specialized in indexing information from a Database

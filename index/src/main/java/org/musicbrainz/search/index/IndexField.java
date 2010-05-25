@@ -1,7 +1,7 @@
 package org.musicbrainz.search.index;
 
-import org.apache.lucene.document.Field;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Field;
 
 /**
  * Fields created in Lucene Search Index

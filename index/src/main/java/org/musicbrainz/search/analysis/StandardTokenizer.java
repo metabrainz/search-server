@@ -18,10 +18,6 @@ package org.musicbrainz.search.analysis;
  */
 
 
-import java.io.IOException;
-import java.io.Reader;
-
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
@@ -30,6 +26,9 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.Version;
+
+import java.io.IOException;
+import java.io.Reader;
 
 /** A grammar-based tokenizer constructed with JFlex
  *

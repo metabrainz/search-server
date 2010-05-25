@@ -9,7 +9,6 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.musicbrainz.search.LuceneVersion;
 
 /** Test that analyser treats No.x and No. x the same (where x can be any number) , because both forms are found

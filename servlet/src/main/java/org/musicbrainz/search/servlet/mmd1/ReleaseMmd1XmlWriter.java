@@ -28,23 +28,13 @@
 
 package org.musicbrainz.search.servlet.mmd1;
 
-import com.jthink.brainz.mmd.Artist;
-import com.jthink.brainz.mmd.DiscList;
-import com.jthink.brainz.mmd.Event;
-import com.jthink.brainz.mmd.Label;
-import com.jthink.brainz.mmd.Metadata;
-import com.jthink.brainz.mmd.ObjectFactory;
-import com.jthink.brainz.mmd.Release;
-import com.jthink.brainz.mmd.ReleaseEventList;
-import com.jthink.brainz.mmd.ReleaseList;
-import com.jthink.brainz.mmd.TextRepresentation;
-import com.jthink.brainz.mmd.TrackList;
+import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.ReleaseIndexField;
-import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 

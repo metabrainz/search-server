@@ -2,12 +2,11 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.AnnotationIndex;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
-import org.musicbrainz.search.LuceneVersion;
 
 import java.util.ArrayList;
 
