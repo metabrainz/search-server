@@ -133,6 +133,27 @@ public class FindWorkTest extends TestCase {
         assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
     }
 
+
+    public void testFindWorkByDefaultUsingName() throws Exception {
+        Results res = ss.searchLucene("\"Symphony No. 5\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+
+    public void testFindWorkByDefaultUsingAlias() throws Exception {
+        Results res = ss.searchLucene("symp5", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+
     /**
      * Tests
      *

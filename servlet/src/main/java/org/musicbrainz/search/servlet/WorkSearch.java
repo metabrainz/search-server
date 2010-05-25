@@ -17,6 +17,7 @@ public class WorkSearch extends SearchServer {
         resultsWriter = new WorkWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(WorkIndexField.WORK.getName());
+        defaultFields.add(WorkIndexField.ALIAS.getName());
         analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
     }
 
@@ -41,6 +42,6 @@ public class WorkSearch extends SearchServer {
 
      @Override
     protected QueryParser getParser() {
-       return new WorkQueryParser(defaultFields.get(0), analyzer);
+       return new WorkQueryParser(defaultFields.toArray(new String[0]), analyzer);
     }
 }
