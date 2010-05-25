@@ -11,6 +11,7 @@ import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
@@ -49,6 +50,7 @@ public class FindWorkTest extends TestCase {
             doc.addField(WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.TYPE, "opera");
+            doc.addField(WorkIndexField.ALIAS, "Symp5");
 
             ArtistCredit ac = of.createArtistCredit();
             NameCredit nc = of.createNameCredit();
@@ -111,6 +113,15 @@ public class FindWorkTest extends TestCase {
         assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
     }
 
+    public void testFindWorkByAlias() throws Exception {
+        Results res = ss.searchLucene("alias:symp5", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/label/?type=xml&query=%22Jockey%20Slut%22
@@ -135,6 +146,7 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("<sort-name>Beethoven, Ludwig van</sort-name>"));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
         assertTrue(output.contains("type=\"opera\""));
+        assertTrue(output.contains("<alias-list><alias>Symp5</alias></alias-list>"));
 
 
     }

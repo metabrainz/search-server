@@ -30,6 +30,7 @@ package org.musicbrainz.search.servlet.mmd2;
 
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.MbDocument;
@@ -76,6 +77,18 @@ public class WorkWriter extends ResultsWriter {
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
             work.setArtistCredit(ac);
+
+            String[] aliases = doc.getValues(WorkIndexField.ALIAS);
+            if(aliases.length>0)
+            {
+                AliasList aliasList = of.createAliasList();
+                for(int i = 0;i<aliases.length;i++) {
+                    Alias alias = of.createAlias();
+                    alias.getContent().add(aliases[i]);
+                    aliasList.getAlias().add(alias);
+                }
+                work.setAliasList(aliasList);
+            }
 
             workList.getWork().add(work);
         }

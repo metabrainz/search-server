@@ -85,6 +85,12 @@ public class WorkIndex extends DatabaseIndex {
                         " WHERE w.id BETWEEN ? AND ?  " +
                         " ORDER BY w.id, acn.position");          //Order by pos so come in expected order
 
+        addPreparedStatement("ALIASES",
+                "SELECT work_alias.work as work, n.name as alias " +
+                " FROM work_alias " +
+                "  JOIN work_name n ON (work_alias.name = n.id) " +
+                " WHERE work BETWEEN ? AND ?");
+
         addPreparedStatement("WORKS",
                         "SELECT w.id as wid, w.gid, wn.name as name, lower(wt.name) as type, iswc " +
                         " FROM work AS w " +
@@ -113,18 +119,41 @@ public class WorkIndex extends DatabaseIndex {
                       "joinphrase",
                       "artistCreditName");
 
+        // Get works aliases
+        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
+        st = getPreparedStatement("ALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int workId = rs.getInt("work");
+
+            List<String> list;
+            if (!aliases.containsKey(workId)) {
+                list = new LinkedList<String>();
+                aliases.put(workId, list);
+            } else {
+                list = aliases.get(workId);
+            }
+            list.add(rs.getString("alias"));
+        }
+
+
+
         //Works
         st = getPreparedStatement("WORKS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, artistCredits, aliases));
         }
 
     }
 
-    public Document documentFromResultSet(ResultSet rs,Map<Integer, ArtistCredit> artistCredits) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, ArtistCredit> artistCredits,
+                                          Map<Integer, List<String>> aliases) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("wid");
         doc.addField(WorkIndexField.WORK_ID, rs.getString("gid"));
@@ -141,7 +170,13 @@ public class WorkIndex extends DatabaseIndex {
                 WorkIndexField.ARTIST_ID,
                 WorkIndexField.ARTIST_NAME,
                 WorkIndexField.ARTIST_CREDIT);
-        
+
+        if (aliases.containsKey(id)) {
+            for (String alias : aliases.get(id)) {
+                doc.addField(LabelIndexField.ALIAS, alias);
+            }
+        }
+
         return doc.getLuceneDocument();
     }
 

@@ -50,8 +50,11 @@ public class WorkIndexTest extends AbstractIndexTest {
                 " VALUES (1, 0, 16153, 1, null)");
 
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (1, 'Work')");
+        stmt.addBatch("INSERT INTO work_name (id, name) VALUES (2, 'Play')");
         stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, type, iswc, comment)" +
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, 'T-101779304-1', null)");
+        stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 2)");
+
 
         stmt.executeBatch();
         stmt.close();
@@ -137,4 +140,34 @@ public class WorkIndexTest extends AbstractIndexTest {
             ir.close();
         }
     }
+
+     public void testIndexWorkWithAlias() throws Exception {
+
+        addWorkOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(WorkIndexField.ALIAS.getName()).length);
+            assertEquals("Play", doc.getField(WorkIndexField.ALIAS.getName()).stringValue());
+            ir.close();
+        }
+    }
+
+    public void testIndexWorkWithNoAlias() throws Exception {
+
+        addWorkTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(0, doc.getFields(WorkIndexField.ALIAS.getName()).length);
+            ir.close();
+        }
+    }
+
 }

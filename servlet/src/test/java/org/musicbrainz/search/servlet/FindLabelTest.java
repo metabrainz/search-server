@@ -48,8 +48,8 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.END, "2004");
             doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
             doc.addField(LabelIndexField.COUNTRY, "GB");
-            doc.addField(ArtistIndexField.TAG, "dance");
-            doc.addField(ArtistIndexField.TAGCOUNT, "22");
+            doc.addField(LabelIndexField.TAG, "dance");
+            doc.addField(LabelIndexField.TAGCOUNT, "22");
 
             writer.addDocument(doc.getLuceneDocument());
         }

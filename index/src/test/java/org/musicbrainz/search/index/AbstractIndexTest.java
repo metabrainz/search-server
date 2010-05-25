@@ -99,6 +99,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE track_raw");
 
                 stmt.addBatch("DROP TABLE work");
+                stmt.addBatch("DROP TABLE work_alias");
                 stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work_type");
 
@@ -514,7 +515,14 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  comment character varying(255)," +
                 "  editpending integer NOT NULL DEFAULT 0" +
                 ")");
-        
+
+        stmt.addBatch("CREATE TABLE work_alias (" +
+                "  id serial NOT NULL," +
+                "  work integer NOT NULL," +
+                "  name integer NOT NULL," +
+                "  editpending integer NOT NULL DEFAULT 0" +
+                ")");
+
         stmt.addBatch("CREATE TABLE work_name (" +
                 "  id serial NOT NULL," +
                 "  name character varying NOT NULL" +
