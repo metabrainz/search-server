@@ -26,6 +26,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -67,6 +68,13 @@ public class WorkIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter) throws SQLException {
 
+        addPreparedStatement("TAGS",
+                       "SELECT work_tag.work, tag.name as tag, work_tag.count as count " +
+                       " FROM work_tag " +
+                       "  INNER JOIN tag ON tag=id " +
+                       " WHERE work between ? AND ?");
+
+
         addPreparedStatement("ARTISTCREDITS",
                         "SELECT w.id as wid, " +
                         "  acn.position as pos, " +
@@ -103,11 +111,18 @@ public class WorkIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        //Artist Credits
-        PreparedStatement st = getPreparedStatement("ARTISTCREDITS");
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"work");
+
+        //Artist Credits
+        st = getPreparedStatement("ARTISTCREDITS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
         Map<Integer, ArtistCredit> artistCredits
                 = ArtistCreditHelper.completeArtistCreditFromDbResults
                      (rs,
@@ -146,12 +161,13 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, artistCredits, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, artistCredits, aliases));
         }
 
     }
 
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<Tag>> tags,
                                           Map<Integer, ArtistCredit> artistCredits,
                                           Map<Integer, List<String>> aliases) throws SQLException {
         MbDocument doc = new MbDocument();
@@ -160,6 +176,7 @@ public class WorkIndex extends DatabaseIndex {
         doc.addField(WorkIndexField.WORK, rs.getString("name"));
         doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
+
 
         ArtistCredit ac = artistCredits.get(id);
         ArtistCreditHelper.buildIndexFieldsFromArtistCredit
@@ -173,7 +190,14 @@ public class WorkIndex extends DatabaseIndex {
 
         if (aliases.containsKey(id)) {
             for (String alias : aliases.get(id)) {
-                doc.addField(LabelIndexField.ALIAS, alias);
+                doc.addField(WorkIndexField.ALIAS, alias);
+            }
+        }
+
+        if (tags.containsKey(id)) {
+            for (Tag tag : tags.get(id)) {
+                doc.addField(WorkIndexField.TAG, tag.getName());
+                doc.addField(WorkIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }
 

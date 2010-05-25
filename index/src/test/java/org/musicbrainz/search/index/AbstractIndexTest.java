@@ -102,6 +102,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE work_alias");
                 stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work_type");
+                stmt.addBatch("DROP TABLE work_tag");
 
                 stmt.executeBatch();
                 stmt.close();
@@ -531,6 +532,12 @@ public abstract class AbstractIndexTest extends TestCase {
         stmt.addBatch("CREATE TABLE work_type (" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE work_tag (" +
+                "  work integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL" +
                 ")");
     }
 

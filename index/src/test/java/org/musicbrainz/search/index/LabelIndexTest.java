@@ -380,6 +380,8 @@ public class LabelIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(LabelIndexField.LABEL.getName()).length);
             assertEquals(1, doc.getFields(LabelIndexField.TAG.getName()).length);
             assertEquals("Goth", doc.getField(LabelIndexField.TAG.getName()).stringValue());
+            assertEquals(1, doc.getFields(LabelIndexField.TAGCOUNT.getName()).length);
+            assertEquals("10", doc.getField(LabelIndexField.TAGCOUNT.getName()).stringValue());
         }
         ir.close();
     }

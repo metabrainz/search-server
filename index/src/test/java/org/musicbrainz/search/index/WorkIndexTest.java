@@ -55,6 +55,9 @@ public class WorkIndexTest extends AbstractIndexTest {
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, 'T-101779304-1', null)");
         stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 2)");
 
+        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'Classical', 2);");
+        stmt.addBatch("INSERT INTO work_tag(work, tag, count)VALUES (1, 1, 10)");
+
 
         stmt.executeBatch();
         stmt.close();
@@ -168,6 +171,30 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals(0, doc.getFields(WorkIndexField.ALIAS.getName()).length);
             ir.close();
         }
+    }
+
+    /**
+     * Checks fields with different sort name to name is indexed correctly
+     *
+     * @throws Exception
+     */
+    public void testIndexWorkWithTag() throws Exception {
+
+        addWorkOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
+            assertEquals(1, doc.getFields(WorkIndexField.TAG.getName()).length);
+            assertEquals("Classical", doc.getField(WorkIndexField.TAG.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.TAGCOUNT.getName()).length);
+            assertEquals("10", doc.getField(LabelIndexField.TAGCOUNT.getName()).stringValue());
+        }
+        ir.close();
     }
 
 }

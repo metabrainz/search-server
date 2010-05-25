@@ -434,6 +434,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
             assertEquals(1, doc.getFields(ArtistIndexField.TAG.getName()).length);
             assertEquals("Goth", doc.getField(ArtistIndexField.TAG.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.TAGCOUNT.getName()).length);
+            assertEquals("10", doc.getField(ArtistIndexField.TAGCOUNT.getName()).stringValue());
         }
         ir.close();
     }
