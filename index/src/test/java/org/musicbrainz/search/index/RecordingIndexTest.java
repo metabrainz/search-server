@@ -83,7 +83,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO isrc (id, recording, isrc) VALUES (1, 1, '1234568')");
         stmt.addBatch("INSERT INTO isrc (id, recording, isrc) VALUES (2, 1, 'abcdefghi')");
-        
+
+        stmt.addBatch("INSERT INTO puid(id, puid)VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e38');");
+        stmt.addBatch("INSERT INTO recording_puid(id, puid, recording, editpending)VALUES (1, 1, 1, 0)");
+                
         stmt.executeBatch();
         stmt.close();
         conn.close();
@@ -378,7 +381,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
 
     /**
-     * Basic test of all fields
      *
      * @throws Exception
      */
@@ -396,9 +398,46 @@ public class RecordingIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
-    public void testToAvoidWarnings()
-     {
-         assertEquals(1,1);
-     }
+
+    /**
+     * Test gives puid
+     *
+     * @throws Exception
+     */
+    public void testPuid() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(1, doc.getFields(RecordingIndexField.PUID.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", doc.getField(RecordingIndexField.PUID.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+/**
+     * Test no puid
+     *
+     * @throws Exception
+     */
+    public void testNoPuid() throws Exception {
+
+        addTrackTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(1, ir.numDocs());
+        {
+            Document doc = ir.document(0);
+            assertEquals(0, doc.getFields(RecordingIndexField.PUID.getName()).length);
+        }
+        ir.close();
+    }
 
 }

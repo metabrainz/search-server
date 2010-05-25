@@ -79,6 +79,17 @@ public class RecordingWriter extends ResultsWriter {
                 recording.setIsrcList(isrcList);
             }
 
+            String[] puids              = doc.getValues(RecordingIndexField.PUID);
+            if(puids.length>0) {
+                PuidList puidList = of.createPuidList();
+                for (int i = 0; i < puids.length; i++) {
+                    Puid puid = of.createPuid();
+                    puid.setId(puids[i]);
+                    puidList.getPuid().add(puid);
+                }
+                recording.setPuidList(puidList);
+            }
+
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
             recording.setArtistCredit(ac);
                      

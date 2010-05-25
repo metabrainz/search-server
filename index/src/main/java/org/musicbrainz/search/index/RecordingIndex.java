@@ -72,6 +72,12 @@ public class RecordingIndex extends DatabaseIndex {
 
     public void init(IndexWriter indexWriter) throws SQLException {
 
+        addPreparedStatement("PUIDS",
+                 "SELECT recording as recordingId, puid.puid " +
+                 " FROM recording_puid " +
+                 " INNER JOIN puid ON recording_puid.puid = puid.id " +
+                 " WHERE recording between ? AND ?");
+
         addPreparedStatement("TAGS",
                  "SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count " +
                  " FROM recording_tag " +
@@ -132,6 +138,39 @@ public class RecordingIndex extends DatabaseIndex {
                 "  INNER JOIN track_name tn ON re.name=tn.id " +
                 " WHERE re.id BETWEEN ? AND ?");
     }
+
+    /**
+     * Get puids for the recordings
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<String>> loadPuids(int min, int max) throws SQLException, IOException {
+
+        //PUID
+        Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("PUIDS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int recordingId = rs.getInt("recordingId");
+            List<String> list;
+            if (!puidWrapper.containsKey(recordingId)) {
+                list = new LinkedList<String>();
+                puidWrapper.put(recordingId, list);
+            } else {
+                list = puidWrapper.get(recordingId);
+            }
+            String puid = new String(rs.getString("puid"));
+            list.add(puid);
+        }
+        return puidWrapper;
+    }
+
 
     /**
      * Get tag information
@@ -353,6 +392,7 @@ public class RecordingIndex extends DatabaseIndex {
     private void loadRecordings(IndexWriter indexWriter,
                                 int min,
                                 int max,
+                                Map<Integer,List<String>> puids,
                                 Map<Integer,List<Tag>> tags,
                                 Map<Integer, List<String>> isrcs,
                                 Map<Integer, ArtistCredit> artistCredits,
@@ -364,21 +404,23 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, isrcs, artistCredits, tracks, releases));
+            indexWriter.addDocument(documentFromResultSet(rs, puids, tags, isrcs, artistCredits, tracks, releases));
         }
 
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
         Map<Integer, List<Tag>> tags = loadTags(min, max);
+        Map<Integer, List<String>> puidWrapper = loadPuids(min, max);
         Map<Integer, List<String>> isrcWrapper = loadISRCs(min, max);
         Map<Integer, ArtistCredit> artistCredits = loadArtists(min, max);
         Map<Integer, List<TrackWrapper>> trackWrapper = loadTracks(min, max);
         Map<Integer, Release> releases = loadReleases(trackWrapper);
-        loadRecordings(indexWriter, min, max, tags, isrcWrapper, artistCredits, trackWrapper,releases);
+        loadRecordings(indexWriter, min, max, puidWrapper, tags, isrcWrapper, artistCredits, trackWrapper,releases);
     }
 
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, List<String>> puids,
                                           Map<Integer, List<Tag>> tags,
                                           Map<Integer, List<String>> isrcs,
                                           Map<Integer, ArtistCredit> artistCredits,
@@ -394,6 +436,13 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+
+        if (puids.containsKey(id)) {
+            //Add each puid for recording
+            for (String puid : puids.get(id)) {
+                doc.addField(RecordingIndexField.PUID, puid);
+            }
+        }
 
         if (isrcs.containsKey(id)) {
             //For each credit artist for this recording

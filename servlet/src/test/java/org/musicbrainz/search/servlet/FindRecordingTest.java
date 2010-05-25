@@ -53,6 +53,7 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
         doc.addField(RecordingIndexField.ARTIST, "Farming Incident");
         doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
+        doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
         Artist artist = of.createArtist();
@@ -304,6 +305,11 @@ public class FindRecordingTest extends TestCase {
            assertEquals(1, res.totalHits);
     }
 
+    public void testFindRecordingByPuidIsDisallowed() throws Exception {
+        Results res = ss.searchLucene("puid:1d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
+        assertEquals(0, res.totalHits);
+    }
+
     public void testOutputAsMmd1Xml() throws Exception {
 
         Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
@@ -359,6 +365,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<status>official</status>"));
         assertTrue(output.contains("<track-count>10</track-count>"));
         assertTrue(output.contains("indie</name>"));
+        assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
         
 
     }
@@ -387,6 +394,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"status\":\"official\""));
         assertTrue(output.contains("\"track-count\":10"));
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
+        assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
 
     }
 

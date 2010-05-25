@@ -33,7 +33,9 @@ public enum RecordingIndexField implements IndexField {
     ISRC    		    ("isrc",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     NUM_TRACKS_RELEASE  ("tracksrelease",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO)
+    TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
+    PUID    		    ("puid",		    Field.Store.YES,	Field.Index.NO),
+
     ;
 
     private String name;

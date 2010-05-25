@@ -84,6 +84,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE track");
                 stmt.addBatch("DROP TABLE recording");
                 stmt.addBatch("DROP TABLE recording_tag");
+                stmt.addBatch("DROP TABLE recording_puid");
+                stmt.addBatch("DROP TABLE puid");
                 stmt.addBatch("DROP TABLE isrc");
 
                 stmt.addBatch("DROP TABLE annotation");
@@ -426,6 +428,20 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  isrc character(12) NOT NULL," +
                 "  source smallint," +
                 "  editpending integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE recording_puid" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  puid integer NOT NULL," +
+                "  recording integer NOT NULL," +
+                "  editpending integer NOT NULL DEFAULT 0," +
+                ")");
+
+        stmt.addBatch("CREATE TABLE puid" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  puid character(36) NOT NULL," +
                 ")");
     }
 
