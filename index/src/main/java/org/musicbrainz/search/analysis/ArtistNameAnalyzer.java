@@ -29,14 +29,19 @@
 package org.musicbrainz.search.analysis;
 
 /**
- * Maps known punctuation only artist names to a different represententation before tokenized otherwise tokenization
- * rips out all punctuation making it impossible to match
+ * Maps known punctuation only artist names to a different representation before tokenized otherwise tokenization
+ * rips out all punctuation making it impossible to match. We only want it to match the name completely, for example we
+ * want to convert the artist called % but not ll artists with % in their name because if an artist was called Frank% we
+ * would like both a search for Frank% and a search for Frank to return it in the results.
  */
 public class ArtistNameAnalyzer extends StandardUnaccentAnalyzer {
 
     protected void setCharConvertMap() {
         super.setCharConvertMap();
+
+        //Need to ensure order more specific first i.e "..." before ...
         charConvertMap.add("!!!","ApostropheApostropheApostrophe");
+        charConvertMap.add("*** ***","StarStarStarSpaceStarStarStar");
 
     }
 
