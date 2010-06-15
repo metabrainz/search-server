@@ -204,7 +204,12 @@ public class FreeDBIndex implements Index {
 
             // Determine number of tracks
             tmp = lastTrack.split("=");
-            numTracks = new Integer(tmp[0].substring(6)) + 1;
+            if(tmp[0].length()>=7) {
+                numTracks = new Integer(tmp[0].substring(6)) + 1;
+            }
+            else {
+                System.err.println("Value of lastTrack cannot be parsed is:"+lastTrack);
+            }
         } catch (Exception e) {
             System.err.println("  "+entryName+ " Unable to determine no of tracks from " + lastTrack);
             e.printStackTrace();
