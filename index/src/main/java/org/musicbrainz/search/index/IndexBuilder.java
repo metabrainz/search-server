@@ -293,7 +293,7 @@ public class IndexBuilder
 class IndexBuilderOptions {
 
     private static final int MAX_TEST_ID = 50000;
-    private static final int IDS_PER_CHUNK = 50000;
+    private static final int IDS_PER_CHUNK = 20000;
 
     // Main database connection parameters
 
