@@ -62,8 +62,10 @@ public class FindReleaseTest extends TestCase {
         artist.setSortName("Incident, Farming");
         nc.setArtist(artist);
         ac.getNameCredit().add(nc);
-        doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
-
+        doc.addField(ReleaseIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
+        doc.addField(ReleaseIndexField.PUID,"668f3a22-03e8-e3cd-55e4-2e9a0906419a");
+        doc.addField(ReleaseIndexField.PUID,"1fa8aa07-c688-1f7c-734b-4d82e528b09a");
+                
         //Medium 1
         doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 10);
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
@@ -497,7 +499,12 @@ public class FindReleaseTest extends TestCase {
            Results res = ss.searchLucene("tracksmedium:[7 TO 17]", 0, 10);
            assertEquals(2, res.totalHits);
        }
-    
+
+    public void testFindReleaseByPuid() throws Exception {
+        Results res = ss.searchLucene("puid:668f3a22-03e8-e3cd-55e4-2e9a0906419a", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release/?type=xml&query=%22Our%20Glorious%205%20Year%20Plan%22

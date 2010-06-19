@@ -123,6 +123,16 @@ public class ReleaseIndex extends DatabaseIndex {
                 "  LEFT JOIN language ON rl.language=language.id " +
                 "  LEFT JOIN script ON rl.script=script.id " +
                 " WHERE rl.id BETWEEN ? AND ?");
+
+
+        addPreparedStatement("PUIDS",
+                 "SELECT m.release, p.puid " +
+                 "FROM medium m " +
+                 "INNER JOIN track t ON t.tracklist=m.tracklist " +
+                 "INNER JOIN recording r ON t.recording=r.id " +
+                 "INNER JOIN recording_puid rp ON rp.recording = r.id " +
+                 "INNER JOIN puid p ON rp.puid=p.id " +
+                 "WHERE m.release between ? AND ? ");
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
@@ -176,6 +186,25 @@ public class ReleaseIndex extends DatabaseIndex {
         }
 
 
+        //Puids
+        Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
+        st = getPreparedStatement("PUIDS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int releaseId = rs.getInt("release");
+            List<String> list;
+            if (!puidWrapper.containsKey(releaseId)) {
+                list = new LinkedList<String>();
+                puidWrapper.put(releaseId, list);
+            } else {
+                list = puidWrapper.get(releaseId);
+            }
+            String puid = new String(rs.getString("puid"));
+            list.add(puid);
+        }
+
         //Artist Credits
         st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
@@ -197,13 +226,14 @@ public class ReleaseIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, labelInfo, mediums, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, labelInfo, mediums, puidWrapper, artistCredits));
         }
     }
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> mediums,
+                                          Map<Integer, List<String>> puids,
                                           Map<Integer, ArtistCredit> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
@@ -253,6 +283,12 @@ public class ReleaseIndex extends DatabaseIndex {
             //Num Discs over the whole release
             doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, discCount);
 
+        }
+
+        if (puids.containsKey(id)) {
+            for (String puid : puids.get(id)) {
+                 doc.addField(ReleaseIndexField.PUID, puid);
+            }
         }
 
         ArtistCredit ac = artistCredits.get(id);

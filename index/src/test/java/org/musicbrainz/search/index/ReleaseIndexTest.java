@@ -4,6 +4,8 @@ import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
@@ -69,6 +71,14 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         	" VALUES (491240, null, null, null, null, '123456789', null)");
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format, name) VALUES (1, 1, 491240, 1, 7, null)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (1, 1, 1)");
+        stmt.addBatch("INSERT INTO puid(id, puid)VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e38');");
+        stmt.addBatch("INSERT INTO recording_puid(id, puid, recording, editpending)VALUES (1, 1, 1, 0)");
+        stmt.addBatch("INSERT INTO tracklist (id, trackcount) VALUES (1, 1)");
+        stmt.addBatch("INSERT INTO track (id, recording, tracklist, position, name, artist_credit, length) "
+                        + " VALUES (1, 1, 1, 4, 2, 1,33100)");
+        stmt.addBatch("INSERT INTO recording(id, gid, name, artist_credit, length, comment)"
+                        + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000, null)");
+
 
         stmt.executeBatch();
         stmt.close();
@@ -726,6 +736,23 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
         }
         ir.close();
+    }
+
+    /**
+     * Tets Puid Indexed (not stored)
+     * @throws Exception
+     */
+    public void testIndexPuid() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        TermEnum tr = ir.terms(new Term(ReleaseIndexField.PUID.getName(), ""));
+        assertEquals(ReleaseIndexField.PUID.getName(), tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", tr.term().text());
     }
 
 }

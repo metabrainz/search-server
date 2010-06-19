@@ -25,7 +25,7 @@ public enum ReleaseIndexField implements IndexField {
     BARCODE			    ("barcode",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
     CATALOG_NO		    ("catno",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    LABEL_ID                        ("labelid",               Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),    
+    LABEL_ID            ("labelid",         Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),    
     DATE			    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     NUM_DISCIDS         ("discids",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
@@ -36,6 +36,7 @@ public enum ReleaseIndexField implements IndexField {
     TYPE		        ("type",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     STATUS		        ("status",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     FORMAT  		    ("format",		    Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
+    PUID    		    ("puid",		    Field.Store.NO,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ;
 
     private String name;
