@@ -128,7 +128,8 @@ public class ReleaseIndex extends DatabaseIndex {
         addPreparedStatement("PUIDS",
                  "SELECT m.release, p.puid " +
                  "FROM medium m " +
-                 "INNER JOIN track t ON t.tracklist=m.tracklist " +
+                 "INNER JOIN tracklist tl on m.tracklist=tl.id " +
+                 "INNER JOIN track t ON t.tracklist=tl.id "  +
                  "INNER JOIN recording r ON t.recording=r.id " +
                  "INNER JOIN recording_puid rp ON rp.recording = r.id " +
                  "INNER JOIN puid p ON rp.puid=p.id " +
