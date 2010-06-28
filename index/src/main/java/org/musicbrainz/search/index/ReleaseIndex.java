@@ -126,12 +126,11 @@ public class ReleaseIndex extends DatabaseIndex {
 
 
         addPreparedStatement("PUIDS",
-                "SELECT m.release ,p.puid " +
+                "SELECT m.release, p.puid " +
                 "FROM medium m " +
-                "INNER JOIN track t ON m.tracklist=t.tracklist " +
-                "INNER JOIN recording_puid rp ON t.recording = rp.recording " +
-                "INNER JOIN puid p ON rp.puid=p.id " +
-                "WHERE m.release between ? AND ? ");
+                " INNER JOIN track t ON (t.tracklist=m.tracklist and m.release between ? AND ?) " +
+                " INNER JOIN recording_puid rp ON rp.recording = t.id " +
+                " INNER JOIN puid p ON rp.puid=p.id");
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
