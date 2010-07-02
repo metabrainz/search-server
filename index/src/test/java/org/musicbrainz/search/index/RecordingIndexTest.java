@@ -64,7 +64,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO release(id, gid, name, artist_credit, release_group, status, packaging, country, " +
                 "  language, script, date_year, date_month, date_day, barcode, comment) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1, null, null)");
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1970, 1, 1, null, null)");
         stmt.addBatch("INSERT INTO release_meta (id, lastupdate, dateadded, coverarturl, infourl, amazonasin, amazonstore) " +
         	" VALUES (491240, null, null, null, null, '123456789', null)");
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format, name) VALUES (1, 1, 491240, 1, 7, null)");
@@ -200,6 +200,29 @@ public class RecordingIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
+
+    /**
+        * Basic test of all fields
+        *
+        * @throws Exception exception
+        */
+       public void testReleaseDate() throws Exception {
+
+           addTrackOne();
+           RAMDirectory ramDir = new RAMDirectory();
+           createIndex(ramDir);
+
+           IndexReader ir = IndexReader.open(ramDir, true);
+           assertEquals(1, ir.numDocs());
+           {
+               Document doc = ir.document(0);
+               assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
+               assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_DATE.getName()).length);
+               assertEquals("1970-01-01", doc.getField(RecordingIndexField.RELEASE_DATE.getName()).stringValue());
+           }
+           ir.close();
+       }
+
 
      /**
      * Basic test of all fields

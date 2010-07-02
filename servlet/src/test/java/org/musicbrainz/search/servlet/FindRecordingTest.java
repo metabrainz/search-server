@@ -74,6 +74,7 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.POSITION, "1");
         doc.addField(RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
         doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
+        doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
         doc.addField(RecordingIndexField.ISRC, "123456789");
         doc.addField(RecordingIndexField.ISRC, "abcdefghi");
 
@@ -287,6 +288,19 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    public void testFindRecordingByReleaseDate() throws Exception {
+        Results res = ss.searchLucene("date:1970-01-01", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    }
+
+
     public void testFindRecordingByDefault() throws Exception {
         Results res = ss.searchLucene("\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -363,6 +377,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<isrc id=\"abcdefghi\"/>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
         assertTrue(output.contains("<status>official</status>"));
+        assertTrue(output.contains("<date>1970-01-01</date>"));
         assertTrue(output.contains("<track-count>10</track-count>"));
         assertTrue(output.contains("indie</name>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));

@@ -119,7 +119,8 @@ public class RecordingIndex extends DatabaseIndex {
         releases =
                 "SELECT " +
                 "  r.id as releaseKey, r.gid as releaseid, rn.name as releasename, rgt.name as type, "+
-                "  rs.name as status, sum(tr.trackcount) as tracks " +
+                "  rs.name as status, sum(tr.trackcount) as tracks, " +
+                "  date_year, date_month, date_day" +       
                 " FROM release r " +
                 "  INNER JOIN release_group rg ON rg.id = r.release_group " +
                 "  INNER JOIN medium m ON m.release=r.id " +
@@ -374,6 +375,7 @@ public class RecordingIndex extends DatabaseIndex {
             rg.setType(rs.getString("type"));
             release.setReleaseGroup(rg);
             release.setStatus(rs.getString("status"));
+            release.setDate(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
             ml.setTrackCount(BigInteger.valueOf(rs.getInt("tracks")));
             release.setReleaseGroup(rg);
             release.setMediumList(ml);
@@ -467,6 +469,8 @@ public class RecordingIndex extends DatabaseIndex {
                 Release release = releases.get(track.getReleaseId());
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, release.getStatus());
+                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_DATE, release.getDate());
+
                 doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
                 doc.addField(RecordingIndexField.RELEASE, release.getTitle());
                 doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
