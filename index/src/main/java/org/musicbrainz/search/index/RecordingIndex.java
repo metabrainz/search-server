@@ -130,7 +130,7 @@ public class RecordingIndex extends DatabaseIndex {
                 "  LEFT JOIN release_status rs ON r.status = rs.id " +
                 " WHERE r.id in " ;
 
-        releasesGroupBy =  " GROUP BY r.id, r.gid, rn.name, rgt.name, rs.name";
+        releasesGroupBy =  " GROUP BY r.id, r.gid, rn.name, rgt.name, rs.name, date_year, date_month, date_day";
 
         addPreparedStatement("RECORDINGS",
                 "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname " +
