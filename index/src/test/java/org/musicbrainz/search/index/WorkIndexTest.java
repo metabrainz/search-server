@@ -20,10 +20,11 @@ public class WorkIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        WorkIndex ci = new WorkIndex(createConnection());
-        ci.init(writer);
-        ci.indexData(writer, 0, Integer.MAX_VALUE);
-        ci.destroy();
+        WorkIndex wi = new WorkIndex(createConnection());
+        wi.init(writer);
+        wi.writeMetaInformation(writer);
+        wi.indexData(writer, 0, Integer.MAX_VALUE);
+        wi.destroy();
         writer.close();
 
     }
@@ -103,9 +104,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
             assertEquals("Work", doc.getField(WorkIndexField.WORK.getName()).stringValue());
             assertEquals(1, doc.getFields(WorkIndexField.ISWC.getName()).length);
@@ -121,9 +122,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(WorkIndexField.TYPE.getName()).length);
             ir.close();
         }
@@ -135,9 +136,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
             assertEquals("opera", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
             ir.close();
@@ -150,9 +151,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(WorkIndexField.ALIAS.getName()).length);
             assertEquals("Play", doc.getField(WorkIndexField.ALIAS.getName()).stringValue());
             ir.close();
@@ -165,9 +166,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(WorkIndexField.ALIAS.getName()).length);
             ir.close();
         }
@@ -185,9 +186,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
             assertEquals(1, doc.getFields(WorkIndexField.TAG.getName()).length);
             assertEquals("Classical", doc.getField(WorkIndexField.TAG.getName()).stringValue());

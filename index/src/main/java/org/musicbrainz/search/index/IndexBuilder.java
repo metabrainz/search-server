@@ -30,12 +30,9 @@
 package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -204,6 +201,7 @@ public class IndexBuilder
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
         index.init(indexWriter);
+        index.writeMetaInformation(indexWriter);
         int maxId = index.getMaxId();
         if (options.isTest() && options.getTestIndexSize() < maxId)
             maxId = options.getTestIndexSize();
@@ -215,7 +213,6 @@ public class IndexBuilder
         }
 
         index.destroy();
-        addMetaFieldsToIndex(indexWriter);
         System.out.println("\n  Started Optimizing at "+new Date());
         indexWriter.optimize();
         indexWriter.close();
@@ -250,29 +247,14 @@ public class IndexBuilder
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
+        index.writeMetaInformation(indexWriter);
         index.indexData(indexWriter);
-        addMetaFieldsToIndex(indexWriter);
 
         System.out.println("  Optimizing");
         indexWriter.optimize();
         indexWriter.close();
     }
-
-    /**
-     * Add document containing additional information about the index as the last document in the index
-     * 
-     * @param indexWriter
-     * @throws IOException
-     */
-    private static void addMetaFieldsToIndex(IndexWriter indexWriter)
-    throws IOException
-    {
-        Document doc = new Document();
-        doc.add(new Field(MetaIndexField.META.getName(),NumericUtils.longToPrefixCoded(new java.util.Date().getTime()),
-                MetaIndexField.META.getStore(), MetaIndexField.META.getIndex()));
-        indexWriter.addDocument(doc);
-    }    
-    
+   
     /**
      * Prepare a database connection, and set its default Postgres schema
      * 

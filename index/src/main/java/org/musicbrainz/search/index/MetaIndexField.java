@@ -27,7 +27,9 @@ import org.apache.lucene.document.Field;
  */
 public enum MetaIndexField implements IndexField {
 
-    META		("meta",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    LAST_UPDATED			("index_lastupdate",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    REPLICATION_SEQUENCE	("index_repseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    SCHEMA_SEQUENCE			("index_schseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     ;
 
     private String name;

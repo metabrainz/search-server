@@ -23,6 +23,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         AnnotationIndex ai = new AnnotationIndex(createConnection());
         ai.init(writer);
+        ai.writeMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);
         ai.destroy();
         writer.close();
@@ -169,9 +170,9 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
             assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
@@ -197,9 +198,9 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
             assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
@@ -224,9 +225,9 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
             assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
             assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
@@ -251,9 +252,9 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
             assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
             assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
@@ -278,9 +279,9 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        //assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
             assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
             assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);

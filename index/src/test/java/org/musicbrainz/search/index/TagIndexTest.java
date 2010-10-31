@@ -20,10 +20,11 @@ public class TagIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TagIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        TagIndex ci = new TagIndex(createConnection());
-        ci.init(writer);
-        ci.indexData(writer, 0, Integer.MAX_VALUE);
-        ci.destroy();
+        TagIndex ti = new TagIndex(createConnection());
+        ti.init(writer);
+        ti.writeMetaInformation(writer);
+        ti.indexData(writer, 0, Integer.MAX_VALUE);
+        ti.destroy();
         writer.close();
 
     }
@@ -48,9 +49,9 @@ public class TagIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(TagIndexField.TAG.getName()).length);
             assertEquals("rock", doc.getField(TagIndexField.TAG.getName()).stringValue());
             ir.close();

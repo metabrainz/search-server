@@ -25,10 +25,11 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        ReleaseIndex li = new ReleaseIndex(createConnection());
-        li.init(writer);
-        li.indexData(writer, 0, Integer.MAX_VALUE);
-        li.destroy();
+        ReleaseIndex ri = new ReleaseIndex(createConnection());
+        ri.init(writer);
+        ri.writeMetaInformation(writer);
+        ri.indexData(writer, 0, Integer.MAX_VALUE);
+        ri.destroy();
         writer.close();
     }
 
@@ -290,9 +291,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(ReleaseIndexField.RELEASE_ID.getName()).stringValue());
@@ -316,9 +317,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             checkTerm(ir, ReleaseIndexField.ARTIST_NAME, "and");
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
@@ -337,9 +338,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
             assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
             assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS.getName()).length);
@@ -358,9 +359,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
             assertEquals("Echo and The Bunnymen", ac.getNameCredit().get(0).getArtist().getSortName());
@@ -378,9 +379,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.TYPE.getName()).length);
         }
@@ -397,9 +398,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
         }
@@ -417,9 +418,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.SCRIPT.getName()).length);
         }
@@ -436,9 +437,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
             assertEquals("-", doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
@@ -456,9 +457,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
         }
@@ -475,9 +476,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
         }
@@ -494,9 +495,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
         }
@@ -513,9 +514,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
         }
@@ -532,9 +533,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.DATE.getName()).length);
         }
@@ -551,9 +552,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.STATUS.getName()).length);
         }
@@ -570,9 +571,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
             assertEquals("eng", doc.getField(ReleaseIndexField.LANGUAGE.getName()).stringValue());
@@ -590,9 +591,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.AMAZON_ID.getName()).length);
             assertEquals("123456789", doc.getField(ReleaseIndexField.AMAZON_ID.getName()).stringValue());
@@ -611,9 +612,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.SCRIPT.getName()).length);
             assertEquals("Latn", doc.getField(ReleaseIndexField.SCRIPT.getName()).stringValue());
@@ -630,9 +631,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
             assertEquals("Vinyl", doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
@@ -650,9 +651,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
@@ -670,9 +671,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.NUM_TRACKS_MEDIUM.getName()).length);
             assertEquals(10, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_TRACKS_MEDIUM.getName()).stringValue()));
@@ -691,9 +692,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
@@ -724,9 +725,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);

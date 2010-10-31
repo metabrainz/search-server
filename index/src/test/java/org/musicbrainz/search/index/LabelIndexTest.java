@@ -22,6 +22,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         LabelIndex li = new LabelIndex(createConnection());
         li.init(writer);
+        li.writeMetaInformation(writer);
         li.indexData(writer, 0, Integer.MAX_VALUE);
         li.destroy();
         writer.close();
@@ -115,9 +116,9 @@ public class LabelIndexTest extends AbstractIndexTest {
            createIndex(ramDir);
 
            IndexReader ir = IndexReader.open(ramDir, true);
-           assertEquals(1, ir.numDocs());
+           assertEquals(2, ir.numDocs());
            {
-               Document doc = ir.document(0);
+               Document doc = ir.document(1);
                assertEquals(1, doc.getFields(LabelIndexField.LABEL_ID.getName()).length);
                assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(LabelIndexField.LABEL_ID.getName()).stringValue());               
                assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
@@ -135,9 +136,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
         }
         ir.close();
@@ -151,9 +152,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
             assertEquals("af", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
         }
@@ -169,9 +170,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(LabelIndexField.COMMENT.getName()).length);
         }
         ir.close();
@@ -184,9 +185,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.COMMENT.getName()).length);
             assertEquals("DO NOT EDIT THIS LABEL", doc.getField(LabelIndexField.COMMENT.getName()).stringValue());
         }
@@ -201,9 +202,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(LabelIndexField.CODE.getName()).length);
         }
         ir.close();
@@ -217,9 +218,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
             assertEquals("5807", doc.getField(LabelIndexField.CODE.getName()).stringValue());
         }
@@ -233,9 +234,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
             assertEquals("99998", doc.getField(LabelIndexField.CODE.getName()).stringValue());
         }
@@ -254,9 +255,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.ALIAS.getName()).length); 
         }
         ir.close();
@@ -274,9 +275,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.BEGIN.getName()).length);
             assertEquals("1979", doc.getField(LabelIndexField.BEGIN.getName()).stringValue());
         }
@@ -296,9 +297,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(LabelIndexField.BEGIN.getName()).length);
         }
         ir.close();
@@ -316,9 +317,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.END.getName()).length);
             assertEquals("2009-04", doc.getField(LabelIndexField.END.getName()).stringValue());
         }
@@ -337,9 +338,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(LabelIndexField.END.getName()).length);
         }
         ir.close();
@@ -353,9 +354,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
             assertEquals("Original Production", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
         }
@@ -374,9 +375,9 @@ public class LabelIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.LABEL.getName()).length);
             assertEquals(1, doc.getFields(LabelIndexField.TAG.getName()).length);
             assertEquals("Goth", doc.getField(LabelIndexField.TAG.getName()).stringValue());
@@ -399,9 +400,9 @@ public class LabelIndexTest extends AbstractIndexTest {
 //        createIndex(ramDir);
 //
 //        IndexReader ir = IndexReader.open(ramDir, true);
-//        assertEquals(1, ir.numDocs());
+//        assertEquals(2, ir.numDocs());
 //        {
-//            Document doc = ir.document(0);
+//            Document doc = ir.document(1);
 //            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
 //            assertEquals("unknown", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
 //        }

@@ -34,6 +34,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -42,6 +43,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
+import java.util.Date;
 
 public class FreeDBIndex implements Index {
 
@@ -71,6 +73,13 @@ public class FreeDBIndex implements Index {
         initDecoders();
     }
 
+	@Override
+	public void writeMetaInformation(IndexWriter indexWriter) throws IOException {
+    	MbDocument doc = new MbDocument();
+        doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+        indexWriter.addDocument(doc.getLuceneDocument());
+	}
+    
     /* This is appended to the getName() method of each index to create the index folder  */
     private static final String INDEX_SUFFIX = "_index";
 

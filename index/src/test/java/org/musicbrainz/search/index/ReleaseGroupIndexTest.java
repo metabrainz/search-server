@@ -42,10 +42,11 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        ReleaseGroupIndex li = new ReleaseGroupIndex(createConnection());
-        li.init(writer);
-        li.indexData(writer, 0, Integer.MAX_VALUE);
-        li.destroy();
+        ReleaseGroupIndex rgi = new ReleaseGroupIndex(createConnection());
+        rgi.init(writer);
+        rgi.writeMetaInformation(writer);
+        rgi.indexData(writer, 0, Integer.MAX_VALUE);
+        rgi.destroy();
         writer.close();
     }
 
@@ -230,7 +231,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(0);
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
@@ -257,9 +258,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
             assertEquals("album", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
         }
@@ -275,9 +276,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
@@ -303,9 +304,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
             assertEquals("nat", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
         }
@@ -325,9 +326,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(2, doc.getFields(ReleaseGroupIndexField.RELEASE.getName()).length);
             String val1 = doc.getFields(ReleaseGroupIndexField.RELEASE.getName())[0].stringValue();
             String val2 = doc.getFields(ReleaseGroupIndexField.RELEASE.getName())[1].stringValue();
@@ -346,9 +347,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
 
             TermEnum tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_NAME.getName(), ""));
             assertEquals(ReleaseGroupIndexField.ARTIST_NAME.getName(), tr.term().field());
@@ -406,9 +407,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.TAG.getName()).length);
             assertEquals("punk", doc.getField(ReleaseGroupIndexField.TAG.getName()).stringValue());

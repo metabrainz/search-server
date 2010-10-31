@@ -34,7 +34,7 @@ public abstract class AbstractIndexTest extends TestCase {
         assertEquals(value, tr.term().text());
 
     }
-
+   
     public void setup() throws Exception {
         try {
             Connection conn = createConnection();
@@ -44,7 +44,7 @@ public abstract class AbstractIndexTest extends TestCase {
             try {
                 Statement stmt = conn.createStatement();
                 stmt.addBatch("DROP TABLE country");
-
+                stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE tag");
 
                 stmt.addBatch("DROP TABLE artist");
@@ -55,7 +55,6 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE artist_credit_name");
                 stmt.addBatch("DROP TABLE gender");
                 stmt.addBatch("DROP TABLE artist_tag");
-
 
                 stmt.addBatch("DROP TABLE label");
                 stmt.addBatch("DROP TABLE label_alias");
@@ -126,8 +125,8 @@ public abstract class AbstractIndexTest extends TestCase {
             setupAnnotationTables(stmt);
             setupCDStubTables(stmt);
             setupWorkTables(stmt);
-            setupTagTables(stmt);
             insertReferenceData(stmt);
+            insertReplicationInfo(stmt);
             
             stmt.executeBatch();
             stmt.close();
@@ -146,11 +145,17 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name character varying(100) NOT NULL" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE tag" +
-                "(" +
+        stmt.addBatch("CREATE TABLE tag (" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL," +
                 "  refcount integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE replication_control (" +
+                "  id serial NOT NULL," +
+                "  current_schema_sequence integer NOT NULL," +
+                "  current_replication_sequence integer, " +
+                "  last_replication_date timestamp " +
                 ")");
     }
 
@@ -557,11 +562,6 @@ public abstract class AbstractIndexTest extends TestCase {
                 ")");
     }
 
-    protected void setupTagTables(Statement stmt) throws Exception {
-
-
-    }
-
     protected void insertReferenceData(Statement stmt) throws Exception {
 
         stmt.addBatch("INSERT INTO gender (id, name) VALUES " + 
@@ -632,7 +632,14 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(15, 'Piano Roll', 1883), " +
                 "(16, 'DCC', 1992) "
         );
-
     }
+    
+    protected void insertReplicationInfo(Statement stmt) throws Exception {
+
+    	stmt.addBatch("INSERT INTO replication_control (id, current_schema_sequence, current_replication_sequence) " +
+        		" VALUES (1, 12, 42459)");
+        
+    }
+
 
 }

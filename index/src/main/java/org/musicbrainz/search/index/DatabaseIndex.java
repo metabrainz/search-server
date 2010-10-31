@@ -20,11 +20,16 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.search.MbDocument;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -35,13 +40,12 @@ public abstract class DatabaseIndex implements Index {
     /* This is appended to the getName() method of each index to create the index folder  */
     private static final String INDEX_SUFFIX = "_index";
 
+    protected HashMap<String, PreparedStatement> preparedStatements;
+    protected Connection dbConnection;
+    
     public String getFilename() {
         return getName() + INDEX_SUFFIX;
     }
-
-    protected HashMap<String, PreparedStatement> preparedStatements;
-    protected Connection dbConnection;
-
 
     protected DatabaseIndex(Connection dbConnection) {
         this.preparedStatements = new HashMap<String, PreparedStatement>();
@@ -52,6 +56,25 @@ public abstract class DatabaseIndex implements Index {
 
     }
 
+	@Override
+	public void writeMetaInformation(IndexWriter indexWriter) throws IOException {
+    	MbDocument doc = new MbDocument();
+        doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+        
+        Statement st;
+		try {
+			st = dbConnection.createStatement();
+	        ResultSet rs = st.executeQuery("SELECT current_schema_sequence, current_replication_sequence FROM replication_control");
+	        rs.next();
+	        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, rs.getString(1));
+	        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, rs.getString(2));
+		} catch (SQLException e) {
+			System.err.println("Unable to get replication information");
+		}
+        
+        indexWriter.addDocument(doc.getLuceneDocument());
+	}
+    
     public PreparedStatement addPreparedStatement(String identifier, String SQL) throws SQLException {
         PreparedStatement st = dbConnection.prepareStatement(SQL);
         preparedStatements.put(identifier, st);

@@ -23,10 +23,11 @@ public class RecordingIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        RecordingIndex li = new RecordingIndex(createConnection());
-        li.init(writer);
-        li.indexData(writer, 0, Integer.MAX_VALUE);
-        li.destroy();
+        RecordingIndex ri = new RecordingIndex(createConnection());
+        ri.init(writer);
+        ri.writeMetaInformation(writer);
+        ri.indexData(writer, 0, Integer.MAX_VALUE);
+        ri.destroy();
         writer.close();
     }
 
@@ -232,9 +233,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
@@ -268,9 +269,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
             assertEquals("Non-Album Tracks", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
@@ -290,9 +291,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
            createIndex(ramDir);
 
            IndexReader ir = IndexReader.open(ramDir, true);
-           assertEquals(1, ir.numDocs());
+           assertEquals(2, ir.numDocs());
            {
-               Document doc = ir.document(0);
+               Document doc = ir.document(1);
                assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
                assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_DATE.getName()).length);
                assertEquals("1970-01-01", doc.getField(RecordingIndexField.RELEASE_DATE.getName()).stringValue());
@@ -313,9 +314,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
@@ -336,9 +337,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
             assertEquals("-", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
@@ -358,9 +359,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
             assertEquals("-", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
@@ -380,9 +381,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
@@ -402,9 +403,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
@@ -424,9 +425,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals("punk", doc.getField(RecordingIndexField.TAG.getName()).stringValue());
         }
         ir.close();
@@ -444,9 +445,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals("Do It Clean", doc.getField(RecordingIndexField.RECORDING_OUTPUT.getName()).stringValue());
             assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
@@ -468,9 +469,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
             assertEquals("1234568", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
         }
@@ -489,9 +490,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(RecordingIndexField.ISRC.getName()).length);
         }
         ir.close();
@@ -509,9 +510,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.PUID.getName()).length);
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", doc.getField(RecordingIndexField.PUID.getName()).stringValue());
         }
@@ -530,9 +531,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(0, doc.getFields(RecordingIndexField.PUID.getName()).length);
         }
         ir.close();
@@ -550,9 +551,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(2, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);

@@ -22,6 +22,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         CDStubIndex ci = new CDStubIndex(createConnection());
         ci.init(writer);
+        ci.writeMetaInformation(writer);
         ci.indexData(writer, 0, Integer.MAX_VALUE);
         ci.destroy();
         writer.close();
@@ -51,9 +52,9 @@ public class CDStubIndexTest extends AbstractIndexTest{
         createIndex(ramDir);
 
         IndexReader ir = IndexReader.open(ramDir, true);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(0);
+            Document doc = ir.document(1);
             assertEquals(1, doc.getFields(CDStubIndexField.ARTIST.getName()).length);
             assertEquals("artist",doc.getField(CDStubIndexField.ARTIST.getName()).stringValue());
             assertEquals(1, doc.getFields(CDStubIndexField.TITLE.getName()).length);

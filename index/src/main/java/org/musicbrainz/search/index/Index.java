@@ -19,7 +19,10 @@
 
 package org.musicbrainz.search.index;
 
+import java.io.IOException;
+
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexWriter;
 
 public interface Index {
 
@@ -43,7 +46,13 @@ public interface Index {
      */
     public Analyzer getAnalyzer();
 
-
-
+    /**
+     * The analyzer used to analyse the index
+     *
+     * @return
+     * @throws IOException 
+     */
+    public void writeMetaInformation(IndexWriter indexWriter) throws IOException;
+    
 
 }
