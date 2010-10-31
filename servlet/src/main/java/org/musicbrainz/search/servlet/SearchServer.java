@@ -97,8 +97,8 @@ public abstract class SearchServer {
         //Is not a disaster if missing so just log and carry on
         try
         {
-            serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(indexSearcher.getIndexReader().document(indexSearcher.getIndexReader().maxDoc()-1)
-                    .getField(MetaIndexField.META.getName()).stringValue()));
+            serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(indexSearcher.getIndexReader().document(0)
+                    .getField(MetaIndexField.LAST_UPDATED.getName()).stringValue()));
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
         catch(Exception e) {
