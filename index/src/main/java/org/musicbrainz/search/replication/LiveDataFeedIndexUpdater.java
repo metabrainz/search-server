@@ -54,10 +54,12 @@ public class LiveDataFeedIndexUpdater {
 
 	private Map<String, EntityDependencyTree> dependencyTrees;
 	private final Logger LOGGER = Logger.getLogger(LiveDataFeedIndexUpdater.class.getName());
+	private final Level LOG_LEVEL = Level.INFO;
 	private Connection mainDbConn;
 	
+	
 	public LiveDataFeedIndexUpdater() {
-		dependencyTrees = initDependencyTrees();
+		
 		LOGGER.setUseParentHandlers(false);
 	    Handler conHdlr = new ConsoleHandler();
 	    conHdlr.setFormatter(new Formatter() {
@@ -65,13 +67,14 @@ public class LiveDataFeedIndexUpdater {
 	      public String format(LogRecord record) {
 	        return new Date(record.getMillis()).toString() + " - "
 	        	+ record.getLevel() + " : "
-//	            + record.getSourceClassName() + " -:- "
-//	            + record.getSourceMethodName() + " -:- "
 	            + record.getMessage() + "\n";
 	      }
 	    });
 	    LOGGER.addHandler(conHdlr);
-		LOGGER.setLevel(Level.ALL);
+	    LOGGER.setLevel(LOG_LEVEL);
+	    conHdlr.setLevel(LOG_LEVEL);
+	    
+	    dependencyTrees = initDependencyTrees();
 	}
 	
 	public void start(LiveDataFeedIndexOptions options) throws SQLException, IOException {
@@ -102,9 +105,10 @@ public class LiveDataFeedIndexUpdater {
             }
 
             clock.start();
+            LOGGER.info("Started updating index: " + index.getName());
             updateDatabaseIndex(index, options);
             clock.stop();
-            LOGGER.info("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
+            LOGGER.info("Finished updating index: " + index.getName() + " in " + Float.toString(clock.getTime()/1000) + " seconds");
             clock.reset();
         }
 
@@ -119,12 +123,11 @@ public class LiveDataFeedIndexUpdater {
      */
     private void updateDatabaseIndex(DatabaseIndex index, LiveDataFeedIndexOptions options) throws IOException, SQLException
     {
-    	LOGGER.info("Updating index: " + index.getName());
     	
     	String path = options.getIndexesDir() + index.getFilename();
         IndexWriter indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer(), false, IndexWriter.MaxFieldLength.LIMITED);
-        //indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
-        //indexWriter.setMergeFactor(MERGE_FACTOR);
+        indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
+        indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
     	
     	IndexReader reader = IndexReader.open(new MMapDirectory(new File(path)));
     	IndexSearcher searcher = new IndexSearcher(reader);
@@ -148,8 +151,8 @@ public class LiveDataFeedIndexUpdater {
             Set<Integer> deletedIds = new HashSet<Integer>();
             Set<Integer> insertedIds = new HashSet<Integer>();
             
-            // TODO: for debug
-            lastReplicationSequence = 1;
+            // For debug purpose: force a certain replication sequence
+            //lastReplicationSequence = 1;
             
             // Load and process each replication packet released since
             ReplicationPacket packet;
@@ -157,24 +160,17 @@ public class LiveDataFeedIndexUpdater {
             	
             	LOGGER.info("Loading packet #" + packet.getReplicationSequence());
             	
-            	/*
             	if (lastSchemaSequence != packet.getSchemaSequence()) {
-            		System.err.println("Aborting, new packet is for a different SCHEMA sequence");
+            		LOGGER.info("Aborting, new packet is for a different SCHEMA sequence");
             		break;
             	}
-            	*/
-//            	try {
             	processReplicationPacket(packet, dependencyTrees.get(index.getName()), insertedIds, deletedIds);
-//            	} catch(Exception e) {
-//            		//TODO: temporary
-//            	}
             	
             	lastReplicationSequence++;
             }
 
             // We're done parsing all replication packets and analyzing impacted entities
             Date indexingDate = new Date();
-            LOGGER.info("Started Building index: " + path + " at " + indexingDate);
             
             // Delete obsolete documents
         	for(Integer id : deletedIds) {
@@ -197,27 +193,13 @@ public class LiveDataFeedIndexUpdater {
             indexWriter.optimize();
             indexWriter.close();
             
-            //For debugging to check sql is not creating too few/many rows
-            if(true) {
-                int dbRows = index.getNoOfRows(Integer.MAX_VALUE);
-                IndexReader newReader = IndexReader.open(FSDirectory.open(new File(path)),true);
-                System.out.println("  "+dbRows+" rows in database, "+(newReader.maxDoc() - 1)+" lucene documents");
-                reader.close();
-            }
+            // Check to we have as much Lucune documents as Database rows
+            int dbRows = index.getNoOfRows(Integer.MAX_VALUE);
+            IndexReader newReader = IndexReader.open(FSDirectory.open(new File(path)),true);
+            LOGGER.info(dbRows+" rows in database, "+(newReader.maxDoc() - 1)+" lucene documents");
+            newReader.close();
     	}
     	
-    	/*
-        indexWriter = new ThreadedIndexWriter(FSDirectory.open(new File(path)),
-                index.getAnalyzer(),
-                true,
-                Runtime.getRuntime().availableProcessors(),
-                options.getDatabaseChunkSize(),
-                IndexWriter.MaxFieldLength.LIMITED);
-
-        indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
-        indexWriter.setMergeFactor(MERGE_FACTOR);
-        */
-
     }
     
 	private void processReplicationPacket(ReplicationPacket packet, EntityDependencyTree dependencyTree, Set<Integer> insertedIds, Set<Integer> deletedIds) 
@@ -240,13 +222,13 @@ public class LiveDataFeedIndexUpdater {
     	for (ReplicationChange change : packet.getChanges()) {
     		
     		if (!dependencyTree.getTables().contains(change.getTableName())) {
-    			LOGGER.finest("Skipping change on table " + change.getTableName());
+    			LOGGER.finest("Skipping change on table " + change.getTableName().toUpperCase());
     			continue;
     		}
     		
     		LinkedTable lt = dependencyTree.getDependency(change.getTableName());
     		
-    		LOGGER.finest("Analyzing change #" + change.getId() + " on table " + change.getTableName().toUpperCase());
+    		LOGGER.finer("Analyzing change #" + change.getId() + " on table " + change.getTableName().toUpperCase());
     		switch (change.getOperation()) {
     			case INSERT:
         			{
@@ -301,7 +283,7 @@ public class LiveDataFeedIndexUpdater {
     		LinkedTable lt = dependencyTree.getDependency(tableName);
     		String sql = lt.generateSQL(tmpIds);
     		
-    		LOGGER.info("Resolution of deleted ids for table " + tableName + ": " + sql);
+    		LOGGER.finest("Resolution of deleted ids for table " + tableName + ": " + sql);
     		
     		Statement st = mainDbConn.createStatement();
     		ResultSet rs = st.executeQuery(sql);
@@ -334,25 +316,6 @@ public class LiveDataFeedIndexUpdater {
     	
     }
     
-	/*
-    private void deleteOldDocuments(DatabaseIndex index, IndexWriter indexWriter, Set<Integer> deletedIds) throws CorruptIndexException, IOException {
-    	Term term;
-    	TermQuery query;
-    	for(Integer id : deletedIds) {
-    		term = new Term("id", id.toString());
-    		query = new TermQuery(term);
-    		indexWriter.deleteDocuments(query);
-    	}
-    }
-    
-    private void insertNewDocuments(DatabaseIndex index, IndexWriter indexWriter, Set<Integer> insertedIds) throws SQLException, IOException {
-    	for(Integer id : insertedIds) {
-    		index.indexData(indexWriter, id, id);
-    	}
-    	
-    }
-    */
-	
     /**
      * Load table dependencies declaration from an XML configuration file
      * @return
@@ -396,9 +359,7 @@ public class LiveDataFeedIndexUpdater {
 			String entity = group.getAttributeValue("root_table");
 			dependencyTree.setRootTableName(entity);
 			map.put(entity, dependencyTree);
-			
-			System.out.println("Building tree dependency for " + entity + "...");
-			
+					
 			// Iterate over each path for the group 
 			for (Iterator it2 = group.getDescendants(filter); it2.hasNext();) {
 
@@ -428,17 +389,18 @@ public class LiveDataFeedIndexUpdater {
 			}
 			
 			// Output of our dependency for debug purpose
-			
+			LOGGER.fine("Building tree dependency for " + entity + "...");
 			for (LinkedTable lt : dependencyTree.dependencies.values()) {
 				if (lt.isHead()) continue;
-				System.out.print(entity + " ==> ");
+				StringBuilder sb = new StringBuilder();
+				sb.append(entity + " ==> ");
 				while (lt.getTargetTable() != null) {
-					System.out.print(lt.getTableName() + " (" + lt.getSourceJoinField() + 
-						") -> " + lt.getTargetTable().getTableName() + " (" + lt.getTargetJoinField() + ")");
+					sb.append(lt.getTableName() + " (" + lt.getSourceJoinField() + ")");
+					sb.append(" -> " + lt.getTargetTable().getTableName() + " (" + lt.getTargetJoinField() + ")");
 					lt = lt.getTargetTable();
-					if (lt.getTargetTable() != null) System.out.print(" -> ");
+					if (lt.getTargetTable() != null) sb.append(" -> ");
 				}
-				System.out.println("");
+				LOGGER.finest(sb.toString());
 			}
 			
 		}

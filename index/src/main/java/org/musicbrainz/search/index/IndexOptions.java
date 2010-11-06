@@ -15,6 +15,10 @@ public class IndexOptions {
     private static final int MAX_TEST_ID = 50000;
     private static final int IDS_PER_CHUNK = 20000;
 
+    // Lucene parameters
+    public static final int MAX_BUFFERED_DOCS = 10000;
+    public static final int MERGE_FACTOR = 3000;
+    
     // PostgreSQL schema that holds MB data
 	public static final String DB_SCHEMA = "musicbrainz";
 	

@@ -51,10 +51,6 @@ import java.util.Properties;
 public class IndexBuilder
 {
 
-    // Lucene parameters
-    private static final int MAX_BUFFERED_DOCS = 10000;
-    private static final int MERGE_FACTOR = 3000;
-
     public static void main(String[] args) throws SQLException, IOException
     {
 
@@ -181,8 +177,8 @@ public class IndexBuilder
                 options.getDatabaseChunkSize(),
                 IndexWriter.MaxFieldLength.LIMITED);
 
-        indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
-        indexWriter.setMergeFactor(MERGE_FACTOR);
+        indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
+        indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
 
         index.init(indexWriter);
         index.addMetaInformation(indexWriter);
@@ -228,8 +224,8 @@ public class IndexBuilder
         String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
         indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer() , true, IndexWriter.MaxFieldLength.LIMITED);
-        indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
-        indexWriter.setMergeFactor(MERGE_FACTOR);
+        indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
+        indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
 
         index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
