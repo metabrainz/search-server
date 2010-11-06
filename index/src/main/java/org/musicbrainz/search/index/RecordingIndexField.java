@@ -12,6 +12,7 @@ import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
  */
 public enum RecordingIndexField implements IndexField {
 
+    ID                  ("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),	
     RECORDING_ID        ("rid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RECORDING           ("recording",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),

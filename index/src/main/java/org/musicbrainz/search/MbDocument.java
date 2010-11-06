@@ -64,6 +64,11 @@ public class MbDocument {
         doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
     }
 
+    public void addField(IndexField field, int value) {
+        addField(field, Integer.toString(value));
+    }
+    
+    
     /**
      * Add numeric field, handled specially so that ranges searches work properly
      * @param field

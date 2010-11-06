@@ -74,7 +74,7 @@ public class FreeDBIndex implements Index {
     }
 
 	@Override
-	public void writeMetaInformation(IndexWriter indexWriter) throws IOException {
+	public void addMetaInformation(IndexWriter indexWriter) throws IOException {
     	MbDocument doc = new MbDocument();
         doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
         indexWriter.addDocument(doc.getLuceneDocument());

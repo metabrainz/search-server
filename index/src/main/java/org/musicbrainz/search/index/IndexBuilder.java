@@ -51,19 +51,14 @@ import java.util.Properties;
 public class IndexBuilder
 {
 
-
     // Lucene parameters
     private static final int MAX_BUFFERED_DOCS = 10000;
     private static final int MERGE_FACTOR = 3000;
 
-	// PostgreSQL schema that holds MB data
-	protected static final String DB_SCHEMA = "musicbrainz";
-
-
     public static void main(String[] args) throws SQLException, IOException
     {
 
-        IndexBuilderOptions options = new IndexBuilderOptions();
+        IndexOptions options = new IndexOptions();
         CmdLineParser parser = new CmdLineParser(options);
 
         try {
@@ -106,24 +101,13 @@ public class IndexBuilder
             }
 
             // Connect to main database
-            String url = "jdbc:postgresql://" + options.getMainDatabaseHost() + "/" + options.getMainDatabaseName();
-            Properties props = new Properties();
-            props.setProperty("user", options.getMainDatabaseUser());
-            props.setProperty("password", options.getMainDatabasePassword());
-            mainDbConn = DriverManager.getConnection(url, props);
-            prepareDbConnection(mainDbConn);
+            mainDbConn = options.getMainDatabaseConnection();
 
             // Connect to raw database
-            url = "jdbc:postgresql://" + options.getRawDatabaseHost() + "/" + options.getRawDatabaseName();
-            props = new Properties();
-            props.setProperty("user", options.getRawDatabaseUser());
-            props.setProperty("password", options.getRawDatabasePassword());
-            rawDbConn = DriverManager.getConnection(url, props);
-            prepareDbConnection(rawDbConn);
+			rawDbConn = options.getRawDatabaseConnection();
         }
     
         StopWatch clock = new StopWatch();
-
 
         // MusicBrainz data indexing
         DatabaseIndex[] indexes = {
@@ -178,7 +162,7 @@ public class IndexBuilder
      * @throws IOException 
      * @throws SQLException 
      */
-    private static void buildDatabaseIndex(DatabaseIndex index, IndexBuilderOptions options) throws IOException, SQLException
+    private static void buildDatabaseIndex(DatabaseIndex index, IndexOptions options) throws IOException, SQLException
     {
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
@@ -201,7 +185,7 @@ public class IndexBuilder
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
         index.init(indexWriter);
-        index.writeMetaInformation(indexWriter);
+        index.addMetaInformation(indexWriter);
         int maxId = index.getMaxId();
         if (options.isTest() && options.getTestIndexSize() < maxId)
             maxId = options.getTestIndexSize();
@@ -235,7 +219,7 @@ public class IndexBuilder
      * @param options
      * @throws IOException 
      */
-    private static void buildFreeDBIndex(File dumpFile, IndexBuilderOptions options) throws IOException
+    private static void buildFreeDBIndex(File dumpFile, IndexOptions options) throws IOException
     {
         FreeDBIndex index = new FreeDBIndex();
         index.setDumpFile(dumpFile);
@@ -247,106 +231,12 @@ public class IndexBuilder
         indexWriter.setMaxBufferedDocs(MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(MERGE_FACTOR);
 
-        index.writeMetaInformation(indexWriter);
+        index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
 
         System.out.println("  Optimizing");
         indexWriter.optimize();
         indexWriter.close();
     }
-   
-    /**
-     * Prepare a database connection, and set its default Postgres schema
-     * 
-     * @param connection
-     * @throws SQLException 
-     */
-    private static void prepareDbConnection(Connection connection) throws SQLException
-    {
-		Statement st = connection.createStatement();
-        //Forces Query Analyser to take advantage of indexes when they exist, this works round the problem with the
-        //explain sometimes deciding to do full table scans when building recording index causing query to run unacceptably slow.
-        st.executeUpdate("SET enable_seqscan = off");
-		st.executeUpdate("SET search_path TO '" + DB_SCHEMA + "'");
-    }
     
-}
-
-class IndexBuilderOptions {
-
-    private static final int MAX_TEST_ID = 50000;
-    private static final int IDS_PER_CHUNK = 20000;
-
-    // Main database connection parameters
-
-    @Option(name="--db-host", aliases = { "-h" }, usage="The database server to connect to. (default: localhost)")
-    private String mainDatabaseHost = "localhost";
-    public String getMainDatabaseHost() { return mainDatabaseHost; }
-
-    @Option(name="--db-name", aliases = { "-d" }, usage="The name of the database server to connect to. (default: musicbrainz_db)")
-    private String mainDatabaseName = "musicbrainz_db";        
-    public String getMainDatabaseName() { return mainDatabaseName; }
-
-    @Option(name="--db-user", aliases = { "-u" }, usage="The username to connect with. (default: musicbrainz_user)")
-    private String mainDatabaseUser = "musicbrainz_user";
-    public String getMainDatabaseUser() { return mainDatabaseUser; }
-
-    @Option(name="--db-password", aliases = { "-p" }, usage="The password for the db user. (default: -blank-)")
-    private String mainDatabasePassword = "";
-    public String getMainDatabasePassword() { return mainDatabasePassword; }
-
-    // Raw database connection parameters
-
-    @Option(name="--raw-db-host", aliases = { "-o" }, usage="The raw database server to connect to. (default: localhost)")
-    private String rawDatabaseHost = "";
-    public String getRawDatabaseHost() { return rawDatabaseHost.isEmpty() ? getMainDatabaseHost() : rawDatabaseHost; }
-
-    @Option(name="--raw-db-name", aliases = { "-a" }, usage="The name of the raw database server to connect to. (default: musicbrainz_db_raw)")
-    private String rawDatabaseName = "musicbrainz_db_raw";     
-    public String getRawDatabaseName() { return rawDatabaseName; }
-
-    @Option(name="--raw-db-user", aliases = { "-s" }, usage="The username for the raw database to connect with. (default: musicbrainz_user)")
-    private String rawDatabaseUser = "musicbrainz_user";
-    public String getRawDatabaseUser() { return rawDatabaseUser; }
-
-    @Option(name="--raw-db-password", aliases = { "-w" }, usage="The password of the db user of the raw database. (default: -blank-)")
-    private String rawDatabasePassword = "";
-    public String getRawDatabasePassword() { return rawDatabasePassword; }
-
-    // Indexes directory
-    @Option(name="--indexes-dir", usage="The directory . (default: ./data/)")
-    private String indexesDir = "." + System.getProperty("file.separator") + "data" + System.getProperty("file.separator");
-    public String getIndexesDir() {
-        if (indexesDir.endsWith(System.getProperty("file.separator"))) return indexesDir; 
-        else return indexesDir + System.getProperty("file.separator");
-    }
-
-    // FreeDB dump file
-    @Option(name="--freedb-dump", usage="The FreeDB dump file to index.")
-    private String freeDBDump = "";
-    public String getFreeDBDump() { return freeDBDump; }
-
-    // Selection of indexes to build
-    @Option(name="--indexes", usage="A comma-separated list of indexes to build (artist,releasegroup,release,recording,label,work,tag,annotation,cdstub,freedb)")
-    private String indexes = "artist,label,release,recording,releasegroup,work,tag,annotation,cdstub,freedb";
-    public ArrayList<String> selectedIndexes() { return new ArrayList<String>(Arrays.asList(indexes.split(","))); }
-    public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
-
-    // Test mode
-    @Option(name="--test", aliases = { "-t" }, usage="Test the index builder by creating small text indexes.")
-    private boolean test = false;
-    public boolean isTest() { return test; }
-
-    @Option(name="--help", usage="Print this usage information.")
-    private boolean help = false;
-    public boolean isHelp() { return help; }
-
-    @Option(name="--testindexsize", aliases = { "-b" }, usage="The number of rows to index when using the test option. (default: -10000)")
-    private int testIndexSize = MAX_TEST_ID;
-    public int getTestIndexSize() { return testIndexSize; }
-
-    @Option(name="--chunksize", aliases = { "-c" }, usage="Chunk Size, The number of rows to return in each SQL query. (default: -10000)")
-    private int databaseChunkSize = IDS_PER_CHUNK;
-    public int getDatabaseChunkSize() { return databaseChunkSize; }
-
 }

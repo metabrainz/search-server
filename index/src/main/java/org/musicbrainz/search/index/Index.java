@@ -52,7 +52,7 @@ public interface Index {
      * @return
      * @throws IOException 
      */
-    public void writeMetaInformation(IndexWriter indexWriter) throws IOException;
+    public void addMetaInformation(IndexWriter indexWriter) throws IOException;
     
 
 }

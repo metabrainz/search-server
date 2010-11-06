@@ -27,7 +27,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseIndex ri = new ReleaseIndex(createConnection());
         ri.init(writer);
-        ri.writeMetaInformation(writer);
+        ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
         ri.destroy();
         writer.close();

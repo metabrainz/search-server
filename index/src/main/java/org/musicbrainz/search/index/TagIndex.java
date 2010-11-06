@@ -35,14 +35,17 @@ public class TagIndex extends DatabaseIndex {
         super(dbConnection);
     }
 
-    public TagIndex() {
-        }
-
+    public TagIndex() { }
 
     public String getName() {
         return "tag";
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return TagIndexField.ID;
+	}
+	
     public Analyzer getAnalyzer() {
         return new PerFieldEntityAnalyzer(WorkIndexField.class);
     }
@@ -66,7 +69,7 @@ public class TagIndex extends DatabaseIndex {
 
 
         addPreparedStatement("TAG",
-                        "SELECT name " +
+                        "SELECT t.id, name " +
                         " FROM tag t" +
                         " WHERE t.id BETWEEN ? AND ? " +
                         " ORDER BY t.id");
@@ -87,6 +90,7 @@ public class TagIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
         MbDocument doc = new MbDocument();
+        doc.addField(TagIndexField.ID, rs.getString("id"));
         doc.addField(TagIndexField.TAG, rs.getString("name"));
         return doc.getLuceneDocument();
     }

@@ -41,9 +41,7 @@ public class WorkIndex extends DatabaseIndex {
         super(dbConnection);
     }
 
-    public WorkIndex() {
-        }
-
+    public WorkIndex() { }
 
     public String getName() {
         return "work";
@@ -53,6 +51,11 @@ public class WorkIndex extends DatabaseIndex {
         return new PerFieldEntityAnalyzer(WorkIndexField.class);
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return WorkIndexField.ID;
+	}
+	
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM work");
@@ -155,8 +158,6 @@ public class WorkIndex extends DatabaseIndex {
             list.add(rs.getString("alias"));
         }
 
-
-
         //Works
         st = getPreparedStatement("WORKS");
         st.setInt(1, min);
@@ -174,11 +175,11 @@ public class WorkIndex extends DatabaseIndex {
                                           Map<Integer, List<String>> aliases) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("wid");
+        doc.addField(WorkIndexField.ID, id);
         doc.addField(WorkIndexField.WORK_ID, rs.getString("gid"));
         doc.addField(WorkIndexField.WORK, rs.getString("name"));
         doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
-
 
         ArtistCredit ac = artistCredits.get(id);
         ArtistCreditHelper.buildIndexFieldsFromArtistCredit

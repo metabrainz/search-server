@@ -40,10 +40,11 @@ import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
  */
 public enum ReleaseGroupIndexField implements IndexField {
 
-	ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-	ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+	ID		    		("_id",				Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	ARTIST_ID		    ("arid",			Field.Store.NO,		Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,		Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+	ARTIST_NAME         ("artistname",		Field.Store.NO,		Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,		Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
 	TYPE			    ("type",			Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

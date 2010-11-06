@@ -43,8 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class
-        ReleaseGroupIndex extends DatabaseIndex {
+public class ReleaseGroupIndex extends DatabaseIndex {
 
     public ReleaseGroupIndex(Connection dbConnection) {
         super(dbConnection);
@@ -62,6 +61,11 @@ public class
         return new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return ReleaseGroupIndexField.ID;
+	}
+    
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM release_group");
@@ -184,6 +188,7 @@ public class
                                           Map<Integer, ArtistCredit> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
+        doc.addField(ReleaseGroupIndexField.ID, id);
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
         doc.addNonEmptyField(ReleaseGroupIndexField.TYPE, rs.getString("type"));

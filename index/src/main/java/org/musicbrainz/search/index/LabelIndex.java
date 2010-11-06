@@ -58,6 +58,11 @@ public class LabelIndex extends DatabaseIndex {
         return new PerFieldEntityAnalyzer(LabelIndexField.class);
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return LabelIndexField.ID;
+	}
+    
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM label");

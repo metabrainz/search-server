@@ -22,7 +22,7 @@ public class TagIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         TagIndex ti = new TagIndex(createConnection());
         ti.init(writer);
-        ti.writeMetaInformation(writer);
+        ti.addMetaInformation(writer);
         ti.indexData(writer, 0, Integer.MAX_VALUE);
         ti.destroy();
         writer.close();

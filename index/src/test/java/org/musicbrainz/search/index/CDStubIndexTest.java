@@ -22,7 +22,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         CDStubIndex ci = new CDStubIndex(createConnection());
         ci.init(writer);
-        ci.writeMetaInformation(writer);
+        ci.addMetaInformation(writer);
         ci.indexData(writer, 0, Integer.MAX_VALUE);
         ci.destroy();
         writer.close();

@@ -40,6 +40,7 @@ import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
  */
 public enum LabelIndexField implements IndexField {
 
+	ID			("_id",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),	
     LABEL_ID	("laid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED, new LabelNameAnalyzer()),
     COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),

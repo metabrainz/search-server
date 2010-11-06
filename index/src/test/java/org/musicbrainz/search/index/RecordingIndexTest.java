@@ -25,7 +25,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         RecordingIndex ri = new RecordingIndex(createConnection());
         ri.init(writer);
-        ri.writeMetaInformation(writer);
+        ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
         ri.destroy();
         writer.close();

@@ -30,6 +30,7 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
  */
 public enum CDStubIndexField implements IndexField {
 
+	ID              ("_id",         Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST          ("artist",      Field.Store.YES,    Field.Index.ANALYZED),
     TITLE           ("title",       Field.Store.YES,    Field.Index.ANALYZED, new TitleAnalyzer()),
     BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),

@@ -39,6 +39,11 @@ public class AnnotationIndex extends DatabaseIndex {
         return new PerFieldEntityAnalyzer(AnnotationIndexField.class);
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return AnnotationIndexField.ID;
+	}
+    
     public int getMaxId() throws SQLException {
         Statement st = this.dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM annotation");
@@ -57,12 +62,13 @@ public class AnnotationIndex extends DatabaseIndex {
         annotationTypeInfos.put(AnnotationType.RECORDING, new AnnotationTypeInfo("recording", "track_name"));
         annotationTypeInfos.put(AnnotationType.RELEASE, new AnnotationTypeInfo("release", "release_name"));
         annotationTypeInfos.put(AnnotationType.RELEASE_GROUP, new AnnotationTypeInfo("release_group", "release_name"));
+        annotationTypeInfos.put(AnnotationType.WORK, new AnnotationTypeInfo("work", "work_name"));
         
         // Build prepared statement for each annotation type
         for (AnnotationType type : annotationTypeInfos.keySet()) {
             AnnotationTypeInfo info = annotationTypeInfos.get(type);
             addPreparedStatement(type.getName(), 
-                "SELECT e.gid, a.text, en.name " +
+                "SELECT a.id, e.gid, a.text, en.name " +
                 " FROM annotation a " +
                 "  INNER JOIN " + info.entityDbName + "_annotation ea ON a.id=ea.annotation " +
                 "  INNER JOIN (SELECT DISTINCT ea2." + info.entityDbName + " as id, max(created) as created_date " +
@@ -105,6 +111,7 @@ public class AnnotationIndex extends DatabaseIndex {
     
     public Document documentFromResultSet(ResultSet rs, AnnotationType type) throws SQLException {
         MbDocument doc = new MbDocument();
+        doc.addField(AnnotationIndexField.ID, rs.getString("id"));
         doc.addField(AnnotationIndexField.ENTITY, rs.getString("gid"));
         doc.addField(AnnotationIndexField.NAME, rs.getString("name"));
         doc.addField(AnnotationIndexField.TYPE, type.getName());

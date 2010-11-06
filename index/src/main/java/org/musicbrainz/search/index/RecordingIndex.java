@@ -43,7 +43,6 @@ public class RecordingIndex extends DatabaseIndex {
     public RecordingIndex() {
     }
 
-
     public String getName() {
         return "recording";
     }
@@ -52,6 +51,11 @@ public class RecordingIndex extends DatabaseIndex {
         return new PerFieldEntityAnalyzer(RecordingIndexField.class);
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return RecordingIndexField.ID;
+	}
+    
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM recording");
@@ -440,6 +444,7 @@ public class RecordingIndex extends DatabaseIndex {
         int id = rs.getInt("recordingId");
 
         MbDocument doc = new MbDocument();
+        doc.addField(RecordingIndexField.ID, id);
         doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
         String recordingName = rs.getString("trackname");
         doc.addNonEmptyField(RecordingIndexField.RECORDING, recordingName);         //Search

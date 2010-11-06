@@ -40,6 +40,7 @@ import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
  */
 public enum ArtistIndexField implements IndexField {
 
+	ID			("_id",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED, new ArtistNameAnalyzer()),
@@ -52,9 +53,8 @@ public enum ArtistIndexField implements IndexField {
     COUNTRY     ("country",     Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
-
-
     ;
+    
     private String name;
 	private Field.Store store;
     private Field.Index index;

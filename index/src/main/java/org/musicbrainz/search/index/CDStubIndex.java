@@ -46,6 +46,12 @@ public class CDStubIndex extends DatabaseIndex {
         return new PerFieldEntityAnalyzer(CDStubIndexField.class);
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return CDStubIndexField.ID;
+	}
+
+    
     public int getMaxId() throws SQLException {
         Statement st = this.dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(release_raw.id) FROM release_raw");
@@ -63,7 +69,7 @@ public class CDStubIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter) throws SQLException {
         addPreparedStatement("CDSTUBS",
-                "SELECT release_raw.title, release_raw.artist, barcode, comment, discid, count(track_raw.id) as tracks " +
+                "SELECT release_raw.id, release_raw.title, release_raw.artist, barcode, comment, discid, count(track_raw.id) as tracks " +
                 " FROM release_raw " +
                 "  JOIN cdtoc_raw ON release_raw.id = cdtoc_raw.release " +
                 "  JOIN track_raw ON track_raw.release = release_raw.id " +
@@ -84,6 +90,7 @@ public class CDStubIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
         MbDocument doc = new MbDocument();
+        doc.addField(CDStubIndexField.ID, rs.getString("id"));
         doc.addField(CDStubIndexField.TITLE, rs.getString("title"));
         doc.addField(CDStubIndexField.ARTIST, rs.getString("artist"));
         doc.addField(CDStubIndexField.DISCID, rs.getString("discid"));

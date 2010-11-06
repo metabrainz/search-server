@@ -48,6 +48,11 @@ public class ArtistIndex extends DatabaseIndex {
         return new PerFieldEntityAnalyzer(ArtistIndexField.class);
     }
 
+	@Override
+	public IndexField getIdentifierField() {
+		return ArtistIndexField.ID;
+	}
+    
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM artist");
@@ -144,6 +149,7 @@ public class ArtistIndex extends DatabaseIndex {
         MbDocument doc = new MbDocument();
         int artistId = rs.getInt("id");
         String artistGuid = rs.getString("gid");
+        doc.addField(ArtistIndexField.ID, artistId);
         doc.addField(ArtistIndexField.ARTIST_ID, artistGuid);
         doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
         doc.addField(ArtistIndexField.SORTNAME, rs.getString("sortname"));

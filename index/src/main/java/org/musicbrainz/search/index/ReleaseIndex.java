@@ -49,7 +49,6 @@ public class ReleaseIndex extends DatabaseIndex {
     public ReleaseIndex() {
     }
 
-
     public Analyzer getAnalyzer() {
         return new PerFieldEntityAnalyzer(ReleaseIndexField.class);
     }
@@ -57,6 +56,11 @@ public class ReleaseIndex extends DatabaseIndex {
     public String getName() {
         return "release";
     }
+
+	@Override
+	public IndexField getIdentifierField() {
+		return ReleaseIndexField.ID;
+	}
 
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
@@ -235,6 +239,7 @@ public class ReleaseIndex extends DatabaseIndex {
                                           Map<Integer, ArtistCredit> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
+        doc.addField(ReleaseIndexField.ID, id);
         doc.addField(ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
         doc.addField(ReleaseIndexField.RELEASE, rs.getString("name"));
         doc.addNonEmptyField(ReleaseIndexField.TYPE, rs.getString("type"));

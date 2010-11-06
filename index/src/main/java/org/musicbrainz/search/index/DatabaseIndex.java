@@ -20,6 +20,8 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 
@@ -57,8 +59,9 @@ public abstract class DatabaseIndex implements Index {
     }
 
 	@Override
-	public void writeMetaInformation(IndexWriter indexWriter) throws IOException {
+	public void addMetaInformation(IndexWriter indexWriter) throws IOException {
     	MbDocument doc = new MbDocument();
+    	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
         doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
         
         Statement st;
@@ -72,6 +75,23 @@ public abstract class DatabaseIndex implements Index {
 			System.err.println("Unable to get replication information");
 		}
         
+        indexWriter.addDocument(doc.getLuceneDocument());
+	}
+	
+	public void updateMetaInformation(IndexWriter indexWriter, Integer lastReplicationSequence,
+			Integer lastSchemaSequence, Date indexingDate) throws IOException {
+		
+		// Remove the old one
+		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
+		TermQuery query = new TermQuery(term);
+		indexWriter.deleteDocuments(query);
+		
+		// And the new one
+    	MbDocument doc = new MbDocument();
+    	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+        doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(indexingDate.getTime()));
+        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, lastSchemaSequence.toString());
+        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, lastReplicationSequence.toString());
         indexWriter.addDocument(doc.getLuceneDocument());
 	}
     
@@ -116,5 +136,7 @@ public abstract class DatabaseIndex implements Index {
      */
     public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
 
+    public abstract IndexField getIdentifierField();
+    
 }
 

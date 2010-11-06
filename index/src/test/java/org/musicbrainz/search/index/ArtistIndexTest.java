@@ -23,7 +23,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ArtistIndex ai = new ArtistIndex(createConnection());
         ai.init(writer);
-        ai.writeMetaInformation(writer);
+        ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);
         ai.destroy();
         writer.close();

@@ -30,6 +30,8 @@ public enum MetaIndexField implements IndexField {
     LAST_UPDATED			("index_lastupdate",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
     REPLICATION_SEQUENCE	("index_repseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     SCHEMA_SEQUENCE			("index_schseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    // Dumb field always filled with '1', but that easily allow to find the meta document
+    META					("index_meta",			Field.Store.YES,	Field.Index.NOT_ANALYZED),    
     ;
 
     private String name;
@@ -37,7 +39,7 @@ public enum MetaIndexField implements IndexField {
     private Field.Index index;
     private Analyzer analyzer;
 
-
+    public static final String META_VALUE = "1";
 
     private MetaIndexField(String name, Field.Store store, Field.Index index) {
         this.name = name;

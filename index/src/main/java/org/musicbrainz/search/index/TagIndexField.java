@@ -1,6 +1,7 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
@@ -8,7 +9,9 @@ import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
  * Fields created in Lucene Search Index
  */
 public enum TagIndexField implements IndexField {
-    TAG              ("tag",          Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentAnalyzer()),
+	
+	ID		("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    TAG		("tag",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentAnalyzer()),
     ;
 
     private String name;

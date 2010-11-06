@@ -22,7 +22,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         LabelIndex li = new LabelIndex(createConnection());
         li.init(writer);
-        li.writeMetaInformation(writer);
+        li.addMetaInformation(writer);
         li.indexData(writer, 0, Integer.MAX_VALUE);
         li.destroy();
         writer.close();

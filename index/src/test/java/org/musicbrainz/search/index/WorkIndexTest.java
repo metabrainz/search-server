@@ -22,7 +22,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         WorkIndex wi = new WorkIndex(createConnection());
         wi.init(writer);
-        wi.writeMetaInformation(writer);
+        wi.addMetaInformation(writer);
         wi.indexData(writer, 0, Integer.MAX_VALUE);
         wi.destroy();
         writer.close();

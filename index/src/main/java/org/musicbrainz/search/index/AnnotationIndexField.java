@@ -28,7 +28,8 @@ import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
  */
 public enum AnnotationIndexField implements IndexField {
 
-	ENTITY("entity",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
+	ID		("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
+	ENTITY	("entity",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
 	NAME	("name",	Field.Store.YES,	Field.Index.ANALYZED),
 	TYPE	("type",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
 	TEXT	("text",	Field.Store.YES,	Field.Index.ANALYZED);

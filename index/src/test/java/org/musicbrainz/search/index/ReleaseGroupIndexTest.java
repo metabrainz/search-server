@@ -44,7 +44,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseGroupIndex rgi = new ReleaseGroupIndex(createConnection());
         rgi.init(writer);
-        rgi.writeMetaInformation(writer);
+        rgi.addMetaInformation(writer);
         rgi.indexData(writer, 0, Integer.MAX_VALUE);
         rgi.destroy();
         writer.close();
