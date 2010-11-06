@@ -30,10 +30,12 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.MMapDirectory;
@@ -94,11 +96,24 @@ public abstract class SearchServer {
      */
     protected void setLastServerUpdatedDate() {
 
-        //Is not a disaster if missing so just log and carry on
+        // Is not a disaster if missing so just log and carry on
         try
         {
-            serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(indexSearcher.getIndexReader().document(0)
-                    .getField(MetaIndexField.LAST_UPDATED.getName()).stringValue()));
+        	Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
+    		TermQuery query = new TermQuery(term);
+    		TopDocs hits = indexSearcher.search(query, 10);
+
+        	if (hits.scoreDocs.length == 0) {
+        		System.out.println("No matches in the index for the meta document.");
+        		return;
+        	} else if (hits.scoreDocs.length > 1) {
+        		System.out.println("More than one meta document was found in the index.");
+        		return;
+        	} 
+
+        	int docId = hits.scoreDocs[0].doc;
+        	MbDocument doc = new MbDocument(indexSearcher.doc(docId));
+        	serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(doc.get(MetaIndexField.LAST_UPDATED)));
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
         catch(Exception e) {
