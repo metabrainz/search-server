@@ -44,7 +44,6 @@ public abstract class AbstractIndexTest extends TestCase {
             try {
                 Statement stmt = conn.createStatement();
                 stmt.addBatch("DROP TABLE country");
-                stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE tag");
 
                 stmt.addBatch("DROP TABLE artist");
@@ -104,6 +103,10 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work_type");
                 stmt.addBatch("DROP TABLE work_tag");
+                
+                stmt.addBatch("DROP TABLE replication_control");
+                stmt.addBatch("DROP TABLE dbmirror_pending");
+                stmt.addBatch("DROP TABLE dbmirror_pendingdata");
 
                 stmt.executeBatch();
                 stmt.close();
@@ -125,6 +128,8 @@ public abstract class AbstractIndexTest extends TestCase {
             setupAnnotationTables(stmt);
             setupCDStubTables(stmt);
             setupWorkTables(stmt);
+            setupReplicationTables(stmt);
+            
             insertReferenceData(stmt);
             insertReplicationInfo(stmt);
             
@@ -151,12 +156,6 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  refcount integer NOT NULL DEFAULT 0" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE replication_control (" +
-                "  id serial NOT NULL," +
-                "  current_schema_sequence integer NOT NULL," +
-                "  current_replication_sequence integer, " +
-                "  last_replication_date timestamp " +
-                ")");
     }
 
     protected void setupArtistTables(Statement stmt) throws Exception {
@@ -562,6 +561,30 @@ public abstract class AbstractIndexTest extends TestCase {
                 ")");
     }
 
+    protected void setupReplicationTables(Statement stmt) throws Exception {
+        
+        stmt.addBatch("CREATE TABLE replication_control (" +
+                "  id serial NOT NULL," +
+                "  current_schema_sequence integer NOT NULL," +
+                "  current_replication_sequence integer, " +
+                "  last_replication_date timestamp " +
+                ")");
+
+        stmt.addBatch("CREATE TABLE dbmirror_pending (" +
+                "  seqid serial NOT NULL," +
+                "  tablename integer NOT NULL," +
+                "  op character(1) ," +
+                "  xid integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE dbmirror_pendingdata (" +
+                "  seqid serial NOT NULL," +
+                "  iskey boolean NOT NULL," +                
+                "  data character varying" +
+                ")");
+
+    }
+    
     protected void insertReferenceData(Statement stmt) throws Exception {
 
         stmt.addBatch("INSERT INTO gender (id, name) VALUES " + 
@@ -638,7 +661,6 @@ public abstract class AbstractIndexTest extends TestCase {
 
     	stmt.addBatch("INSERT INTO replication_control (id, current_schema_sequence, current_replication_sequence) " +
         		" VALUES (1, 12, 42459)");
-        
     }
 
 
