@@ -149,7 +149,7 @@ public class LiveDataFeedIndexUpdater {
             int lastSchemaSequence = Integer.parseInt(doc.get(MetaIndexField.SCHEMA_SEQUENCE));
             
             Set<Integer> deletedIds = new HashSet<Integer>();
-            Set<Integer> insertedIds = new HashSet<Integer>();
+            Set<Integer> insertedOrUpdatedIds = new HashSet<Integer>();
             
             // For debug purpose: force a certain replication sequence
             //lastReplicationSequence = 1;
@@ -164,7 +164,7 @@ public class LiveDataFeedIndexUpdater {
             		LOGGER.info("Aborting, new packet is for a different SCHEMA sequence");
             		break;
             	}
-            	processReplicationPacket(packet, dependencyTrees.get(index.getName()), insertedIds, deletedIds);
+            	processReplicationPacket(packet, dependencyTrees.get(index.getName()), insertedOrUpdatedIds, deletedIds);
             	
             	lastReplicationSequence++;
             }
@@ -174,7 +174,7 @@ public class LiveDataFeedIndexUpdater {
             
             // Delete obsolete documents
         	for(Integer id : deletedIds) {
-        		LOGGER.finer("Deleting document " + id.toString());
+        		LOGGER.finer("Deleting " + index.getName() + " #" + id.toString());
         		term = new Term(index.getIdentifierField().getName(), id.toString());
         		query = new TermQuery(term);
         		indexWriter.deleteDocuments(query);
@@ -182,8 +182,11 @@ public class LiveDataFeedIndexUpdater {
         	
         	// Index new (or udpated) ones
         	index.init(indexWriter);
-        	for(Integer id : insertedIds) {
-        		LOGGER.finer("Reindexing document " + id.toString());
+        	for(Integer id : insertedOrUpdatedIds) {
+        		LOGGER.finer("Reindexing " + index.getName() + " #" + id.toString());
+        		term = new Term(index.getIdentifierField().getName(), id.toString());
+        		query = new TermQuery(term);
+        		indexWriter.deleteDocuments(query);
         		index.indexData(indexWriter, id, id);
         	}
         	index.destroy();
@@ -202,20 +205,18 @@ public class LiveDataFeedIndexUpdater {
     	
     }
     
-	private void processReplicationPacket(ReplicationPacket packet, EntityDependencyTree dependencyTree, Set<Integer> insertedIds, Set<Integer> deletedIds) 
+	private void processReplicationPacket(ReplicationPacket packet, EntityDependencyTree dependencyTree, Set<Integer> insertedOrUpdatedIds, Set<Integer> deletedIds) 
     throws SQLException 
     {
     	
-    	Map<String, Set<Integer>> deletedToBeDetermined = new HashMap<String, Set<Integer>>();
-    	Map<String, Set<Integer>> insertedToBeDetermined = new HashMap<String, Set<Integer>>();
+    	Map<String, Set<Integer>> changedTables = new HashMap<String, Set<Integer>>();
     	
     	// Initialize deleted and inserted maps of 
     	for (String tableName : dependencyTree.getTables()) {
     		if (tableName.equals(dependencyTree.getRootTableName())) {
     			continue;
     		}
-    		deletedToBeDetermined.put(tableName, new HashSet<Integer>());
-    		insertedToBeDetermined.put(tableName, new HashSet<Integer>());
+    		changedTables.put(tableName, new HashSet<Integer>());
     	}
     	
     	// Process changes in replication packet
@@ -234,9 +235,9 @@ public class LiveDataFeedIndexUpdater {
         			{
         				Map<String,String> values = change.getNewValues();
         				if (lt.isHead()) {
-        					insertedIds.add( Integer.parseInt(values.get("id")) );
+        					insertedOrUpdatedIds.add( Integer.parseInt(values.get("id")) );
         				} else {
-        					insertedToBeDetermined.get(change.getTableName()).add( 
+        					changedTables.get(change.getTableName()).add( 
         							Integer.parseInt(values.get(lt.getSourceJoinField()) )); 
         				}
         			}
@@ -247,12 +248,12 @@ public class LiveDataFeedIndexUpdater {
         				Map<String,String> newValues = change.getNewValues();
         				if (lt.isHead()) {
         					// TODO: fix hardcoding of "id"?
-        					insertedIds.add( Integer.parseInt(newValues.get("id")) );
-        					deletedIds.add( Integer.parseInt(oldValues.get("id")) );
+        					insertedOrUpdatedIds.add( Integer.parseInt(newValues.get("id")) );
         				} else {
-        					insertedToBeDetermined.get(change.getTableName()).add( 
+        					
+        					changedTables.get(change.getTableName()).add( 
         							Integer.parseInt(newValues.get(lt.getSourceJoinField()) ));
-        					deletedToBeDetermined.get(change.getTableName()).add( 
+        					changedTables.get(change.getTableName()).add( 
         							Integer.parseInt(oldValues.get(lt.getSourceJoinField()) )); 
         				}
         			}
@@ -263,53 +264,32 @@ public class LiveDataFeedIndexUpdater {
         				if (lt.isHead()) {
         					deletedIds.add( Integer.parseInt(values.get("id")) );
         				} else {
-        					deletedToBeDetermined.get(change.getTableName()).add( 
+        					changedTables.get(change.getTableName()).add( 
         							Integer.parseInt(values.get(lt.getSourceJoinField()) )); 
         				}
         			}
     				break;
-    		
     		}
     		
     	}
     	
     	// Now determine the ids of our entity
-    	for (String tableName : deletedToBeDetermined.keySet()) {
+    	for (String tableName : changedTables.keySet()) {
     		
-    		Set<Integer> tmpIds = deletedToBeDetermined.get(tableName);
+    		Set<Integer> tmpIds = changedTables.get(tableName);
     		if (tmpIds.isEmpty()) {
     			continue;
     		}
     		LinkedTable lt = dependencyTree.getDependency(tableName);
     		String sql = lt.generateSQL(tmpIds);
     		
-    		LOGGER.finest("Resolution of deleted ids for table " + tableName + ": " + sql);
+    		LOGGER.finest("Resolution of affected ids for table " + tableName + ": " + sql);
     		
     		Statement st = mainDbConn.createStatement();
     		ResultSet rs = st.executeQuery(sql);
     		
     		while (rs.next()) {
-    			deletedIds.add(rs.getInt(1));
-    		}
-    		
-    	}
-    	
-    	for (String tableName : insertedToBeDetermined.keySet()) {
-    		
-    		Set<Integer> tmpIds = insertedToBeDetermined.get(tableName);
-    		if (tmpIds.isEmpty()) {
-    			continue;
-    		}
-    		LinkedTable lt = dependencyTree.getDependency(tableName);
-    		String sql = lt.generateSQL(tmpIds);
-    		
-    		LOGGER.finest("Resolution of inserted ids for table " + tableName + ": " + sql);
-    		
-    		Statement st = mainDbConn.createStatement();
-    		ResultSet rs = st.executeQuery(sql);
-    		
-    		while (rs.next()) {
-    			insertedIds.add(rs.getInt(1));
+    			insertedOrUpdatedIds.add(rs.getInt(1));
     		}
     		
     	}
