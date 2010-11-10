@@ -29,16 +29,18 @@
 package org.musicbrainz.search.servlet;
 
 public enum RequestParameter {
-    QUERY("query"),
-    TYPE("type"),
-    FORMAT("fmt"),
-    LIMIT("limit"),
-    MAX("max"),
-    OFFSET("offset"),
-    COUNT("count"),
-    VERSION("version"),
-    INIT("init"),
+	
+    QUERY ("query"),
+    TYPE ("type"),
+    FORMAT ("fmt"),
+    LIMIT ("limit"),
+    MAX ("max"),
+    OFFSET ("offset"),
+    COUNT ("count"),
+    VERSION ("version"),
+    INIT ("init"),
     ;
+    
     private String name;
 
     RequestParameter(String name) {

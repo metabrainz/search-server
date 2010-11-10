@@ -38,6 +38,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.NumericUtils;
@@ -69,23 +70,8 @@ public abstract class SearchServer {
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
-
-    protected SearchServer() {
-
-    }
-
-    protected IndexSearcher createIndexSearcherFromMMapIndex(String indexDir,String indexName) throws Exception
-    {
-        return new IndexSearcher(IndexReader.open(new MMapDirectory(new File(indexDir + '/' + indexName + '/')), true));
-
-    }
-
-    protected IndexSearcher createIndexSearcherFromFileIndex(String indexDir,String indexName) throws Exception
-    {
-        return new IndexSearcher(IndexReader.open(new NIOFSDirectory(new File(indexDir + '/' + indexName + '/')), true));
-
-    }
-
+    protected SearchServer() {}
+    
     /**
      * Set the last updated date by getting the value from the index
      *
@@ -96,6 +82,8 @@ public abstract class SearchServer {
      */
     protected void setLastServerUpdatedDate() {
 
+    	if (indexSearcher == null) return;
+    	
         // Is not a disaster if missing so just log and carry on
         try
         {
@@ -123,7 +111,10 @@ public abstract class SearchServer {
     }
 
 
-    public void close() {
+    public void close() throws IOException {
+    	if (indexSearcher != null) {
+    		indexSearcher.close();
+    	}
     }
 
 
