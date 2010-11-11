@@ -171,7 +171,7 @@ public class LabelIndex extends DatabaseIndex {
         if (type != null) {
             doc.addField(LabelIndexField.TYPE, type);
         } else {
-            doc.addField(LabelIndexField.TYPE, LabelType.UNKNOWN.getName());
+            doc.addField(LabelIndexField.TYPE, "unknown");
         }
 
         doc.addNonEmptyField(LabelIndexField.COMMENT, rs.getString("comment"));
