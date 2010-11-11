@@ -33,6 +33,9 @@ import java.util.*;
 
 public class ArtistIndex extends DatabaseIndex {
 
+    //Special purpose Artist
+    private static final String DELETED_ARTIST = "Deleted Artist";
+
     public ArtistIndex(Connection dbConnection) throws SQLException {
         super(dbConnection);
     }
@@ -138,6 +141,10 @@ public class ArtistIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
+            if(rs.getString("name").equals(DELETED_ARTIST))
+            {
+                continue;
+            }
             indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
     }

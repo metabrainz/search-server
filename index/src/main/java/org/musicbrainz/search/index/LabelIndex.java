@@ -40,6 +40,7 @@ public class LabelIndex extends DatabaseIndex {
 
 
     private Pattern stripLabelCodeOfLeadingZeroes;
+    private static final String DELETED_LABEL = "Deleted Label";
 
     public LabelIndex(Connection dbConnection) {
         super(dbConnection);
@@ -147,6 +148,10 @@ public class LabelIndex extends DatabaseIndex {
         rs = st.executeQuery();
 
         while (rs.next()) {
+            if(rs.getString("name").equals(DELETED_LABEL))
+            {
+                continue;
+            }
             indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
     }
