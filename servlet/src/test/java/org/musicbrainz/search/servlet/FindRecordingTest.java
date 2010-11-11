@@ -14,7 +14,7 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
-import org.musicbrainz.search.index.ReleaseGroupType;
+import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
 

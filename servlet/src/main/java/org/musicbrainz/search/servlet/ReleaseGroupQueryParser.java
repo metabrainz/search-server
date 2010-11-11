@@ -7,7 +7,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
-import org.musicbrainz.search.index.ReleaseGroupType;
+import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 
 
 /**
@@ -25,7 +25,7 @@ public class ReleaseGroupQueryParser extends QueryParser {
             try {
                 int typeId = Integer.parseInt(term.text());
                if (typeId >= ReleaseGroupType.getMinSearchId() && typeId <= ReleaseGroupType.getMaxSearchId()) {
-                    TermQuery tq = new TermQuery(new Term(term.field(),ReleaseGroupType.getBySearchId(typeId).getName()));
+                    TermQuery tq = new TermQuery(new Term(term.field(), ReleaseGroupType.getBySearchId(typeId).getName()));
                     return tq;
                 }
                 else {

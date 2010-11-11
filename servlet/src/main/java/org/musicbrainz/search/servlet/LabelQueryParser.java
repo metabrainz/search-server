@@ -6,7 +6,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.LabelIndexField;
-import org.musicbrainz.search.index.LabelType;
+import org.musicbrainz.search.servlet.mmd1.LabelType;
 
 public class LabelQueryParser extends MultiFieldQueryParser {
 
@@ -24,7 +24,7 @@ public class LabelQueryParser extends MultiFieldQueryParser {
             try {
                 int typeId = Integer.parseInt(term.text());
                 if (typeId >= LabelType.getMinSearchId() && typeId <= LabelType.getMaxSearchId()) {
-                    TermQuery tq = new TermQuery(new Term(term.field(),LabelType.getBySearchId(typeId).getName()));
+                    TermQuery tq = new TermQuery(new Term(term.field(), LabelType.getBySearchId(typeId).getName()));
                     return tq;
                 }
                 else {

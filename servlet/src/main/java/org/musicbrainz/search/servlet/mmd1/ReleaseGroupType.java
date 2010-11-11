@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.servlet.mmd1;
 
 /**
  * Required when searching releases or release groups using the old release(group)id
