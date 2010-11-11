@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,10 +48,73 @@ public class ReplicationPacket {
 	private void setSchemaSequence(int schemaSequence) {
 		this.schemaSequence = schemaSequence;
 	}
+	
+	public Integer getMaxChangeId() {
+		Integer result = null;
+		
+		for(ReplicationChange change : getChanges()) {
+			if (result == null || change.getId() > result) {
+				result = change.getId();
+			}
+		}
+		return result;
+	}
 
+	public static ReplicationPacket loadFromDatabase(Connection dbConnection, int lastChangeId) throws IOException, SQLException {
+		
+		ReplicationPacket packet = new ReplicationPacket();
+
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery(
+        		"SELECT p.seqid, p.tablename, p.op, pd.iskey, pd.data, " +
+        		"	 	r.current_schema_sequence, r.current_replication_sequence " +
+        		" FROM dbmirror_pending p " +
+        		"  JOIN dbmirror_pendingdata pd ON (p.seqid = pd.seqid) " +
+        		"  CROSS JOIN replication_control r " +        		
+        		" WHERE p.seqid > " + lastChangeId +
+        		" ORDER BY p.seqid");
+        
+        ReplicationChange change = null;
+        while (rs.next()) {
+        	
+        	// Fill replication and schema sequences on first result
+        	if (change == null) {
+        		packet.setSchemaSequence(rs.getInt("current_schema_sequence"));
+        		packet.setReplicationSequence(rs.getInt("current_replication_sequence"));
+        	}
+        	
+            int seqId = rs.getInt("seqid");
+            
+            if (change == null || change.getId() != seqId) {
+	            change = new ReplicationChange(seqId);
+	            change.setTableName(rs.getString("tablename"));
+	            change.setOperation(rs.getString("op"));
+	            packet.getChanges().add(change);
+            } 
+            
+            String values = rs.getString("data");
+            String opcode = rs.getString("iskey");
+        	switch (change.getOperation()) {
+	    		case INSERT:
+	    			change.setNewValues(UnpackUtils.unpackData(values));
+	    			break;
+	    		case UPDATE:
+	    			if ("f".equals(opcode)) change.setOldValues(UnpackUtils.unpackData(values));
+	    			if ("t".equals(opcode)) change.setNewValues(UnpackUtils.unpackData(values));
+	    			break;
+	    		case DELETE:
+	    			change.setOldValues(UnpackUtils.unpackData(values));
+	    			break;
+        	}
+        }
+        
+        // If we've no changes, there's not point, return null
+		return packet.getChanges().isEmpty() ? null : packet;
+	}	
+	
 	public static ReplicationPacket loadFromRepository(int sequence, String repositoryPath) throws IOException {
 		
-		URL url = new URL(repositoryPath + "replication-"+sequence+".tar.bz2");
+		URL url = new URL(repositoryPath + "/" + "replication-"+sequence+".tar.bz2");
 		InputStream input;
 		try {
 			input = url.openStream();

@@ -27,6 +27,15 @@ public class ReplicationPacketTest extends TestCase {
 		assertEquals("release", packet.getChanges().get(0).getTableName());
 		assertEquals(DatabaseOperation.UPDATE, packet.getChanges().get(0).getOperation());
 	}
+
+	public void testGetMaxChangeId() throws Exception {
+		assertEquals(new Integer(54), packet.getMaxChangeId());
+	}
+
+	public void testGetMaxChangeIdWithNoChanges() throws Exception {
+		ReplicationPacket packet = new ReplicationPacket();
+		assertNull(packet.getMaxChangeId());
+	}
 	
 	public void testBigPacket() throws Exception {
         long t0 = System.currentTimeMillis();

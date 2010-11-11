@@ -24,6 +24,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.replication.packet.ReplicationPacket;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -67,10 +68,14 @@ public abstract class DatabaseIndex implements Index {
         Statement st;
 		try {
 			st = dbConnection.createStatement();
-	        ResultSet rs = st.executeQuery("SELECT current_schema_sequence, current_replication_sequence FROM replication_control");
+	        ResultSet rs = st.executeQuery(
+	        		"SELECT current_schema_sequence, current_replication_sequence, " +
+	        		"	(SELECT MAX(seqid) FROM dbmirror_pending) as max_seq_id " +
+	        		"FROM replication_control;");
 	        rs.next();
-	        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, rs.getString(1));
-	        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, rs.getString(2));
+	        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, rs.getString("current_schema_sequence"));
+	        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, rs.getString("current_replication_sequence"));
+	        doc.addNonEmptyField(MetaIndexField.LAST_CHANGE_SEQUENCE, rs.getString("max_seq_id"));
 		} catch (SQLException e) {
 			System.err.println("Unable to get replication information");
 		}
@@ -78,8 +83,7 @@ public abstract class DatabaseIndex implements Index {
         indexWriter.addDocument(doc.getLuceneDocument());
 	}
 	
-	public void updateMetaInformation(IndexWriter indexWriter, Integer lastReplicationSequence,
-			Integer lastSchemaSequence, Date indexingDate) throws IOException {
+	public void updateMetaInformation(IndexWriter indexWriter, ReplicationPacket lastPacket, Date indexingDate) throws IOException {
 		
 		// Remove the old one
 		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
@@ -90,8 +94,12 @@ public abstract class DatabaseIndex implements Index {
     	MbDocument doc = new MbDocument();
     	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
         doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(indexingDate.getTime()));
-        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, lastSchemaSequence.toString());
-        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, lastReplicationSequence.toString());
+        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, lastPacket.getSchemaSequence());
+        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, lastPacket.getReplicationSequence());
+        Integer lastChangeId = lastPacket.getMaxChangeId();
+        if (lastChangeId != null) {
+        	doc.addField(MetaIndexField.LAST_CHANGE_SEQUENCE, lastChangeId);
+        }
         indexWriter.addDocument(doc.getLuceneDocument());
 	}
     

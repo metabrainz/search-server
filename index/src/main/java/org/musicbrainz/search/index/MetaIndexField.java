@@ -30,6 +30,7 @@ public enum MetaIndexField implements IndexField {
     LAST_UPDATED			("index_lastupdate",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
     REPLICATION_SEQUENCE	("index_repseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
     SCHEMA_SEQUENCE			("index_schseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
+    LAST_CHANGE_SEQUENCE	("index_changeseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),    
     // Dumb field always filled with '1', but that easily allow to find the meta document
     META					("index_meta",			Field.Store.YES,	Field.Index.NOT_ANALYZED),    
     ;

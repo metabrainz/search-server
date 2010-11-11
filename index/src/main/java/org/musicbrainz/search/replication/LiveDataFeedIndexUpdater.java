@@ -147,6 +147,12 @@ public class LiveDataFeedIndexUpdater {
             MbDocument doc = new MbDocument(searcher.doc(docId));
             int lastReplicationSequence = Integer.parseInt(doc.get(MetaIndexField.REPLICATION_SEQUENCE));
             int lastSchemaSequence = Integer.parseInt(doc.get(MetaIndexField.SCHEMA_SEQUENCE));
+            String tmpStr = doc.get(MetaIndexField.LAST_CHANGE_SEQUENCE);
+            Integer lastChangeSequence = (tmpStr != null && !tmpStr.isEmpty()) ? Integer.parseInt(tmpStr) : null;
+
+            LOGGER.info("Current index properties: schema_sequence=" + lastSchemaSequence +
+            		", replication_sequence=" + lastSchemaSequence + 
+            		", change_sequence=" + (lastChangeSequence != null ? lastChangeSequence : "") );
             
             Set<Integer> deletedIds = new HashSet<Integer>();
             Set<Integer> insertedOrUpdatedIds = new HashSet<Integer>();
@@ -155,20 +161,40 @@ public class LiveDataFeedIndexUpdater {
             //lastReplicationSequence = 1;
             
             // Load and process each replication packet released since
+            ReplicationPacket lastPacket = null;
             ReplicationPacket packet;
             while ( (packet = ReplicationPacket.loadFromRepository(lastReplicationSequence+1, options.getRepositoryPath())) != null ) {
-            	
+            	           	
             	LOGGER.info("Loading packet #" + packet.getReplicationSequence());
             	
             	if (lastSchemaSequence != packet.getSchemaSequence()) {
             		LOGGER.info("Aborting, new packet is for a different SCHEMA sequence");
             		break;
             	}
-            	processReplicationPacket(packet, dependencyTrees.get(index.getName()), insertedOrUpdatedIds, deletedIds);
+            	
+            	lastPacket = packet;
+            	processReplicationPacket(packet, lastChangeSequence, dependencyTrees.get(index.getName()), insertedOrUpdatedIds, deletedIds);
             	
             	lastReplicationSequence++;
             }
 
+            // Now try to get last changes straight from the database (should only work on master database)
+            if (lastPacket != null && lastChangeSequence != null) {
+            	lastChangeSequence = Math.max(lastChangeSequence, lastPacket.getMaxChangeId());
+            } else if (lastPacket != null) {
+            	lastChangeSequence = lastPacket.getMaxChangeId();
+            }
+            
+            if (lastChangeSequence != null) {
+            	packet = ReplicationPacket.loadFromDatabase(mainDbConn, lastChangeSequence);
+            	if (packet != null) {
+            		LOGGER.info("Loading last pending changes from database (with seqid > " + lastChangeSequence + ")");
+        			processReplicationPacket(packet, lastChangeSequence, dependencyTrees.get(index.getName()), insertedOrUpdatedIds, deletedIds);
+        			lastPacket = packet;
+            	}
+            	
+            }
+            
             // We're done parsing all replication packets and analyzing impacted entities
             Date indexingDate = new Date();
             
@@ -191,21 +217,24 @@ public class LiveDataFeedIndexUpdater {
         	}
         	index.destroy();
         	
-            index.updateMetaInformation(indexWriter, lastReplicationSequence, lastSchemaSequence, indexingDate);
-            indexWriter.commit();
-            indexWriter.optimize();
+        	// Only update the index if we've been able to load at least one packet
+        	if (lastPacket != null) {
+        		index.updateMetaInformation(indexWriter, lastPacket, indexingDate);
+        		indexWriter.commit();
+        		indexWriter.optimize();
+        	}
             indexWriter.close();
             
             // Check to we have as much Lucune documents as Database rows
             int dbRows = index.getNoOfRows(Integer.MAX_VALUE);
-            IndexReader newReader = IndexReader.open(FSDirectory.open(new File(path)),true);
-            LOGGER.info(dbRows+" rows in database, "+(newReader.maxDoc() - 1)+" lucene documents");
-            newReader.close();
+            reader = reader.reopen();
+            LOGGER.info(dbRows + " rows in database, " + (reader.maxDoc()-1) + " lucene documents");
+            reader.close();
     	}
     	
     }
     
-	private void processReplicationPacket(ReplicationPacket packet, EntityDependencyTree dependencyTree, Set<Integer> insertedOrUpdatedIds, Set<Integer> deletedIds) 
+	private void processReplicationPacket(ReplicationPacket packet, Integer lastChangeSequence, EntityDependencyTree dependencyTree, Set<Integer> insertedOrUpdatedIds, Set<Integer> deletedIds) 
     throws SQLException 
     {
     	
@@ -221,6 +250,11 @@ public class LiveDataFeedIndexUpdater {
     	
     	// Process changes in replication packet
     	for (ReplicationChange change : packet.getChanges()) {
+
+    		if (lastChangeSequence != null && change.getId() <= lastChangeSequence ) {
+    			LOGGER.finest("Skipping change #" + change.getId() + " because it has already been applied");
+    			continue;
+    		}
     		
     		if (!dependencyTree.getTables().contains(change.getTableName())) {
     			LOGGER.finest("Skipping change on table " + change.getTableName().toUpperCase());

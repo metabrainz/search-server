@@ -11,8 +11,8 @@ public class ReplicationChangeTest extends TestCase {
 		change.setOldValues(UnpackUtils.unpackData(strOldValues));
 		change.setNewValues(UnpackUtils.unpackData(strNewValues));
 		
-		assertEquals(change.getChangedFields().size(), 1);
-		assertEquals(change.getChangedFields().iterator().next(), "recording");
+		assertEquals(1, change.getChangedFields().size(), 1);
+		assertEquals("recording", change.getChangedFields().iterator().next());
 	}
 
 	public void testChangedFieldsWithNullValues() {
@@ -22,9 +22,19 @@ public class ReplicationChangeTest extends TestCase {
 		change.setOldValues(UnpackUtils.unpackData(strOldValues));
 		change.setNewValues(UnpackUtils.unpackData(strNewValues));
 		
-		assertEquals(change.getChangedFields().size(), 1);
-		assertEquals(change.getChangedFields().iterator().next(), "id");
+		assertEquals(1, change.getChangedFields().size());
+		assertEquals("id", change.getChangedFields().iterator().next());
 	}
 
+	public void testChangedFieldsWithMissingField() {
+		ReplicationChange change = new ReplicationChange(0);
+		String strOldValues = "\"id\"='1' \"recording\"='' ";
+		String strNewValues = "\"id\"='1' \"recording\"='1' \"tracklist\"='1' ";
+		change.setOldValues(UnpackUtils.unpackData(strOldValues));
+		change.setNewValues(UnpackUtils.unpackData(strNewValues));
+		
+		assertEquals(1, change.getChangedFields().size());
+		assertEquals("recording", change.getChangedFields().iterator().next());
+	}
 	
 }
