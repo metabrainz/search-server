@@ -29,7 +29,7 @@
 package org.musicbrainz.search.analysis;
 
 /**
- * Maps known punctuation only label names to a different represententation before tokenization otherwise tokenization
+ * Maps known punctuation only label names to a different representation before tokenization otherwise tokenization
  * rips out all punctuation making it impossible to match
  */
 public class LabelNameAnalyzer extends StandardUnaccentAnalyzer {

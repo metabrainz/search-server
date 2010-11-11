@@ -29,7 +29,7 @@ public enum ReleaseIndexField implements IndexField {
     LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     LABEL_ID            ("labelid",         Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),    
     DATE			    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     NUM_DISCIDS         ("discids",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     NUM_DISCIDS_MEDIUM  ("discidsmedium",   Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     AMAZON_ID		    ("asin",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),

@@ -69,7 +69,7 @@ public class ArtistWriter extends ResultsWriter {
 
             String country = doc.get(ArtistIndexField.COUNTRY);
             if (country != null) {
-                artist.setCountry(country.toLowerCase(Locale.US));
+                artist.setCountry(country);
 
             }
 

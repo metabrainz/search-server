@@ -164,6 +164,16 @@ public class FindLabelTest extends TestCase {
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
 
+    public void testFindLabelByCountryUpercase() throws Exception {
+        Results res = ss.searchLucene("country:\"GB\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+    }
+
+
     public void testFindLabelByCode() throws Exception {
         Results res = ss.searchLucene("code:\"5807\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -243,6 +253,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
         assertTrue(output.contains("<label-code>1234</label-code>"));
+        assertTrue(output.contains("<country>GB</country>"));
         assertTrue(output.contains("dance</name>"));
     }
 
@@ -269,6 +280,7 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"label-code\":1234"));
+        assertTrue(output.contains("\"country\":\"GB\""));
         assertTrue(output.contains("tag-list\":{\"tag\":[{\"count\":22,\"name\":\"dance\"}"));
     }
 }

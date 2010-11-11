@@ -81,7 +81,7 @@ public class FindReleaseTest extends TestCase {
         doc.addField(ReleaseIndexField.TYPE, "album");
         doc.addField(ReleaseIndexField.AMAZON_ID, "B00004Y6O9");
 
-        doc.addField(ReleaseIndexField.COUNTRY, "gb");
+        doc.addField(ReleaseIndexField.COUNTRY, "GB");
 
         doc.addField(ReleaseIndexField.DATE, "2005");
         doc.addField(ReleaseIndexField.BARCODE, "07599273202");
@@ -143,7 +143,7 @@ public class FindReleaseTest extends TestCase {
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, 1);
         doc.addField(ReleaseIndexField.FORMAT, "CD");
 
-        doc.addField(ReleaseIndexField.COUNTRY, "us");
+        doc.addField(ReleaseIndexField.COUNTRY, "US");
         doc.addField(ReleaseIndexField.DATE, "2003-09-23");
         doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,1);
 
@@ -170,7 +170,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("B00004Y6O9", doc.get(ReleaseIndexField.AMAZON_ID));
 
         assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY).length);
-        assertEquals("gb", doc.get(ReleaseIndexField.COUNTRY));
+        assertEquals("GB", doc.get(ReleaseIndexField.COUNTRY));
         assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
         assertEquals("2005", doc.get(ReleaseIndexField.DATE));
         assertEquals(2, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM).length);
@@ -564,7 +564,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<language>eng</language>"));
-        assertTrue(output.contains("<script>latn</script>"));
+        assertTrue(output.contains("<script>Latn</script>"));
         assertTrue(output.contains("<release-group type=\"album\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
@@ -573,7 +573,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<disc-list count=\"1\""));
         assertTrue(output.contains("<track-list count=\"10\""));
         assertTrue(output.contains("<date>2005</date>"));
-        assertTrue(output.contains("<country>gb</country>"));
+        assertTrue(output.contains("<country>GB</country>"));
         assertTrue(output.contains("<format>vinyl</format>"));
         assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
         assertTrue(output.contains("<track-count>17</track-count>"));
@@ -602,7 +602,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("title\":\"Our Glorious 5 Year Plan\""));
         assertTrue(output.contains("\"status\":\"official\""));
         assertTrue(output.contains("\"language\":\"eng\""));
-        assertTrue(output.contains("\"script\":\"latn\""));
+        assertTrue(output.contains("\"script\":\"Latn\""));
         assertTrue(output.contains("\"barcode\":\"07599273202\""));
         assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
         assertTrue(output.contains("\"track-count\":17"));

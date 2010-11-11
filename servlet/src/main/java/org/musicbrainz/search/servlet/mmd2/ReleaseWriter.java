@@ -76,7 +76,7 @@ public class ReleaseWriter extends ResultsWriter {
 
             String country = doc.get(ReleaseIndexField.COUNTRY);
             if (country != null) {
-                release.setCountry(country.toLowerCase(Locale.US));
+                release.setCountry(country);
             }
 
             String date = doc.get(ReleaseIndexField.DATE);
@@ -97,7 +97,7 @@ public class ReleaseWriter extends ResultsWriter {
             TextRepresentation tr = of.createTextRepresentation();
             String script = doc.get(ReleaseIndexField.SCRIPT);
             if (script != null) {
-                tr.setScript(script.toLowerCase(Locale.US));
+                tr.setScript(script);
             }
 
             String lang = doc.get(ReleaseIndexField.LANGUAGE);
