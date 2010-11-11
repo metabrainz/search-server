@@ -40,7 +40,7 @@ public class LabelIndex extends DatabaseIndex {
 
 
     private Pattern stripLabelCodeOfLeadingZeroes;
-    private static final String DELETED_LABEL = "Deleted Label";
+    private static final String DELETED_LABEL_MBID = "f43e252d-9ebf-4e8e-bba8-36d080756cc1";
 
     public LabelIndex(Connection dbConnection) {
         super(dbConnection);
@@ -148,7 +148,7 @@ public class LabelIndex extends DatabaseIndex {
         rs = st.executeQuery();
 
         while (rs.next()) {
-            if(rs.getString("name").equals(DELETED_LABEL))
+            if(rs.getString("gid").equals(DELETED_LABEL_MBID))
             {
                 continue;
             }

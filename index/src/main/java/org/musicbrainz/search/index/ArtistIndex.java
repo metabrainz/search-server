@@ -34,7 +34,7 @@ import java.util.*;
 public class ArtistIndex extends DatabaseIndex {
 
     //Special purpose Artist
-    private static final String DELETED_ARTIST = "Deleted Artist";
+    private static final String DELETED_ARTIST_MBID = "c06aa285-520e-40c0-b776-83d2c9e8a6d1";
 
     public ArtistIndex(Connection dbConnection) throws SQLException {
         super(dbConnection);
@@ -141,7 +141,7 @@ public class ArtistIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            if(rs.getString("name").equals(DELETED_ARTIST))
+            if(rs.getString("gid").equals(DELETED_ARTIST_MBID))
             {
                 continue;
             }
