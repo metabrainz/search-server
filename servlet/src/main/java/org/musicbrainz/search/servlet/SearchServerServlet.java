@@ -131,6 +131,18 @@ public class SearchServerServlet extends HttpServlet {
         }
     	searchers.clear();
     }
+    
+    protected void reloadIndexes() {
+    	
+    	for (SearchServer searchServer : searchers.values()) {
+    		if (searchServer == null) continue;
+			try {
+				searchServer.reloadIndex();				
+			} catch (IOException e) {
+				log.severe("Caught exception during reopening of index: " + e.getMessage());
+			}
+        }
+    }
 
 
     @Override
@@ -145,12 +157,19 @@ public class SearchServerServlet extends HttpServlet {
         // Ensure encoding set to UTF8
         request.setCharacterEncoding(CHARSET);
 
-        // Force initialization of search server, if already open this forces a reopen of the indexes, this will pick up
-        // any modification to the index since they were originally opened
+        // Force initialization of search server, if already open this forces an *expensive* reopen of the indexes
+        // reload should be preferred unless you want to use switch between mmap and niofs
         // If specify mmap mode then MMappedDirectory used, should only be used on 64bit JVM or on small indexes
         String init = request.getParameter(RequestParameter.INIT.getName());
-        if(init != null) {
+        if (init != null) {
             init(init.equals("mmap"));
+            return;
+        }
+        
+        // Reopen the indexes in an efficient way
+        String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
+        if (reloadIndexes != null) {
+        	reloadIndexes();
             return;
         }
 

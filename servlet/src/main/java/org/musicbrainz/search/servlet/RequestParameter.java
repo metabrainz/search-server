@@ -38,7 +38,9 @@ public enum RequestParameter {
     OFFSET ("offset"),
     COUNT ("count"),
     VERSION ("version"),
+    // For admin only
     INIT ("init"),
+    RELOAD_INDEXES ("reload"),
     ;
     
     private String name;

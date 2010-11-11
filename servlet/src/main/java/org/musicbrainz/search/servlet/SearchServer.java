@@ -29,25 +29,23 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -110,13 +108,25 @@ public abstract class SearchServer {
 
     }
 
-
-    public void close() throws IOException {
-    	if (indexSearcher != null) {
-    		indexSearcher.close();
+    public void reloadIndex() throws CorruptIndexException, IOException {
+    	
+    	if (this.indexSearcher != null) {
+    		IndexReader oldReader = indexSearcher.getIndexReader();
+			IndexReader newReader = oldReader.reopen();
+			if (oldReader != newReader) {
+				Similarity similarity = indexSearcher.getSimilarity();
+				this.indexSearcher = new IndexSearcher(newReader);
+				this.indexSearcher.setSimilarity(similarity);
+				this.setLastServerUpdatedDate();
+			}
     	}
     }
 
+    public void close() throws IOException {
+    	if (indexSearcher != null) {
+    		indexSearcher.getIndexReader().close();
+    	}
+    }
 
     public org.musicbrainz.search.servlet.mmd2.ResultsWriter getXmlWriter() {
         return resultsWriter;
@@ -219,4 +229,5 @@ public abstract class SearchServer {
         }
         return results;
     }
+
 }
