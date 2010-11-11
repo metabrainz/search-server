@@ -226,4 +226,15 @@ The search url is a mapping you can also use the underlying url directly as foll
 
      http://localhost:80/?type=artist&query=fred
 
-     
+
+Development
+------------
+
+For developement environments there is a much simpler deployment possible
+
+    cd search_server/servlet
+    mvn jetty:plugin
+
+This will start the Jetty servlet container (instead of Tomcat), then just use the underlying url on port8080
+
+     http://localhost:8080/?type=artist&query=fred
