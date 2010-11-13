@@ -37,8 +37,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type, gender, country)" +
-            " VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, null, 1999,4, null, 2, 1, 1)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, country)" +
+            " VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, 1999, 4, 2, 1, 1)");
         stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (1, 'AF', 'Afghanistan')");
 
         stmt.executeBatch();
@@ -61,15 +61,15 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (5, 'Bunnymen Orchestra')");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
-                " VALUES (1, 0, 16153, 5, null)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
+                " VALUES (1, 0, 16153, 5)");
 
         //This is same as alias, so should be ignored
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
-                " VALUES (1, 0, 16153, 3, null)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
+                " VALUES (1, 0, 16153, 3)");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
-                   " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, null, 1995, 2)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, end_date_year, type)" +
+                   " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, 1995, 2)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -79,12 +79,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
         conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Siobhan Lynch')");
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'Lynch, Siobhan')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Siobhan Lynch')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Lynch, Siobhan')");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
-            " VALUES (76834,2, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe', 3, null, null, null, null, null)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name)" +
+            " VALUES (76834, 1, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe', 2)");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2)");
         stmt.addBatch("INSERT INTO artist_tag (artist, tag, count) VALUES (76834, 1, 10)");

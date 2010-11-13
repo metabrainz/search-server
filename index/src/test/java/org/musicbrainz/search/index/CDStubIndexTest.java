@@ -36,10 +36,10 @@ public class CDStubIndexTest extends AbstractIndexTest{
          Statement stmt = conn.createStatement();
 
          stmt.addBatch("INSERT INTO cdtoc_raw (id, release, discid, track_count, leadout_offset) VALUES (1, 1, 'discid', 11, 1)");
-         stmt.addBatch("INSERT INTO release_raw (id, title, artist, added, last_modified, lookup_count, modify_count, source, barcode, comment)" +
-                "VALUES (1, 'title', 'artist', now(), now(), null, null, null, null, null)");
-         stmt.addBatch("INSERT INTO track_raw (id, release, title, artist, sequence)" +
-                "VALUES (1, 1, 'tracktitle', null, 3)");
+         stmt.addBatch("INSERT INTO release_raw (id, title, artist, added, last_modified) " +
+                "VALUES (1, 'title', 'artist', now(), now())");
+         stmt.addBatch("INSERT INTO track_raw (id, release, title, sequence)" +
+                "VALUES (1, 1, 'tracktitle', 3)");
 
          stmt.executeBatch();
          stmt.close();

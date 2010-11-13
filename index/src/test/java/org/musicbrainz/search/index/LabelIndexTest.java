@@ -42,7 +42,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sort_name, type, label_code, begin_date_year) " +
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, begin_date_year) " +
 					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, 1979)");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (1, 2)");
 
@@ -92,8 +92,8 @@ public class LabelIndexTest extends AbstractIndexTest {
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, country)" +
-					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, null, 1)");
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, country)" +
+					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1)");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (3, 2)");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2);");
