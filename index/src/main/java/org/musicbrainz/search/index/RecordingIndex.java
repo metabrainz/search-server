@@ -96,7 +96,7 @@ public class RecordingIndex extends DatabaseIndex {
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT re.id as recordingId, " +
                 "  acn.position as pos, " +
-                "  acn.joinphrase as joinphrase, " +
+                "  acn.join_phrase as joinphrase, " +
                 "  a.gid as artistId,  " +
                 "  a.comment as comment, " +
                 "  an.name as artistName, " +
@@ -107,13 +107,13 @@ public class RecordingIndex extends DatabaseIndex {
                 "  INNER JOIN artist a ON a.id=acn.artist " +
                 "  INNER JOIN artist_name an ON a.name=an.id " +
                 "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                "  INNER JOIN artist_name an3 ON a.sortname=an3.id " +
+                "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
                 " WHERE re.id BETWEEN ? AND ?  " +
                 " ORDER BY re.id, acn.position ");
 
         addPreparedStatement("TRACKS",
-                "SELECT tn.name as trackname, t.recording, t.position as trackposition, tl.trackcount, " +
-                "  m.release as releaseid, m.position as mediumposition " +
+                "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
+                "  m.release as release_id, m.position as medium_position " +
                 " FROM track t " +
                 "  INNER JOIN track_name tn ON t.name=tn.id " +
                 "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
@@ -123,7 +123,7 @@ public class RecordingIndex extends DatabaseIndex {
         releases =
                 "SELECT " +
                 "  r.id as releaseKey, r.gid as releaseid, rn.name as releasename, rgt.name as type, "+
-                "  rs.name as status, sum(tr.trackcount) as tracks, " +
+                "  rs.name as status, sum(tr.track_count) as tracks, " +
                 "  date_year, date_month, date_day" +       
                 " FROM release r " +
                 "  INNER JOIN release_group rg ON rg.id = r.release_group " +
@@ -289,11 +289,11 @@ public class RecordingIndex extends DatabaseIndex {
                 list = tracks.get(recordingId);
             }
             TrackWrapper tw = new TrackWrapper();
-            tw.setReleaseId(rs.getInt("releaseid"));
-            tw.setTrackCount(rs.getInt("trackcount"));
-            tw.setTrackPosition(rs.getInt("trackposition"));
-            tw.setTrackName(rs.getString("trackname"));
-            tw.setMediumPosition(rs.getInt("mediumposition"));
+            tw.setReleaseId(rs.getInt("release_id"));
+            tw.setTrackCount(rs.getInt("track_count"));
+            tw.setTrackPosition(rs.getInt("track_position"));
+            tw.setTrackName(rs.getString("track_name"));
+            tw.setMediumPosition(rs.getInt("medium_position"));
             list.add(tw);
         }
         return tracks;

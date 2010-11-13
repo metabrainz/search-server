@@ -79,25 +79,25 @@ public class ReleaseIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter) throws SQLException {
        addPreparedStatement("LABELINFOS",
-               "SELECT rl.release as releaseId, l.gid as labelId, ln.name as labelName, catno " +
+               "SELECT rl.release as releaseId, l.gid as labelId, ln.name as labelName, catalog_number " +
                " FROM release_label rl " +
                "  LEFT JOIN label l ON rl.label=l.id " +
                "  LEFT JOIN label_name ln ON l.name = ln.id " +
                " WHERE rl.release BETWEEN ? AND ?");
 
         addPreparedStatement("MEDIUMS",
-              "SELECT m.release as releaseId, mf.name as format,tr.trackcount as numTracksOnMedium, count(mc.id) as discidsOnMedium " +
+              "SELECT m.release as releaseId, mf.name as format, tr.track_count as numTracksOnMedium, count(mc.id) as discidsOnMedium " +
               " FROM medium m " +
               "  LEFT JOIN medium_format mf ON m.format=mf.id " +
               "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
               "  LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
               " WHERE m.release BETWEEN ? AND ? " +
-              " GROUP BY m.release, m.id, mf.name, tr.trackcount");
+              " GROUP BY m.release, m.id, mf.name, tr.track_count");
 
          addPreparedStatement("ARTISTCREDITS",
                 "SELECT r.id as releaseId, " +
                 "  acn.position as pos, " +
-                "  acn.joinphrase as joinphrase, " +
+                "  acn.join_phrase as joinphrase, " +
                 "  a.gid as artistId,  " +
                 "  a.comment as comment, " +
                 "  an.name as artistName, " +
@@ -108,15 +108,15 @@ public class ReleaseIndex extends DatabaseIndex {
                 "  INNER JOIN artist a ON a.id=acn.artist " +
                 "  INNER JOIN artist_name an ON a.name=an.id " +
                 "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                "  INNER JOIN artist_name an3 ON a.sortname=an3.id " +
+                "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, acn.position");
 
          addPreparedStatement("RELEASES",
                 "SELECT rl.id, rl.gid, rn.name as name, " +
-                "  barcode, lower(country.isocode) as country, " +
-                "  date_year, date_month, date_day, rgt.name as type, rm.amazonasin, " +
-                "  language.isocode_3t as language, script.isocode as script, rs.name as status " +
+                "  barcode, lower(country.iso_code) as country, " +
+                "  date_year, date_month, date_day, rgt.name as type, rm.amazon_asin, " +
+                "  language.iso_code_3t as language, script.iso_code as script, rs.name as status " +
                 " FROM release rl " +
                 "  INNER JOIN release_meta rm ON rl.id = rm.id " +
                 "  INNER JOIN release_group rg ON rg.id = rl.release_group " +
@@ -158,7 +158,7 @@ public class ReleaseIndex extends DatabaseIndex {
             List<String> entry = new ArrayList<String>(3);
             entry.add(rs.getString("labelId"));
             entry.add(rs.getString("labelName"));
-            entry.add(rs.getString("catno"));
+            entry.add(rs.getString("catalog_number"));
             list.add(entry);
         }
 
@@ -248,7 +248,7 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addNonEmptyField(ReleaseIndexField.DATE,
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
         doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
-        doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazonasin"));
+        doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
         doc.addNonEmptyField(ReleaseIndexField.LANGUAGE, rs.getString("language"));
         doc.addNonEmptyField(ReleaseIndexField.SCRIPT, rs.getString("script"));
 

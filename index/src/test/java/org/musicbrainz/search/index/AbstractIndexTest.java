@@ -146,14 +146,14 @@ public abstract class AbstractIndexTest extends TestCase {
     protected void setupCommonTables(Statement stmt) throws Exception {
         stmt.addBatch("CREATE TABLE country (" +
                 "  id serial NOT NULL," +
-                "  isocode character varying(2) NOT NULL," +
+                "  iso_code character varying(2) NOT NULL," +
                 "  name character varying(100) NOT NULL" +
                 ")");
 
         stmt.addBatch("CREATE TABLE tag (" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL," +
-                "  refcount integer NOT NULL DEFAULT 0" +
+                "  ref_count integer NOT NULL DEFAULT 0" +
                 ")");
 
     }
@@ -164,25 +164,26 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
-                "  sortname integer NOT NULL," +
-                "  begindate_year integer," +
-                "  begindate_month integer," +
-                "  begindate_day integer," +
-                "  enddate_year integer," +
-                "  enddate_month integer," +
-                "  enddate_day integer," +
+                "  sort_name integer NOT NULL," +
+                "  begin_date_year integer," +
+                "  begin_date_month integer," +
+                "  begin_date_day integer," +
+                "  end_date_year integer," +
+                "  end_date_month integer," +
+                "  end_date_day integer," +
                 "  type integer," +
                 "  country integer," +
                 "  gender integer," +
                 "  comment character varying(255)," +
-                "  editpending integer DEFAULT 0" +
+                "  ipi_code VARCHAR(11)," +
+                "  edits_pending integer DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_credit (" +
                 "  id serial NOT NULL," +
                 "  name integer NOT NULL," +
-                "  artistcount integer NOT NULL," +
-                "  refcount integer DEFAULT 0" +
+                "  artist_count integer NOT NULL," +
+                "  ref_count integer DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_credit_name (" +
@@ -190,14 +191,14 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  position integer NOT NULL," +
                 "  artist integer NOT NULL," +
                 "  name integer NOT NULL," +
-                "  joinphrase character varying(32)" +
+                "  join_phrase character varying(32)" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_alias (" +
                 "  id serial NOT NULL," +
                 "  artist integer NOT NULL," +
                 "  name integer NOT NULL," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_name (" +
@@ -228,25 +229,25 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  gid uuid NOT NULL," +
                 "  name integer NOT NULL," +
-                "  sortname integer NOT NULL," +
-                "  begindate_year integer," +
-                "  begindate_month integer," +
-                "  begindate_day integer," +
-                "  enddate_year integer," +
-                "  enddate_month integer," +
-                "  enddate_day integer," +
-                "  labelcode integer," +
+                "  sort_name integer NOT NULL," +
+                "  begin_date_year integer," +
+                "  begin_date_month integer," +
+                "  begin_date_day integer," +
+                "  end_date_year integer," +
+                "  end_date_month integer," +
+                "  end_date_day integer," +
+                "  label_code integer," +
                 "  type integer," +
                 "  country integer," +
                 "  comment character varying(255)," +
-                "  editpending integer DEFAULT 0" +
+                "  edits_pending integer DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE label_alias (" +
                 "  id serial NOT NULL," +
                 "  label integer NOT NULL," +
                 "  name integer NOT NULL," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE label_name (" +
@@ -284,7 +285,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  date_day integer," +
                 "  barcode character varying(255)," +
                 "  comment character varying(255)," +
-                "  editpending integer DEFAULT 0" +
+                "  edits_pending integer DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE release_name (" +
@@ -306,7 +307,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  release integer NOT NULL," +
                 "  label integer," +
-                "  catno character varying(255)" +
+                "  catalog_number character varying(255)" +
                 ")");
 
         stmt.addBatch("CREATE TABLE medium (" +
@@ -316,7 +317,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  position integer NOT NULL," +
                 "  format integer," +
                 "  name character varying(255)," +
-                "  editpending integer DEFAULT 0" +
+                "  edits_pending integer DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE medium_format (" +
@@ -327,38 +328,37 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE release_meta (" +
                 "  id integer NOT NULL," +
-                "  lastupdate timestamp," +
-                "  dateadded timestamp," +
-                "  coverarturl character varying(255)," +
-                "  infourl character varying(255)," +
-                "  amazonasin character varying(10)," +
-                "  amazonstore character varying(20)" +
+                "  last_updated timestamp," +
+                "  date_added timestamp," +
+                "  info_url character varying(255)," +
+                "  amazon_asin character varying(10)," +
+                "  amazon_store character varying(20)" +
                 ")");
 
         stmt.addBatch("CREATE TABLE medium_cdtoc (" +
                 "  id serial NOT NULL," +
                 "  medium integer NOT NULL," +
                 "  cdtoc integer NOT NULL," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE tracklist (" +
                 "  id serial NOT NULL," +
-                "  trackcount integer NOT NULL DEFAULT 0" +
+                "  track_count integer NOT NULL DEFAULT 0" +
                 ")");
         
         stmt.addBatch("CREATE TABLE language (" +
                 "  id serial NOT NULL," +
-                "  isocode_3t character(3) NOT NULL," +
-                "  isocode_3b character(3) NOT NULL," +
-                "  isocode_2 character(2)," +
+                "  iso_code_3t character(3) NOT NULL," +
+                "  iso_code_3b character(3) NOT NULL," +
+                "  iso_code_2 character(2)," +
                 "  name character varying(100) NOT NULL," +
                 "  frequency integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE script (" +
                 "  id serial NOT NULL," +
-                "  isocode character(4) NOT NULL," +
+                "  iso_code character(4) NOT NULL," +
                 "  isonumber character(3) NOT NULL," +
                 "  name character varying(100) NOT NULL," +
                 "  frequency integer NOT NULL DEFAULT 0" +
@@ -374,7 +374,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  artist_credit integer NOT NULL," +
                 "  type integer," +
                 "  comment character varying(255)," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE release_group_type (" +
@@ -405,7 +405,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE recording (" +
@@ -415,7 +415,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +
                 "  comment character varying(255)," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE recording_tag" +
@@ -431,7 +431,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  recording integer NOT NULL," +
                 "  isrc character(12) NOT NULL," +
                 "  source smallint," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE recording_puid" +
@@ -439,7 +439,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  puid integer NOT NULL," +
                 "  recording integer NOT NULL," +
-                "  editpending integer NOT NULL DEFAULT 0," +
+                "  edits_pending integer NOT NULL DEFAULT 0," +
                 ")");
 
         stmt.addBatch("CREATE TABLE puid" +
@@ -498,9 +498,9 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  title character varying(255) NOT NULL," +
                 "  artist character varying(255)," +
                 "  added timestamp DEFAULT now()," +
-                "  lastmodified timestamp DEFAULT now()," +
-                "  lookupcount integer DEFAULT 0," +
-                "  modifycount integer DEFAULT 0," +
+                "  last_modified timestamp DEFAULT now()," +
+                "  lookup_count integer DEFAULT 0," +
+                "  modify_count integer DEFAULT 0," +
                 "  source integer DEFAULT 0," +
                 "  barcode character varying(255)," +
                 "  comment character varying(255)" +
@@ -518,9 +518,9 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  release integer NOT NULL," +
                 "  discid character(28) NOT NULL," +
-                "  trackcount integer NOT NULL," +
-                "  leadoutoffset integer NOT NULL" +
-                // "  trackoffset integer[] NOT NULL"  // Not needed for our purposes (and h2 doesn't support array)
+                "  track_count integer NOT NULL," +
+                "  leadout_offset integer NOT NULL" +
+                // "  track_offset integer[] NOT NULL"  // Not needed for our purposes (and h2 doesn't support array)
                 ")");            
     }
 
@@ -534,14 +534,14 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  type integer," +
                 "  iswc character(15)," +
                 "  comment character varying(255)," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE work_alias (" +
                 "  id serial NOT NULL," +
                 "  work integer NOT NULL," +
                 "  name integer NOT NULL," +
-                "  editpending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE work_name (" +

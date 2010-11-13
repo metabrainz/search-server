@@ -44,10 +44,10 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
-                " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 2, 'a comment', 1978, null, 1995, 2)");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase) " +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment)" +
+                " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 2, 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
                 " VALUES (1, 0, 16153, 1, null)");
 
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (1, 'Work')");
@@ -56,7 +56,7 @@ public class WorkIndexTest extends AbstractIndexTest {
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, 'T-101779304-1', null)");
         stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 2)");
 
-        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'Classical', 2);");
+        stmt.addBatch("INSERT INTO tag(id, name, ref_count)VALUES (1, 'Classical', 2);");
         stmt.addBatch("INSERT INTO work_tag(work, tag, count)VALUES (1, 1, 10)");
 
 
@@ -80,11 +80,11 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist(id,name, gid, sortname,comment, begindate_year,begindate_month,enddate_year,type,editpending)" +
-                " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245',2,'a comment', 1978,null, 1995, 2, 0)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment)" +
+                " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 2, 'a comment')");
 
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist,name, joinphrase) " +
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
                 " VALUES (1, 0, 16153, 1, null)");
 
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (1, 'Work')");

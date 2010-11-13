@@ -68,10 +68,10 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist (id,name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+        stmt.addBatch("INSERT INTO artist (id,name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
                 " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 2, 'a comment', 1978, null, 1995, 2)");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase) " +
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
                 " VALUES (1, 0, 16153, 1, null)");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
@@ -108,10 +108,10 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
                 " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, null, 1995, 2)");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist,name, joinphrase) " +
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist,name, join_phrase) " +
                 " VALUES (1, 0, 16153, 1, null)");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
@@ -150,10 +150,10 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
                 " VALUES (16153,1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, null, 1995, 2)");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist,name, joinphrase) " +
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist,name, join_phrase) " +
                 " VALUES (1, 0, 16153, 1, null)");
         
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
@@ -192,15 +192,15 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (5, 'Cincinnati Pops')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (6, 'Erich Kunzel and Kunzel, Eric')");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
                 " VALUES (1, 1, '99845d0c-f239-4051-a6b1-4b5e9f7ede0b', 2, 'a comment', 1978, null, 1995, 2)");
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
                 " VALUES (2, 3, 'd8fbd94c-cd06-4e8b-a559-761ad969d07e', 4, 'a comment', 1978, null, 1995, 2)");
 
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artistcount, refcount) VALUES (1, 6, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase)" +
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 6, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase)" +
                 " VALUES (1, 0, 1, 1, ' and ')");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, joinphrase)" +
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase)" +
                 " VALUES (1, 1, 2, 5, null)");
         
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Epics')");
@@ -211,7 +211,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
                 "  language, script, date_year, date_month, date_day, barcode, comment) " +
                 " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, null, null)");
 
-        stmt.addBatch("INSERT INTO tag (id, name, refcount) VALUES (1, 'punk', 2)");
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'punk', 2)");
         stmt.addBatch("INSERT INTO release_group_tag (release_group, tag, count) VALUES (1, 1, 10)");
 
         stmt.executeBatch();

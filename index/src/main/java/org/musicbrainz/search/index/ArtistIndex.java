@@ -94,13 +94,13 @@ public class ArtistIndex extends DatabaseIndex {
 
 
         addPreparedStatement("ARTISTS",
-                "SELECT artist.id, gid, n0.name as name, n1.name as sortname, " +
-                "  lower(artist_type.name) as type, begindate_year, begindate_month, begindate_day, " +
-                "  enddate_year, enddate_month, enddate_day, " +
-                "  comment, lower(isocode) as country, lower(gender.name) as gender " +
+                "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
+                "  lower(artist_type.name) as type, begin_date_year, begin_date_month, begin_date_day, " +
+                "  end_date_year, end_date_month, end_date_day, " +
+                "  comment, lower(iso_code) as country, lower(gender.name) as gender " +
                 " FROM artist " +
                 "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
-                "  LEFT JOIN artist_name n1 ON artist.sortname = n1.id " +
+                "  LEFT JOIN artist_name n1 ON artist.sort_name = n1.id " +
                 "  LEFT JOIN artist_type ON artist.type = artist_type.id " +
                 "  LEFT JOIN country ON artist.country = country.id " +
                 "  LEFT JOIN gender ON artist.gender=gender.id " +
@@ -159,7 +159,7 @@ public class ArtistIndex extends DatabaseIndex {
         doc.addField(ArtistIndexField.ID, artistId);
         doc.addField(ArtistIndexField.ARTIST_ID, artistGuid);
         doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
-        doc.addField(ArtistIndexField.SORTNAME, rs.getString("sortname"));
+        doc.addField(ArtistIndexField.SORTNAME, rs.getString("sort_name"));
 
         //Allows you to search for artists of unknown type
         String type = rs.getString("type");
@@ -170,10 +170,10 @@ public class ArtistIndex extends DatabaseIndex {
         }
 
         doc.addNonEmptyField(ArtistIndexField.BEGIN,
-                Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
+                Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));
 
         doc.addNonEmptyField(ArtistIndexField.END,
-                Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
+                Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day")));
 
         doc.addNonEmptyField(ArtistIndexField.COMMENT, rs.getString("comment"));
         doc.addNonEmptyField(ArtistIndexField.COUNTRY, rs.getString("country"));

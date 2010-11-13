@@ -99,7 +99,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT rg.id as releaseGroupId, " +
                 "  acn.position as pos, " +
-                "  acn.joinphrase as joinphrase, " +
+                "  acn.join_phrase as joinphrase, " +
                 "  a.gid as artistId,  " +
                 "  a.comment as comment, " +
                 "  an.name as artistName, " +
@@ -110,7 +110,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 "  INNER JOIN artist a ON a.id=acn.artist " +
                 "  INNER JOIN artist_name an ON a.name=an.id " +
                 "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                "  INNER JOIN artist_name an3 ON a.sortname=an3.id " +
+                "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
                 " WHERE rg.id BETWEEN ? AND ?  " +
                 " ORDER BY rg.id, acn.position ");          //Order by pos so come in expected order
 

@@ -88,7 +88,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sortname, comment, begindate_year, begindate_month, enddate_year, type)" +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, begin_date_month, end_date_year, type)" +
                     "  VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, null, 1999, 4, null, 2)");
 
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
@@ -115,8 +115,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
         stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
-        stmt.addBatch("INSERT INTO label (id, gid, name, sortname, type, labelcode, country, comment, " +
-                "    begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, country, comment, " +
+                "    begin_date_year, begin_date_month, begin_date_day, end_date_year, end_date_month, end_date_day) " +
                 "  VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, null, null, " +
                 "    1979, null, null, null, null, null)");
         

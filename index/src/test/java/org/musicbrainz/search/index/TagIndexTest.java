@@ -35,7 +35,7 @@ public class TagIndexTest extends AbstractIndexTest {
 
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO tag (id, name, refcount) VALUES (1, 'rock', 1);");
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'rock', 1);");
         stmt.executeBatch();
         stmt.close();
         conn.close();

@@ -99,13 +99,13 @@ public class LabelIndex extends DatabaseIndex {
 
 
         addPreparedStatement("LABELS",
-                "SELECT label.id, gid, n0.name as name, n1.name as sortname, " +
-                "  label_type.name as type, begindate_year, begindate_month, begindate_day, " +
-                "  enddate_year, enddate_month, enddate_day, " +
-                "  comment, labelcode, lower(isocode) as country " +
+                "SELECT label.id, gid, n0.name as name, n1.name as sort_name, " +
+                "  label_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
+                "  end_date_year, end_date_month, end_date_day, " +
+                "  comment, label_code, lower(iso_code) as country " +
                 " FROM label " +
                 "  LEFT JOIN label_name n0 ON label.name = n0.id " +
-                "  LEFT JOIN label_name n1 ON label.sortname = n1.id " +
+                "  LEFT JOIN label_name n1 ON label.sort_name = n1.id " +
                 "  LEFT JOIN label_type ON label.type = label_type.id " +
                 "  LEFT JOIN country ON label.country = country.id " +
                 " WHERE label.id BETWEEN ? AND ?");
@@ -164,7 +164,7 @@ public class LabelIndex extends DatabaseIndex {
         int labelId = rs.getInt("id");
         doc.addField(LabelIndexField.LABEL_ID, rs.getString("gid"));
         doc.addField(LabelIndexField.LABEL, rs.getString("name"));
-        doc.addField(LabelIndexField.SORTNAME, rs.getString("sortname"));
+        doc.addField(LabelIndexField.SORTNAME, rs.getString("sort_name"));
 
         //Allows you to search for labels of Unknown type
         String type = rs.getString("type");
@@ -178,12 +178,12 @@ public class LabelIndex extends DatabaseIndex {
         doc.addNonEmptyField(LabelIndexField.COUNTRY, rs.getString("country"));
 
         doc.addNonEmptyField(LabelIndexField.BEGIN,
-                Utils.formatDate(rs.getInt("begindate_year"), rs.getInt("begindate_month"), rs.getInt("begindate_day")));
+                Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));
 
         doc.addNonEmptyField(LabelIndexField.END,
-                Utils.formatDate(rs.getInt("enddate_year"), rs.getInt("enddate_month"), rs.getInt("enddate_day")));
+                Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day")));
 
-        String labelcode = rs.getString("labelcode");
+        String labelcode = rs.getString("label_code");
         if (labelcode != null && !labelcode.isEmpty()) {
             Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
             doc.addField(LabelIndexField.CODE, m.replaceFirst(""));

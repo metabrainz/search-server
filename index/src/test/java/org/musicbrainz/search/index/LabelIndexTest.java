@@ -42,10 +42,8 @@ public class LabelIndexTest extends AbstractIndexTest {
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
-					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
-					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, null, null, " +
-					"	1979, null, null, null, null, null)");
+        stmt.addBatch("INSERT INTO label(id, gid, name, sort_name, type, label_code, begin_date_year) " +
+					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, 1979)");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (1, 2)");
 
         stmt.executeBatch();
@@ -65,14 +63,14 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 		
-	stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (38, 'CA','Canada')");
+	stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (38, 'CA','Canada')");
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
 		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
-					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
+        stmt.addBatch("INSERT INTO label(id, gid, name, sort_name, type, label_code, country, comment, " + 
+					"	begin_date_year, begin_date_month, begin_date_day, end_date_year, end_date_month) " +
 					"VALUES (2, 'd8caa692-704d-412b-a410-4fbcf5b9c796', 3, 4, 1, 0099998, 38, 'DO NOT EDIT THIS LABEL', " +
-					"	2009, 1, 1, 2009, 4, null)");
+					"	2009, 1, 1, 2009, 4)");
 
         stmt.executeBatch();
         stmt.close();
@@ -90,19 +88,16 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 		
-	stmt.addBatch("INSERT INTO country (id, isocode, name) VALUES (1, 'AF','Afghanistan')");
-	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
-	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+		stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (1, 'AF','Afghanistan')");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sortname, type, labelcode, country, comment, " + 
-					"	begindate_year, begindate_month, begindate_day, enddate_year, enddate_month, enddate_day) " +
-					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, null, 1, null, " +
-					"	null, null, null, null, null, null)");
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, country)" +
+					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, null, null, 1)");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (3, 2)");
 
-        stmt.addBatch("INSERT INTO tag(id, name, refcount)VALUES (1, 'Goth', 2);");
-        stmt.addBatch("INSERT INTO label_tag(label, tag, count)VALUES (3, 1, 10)");
-
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2);");
+        stmt.addBatch("INSERT INTO label_tag (label, tag, count) VALUES (3, 1, 10)");
 
         stmt.executeBatch();
         stmt.close();

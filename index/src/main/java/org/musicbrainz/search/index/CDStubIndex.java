@@ -22,6 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -69,7 +70,7 @@ public class CDStubIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter) throws SQLException {
         addPreparedStatement("CDSTUBS",
-                "SELECT release_raw.id, release_raw.title, release_raw.artist, barcode, comment, discid, count(track_raw.id) as tracks " +
+                "SELECT release_raw.id, release_raw.title, release_raw.artist, barcode, comment, discid, added, count(track_raw.id) as tracks " +
                 " FROM release_raw " +
                 "  JOIN cdtoc_raw ON release_raw.id = cdtoc_raw.release " +
                 "  JOIN track_raw ON track_raw.release = release_raw.id " +
@@ -94,7 +95,8 @@ public class CDStubIndex extends DatabaseIndex {
         doc.addField(CDStubIndexField.TITLE, rs.getString("title"));
         doc.addField(CDStubIndexField.ARTIST, rs.getString("artist"));
         doc.addField(CDStubIndexField.DISCID, rs.getString("discid"));
-
+        doc.addField(CDStubIndexField.ADDED, NumericUtils.longToPrefixCoded(rs.getTimestamp("added").getTime()));
+        
         //TODO Should really index as number
         doc.addField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
 
