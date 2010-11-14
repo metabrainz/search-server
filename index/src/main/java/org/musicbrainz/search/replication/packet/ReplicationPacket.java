@@ -87,7 +87,7 @@ public class ReplicationPacket {
             
             if (change == null || change.getId() != seqId) {
 	            change = new ReplicationChange(seqId);
-	            change.setTableName(rs.getString("tablename"));
+	            change.setTableName(sanitizeTableName(rs.getString("tablename")));
 	            change.setOperation(rs.getString("op"));
 	            packet.getChanges().add(change);
             } 
@@ -180,9 +180,7 @@ public class ReplicationPacket {
                 		changes.put(id, change);
                 	}
                 	
-                	String tableName = st.nextToken().replace("\"public\".", "").replace("\"musicbrainz\".", "");
-                	tableName = tableName.substring(1, tableName.length()-1);
-                	change.setTableName(tableName);
+                	change.setTableName(sanitizeTableName(st.nextToken()));
                 	change.setOperation(st.nextToken());
                 	
                 	changes.put(change.getId(), change);
@@ -236,6 +234,12 @@ public class ReplicationPacket {
 		}
         
 		return packet;
+	}
+	
+	private static String sanitizeTableName(String inputTableName) {
+		String outputTableName = inputTableName.replace("\"public\".", "").replace("\"musicbrainz\".", ""); 
+		return outputTableName.substring(1, outputTableName.length()-1);
+		
 	}
 	
 }
