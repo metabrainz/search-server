@@ -153,7 +153,7 @@ public class RecordingIndex extends DatabaseIndex {
      * @throws IOException
      * @return A map of matches
      */
-    private Map<Integer, List<String>> loadPuids(int min, int max) throws SQLException, IOException {
+    private Map<Integer, List<String>> loadPUIDs(int min, int max) throws SQLException, IOException {
 
         //PUID
         Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
@@ -193,7 +193,7 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"recording");
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs, "recording");
         return tags;
     }
 
@@ -322,20 +322,6 @@ public class RecordingIndex extends DatabaseIndex {
 
     }
 
-    /** Fill in parameters of the release statement
-     *
-     * @param stmt
-     * @param releaseKeys
-     * @throws SQLException
-     */
-    private void useReleaseStatement(PreparedStatement stmt,Set<Integer> releaseKeys) throws SQLException {
-        int count = 1;
-        for(Integer key:releaseKeys) {
-            stmt.setInt(count,key);
-            count++;
-        }
-    }
-
     /**
      * Get release information for recordings
      *
@@ -350,16 +336,20 @@ public class RecordingIndex extends DatabaseIndex {
 
         ObjectFactory of = new ObjectFactory();
 
-        //Add all the releaseKeys to a set to prevent duplicates
+        // Add all the releaseKeys to a set to prevent duplicates
         Set<Integer> releaseKeys = new HashSet<Integer>();
-        for(List<TrackWrapper> recording:tracks.values()) {
-            for(TrackWrapper track  : recording) {
+        for(List<TrackWrapper> recording : tracks.values()) {
+            for(TrackWrapper track : recording) {
                 releaseKeys.add(track.getReleaseId());
             }
         }
 
         PreparedStatement stmt = createReleaseStatement(releaseKeys.size());
-        useReleaseStatement(stmt, releaseKeys);
+        int count = 1;
+        for(Integer key : releaseKeys) {
+            stmt.setInt(count, key);
+            count++;
+        }
         ResultSet rs = stmt.executeQuery();
         Map<Integer, Release> releases = new HashMap<Integer, Release>();
         Release release;
@@ -388,31 +378,16 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
 
-    /**
-     * Load recordings
-     *
-     * @param indexWriter
-     * @param min min recording id
-     * @param max max recording id
-     * @param puids
-     * @param tags
-     * @param isrcs
-     * @param artistCredits
-     * @param tracks
-     * @param releases
-     * @throws SQLException if SQL problem
-     * @throws IOException if IO problem
-     */
-    private void loadRecordings(IndexWriter indexWriter,
-                                int min,
-                                int max,
-                                Map<Integer,List<String>> puids,
-                                Map<Integer,List<Tag>> tags,
-                                Map<Integer, List<String>> isrcs,
-                                Map<Integer, ArtistCredit> artistCredits,
-                                Map<Integer, List<TrackWrapper>> tracks,
-                                Map<Integer, Release> releases ) throws SQLException, IOException {
 
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+    	
+        Map<Integer, List<Tag>> tags = loadTags(min, max);
+        Map<Integer, List<String>> puids = loadPUIDs(min, max);
+        Map<Integer, List<String>> isrcs = loadISRCs(min, max);
+        Map<Integer, ArtistCredit> artistCredits = loadArtists(min, max);
+        Map<Integer, List<TrackWrapper>> tracks = loadTracks(min, max);
+        Map<Integer, Release> releases = loadReleases(tracks);
+        
         PreparedStatement st = getPreparedStatement("RECORDINGS");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -420,17 +395,6 @@ public class RecordingIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, puids, tags, isrcs, artistCredits, tracks, releases));
         }
-
-    }
-
-    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-        Map<Integer, List<Tag>> tags = loadTags(min, max);
-        Map<Integer, List<String>> puidWrapper = loadPuids(min, max);
-        Map<Integer, List<String>> isrcWrapper = loadISRCs(min, max);
-        Map<Integer, ArtistCredit> artistCredits = loadArtists(min, max);
-        Map<Integer, List<TrackWrapper>> trackWrapper = loadTracks(min, max);
-        Map<Integer, Release> releases = loadReleases(trackWrapper);
-        loadRecordings(indexWriter, min, max, puidWrapper, tags, isrcWrapper, artistCredits, trackWrapper,releases);
     }
 
     public Document documentFromResultSet(ResultSet rs,
@@ -453,21 +417,21 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
 
         if (puids.containsKey(id)) {
-            //Add each puid for recording
+            // Add each puid for recording
             for (String puid : puids.get(id)) {
                 doc.addField(RecordingIndexField.PUID, puid);
             }
         }
 
         if (isrcs.containsKey(id)) {
-            //For each credit artist for this recording
+            // For each credit artist for this recording
             for (String isrc : isrcs.get(id)) {
                 doc.addField(RecordingIndexField.ISRC, isrc);
             }
         }
 
         if (tracks.containsKey(id)) {
-            //For each track for this recording
+            // For each track for this recording
             for (TrackWrapper track : tracks.get(id)) {
                 doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
                 doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
@@ -480,9 +444,9 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addField(RecordingIndexField.RELEASE, release.getTitle());
                 doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
 
-                //Added to TRACK_OUTPUT for outputting xml,
+                // Added to TRACK_OUTPUT for outputting xml,
                 doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
-                //and if different to recording for searching
+                // and if different to recording for searching
                 if(!track.getTrackName().equals(recordingName)) {
                     doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
                 }
