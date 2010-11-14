@@ -41,7 +41,6 @@ public class LinkedTableTest extends TestCase {
 		
 		// Work
 		EntityDependencyTree dependencyTree = new EntityDependencyTree();
-    	dependencyTree.setRootTableName("work");
 
     	for (String table : new String[]{"work_alias", "work_tag"}) {
         	LinkedTable lt = new LinkedTable(table);

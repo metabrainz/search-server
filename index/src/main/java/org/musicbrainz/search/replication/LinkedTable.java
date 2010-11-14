@@ -3,6 +3,7 @@ package org.musicbrainz.search.replication;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class LinkedTable {
 
@@ -10,7 +11,8 @@ public class LinkedTable {
 	private String sourceJoinField;
 	private LinkedTable targetTable;
 	private String targetJoinField;
-	
+	private Set<String> fieldsUsedForIndexing = new HashSet<String>();
+
 	public LinkedTable(String sourceTable) {
 		this.tableName = sourceTable;
 	}
@@ -30,7 +32,21 @@ public class LinkedTable {
 	public String getTargetJoinField() {
 		return targetJoinField;
 	}
+	
+	public Set<String> getFieldsUsedForIndexing() {
+		return fieldsUsedForIndexing;
+	}
 
+	public void setFieldsUsedForIndexing(String[] fieldsUsedForIndexing) {
+		for (String field : fieldsUsedForIndexing) {
+			this.fieldsUsedForIndexing.add(field);
+		}
+	}
+	
+	public void setFieldsUsedForIndexing(Set<String> fieldsUsedForIndexing) {
+		this.fieldsUsedForIndexing = fieldsUsedForIndexing;
+	}
+	
 	public void setTargetTable(LinkedTable targetTable, String targetJoinField, String sourceJoinField) {
 		if (targetTable == null || targetJoinField == null || sourceJoinField == null) {
 			throw new IllegalArgumentException("arguments can not be null");

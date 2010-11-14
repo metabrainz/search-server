@@ -13,11 +13,20 @@ public class EntityDependencyTree {
 		return rootTableName;
 	}
 
-	public void setRootTableName(String rootTableName) {
-		this.rootTableName = rootTableName;
-	}
-
 	public void addDependency(LinkedTable linkedTable) {
+
+		LinkedTable head = linkedTable.getHead();
+		// If this is the first dependency, use the table of the head of the path as root table
+		if (rootTableName == null) {
+			rootTableName = head.getTableName();
+		// Otherwise, check that the new path has the same root table
+		} else {
+			if (!rootTableName.equals(head.getTableName())) {
+				throw new IllegalArgumentException("This linked table is not compatible, " +
+						"its head table (" + head.getTableName() + ") " +
+						"is different from the actual root table (" + rootTableName + ")");
+			}
+		}
 		
 		// Add also all intermediate tables in path
 		LinkedTable lt = linkedTable;

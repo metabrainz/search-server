@@ -2,7 +2,7 @@
 <table_dependencies>
 
 	<!-- Artist  -->
-	<group root_table='artist'>
+	<index name='artist'>
 		<table name='artist'>
 			<join src_field='id' target_field='artist'>
 				<table name='artist_alias' />
@@ -14,10 +14,10 @@
 				<table name='artist_credit_name' />
 			</join>
 		</table>
-	</group>
+	</index>
 	
 	<!-- Label  -->
-	<group root_table='label'>
+	<index name='label'>
 		<table name='label'>
 			<join src_field='id' target_field='label'>
 				<table name='label_alias' />
@@ -26,10 +26,10 @@
 				<table name='label_tag' />
 			</join>
 		</table>
-	</group>
+	</index>
 	
 	<!-- Work  -->
-	<group root_table='work'>
+	<index name='work'>
 		<table name='work'>
 			<join src_field='id' target_field='work'>
 				<table name='work_alias' />
@@ -40,18 +40,18 @@
 			<join src_field='artist_credit' target_field='artist_credit'>
 				<table name='artist_credit_name'>
 					<join src_field='artist' target_field='id'>
-						<table name='artist' />
+						<table name='artist' used_fields='name,sortname' />
 					</join>
 				</table>
 			</join>
 		</table>
-	</group>
+	</index>
 	
 	<!-- ReleaseGroup  -->
-	<group root_table='release_group'>
+	<index name='releasegroup'>
 		<table name='release_group'>
 			<join src_field='id' target_field='release_group'>
-				<table name='release' />
+				<table name='release' used_fields='name' />
 			</join>
 			<join src_field='id' target_field='release_group'>
 				<table name='release_group_tag' />
@@ -59,27 +59,35 @@
 			<join src_field='artist_credit' target_field='artist_credit'>
 				<table name='artist_credit_name'>
 					<join src_field='artist' target_field='id'>
-						<table name='artist' />
+						<table name='artist' used_fields='name,sortname' />
 					</join>
 				</table>
 			</join>
 		</table>
-	</group>
+	</index>
 	
 	<!-- Release  -->
-	<group root_table='release'>
+	<index name='release'>
 		<table name='release'>
 			<join src_field='id' target_field='release'>
 				<table name='release_label'>
 					<join src_field='label' target_field='id'>
-						<table name='label' />
+						<table name='label' used_fields='name' />
 					</join>
 				</table>
 			</join>
 			<join src_field='id' target_field='release'>
-				<table name='medium'>
+				<table name='medium' used_fields='tracklist,release,format'>
 					<join src_field='tracklist' target_field='id'>
-						<table name='tracklist' />
+						<table name='tracklist'>
+							<join src_field='id' target_field='tracklist'>
+								<table name='track' used_fields='tracklist,recording'>
+									<join src_field='recording' target_field='recording'>
+										<table name ='recording_puid' />
+									</join>
+								</table>
+							</join>						
+						</table>
 					</join>
 					<join src_field='id' target_field='medium'>
 						<table name='medium_cdtoc' />
@@ -90,35 +98,20 @@
 				<table name='release_meta' />
 			</join>
 			<join src_field='release_group' target_field='id'>
-				<table name='release_group' />
-			</join>
-			<join src_field='id' target_field='release'>
-				<table name='medium'>
-					<join src_field='tracklist' target_field='id'>
-						<table name='tracklist'>
-							<join src_field='id' target_field='tracklist'>
-								<table name='track'>
-									<join src_field='recording' target_field='recording'>
-										<table name ='recording_puid' />
-									</join>
-								</table>
-							</join>
-						</table>
-					</join>
-				</table>					
+				<table name='release_group' used_fields='type' />
 			</join>
 			<join src_field='artist_credit' target_field='artist_credit'>
 				<table name='artist_credit_name'>
 					<join src_field='artist' target_field='id'>
-						<table name='artist' />
+						<table name='artist' used_fields='name,sortname' />
 					</join>
 				</table>
 			</join>
 		</table>
-	</group>
+	</index>
 	
 	<!-- Recording  -->
-	<group root_table='recording'>
+	<index name='recording'>
 		<table name='recording'>
 			<join src_field='id' target_field='recording'>
 				<table name='recording_puid' />
@@ -134,11 +127,11 @@
 					<join src_field='tracklist' target_field='id'>
 						<table name='tracklist'>
 							<join src_field='id' target_field='tracklist'>
-								<table name='medium'>
+								<table name='medium' used_fields='tracklist,release' >
 									<join src_field='release' target_field='id'>
 										<table name='release'>
 											<join src_field='release_group' target_field='id'>
-												<table name='release_group' />
+												<table name='release_group' used_fields='type' />
 											</join>
 										</table>
 									</join>
@@ -151,63 +144,63 @@
 			<join src_field='artist_credit' target_field='artist_credit'>
 				<table name='artist_credit_name'>
 					<join src_field='artist' target_field='id'>
-						<table name='artist' />
+						<table name='artist' used_fields='name,sortname' />
 					</join>
 				</table>
 			</join>
 		</table>
-	</group>
+	</index>
 	
 	<!-- Tag  -->
-	<group root_table='tag'>
+	<index name='tag'>
 		<table name='tag' />
-	</group>
+	</index>
 	
 	<!-- Annotation  -->
-	<group root_table='annotation'>
+	<index name='annotation'>
 		<table name='annotation'>
 			<join src_field='id' target_field='annotation'>
 				<table name='artist_annotation'>
 					<join src_field='artist' target_field='id'>
-						<table name='artist' />
+						<table name='artist' used_fields='name' />
 					</join>
 				</table>
 			</join>
 			<join src_field='id' target_field='annotation'>
 				<table name='label_annotation'>
 					<join src_field='label' target_field='id'>
-						<table name='label' />
+						<table name='label' used_fields='name' />
 					</join>
 				</table>
 			</join>
 			<join src_field='id' target_field='annotation'>
 				<table name='work_annotation'>
 					<join src_field='work' target_field='id'>
-						<table name='work' />
+						<table name='work' used_fields='name' />
 					</join>
 				</table>
 			</join>
 			<join src_field='id' target_field='annotation'>
 				<table name='release_annotation'>
 					<join src_field='release' target_field='id'>
-						<table name='release' />
+						<table name='release' used_fields='name' />
 					</join>
 				</table>
 			</join>
 			<join src_field='id' target_field='annotation'>
 				<table name='release_group_annotation'>
 					<join src_field='release_group' target_field='id'>
-						<table name='release_group' />
+						<table name='release_group' used_fields='name' />
 					</join>
 				</table>
 			</join>
 			<join src_field='id' target_field='annotation'>
 				<table name='recording_annotation'>
 					<join src_field='recording' target_field='id'>
-						<table name='recording' />
+						<table name='recording' used_fields='name' />
 					</join>
 				</table>
 			</join>
 		</table>
-	</group>
+	</index>
 </table_dependencies>

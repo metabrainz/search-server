@@ -30,6 +30,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.MMapDirectory;
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
@@ -157,8 +158,9 @@ public class LiveDataFeedIndexUpdater {
             Set<Integer> deletedIds = new HashSet<Integer>();
             Set<Integer> insertedOrUpdatedIds = new HashSet<Integer>();
             
-            // For debug purpose: force a certain replication sequence
+            // For debug purpose: force replication and change sequences
             //lastReplicationSequence = 1;
+            //lastChangeSequence = 1;
             
             // Load and process each replication packet released since
             ReplicationPacket lastPacket = null;
@@ -188,7 +190,7 @@ public class LiveDataFeedIndexUpdater {
             if (lastChangeSequence != null) {
             	packet = ReplicationPacket.loadFromDatabase(mainDbConn, lastChangeSequence);
             	if (packet != null) {
-            		LOGGER.info("Loading last pending changes from database (with seqid > " + lastChangeSequence + ")");
+            		LOGGER.info("Loading pending changes from database since change #" + lastChangeSequence);
         			processReplicationPacket(packet, lastChangeSequence, dependencyTrees.get(index.getName()), insertedOrUpdatedIds, deletedIds);
         			lastPacket = packet;
             	}
@@ -252,12 +254,12 @@ public class LiveDataFeedIndexUpdater {
     	for (ReplicationChange change : packet.getChanges()) {
 
     		if (lastChangeSequence != null && change.getId() <= lastChangeSequence ) {
-    			LOGGER.finest("Skipping change #" + change.getId() + " because it has already been applied");
+    			LOGGER.finer("Skipping change #" + change.getId() + " because it has already been applied");
     			continue;
     		}
     		
     		if (!dependencyTree.getTables().contains(change.getTableName())) {
-    			LOGGER.finest("Skipping change on table " + change.getTableName().toUpperCase());
+    			LOGGER.finer("Skipping change #" + change.getId() + " on unrelated table " + change.getTableName().toUpperCase());
     			continue;
     		}
     		
@@ -285,10 +287,27 @@ public class LiveDataFeedIndexUpdater {
         					insertedOrUpdatedIds.add( Integer.parseInt(newValues.get("id")) );
         				} else {
         					
-        					changedTables.get(change.getTableName()).add( 
-        							Integer.parseInt(newValues.get(lt.getSourceJoinField()) ));
-        					changedTables.get(change.getTableName()).add( 
-        							Integer.parseInt(oldValues.get(lt.getSourceJoinField()) )); 
+        					// By default, skip this change unless no fields used for indexing 
+        					// have been declared
+        					boolean skipChange = lt.getFieldsUsedForIndexing().isEmpty() ? false : true;
+        					
+        					// Now check that at least one of the used fields has been changed
+        					for (String usedField : lt.getFieldsUsedForIndexing()) {
+        						if (change.getChangedFields().contains(usedField)) {
+        							skipChange = false;
+        							break;
+        						}
+        					}
+        					
+        					if (skipChange) {
+        						LOGGER.finer("Skipping change #" + change.getId() + " on table " + change.getTableName().toUpperCase()
+        								+ " because none of the fields used for indexing has been changed");
+        					} else {
+	        					changedTables.get(change.getTableName()).add( 
+	        							Integer.parseInt(newValues.get(lt.getSourceJoinField()) ));
+	        					changedTables.get(change.getTableName()).add( 
+	        							Integer.parseInt(oldValues.get(lt.getSourceJoinField()) ));
+        					}
         				}
         			}
     				break;
@@ -364,35 +383,43 @@ public class LiveDataFeedIndexUpdater {
 
 		// Iterate over each group
 		Element root = document.getRootElement();
-		List groups = root.getChildren("group");
+		List groups = root.getChildren("index");
 		
 		for (Iterator it = groups.iterator(); it.hasNext();) {
 			
 			Element group = (Element) it.next();
 			EntityDependencyTree dependencyTree = new EntityDependencyTree();
-			String entity = group.getAttributeValue("root_table");
-			dependencyTree.setRootTableName(entity);
-			map.put(entity, dependencyTree);
+			String indexName = group.getAttributeValue("name");		
+			map.put(indexName, dependencyTree);
 					
 			// Iterate over each path for the group 
 			for (Iterator it2 = group.getDescendants(filter); it2.hasNext();) {
 
 				Element currElement = (Element) it2.next();
 				
-				LinkedTable firstLinkedtable = new LinkedTable(currElement.getAttributeValue("name"));
-				LinkedTable lastLinkedTable = firstLinkedtable;
+				LinkedTable firstLinkedtable = null;
+				LinkedTable lastLinkedTable = null;
+				Element lastJoin = null;
 				
-				Element lastJoin = currElement.getParentElement();
-				currElement = currElement.getParentElement().getParentElement();
 				while ( "table".equals(currElement.getName()) ) {
 					
 					LinkedTable newlt = new LinkedTable(currElement.getAttributeValue("name"));
-					// targetJoinKey -> src_field and sourceJoinKey -> target_field
-					// because we're reading it the other way
-					String targetJoinKey = lastJoin.getAttributeValue("src_field");
-					String sourceJoinKey = lastJoin.getAttributeValue("target_field");
+					Attribute usedFields = currElement.getAttribute("used_fields"); 
+					if (usedFields != null && !usedFields.getValue().isEmpty()) {
+						newlt.setFieldsUsedForIndexing(usedFields.getValue().replace(" ", "").split(","));	
+					}
 					
-					lastLinkedTable.setTargetTable(newlt, targetJoinKey, sourceJoinKey);
+					if (lastLinkedTable == null) {
+						firstLinkedtable = newlt;
+					} else {
+						
+						// targetJoinKey -> src_field and sourceJoinKey -> target_field
+						// because we're reading it the other way
+						String targetJoinKey = lastJoin.getAttributeValue("src_field");
+						String sourceJoinKey = lastJoin.getAttributeValue("target_field");
+						
+						lastLinkedTable.setTargetTable(newlt, targetJoinKey, sourceJoinKey);
+					}
 					lastLinkedTable = newlt;
 					lastJoin = currElement.getParentElement();
 					currElement = lastJoin.getParentElement();
@@ -402,12 +429,15 @@ public class LiveDataFeedIndexUpdater {
 				dependencyTree.addDependency(firstLinkedtable);
 			}
 			
-			// Output of our dependency for debug purpose
-			LOGGER.fine("Building tree dependency for " + entity + "...");
+			// Output of our dependencies for debug purpose
+			LOGGER.fine("Building tree dependency for " + indexName + "...");
 			for (LinkedTable lt : dependencyTree.dependencies.values()) {
-				if (lt.isHead()) continue;
+				if (lt.isHead()) {
+					LOGGER.finest(lt.getTableName());
+					continue;
+				}
 				StringBuilder sb = new StringBuilder();
-				sb.append(entity + " ==> ");
+				sb.append(indexName + " ==> ");
 				while (lt.getTargetTable() != null) {
 					sb.append(lt.getTableName() + " (" + lt.getSourceJoinField() + ")");
 					sb.append(" -> " + lt.getTargetTable().getTableName() + " (" + lt.getTargetJoinField() + ")");
