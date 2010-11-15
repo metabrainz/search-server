@@ -186,9 +186,10 @@ public class IndexBuilder
         if (options.isTest() && options.getTestIndexSize() < maxId)
             maxId = options.getTestIndexSize();
         int j = 0;
-        while (j < maxId) {
-            System.out.print("  Indexing " + j + "..." + (j + options.getDatabaseChunkSize()) + " / " + maxId + " (" + (100*j/maxId) + "%)\r");
-            index.indexData(indexWriter, j, j + options.getDatabaseChunkSize() - 1);
+        while (j <= maxId) {
+        	int k = Math.min(j + options.getDatabaseChunkSize() - 1, maxId);
+            System.out.print("  Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
+            index.indexData(indexWriter, j, k);
             j += options.getDatabaseChunkSize();
         }
 
@@ -197,14 +198,14 @@ public class IndexBuilder
         indexWriter.optimize();
         indexWriter.close();
 
-        //For debugging to check sql is not creating too few/many rows
+        // For debugging to check sql is not creating too few/many rows
         if(true) {
             int dbRows = index.getNoOfRows(maxId);
             IndexReader reader = IndexReader.open(FSDirectory.open(new File(path)),true);
             System.out.println("  Indexed "+dbRows+" rows, creating "+(reader.maxDoc() - 1)+" lucene documents");
             reader.close();
         }
-        System.out.println("\n  Completed Optimizing at "+new Date());
+        System.out.println("  Completed Optimizing at "+new Date());
 
     }
     
