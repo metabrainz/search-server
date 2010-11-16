@@ -75,7 +75,7 @@ public class CDStubIndex extends DatabaseIndex {
                 "  JOIN cdtoc_raw ON release_raw.id = cdtoc_raw.release " +
                 "  JOIN track_raw ON track_raw.release = release_raw.id " +
                 " WHERE release_raw.id BETWEEN ? AND ? " +
-                " GROUP BY release_raw.title, release_raw.id, release_raw.artist, barcode, comment, discid");
+                " GROUP BY release_raw.title, release_raw.id, release_raw.artist, barcode, comment, discid, added");
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
