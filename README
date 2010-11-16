@@ -233,7 +233,7 @@ Development
 For developement environments there is a much simpler deployment possible
 
     cd search_server/servlet
-    mvn jetty:plugin
+    mvn jetty:run
 
 This will start the Jetty servlet container (instead of Tomcat), then just use the underlying url on port8080
 
