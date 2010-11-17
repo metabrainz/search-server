@@ -133,7 +133,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 "SELECT m.release, p.puid " +
                 "FROM medium m " +
                 " INNER JOIN track t ON (t.tracklist=m.tracklist and m.release between ? AND ?) " +
-                " INNER JOIN recording_puid rp ON rp.recording = t.id " +
+                " INNER JOIN recording_puid rp ON rp.recording = t.recording " +
                 " INNER JOIN puid p ON rp.puid=p.id");
     }
 

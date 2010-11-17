@@ -66,12 +66,12 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (1, 1, 1)");
         stmt.addBatch("INSERT INTO puid (id, puid) VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e38')");
-        stmt.addBatch("INSERT INTO recording_puid (id, puid, recording) VALUES (1, 1, 1)");
+        stmt.addBatch("INSERT INTO recording_puid (id, puid, recording) VALUES (1, 1, 2)");
         stmt.addBatch("INSERT INTO tracklist (id, track_count) VALUES (1, 1)");
         stmt.addBatch("INSERT INTO track (id, recording, tracklist, position, name, artist_credit, length) "
-                        + " VALUES (1, 1, 1, 4, 2, 1, 33100)");
+                        + " VALUES (1, 2, 1, 4, 2, 1, 33100)");
         stmt.addBatch("INSERT INTO recording(id, gid, name, artist_credit, length)"
-                        + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
+                        + " VALUES (2, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
 
 
         stmt.executeBatch();
