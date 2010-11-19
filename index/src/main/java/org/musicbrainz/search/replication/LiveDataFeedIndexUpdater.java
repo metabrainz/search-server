@@ -66,9 +66,7 @@ public class LiveDataFeedIndexUpdater {
 	    conHdlr.setFormatter(new Formatter() {
 	      @Override
 	      public String format(LogRecord record) {
-	        return new Date(record.getMillis()).toString() + " - "
-	        	+ record.getLevel() + " : "
-	            + record.getMessage() + "\n";
+	        return record.getLevel() + "\t" + record.getMessage() + "\n";
 	      }
 	    });
 	    LOGGER.addHandler(conHdlr);
@@ -101,11 +99,13 @@ public class LiveDataFeedIndexUpdater {
 
             // Check if this index should be built
             if (!options.buildIndex(index.getName())) {
+            	LOGGER.info("");
             	LOGGER.info("Skipping index: " + index.getName());
                 continue;
             }
 
             clock.start();
+            LOGGER.info("");
             LOGGER.info("Started updating index: " + index.getName());
             updateDatabaseIndex(index, options);
             clock.stop();
@@ -202,7 +202,7 @@ public class LiveDataFeedIndexUpdater {
             
             // Delete obsolete documents
         	for(Integer id : deletedIds) {
-        		LOGGER.finer("Deleting " + index.getName() + " #" + id.toString());
+        		LOGGER.fine("Deleting " + index.getName() + " #" + id.toString());
         		term = new Term(index.getIdentifierField().getName(), id.toString());
         		query = new TermQuery(term);
         		indexWriter.deleteDocuments(query);
@@ -211,7 +211,7 @@ public class LiveDataFeedIndexUpdater {
         	// Index new (or udpated) ones
         	index.init(indexWriter);
         	for(Integer id : insertedOrUpdatedIds) {
-        		LOGGER.finer("Reindexing " + index.getName() + " #" + id.toString());
+        		LOGGER.fine("Reindexing " + index.getName() + " #" + id.toString());
         		term = new Term(index.getIdentifierField().getName(), id.toString());
         		query = new TermQuery(term);
         		indexWriter.deleteDocuments(query);
@@ -223,7 +223,9 @@ public class LiveDataFeedIndexUpdater {
         	if (lastPacket != null) {
         		index.updateMetaInformation(indexWriter, lastPacket, indexingDate);
         		indexWriter.commit();
-        		indexWriter.optimize();
+        		// TODO: index don't need to optimized on each update, it's way too resource intensive
+        		// => disabled for now, need to be done on a regular basis that should determined
+        		// indexWriter.optimize();
         	}
             indexWriter.close();
             
@@ -259,7 +261,7 @@ public class LiveDataFeedIndexUpdater {
     		}
     		
     		if (!dependencyTree.getTables().contains(change.getTableName())) {
-    			LOGGER.finer("Skipping change #" + change.getId() + " on unrelated table " + change.getTableName().toUpperCase());
+    			LOGGER.finest("Skipping change #" + change.getId() + " on unrelated table " + change.getTableName().toUpperCase());
     			continue;
     		}
     		
@@ -336,7 +338,7 @@ public class LiveDataFeedIndexUpdater {
     		LinkedTable lt = dependencyTree.getDependency(tableName);
     		String sql = lt.generateSQL(tmpIds);
     		
-    		LOGGER.finest("Resolution of affected ids for table " + tableName + ": " + sql);
+    		LOGGER.finer("Resolution of affected ids for table " + tableName + ": " + sql);
     		
     		Statement st = mainDbConn.createStatement();
     		ResultSet rs = st.executeQuery(sql);

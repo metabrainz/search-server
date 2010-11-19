@@ -1,8 +1,10 @@
 package org.musicbrainz.search.replication;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class LinkedTable {
@@ -86,12 +88,19 @@ public class LinkedTable {
 		sb.append("SELECT " + finalLT.getTableName() + ".id");
 		sb.append(" FROM " + finalLT.getTableName());
 		
+		// JOINs should be added reversely, so we need to first store them before adding them to the SQL query
+		List<String> joins = new ArrayList<String>();
+		
 		if (!isHead()) {
 			LinkedTable lt = this.getTargetTable();
 			while (!lt.isHead()) {
-				sb.append(" JOIN " + lt.getTableName() + " ON (" + lt.getTableName() + "." + lt.getSourceJoinField() 
+				joins.add(" JOIN " + lt.getTableName() + " ON (" + lt.getTableName() + "." + lt.getSourceJoinField() 
 						+ " = " + lt.getTargetTable().getTableName() + "." + lt.getTargetJoinField() + ")");
 				lt = lt.getTargetTable();
+			}
+			
+			for (int i = joins.size()-1; i >= 0; i--) {
+				sb.append(joins.get(i));
 			}
 		}
 		
