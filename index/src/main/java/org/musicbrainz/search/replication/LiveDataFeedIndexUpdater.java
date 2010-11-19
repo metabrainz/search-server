@@ -152,7 +152,7 @@ public class LiveDataFeedIndexUpdater {
             Integer lastChangeSequence = (tmpStr != null && !tmpStr.isEmpty()) ? Integer.parseInt(tmpStr) : null;
 
             LOGGER.info("Current index properties: schema_sequence=" + lastSchemaSequence +
-            		", replication_sequence=" + lastSchemaSequence + 
+            		", replication_sequence=" + lastReplicationSequence + 
             		", change_sequence=" + (lastChangeSequence != null ? lastChangeSequence : "") );
             
             Set<Integer> deletedIds = new HashSet<Integer>();
