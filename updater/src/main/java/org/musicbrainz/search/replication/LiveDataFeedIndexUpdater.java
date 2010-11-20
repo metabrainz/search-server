@@ -368,7 +368,7 @@ public class LiveDataFeedIndexUpdater {
     	
     	SAXBuilder sxb = new SAXBuilder();
 		try {
-			document = sxb.build(new File(getClass().getResource("/dependencies.xml").getFile()));
+			document = sxb.build( getClass().getResourceAsStream("/dependencies.xml") );
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			return map;
