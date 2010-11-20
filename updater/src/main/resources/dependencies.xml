@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table_dependencies>
+
+	<!-- Artist  -->
+	<index name='artist'>
+		<table name='artist'>
+			<join src_field='id' target_field='artist'>
+				<table name='artist_alias' />
+			</join>
+			<join src_field='id' target_field='artist'>
+				<table name='artist_tag' />
+			</join>
+			<join src_field='id' target_field='artist'>
+				<table name='artist_credit_name' />
+			</join>
+		</table>
+	</index>
+	
+	<!-- Label  -->
+	<index name='label'>
+		<table name='label'>
+			<join src_field='id' target_field='label'>
+				<table name='label_alias' />
+			</join>
+			<join src_field='id' target_field='label'>
+				<table name='label_tag' />
+			</join>
+		</table>
+	</index>
+	
+	<!-- Work  -->
+	<index name='work'>
+		<table name='work'>
+			<join src_field='id' target_field='work'>
+				<table name='work_alias' />
+			</join>
+			<join src_field='id' target_field='work'>
+				<table name='work_tag' />
+			</join>
+			<join src_field='artist_credit' target_field='artist_credit'>
+				<table name='artist_credit_name'>
+					<join src_field='artist' target_field='id'>
+						<table name='artist' used_fields='name,sort_name' />
+					</join>
+				</table>
+			</join>
+		</table>
+	</index>
+	
+	<!-- ReleaseGroup  -->
+	<index name='releasegroup'>
+		<table name='release_group'>
+			<join src_field='id' target_field='release_group'>
+				<table name='release' used_fields='name' />
+			</join>
+			<join src_field='id' target_field='release_group'>
+				<table name='release_group_tag' />
+			</join>
+			<join src_field='artist_credit' target_field='artist_credit'>
+				<table name='artist_credit_name'>
+					<join src_field='artist' target_field='id'>
+						<table name='artist' used_fields='name,sort_name' />
+					</join>
+				</table>
+			</join>
+		</table>
+	</index>
+	
+	<!-- Release  -->
+	<index name='release'>
+		<table name='release'>
+			<join src_field='id' target_field='release'>
+				<table name='release_label'>
+					<join src_field='label' target_field='id'>
+						<table name='label' used_fields='name' />
+					</join>
+				</table>
+			</join>
+			<join src_field='id' target_field='release'>
+				<table name='medium' used_fields='tracklist,release,format'>
+					<join src_field='tracklist' target_field='id'>
+						<table name='tracklist'>
+							<join src_field='id' target_field='tracklist'>
+								<table name='track' used_fields='tracklist,recording'>
+									<join src_field='recording' target_field='recording'>
+										<table name ='recording_puid' />
+									</join>
+								</table>
+							</join>						
+						</table>
+					</join>
+					<join src_field='id' target_field='medium'>
+						<table name='medium_cdtoc' />
+					</join>
+				</table>					
+			</join>
+			<join src_field='id' target_field='id'>
+				<table name='release_meta' />
+			</join>
+			<join src_field='release_group' target_field='id'>
+				<table name='release_group' used_fields='type' />
+			</join>
+			<join src_field='artist_credit' target_field='artist_credit'>
+				<table name='artist_credit_name'>
+					<join src_field='artist' target_field='id'>
+						<table name='artist' used_fields='name,sort_name' />
+					</join>
+				</table>
+			</join>
+		</table>
+	</index>
+	
+	<!-- Recording  -->
+	<index name='recording'>
+		<table name='recording'>
+			<join src_field='id' target_field='recording'>
+				<table name='recording_puid' />
+			</join>
+			<join src_field='id' target_field='recording'>
+				<table name='recording_tag' />
+			</join>
+			<join src_field='id' target_field='recording'>
+				<table name='isrc' />
+			</join>
+			<join src_field='id' target_field='recording'>
+				<table name='track'>
+					<join src_field='tracklist' target_field='id'>
+						<table name='tracklist'>
+							<join src_field='id' target_field='tracklist'>
+								<table name='medium' used_fields='tracklist,release' >
+									<join src_field='release' target_field='id'>
+										<table name='release'>
+											<join src_field='release_group' target_field='id'>
+												<table name='release_group' used_fields='type' />
+											</join>
+										</table>
+									</join>
+								</table>
+							</join>
+						</table>
+					</join>
+				</table>					
+			</join>
+			<join src_field='artist_credit' target_field='artist_credit'>
+				<table name='artist_credit_name'>
+					<join src_field='artist' target_field='id'>
+						<table name='artist' used_fields='name,sort_name' />
+					</join>
+				</table>
+			</join>
+		</table>
+	</index>
+	
+	<!-- Tag  -->
+	<index name='tag'>
+		<table name='tag' />
+	</index>
+	
+	<!-- Annotation  -->
+	<index name='annotation'>
+		<table name='annotation'>
+			<join src_field='id' target_field='annotation'>
+				<table name='artist_annotation'>
+					<join src_field='artist' target_field='id'>
+						<table name='artist' used_fields='name' />
+					</join>
+				</table>
+			</join>
+			<join src_field='id' target_field='annotation'>
+				<table name='label_annotation'>
+					<join src_field='label' target_field='id'>
+						<table name='label' used_fields='name' />
+					</join>
+				</table>
+			</join>
+			<join src_field='id' target_field='annotation'>
+				<table name='work_annotation'>
+					<join src_field='work' target_field='id'>
+						<table name='work' used_fields='name' />
+					</join>
+				</table>
+			</join>
+			<join src_field='id' target_field='annotation'>
+				<table name='release_annotation'>
+					<join src_field='release' target_field='id'>
+						<table name='release' used_fields='name' />
+					</join>
+				</table>
+			</join>
+			<join src_field='id' target_field='annotation'>
+				<table name='release_group_annotation'>
+					<join src_field='release_group' target_field='id'>
+						<table name='release_group' used_fields='name' />
+					</join>
+				</table>
+			</join>
+			<join src_field='id' target_field='annotation'>
+				<table name='recording_annotation'>
+					<join src_field='recording' target_field='id'>
+						<table name='recording' used_fields='name' />
+					</join>
+				</table>
+			</join>
+		</table>
+	</index>
+</table_dependencies>

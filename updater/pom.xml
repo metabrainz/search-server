@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.musicbrainz.search</groupId>
-  <artifactId>index</artifactId>
+  <artifactId>updater</artifactId>
   <packaging>jar</packaging>
   <version>2.0-SNAPSHOT</version>
-  <name>MusicBrainz Search Server's Index</name>
+  <name>MusicBrainz Search Indexes Updater</name>
   <repositories>
     <repository>
       <id>maven-snapshot-repository</id>
@@ -17,6 +17,12 @@
     </repository>
   </repositories>
   <dependencies>
+    <dependency>
+      <groupId>org.musicbrainz.search</groupId>
+      <artifactId>index</artifactId>
+      <version>2.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -36,11 +42,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.musicbrainz.mmd2</groupId>
-      <artifactId>mmd2</artifactId>
-      <version>2.0.0</version>
-    </dependency>  
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.4</version>
@@ -57,26 +58,12 @@
         <version>1.0</version>
     </dependency>
     <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>1.2.140</version>
-      <scope>test</scope>
+    	<groupId>org.jdom</groupId>
+    	<artifactId>jdom</artifactId>
+    	<version>1.1</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
     </dependency>
-    <dependency>
-        <groupId>com.ibm.icu</groupId>
-        <artifactId>icu4j</artifactId>
-        <version>4.0.1</version>
-    </dependency>
-     <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.1.12</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-json</artifactId>
-      <version>1.1.4</version>
-    </dependency>  
   </dependencies>
    <build>
     <pluginManagement>
@@ -132,7 +119,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.musicbrainz.search.index.IndexBuilder</mainClass>
+              <mainClass>org.musicbrainz.search.replication.LiveDataFeedIndexUpdater</mainClass>
               <packageName>org.musicbrainz.search</packageName>
               <addClasspath>true</addClasspath>
             </manifest>
