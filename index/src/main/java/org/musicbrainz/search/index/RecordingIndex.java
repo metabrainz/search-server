@@ -334,6 +334,7 @@ public class RecordingIndex extends DatabaseIndex {
     private Map<Integer, Release>  loadReleases
             (Map<Integer, List<TrackWrapper>> tracks) throws SQLException, IOException {
 
+        Map<Integer, Release> releases = new HashMap<Integer, Release>();
         ObjectFactory of = new ObjectFactory();
 
         // Add all the releaseKeys to a set to prevent duplicates
@@ -344,6 +345,10 @@ public class RecordingIndex extends DatabaseIndex {
             }
         }
 
+        if (releaseKeys.isEmpty()) {
+        	return releases;
+        }
+        
         PreparedStatement stmt = createReleaseStatement(releaseKeys.size());
         int count = 1;
         for(Integer key : releaseKeys) {
@@ -351,7 +356,7 @@ public class RecordingIndex extends DatabaseIndex {
             count++;
         }
         ResultSet rs = stmt.executeQuery();
-        Map<Integer, Release> releases = new HashMap<Integer, Release>();
+        
         Release release;
         while (rs.next()) {
             int releaseKey = rs.getInt("releaseKey");
