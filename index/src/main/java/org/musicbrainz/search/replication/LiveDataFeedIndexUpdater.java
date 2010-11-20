@@ -159,7 +159,7 @@ public class LiveDataFeedIndexUpdater {
             Set<Integer> insertedOrUpdatedIds = new HashSet<Integer>();
             
             // For debug purpose: force replication and change sequences
-            //lastReplicationSequence = 1;
+            //lastReplicationSequence = 500;
             //lastChangeSequence = 1;
             
             // Load and process each replication packet released since
@@ -221,7 +221,11 @@ public class LiveDataFeedIndexUpdater {
         	
         	// Only update the index if we've been able to load at least one packet
         	if (lastPacket != null) {
-        		index.updateMetaInformation(indexWriter, lastPacket, indexingDate);
+        		index.updateMetaInformation(indexWriter, 
+        				lastPacket.getSchemaSequence(), 
+        				lastPacket.getReplicationSequence(),
+        				lastPacket.getMaxChangeId(),
+        				indexingDate);
         		indexWriter.commit();
         		// TODO: index don't need to optimized on each update, it's way too resource intensive
         		// => disabled for now, need to be done on a regular basis that should determined

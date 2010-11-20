@@ -24,7 +24,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.replication.packet.ReplicationPacket;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -82,8 +81,8 @@ public abstract class DatabaseIndex implements Index {
         
         indexWriter.addDocument(doc.getLuceneDocument());
 	}
-	
-	public void updateMetaInformation(IndexWriter indexWriter, ReplicationPacket lastPacket, Date indexingDate) throws IOException {
+
+	public void updateMetaInformation(IndexWriter indexWriter, int schemaSeq, int replicationSeq, Integer changeSeq, Date indexingDate) throws IOException {
 		
 		// Remove the old one
 		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
@@ -94,11 +93,10 @@ public abstract class DatabaseIndex implements Index {
     	MbDocument doc = new MbDocument();
     	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
         doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(indexingDate.getTime()));
-        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, lastPacket.getSchemaSequence());
-        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, lastPacket.getReplicationSequence());
-        Integer lastChangeId = lastPacket.getMaxChangeId();
-        if (lastChangeId != null) {
-        	doc.addField(MetaIndexField.LAST_CHANGE_SEQUENCE, lastChangeId);
+        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, schemaSeq);
+        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, replicationSeq);
+        if (changeSeq != null) {
+        	doc.addField(MetaIndexField.LAST_CHANGE_SEQUENCE, changeSeq);
         }
         indexWriter.addDocument(doc.getLuceneDocument());
 	}
