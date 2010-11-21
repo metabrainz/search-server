@@ -29,7 +29,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.MMapDirectory;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.filter.Filter;
@@ -55,28 +54,32 @@ public class LiveDataFeedIndexUpdater {
 
 	private Map<String, EntityDependencyTree> dependencyTrees;
 	private final Logger LOGGER = Logger.getLogger(LiveDataFeedIndexUpdater.class.getName());
-	private final Level LOG_LEVEL = Level.INFO;
+	private final Level LOG_LEVEL = Level.FINE;
+	
 	private Connection mainDbConn;
+	private LiveDataFeedIndexOptions options;
+	private HashMap<Integer,ReplicationPacket> remotePacketCache = new HashMap<Integer,ReplicationPacket>();
 	
 	
-	public LiveDataFeedIndexUpdater() {
+	public LiveDataFeedIndexUpdater(LiveDataFeedIndexOptions options) {
 		
 		LOGGER.setUseParentHandlers(false);
 	    Handler conHdlr = new ConsoleHandler();
 	    conHdlr.setFormatter(new Formatter() {
 	      @Override
 	      public String format(LogRecord record) {
-	        return record.getLevel() + "\t" + record.getMessage() + "\n";
+	        return new Date(record.getMillis()).toString() + "\t" + record.getLevel() + "\t" + record.getMessage() + "\n";
 	      }
 	    });
 	    LOGGER.addHandler(conHdlr);
 	    LOGGER.setLevel(LOG_LEVEL);
 	    conHdlr.setLevel(LOG_LEVEL);
 	    
+	    this.options = options;
 	    dependencyTrees = initDependencyTrees();
 	}
 	
-	public void start(LiveDataFeedIndexOptions options) throws SQLException, IOException {
+	public void start() throws SQLException, IOException {
 		
         // Connect to main database
         mainDbConn = options.getMainDatabaseConnection();
@@ -107,7 +110,9 @@ public class LiveDataFeedIndexUpdater {
             clock.start();
             LOGGER.info("");
             LOGGER.info("Started updating index: " + index.getName());
+            
             updateDatabaseIndex(index, options);
+            
             clock.stop();
             LOGGER.info("Finished updating index: " + index.getName() + " in " + Float.toString(clock.getTime()/1000) + " seconds");
             clock.reset();
@@ -130,7 +135,7 @@ public class LiveDataFeedIndexUpdater {
         indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
     	
-    	IndexReader reader = IndexReader.open(new MMapDirectory(new File(path)));
+        IndexReader reader = indexWriter.getReader();
     	IndexSearcher searcher = new IndexSearcher(reader);
     	
 		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
@@ -165,7 +170,7 @@ public class LiveDataFeedIndexUpdater {
             // Load and process each replication packet released since
             ReplicationPacket lastPacket = null;
             ReplicationPacket packet;
-            while ( (packet = ReplicationPacket.loadFromRepository(lastReplicationSequence+1, options.getRepositoryPath())) != null ) {
+            while ( (packet = getCachedReplicationPacket(lastReplicationSequence+1)) != null ) {
             	           	
             	LOGGER.info("Loading packet #" + packet.getReplicationSequence());
             	
@@ -209,15 +214,18 @@ public class LiveDataFeedIndexUpdater {
         	}
         	
         	// Index new (or udpated) ones
-        	index.init(indexWriter);
-        	for(Integer id : insertedOrUpdatedIds) {
-        		LOGGER.fine("Reindexing " + index.getName() + " #" + id.toString());
-        		term = new Term(index.getIdentifierField().getName(), id.toString());
-        		query = new TermQuery(term);
-        		indexWriter.deleteDocuments(query);
-        		index.indexData(indexWriter, id, id);
+        	if (!insertedOrUpdatedIds.isEmpty()) {
+        		index.init(indexWriter);	
+        	
+	        	for(Integer id : insertedOrUpdatedIds) {
+	        		LOGGER.fine("Reindexing " + index.getName() + " #" + id.toString());
+	        		term = new Term(index.getIdentifierField().getName(), id.toString());
+	        		query = new TermQuery(term);
+	        		indexWriter.deleteDocuments(query);
+	        		index.indexData(indexWriter, id, id);
+	        	}
+	        	index.destroy();
         	}
-        	index.destroy();
         	
         	// Only update the index if we've been able to load at least one packet
         	if (lastPacket != null) {
@@ -230,14 +238,28 @@ public class LiveDataFeedIndexUpdater {
         		// TODO: index don't need to optimized on each update, it's way too resource intensive
         		// => disabled for now, need to be done on a regular basis that should determined
         		// indexWriter.optimize();
-        	}
-            indexWriter.close();
             
-            // Check to we have as much Lucune documents as Database rows
-            int dbRows = index.getNoOfRows(Integer.MAX_VALUE);
-            reader = reader.reopen();
-            LOGGER.info(dbRows + " rows in database, " + (reader.maxDoc()-1) + " lucene documents");
-            reader.close();
+	            // Check to we have as much Lucune documents as Database rows
+	            int dbRows = index.getNoOfRows(Integer.MAX_VALUE);
+	            reader = reader.reopen();
+	            LOGGER.info(dbRows + " rows in database, " + (reader.maxDoc()-1) + " lucene documents");
+        	} else {
+        		LOGGER.info("No changes found");
+        	}
+	            
+            indexWriter.close();
+    	}
+    	
+    }
+    
+    private ReplicationPacket getCachedReplicationPacket(Integer packetNo) throws IOException {
+    	
+    	if (remotePacketCache.containsKey(packetNo)) {
+    		return remotePacketCache.get(packetNo);
+    	} else {
+    		ReplicationPacket packet = ReplicationPacket.loadFromRepository(packetNo, options.getRepositoryPath());
+    		remotePacketCache.put(packetNo, packet);
+    		return packet;
     	}
     	
     }
@@ -490,8 +512,8 @@ public class LiveDataFeedIndexUpdater {
             System.exit(1);
         }
         
-        LiveDataFeedIndexUpdater updater = new LiveDataFeedIndexUpdater();
-        updater.start(options);
+        LiveDataFeedIndexUpdater updater = new LiveDataFeedIndexUpdater(options);
+        updater.start();
 	}
     
 }
