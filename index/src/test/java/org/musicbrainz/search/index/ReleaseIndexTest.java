@@ -180,7 +180,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
                 "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 28, 1, 1, 1)");
         stmt.addBatch("INSERT INTO language (id, iso_code_3t, iso_code_3b, iso_code_2, name, frequency) " +
         	" VALUES (1, 'eng', 'eng', 'en', 'English', 1)");
-        stmt.addBatch("INSERT INTO script (id, iso_code, isonumber, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
+        stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
 
@@ -219,7 +219,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 221, 1, 28, 1970, 1, 1, '5060180310066')");
         stmt.addBatch("INSERT INTO language (id, iso_code_3t, iso_code_3b, iso_code_2, name, frequency) " +
         	" VALUES (1, 'eng', 'eng', 'en', 'English', 1)");
-        stmt.addBatch("INSERT INTO script (id, iso_code, isonumber, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
+        stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
         stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (221, 'GB', 'United Kingdom')");
 
         stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, 'korova')");

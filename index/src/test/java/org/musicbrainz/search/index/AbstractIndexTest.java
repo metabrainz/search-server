@@ -176,6 +176,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  gender integer," +
                 "  comment character varying(255)," +
                 "  ipi_code VARCHAR(11)," +
+                "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");
 
@@ -183,7 +184,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  name integer NOT NULL," +
                 "  artist_count integer NOT NULL," +
-                "  ref_count integer DEFAULT 0" +
+                "  ref_count integer DEFAULT 0," +
+                "  created timestamp" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_credit_name (" +
@@ -198,6 +200,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  artist integer NOT NULL," +
                 "  name integer NOT NULL," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -220,7 +223,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(" +
                 "  artist integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL" +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp," +
                 ")");
     }
 
@@ -240,6 +244,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  type integer," +
                 "  country integer," +
                 "  comment character varying(255)," +
+                "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");
 
@@ -247,6 +252,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  label integer NOT NULL," +
                 "  name integer NOT NULL," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -263,7 +269,8 @@ public abstract class AbstractIndexTest extends TestCase {
         stmt.addBatch("CREATE TABLE label_tag (" +
                 "  label integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL" +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
                 ")");
     }
 
@@ -285,6 +292,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  date_day integer," +
                 "  barcode character varying(255)," +
                 "  comment character varying(255)," +
+                "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");
 
@@ -307,7 +315,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  release integer NOT NULL," +
                 "  label integer," +
-                "  catalog_number character varying(255)" +
+                "  catalog_number character varying(255)," +
+                "  last_updated timestamp" +
                 ")");
 
         stmt.addBatch("CREATE TABLE medium (" +
@@ -317,6 +326,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  position integer NOT NULL," +
                 "  format integer," +
                 "  name character varying(255)," +
+                "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");
 
@@ -328,7 +338,6 @@ public abstract class AbstractIndexTest extends TestCase {
 
         stmt.addBatch("CREATE TABLE release_meta (" +
                 "  id integer NOT NULL," +
-                "  last_updated timestamp," +
                 "  date_added timestamp," +
                 "  info_url character varying(255)," +
                 "  amazon_asin character varying(10)," +
@@ -339,12 +348,14 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  medium integer NOT NULL," +
                 "  cdtoc integer NOT NULL," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
         stmt.addBatch("CREATE TABLE tracklist (" +
                 "  id serial NOT NULL," +
-                "  track_count integer NOT NULL DEFAULT 0" +
+                "  track_count integer NOT NULL DEFAULT 0," +
+                "  last_updated timestamp" +
                 ")");
         
         stmt.addBatch("CREATE TABLE language (" +
@@ -359,7 +370,7 @@ public abstract class AbstractIndexTest extends TestCase {
         stmt.addBatch("CREATE TABLE script (" +
                 "  id serial NOT NULL," +
                 "  iso_code character(4) NOT NULL," +
-                "  isonumber character(3) NOT NULL," +
+                "  iso_number character(3) NOT NULL," +
                 "  name character varying(100) NOT NULL," +
                 "  frequency integer NOT NULL DEFAULT 0" +
                 ")");
@@ -374,6 +385,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  artist_credit integer NOT NULL," +
                 "  type integer," +
                 "  comment character varying(255)," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -386,7 +398,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(" +
                 "  release_group integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL" +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
                 ")");
     }
 
@@ -405,6 +418,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -415,6 +429,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +
                 "  comment character varying(255)," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -422,7 +437,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 "(" +
                 "  recording integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL" +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
                 ")");
 
         stmt.addBatch("CREATE TABLE isrc" +
@@ -431,6 +447,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  recording integer NOT NULL," +
                 "  isrc character(12) NOT NULL," +
                 "  source smallint," +
+                "  created timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -439,6 +456,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  puid integer NOT NULL," +
                 "  recording integer NOT NULL," +
+                "  created timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0," +
                 ")");
 
@@ -534,6 +552,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  type integer," +
                 "  iswc character(15)," +
                 "  comment character varying(255)," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -541,6 +560,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  work integer NOT NULL," +
                 "  name integer NOT NULL," +
+                "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
@@ -557,7 +577,8 @@ public abstract class AbstractIndexTest extends TestCase {
         stmt.addBatch("CREATE TABLE work_tag (" +
                 "  work integer NOT NULL," +
                 "  tag integer NOT NULL," +
-                "  count integer NOT NULL" +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
                 ")");
     }
 
