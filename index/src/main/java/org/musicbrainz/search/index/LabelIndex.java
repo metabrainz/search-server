@@ -73,7 +73,7 @@ public class LabelIndex extends DatabaseIndex {
 
     public int getNoOfRows(int maxId) throws SQLException {
     	PreparedStatement st = dbConnection.prepareStatement(
-    		"SELECT count(*) FROM label WHERE id <= ? AND gid::varchar <> ?");
+    		"SELECT count(*) FROM label WHERE id <= ? AND gid <> ?::uuid");
     	st.setInt(1, maxId);
     	st.setString(2, DELETED_LABEL_MBID);
     	ResultSet rs = st.executeQuery();

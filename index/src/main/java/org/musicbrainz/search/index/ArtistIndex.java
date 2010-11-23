@@ -65,7 +65,7 @@ public class ArtistIndex extends DatabaseIndex {
 
     public int getNoOfRows(int maxId) throws SQLException {
     	PreparedStatement st = dbConnection.prepareStatement(
-    			"SELECT count(*) FROM artist WHERE id <= ? AND gid::varchar <> ?");
+    			"SELECT count(*) FROM artist WHERE id <= ? AND gid <> ?::uuid");
     	st.setInt(1, maxId);
     	st.setString(2, DELETED_ARTIST_MBID);
         ResultSet rs = st.executeQuery();
