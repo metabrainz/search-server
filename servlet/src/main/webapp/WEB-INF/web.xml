@@ -22,6 +22,7 @@
      <param-name>index_dir</param-name>
      <param-value>/home/search/indexdata</param-value>
   </init-param>
+  <load-on-startup>1</load-on-startup>
 </servlet>
 <servlet-mapping>
   <servlet-name>SearchServerServlet</servlet-name>
