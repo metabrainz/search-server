@@ -46,6 +46,7 @@ import org.musicbrainz.search.index.RecordingIndex;
 import org.musicbrainz.search.index.ReleaseGroupIndex;
 import org.musicbrainz.search.index.ReleaseIndex;
 import org.musicbrainz.search.index.TagIndex;
+import org.musicbrainz.search.index.ThreadedIndexWriter;
 import org.musicbrainz.search.index.WorkIndex;
 import org.musicbrainz.search.replication.packet.ReplicationChange;
 import org.musicbrainz.search.replication.packet.ReplicationPacket;
@@ -54,7 +55,6 @@ public class LiveDataFeedIndexUpdater {
 
 	private Map<String, EntityDependencyTree> dependencyTrees;
 	private final Logger LOGGER = Logger.getLogger(LiveDataFeedIndexUpdater.class.getName());
-	private final Level LOG_LEVEL = Level.FINE;
 	
 	private Connection mainDbConn;
 	private LiveDataFeedIndexOptions options;
@@ -72,8 +72,9 @@ public class LiveDataFeedIndexUpdater {
 	      }
 	    });
 	    LOGGER.addHandler(conHdlr);
-	    LOGGER.setLevel(LOG_LEVEL);
-	    conHdlr.setLevel(LOG_LEVEL);
+	    Level logLevel = options.isVerbose() ? Level.FINE : Level.INFO;
+	    LOGGER.setLevel(logLevel);
+	    conHdlr.setLevel(logLevel);
 	    
 	    this.options = options;
 	    dependencyTrees = initDependencyTrees();
@@ -131,7 +132,12 @@ public class LiveDataFeedIndexUpdater {
     {
     	
     	String path = options.getIndexesDir() + index.getFilename();
-        IndexWriter indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer(), false, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter indexWriter = new ThreadedIndexWriter(FSDirectory.open(new File(path)),
+                index.getAnalyzer(),
+                false,
+                Runtime.getRuntime().availableProcessors(),
+                10,
+                IndexWriter.MaxFieldLength.LIMITED);
         indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
     	

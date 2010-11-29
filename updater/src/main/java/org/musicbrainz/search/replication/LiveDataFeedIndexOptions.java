@@ -9,5 +9,8 @@ public class LiveDataFeedIndexOptions extends IndexOptions {
     private String repositoryPath = "http://ftp.musicbrainz.org/pub/musicbrainz/data/replication/";
     public String getRepositoryPath() { return repositoryPath; }
 
+    @Option(name="--verbose", usage="More verbosity")
+    private boolean verbose = false;
+    public boolean isVerbose() { return verbose; }
 	
 }
