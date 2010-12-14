@@ -28,6 +28,7 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -76,9 +77,71 @@ public class ReleaseIndex extends DatabaseIndex {
         return rs.getInt(1);
     }
 
+
+    /**
+     * Create table mapping a release to all that puids that tracks within the release contain, then create index
+     * and vacuum analyze the table ready for use.
+     *
+     * @throws SQLException
+     */
+    private void createReleasePuidTable(boolean isTest) throws SQLException
+    {
+        getDbConnection().createStatement().execute(
+                    "CREATE TEMP TABLE release_puid (release integer NOT NULL,puid character(36) NOT NULL)");
+        getDbConnection().commit();
+
+        System.out.println(" Started Populating ReleasePuid Temp Table");
+        StopWatch clock = new StopWatch();
+        clock.start();
+        getDbConnection().createStatement().execute(
+            "INSERT INTO release_puid(release,puid) " +
+            "SELECT m.release, p.puid " +
+            "FROM medium m " +
+            "INNER JOIN track t ON t.tracklist=m.tracklist " +
+            "INNER JOIN recording_puid rp ON rp.recording = t.recording " +
+            "INNER JOIN puid p ON rp.puid=p.id");
+        clock.stop();
+        System.out.println(" Populated ReleasePuid Temp Table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+
+        clock.start();
+        getDbConnection().createStatement().execute(
+             "CREATE INDEX releasepuid_idx_release ON release_puid (release) ");
+        clock.stop();
+        System.out.println(" Created ReleasePuid Index in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+
+        if(!isTest)
+        {
+            getDbConnection().createStatement().execute("ANALYZE release_puid");
+        }
+
+    }
+
     @Override
-    public void init(IndexWriter indexWriter) throws SQLException {
-       addPreparedStatement("LABELINFOS",
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
+        init(indexWriter, isUpdater, false);
+    }
+
+    public void init(IndexWriter indexWriter, boolean isUpdater, boolean isTest) throws SQLException {
+
+        if(!isUpdater) {
+            createReleasePuidTable(isTest);
+            addPreparedStatement("PUIDS",
+                "SELECT release, puid " +
+                "FROM   release_puid " +
+                "WHERE  release BETWEEN ? AND ? ");
+        }
+        else {
+            addPreparedStatement("PUIDS",
+                "SELECT m.release, p.puid " +
+                "FROM medium m " +
+                " INNER JOIN track t ON (t.tracklist=m.tracklist AND m.release BETWEEN ? AND ?) " +
+                " INNER JOIN recording_puid rp ON rp.recording = t.recording " +
+                " INNER JOIN puid p ON rp.puid=p.id");
+        }
+
+        addPreparedStatement("LABELINFOS",
                "SELECT rl.release as releaseId, l.gid as labelId, ln.name as labelName, catalog_number " +
                " FROM release_label rl " +
                "  LEFT JOIN label l ON rl.label=l.id " +
@@ -94,7 +157,7 @@ public class ReleaseIndex extends DatabaseIndex {
               " WHERE m.release BETWEEN ? AND ? " +
               " GROUP BY m.release, m.id, mf.name, tr.track_count");
 
-         addPreparedStatement("ARTISTCREDITS",
+        addPreparedStatement("ARTISTCREDITS",
                 "SELECT r.id as releaseId, " +
                 "  acn.position as pos, " +
                 "  acn.join_phrase as joinphrase, " +
@@ -112,7 +175,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, acn.position");
 
-         addPreparedStatement("RELEASES",
+        addPreparedStatement("RELEASES",
                 "SELECT rl.id, rl.gid, rn.name as name, " +
                 "  barcode, lower(country.iso_code) as country, " +
                 "  date_year, date_month, date_day, rgt.name as type, rm.amazon_asin, " +
@@ -127,14 +190,6 @@ public class ReleaseIndex extends DatabaseIndex {
                 "  LEFT JOIN language ON rl.language=language.id " +
                 "  LEFT JOIN script ON rl.script=script.id " +
                 " WHERE rl.id BETWEEN ? AND ?");
-
-
-        addPreparedStatement("PUIDS",
-                "SELECT m.release, p.puid " +
-                "FROM medium m " +
-                " INNER JOIN track t ON (t.tracklist=m.tracklist and m.release between ? AND ?) " +
-                " INNER JOIN recording_puid rp ON rp.recording = t.recording " +
-                " INNER JOIN puid p ON rp.puid=p.id");
     }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {

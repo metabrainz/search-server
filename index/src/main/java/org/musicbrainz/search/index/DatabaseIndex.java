@@ -115,7 +115,15 @@ public abstract class DatabaseIndex implements Index {
         return dbConnection;
     }
 
-    public void init(IndexWriter indexWriter) throws SQLException {
+    /**
+     * Initialize the indexer, usually this includes creation of prepared statements
+     * and any temporary tables or indexes that re reuired.
+     *
+     * @param indexWriter
+     * @param isUpdater
+     * @throws SQLException
+     */
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
     }
     
     public void destroy() throws SQLException {

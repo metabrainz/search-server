@@ -71,7 +71,7 @@ public class WorkIndex extends DatabaseIndex {
     }
 
     @Override
-    public void init(IndexWriter indexWriter) throws SQLException {
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         addPreparedStatement("TAGS",
                        "SELECT work_tag.work, tag.name as tag, work_tag.count as count " +

@@ -73,7 +73,7 @@ public class RecordingIndex extends DatabaseIndex {
     String releases;
     String releasesGroupBy;
 
-    public void init(IndexWriter indexWriter) throws SQLException {
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         addPreparedStatement("PUIDS",
                  "SELECT recording as recordingId, puid.puid " +

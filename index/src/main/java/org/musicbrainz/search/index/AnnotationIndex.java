@@ -52,9 +52,8 @@ public class AnnotationIndex extends DatabaseIndex {
     }
 
     @Override
-    public void init(IndexWriter indexWriter) throws SQLException {
-        super.init(indexWriter);
-        
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
+
         // Register all information for each annotation type
         annotationTypeInfos = new EnumMap<AnnotationType, AnnotationTypeInfo>(AnnotationType.class);
         annotationTypeInfos.put(AnnotationType.ARTIST, new AnnotationTypeInfo("artist", "artist_name"));

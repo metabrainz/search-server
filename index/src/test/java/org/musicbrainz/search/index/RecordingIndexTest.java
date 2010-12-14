@@ -9,7 +9,6 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-import java.sql.Connection;
 import java.sql.Statement;
 
 
@@ -24,7 +23,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         RecordingIndex ri = new RecordingIndex(conn);
-        ri.init(writer);
+        ri.init(writer, false);
         ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
         ri.destroy();

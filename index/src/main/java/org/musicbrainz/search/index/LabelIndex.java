@@ -82,7 +82,7 @@ public class LabelIndex extends DatabaseIndex {
     }
 
     @Override
-    public void init(IndexWriter indexWriter) throws SQLException {
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         indexWriter.setSimilarity(new MusicbrainzSimilarity());
 

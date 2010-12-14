@@ -7,7 +7,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-import java.sql.Connection;
 import java.sql.Statement;
 
 
@@ -22,7 +21,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         AnnotationIndex ai = new AnnotationIndex(conn);
-        ai.init(writer);
+        ai.init(writer, false);
         ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);
         ai.destroy();

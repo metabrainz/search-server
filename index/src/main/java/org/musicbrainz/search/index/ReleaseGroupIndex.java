@@ -81,7 +81,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
     }
 
     @Override
-    public void init(IndexWriter indexWriter) throws SQLException {
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         addPreparedStatement("TAGS",
                  "SELECT release_group_tag.release_group, tag.name as tag, release_group_tag.count as count " +

@@ -221,7 +221,7 @@ public class LiveDataFeedIndexUpdater {
         	
         	// Index new (or udpated) ones
         	if (!insertedOrUpdatedIds.isEmpty()) {
-        		index.init(indexWriter);	
+        		index.init(indexWriter, true);	
         	
 	        	for(Integer id : insertedOrUpdatedIds) {
 	        		LOGGER.fine("Reindexing " + index.getName() + " #" + id.toString());

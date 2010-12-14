@@ -7,7 +7,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-import java.sql.Connection;
 import java.sql.Statement;
 
 
@@ -22,7 +21,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ArtistIndex ai = new ArtistIndex(conn);
-        ai.init(writer);
+        ai.init(writer, false);
         ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);
         ai.destroy();

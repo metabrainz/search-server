@@ -7,7 +7,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-import java.sql.Connection;
 import java.sql.Statement;
 
 
@@ -21,7 +20,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         WorkIndex wi = new WorkIndex(conn);
-        wi.init(writer);
+        wi.init(writer, false);
         wi.addMetaInformation(writer);
         wi.indexData(writer, 0, Integer.MAX_VALUE);
         wi.destroy();

@@ -29,7 +29,6 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-import java.sql.Connection;
 import java.sql.Statement;
 
 
@@ -43,7 +42,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseGroupIndex rgi = new ReleaseGroupIndex(conn);
-        rgi.init(writer);
+        rgi.init(writer, false);
         rgi.addMetaInformation(writer);
         rgi.indexData(writer, 0, Integer.MAX_VALUE);
         rgi.destroy();
