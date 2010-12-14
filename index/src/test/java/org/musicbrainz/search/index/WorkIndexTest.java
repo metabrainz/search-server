@@ -20,7 +20,7 @@ public class WorkIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        WorkIndex wi = new WorkIndex(createConnection());
+        WorkIndex wi = new WorkIndex(conn);
         wi.init(writer);
         wi.addMetaInformation(writer);
         wi.indexData(writer, 0, Integer.MAX_VALUE);
@@ -30,8 +30,6 @@ public class WorkIndexTest extends AbstractIndexTest {
     }
 
     private void addWorkOne() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -56,12 +54,9 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     private void addWorkTwo() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -83,7 +78,6 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     public void testIndexWork() throws Exception {

@@ -20,7 +20,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
      private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(CDStubIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        CDStubIndex ci = new CDStubIndex(createConnection());
+        CDStubIndex ci = new CDStubIndex(conn);
         ci.init(writer);
         ci.addMetaInformation(writer);
         ci.indexData(writer, 0, Integer.MAX_VALUE);
@@ -30,8 +30,6 @@ public class CDStubIndexTest extends AbstractIndexTest{
     }
 
     private void addCDStubOne() throws Exception {
-         Connection conn = createConnection();
-         conn.setAutoCommit(true);
 
          Statement stmt = conn.createStatement();
 

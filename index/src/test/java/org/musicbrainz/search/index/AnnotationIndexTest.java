@@ -21,7 +21,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        AnnotationIndex ai = new AnnotationIndex(createConnection());
+        AnnotationIndex ai = new AnnotationIndex(conn);
         ai.init(writer);
         ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);
@@ -34,8 +34,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addReleaseAnnotation() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -49,15 +47,12 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
      /**
      * @throws Exception exception
      */
     private void addReleaseGroupAnnotation() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -71,7 +66,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
 
@@ -79,8 +73,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addArtistAnnotation() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -98,15 +90,12 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
       /**
      * @throws Exception  exception
      */
     private void addLabelAnnotation() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -124,15 +113,12 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
       /**
      * @throws Exception exception
      */
     private void addRecordingAnnotation() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -150,7 +136,6 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**

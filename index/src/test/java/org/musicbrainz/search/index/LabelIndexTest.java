@@ -20,7 +20,7 @@ public class LabelIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(LabelIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        LabelIndex li = new LabelIndex(createConnection());
+        LabelIndex li = new LabelIndex(conn);
         li.init(writer);
         li.addMetaInformation(writer);
         li.indexData(writer, 0, Integer.MAX_VALUE);
@@ -34,8 +34,6 @@ public class LabelIndexTest extends AbstractIndexTest {
      * @throws Exception
      */
     private void addLabelOne() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -48,7 +46,6 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
 
@@ -58,8 +55,6 @@ public class LabelIndexTest extends AbstractIndexTest {
      * @throws Exception
      */
     private void addLabelTwo() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 		
@@ -74,7 +69,6 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -83,8 +77,6 @@ public class LabelIndexTest extends AbstractIndexTest {
      * @throws Exception
      */
     private void addLabelThree() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 		
@@ -101,7 +93,6 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     public void testIndexLabel() throws Exception {

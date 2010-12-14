@@ -42,7 +42,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        ReleaseGroupIndex rgi = new ReleaseGroupIndex(createConnection());
+        ReleaseGroupIndex rgi = new ReleaseGroupIndex(conn);
         rgi.init(writer);
         rgi.addMetaInformation(writer);
         rgi.indexData(writer, 0, Integer.MAX_VALUE);
@@ -54,8 +54,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      * @throws Exception
      */
     private void addReleaseGroupOne() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -78,7 +76,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -87,8 +84,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      * @throws Exception
      */
     private void addReleaseGroupTwo() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -111,7 +106,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -120,8 +114,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      * @throws Exception
      */
     private void addReleaseGroupThree() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -149,15 +141,12 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
      * @throws Exception
      */
     private void addReleaseGroupFour() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -191,7 +180,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**

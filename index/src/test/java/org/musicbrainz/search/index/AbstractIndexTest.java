@@ -14,9 +14,25 @@ import java.sql.Statement;
 
 public abstract class AbstractIndexTest extends TestCase {
 
-    protected Connection createConnection() throws Exception {
+    /**
+     * Holds connection to be used for the duration of an individual test
+     */
+    protected Connection conn;
+
+
+    /**
+     * Create private db in memory and setup connection
+     *
+     * This ensures that the database is only accessible from the connection that is
+     * setup. This allows multiple tests to run concurrently without encountering race conditions and also
+     * allow code that create temporary tables to work correctly in tests.
+     *
+     * @return
+     * @throws Exception
+     */
+    protected void createConnection() throws Exception {
         Class.forName("org.h2.Driver");
-        return DriverManager.getConnection("jdbc:h2:mem:tests;MODE=PostgreSQL");
+        conn =  DriverManager.getConnection("jdbc:h2:mem:;MODE=PostgreSQL");
     }
 
     /** Check first term of given field, terms are listed lexigrahically
@@ -37,9 +53,7 @@ public abstract class AbstractIndexTest extends TestCase {
    
     public void setup() throws Exception {
         try {
-            Connection conn = createConnection();
-            conn.setAutoCommit(true);
-
+            createConnection();
             //Drop tables, if they exist
             try {
                 Statement stmt = conn.createStatement();

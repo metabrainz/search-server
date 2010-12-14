@@ -21,7 +21,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        ArtistIndex ai = new ArtistIndex(createConnection());
+        ArtistIndex ai = new ArtistIndex(conn);
         ai.init(writer);
         ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);
@@ -31,8 +31,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
     }
 
     private void addArtistOne() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -47,8 +45,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
 
 
     private void addArtistTwo() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
@@ -75,8 +71,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
     }
 
     private void addArtistThree() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Siobhan Lynch')");

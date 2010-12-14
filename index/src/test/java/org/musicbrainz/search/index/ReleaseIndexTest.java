@@ -25,8 +25,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        ReleaseIndex ri = new ReleaseIndex(createConnection());
-        ri.init(writer);
+        ReleaseIndex ri = new ReleaseIndex(conn);
+        ri.init(writer, true);
         ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
         ri.destroy();
@@ -40,9 +40,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addReleaseOne() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
-
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
@@ -76,7 +73,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -85,9 +81,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addReleaseTwo() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
-
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id ,name) VALUES (1, 'Echo & The Bunnymen')");
@@ -111,7 +104,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -120,9 +112,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addReleaseThree() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
-
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
@@ -148,7 +137,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO tracklist (id, track_count) VALUES (1, 10)");
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -157,9 +145,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addReleaseFour() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
-
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
@@ -186,7 +171,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
 
@@ -196,8 +180,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addReleaseFive() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -233,7 +215,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
 

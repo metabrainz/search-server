@@ -23,7 +23,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        RecordingIndex ri = new RecordingIndex(createConnection());
+        RecordingIndex ri = new RecordingIndex(conn);
         ri.init(writer);
         ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
@@ -38,8 +38,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addTrackOne() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -79,7 +77,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
                 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -88,8 +85,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     private void addTrackTwo() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
 
         Statement stmt = conn.createStatement();
 
@@ -121,7 +116,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.executeBatch();
         stmt.close();
-        conn.close();
     }
 
     /**
@@ -130,8 +124,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
      * @throws Exception
      */
     private void addTrackThree() throws Exception {
-            Connection conn = createConnection();
-            conn.setAutoCommit(true);
 
             Statement stmt = conn.createStatement();
 
@@ -181,7 +173,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
             stmt.executeBatch();
             stmt.close();
-            conn.close();
         }
 
 

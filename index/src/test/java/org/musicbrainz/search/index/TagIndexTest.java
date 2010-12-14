@@ -20,7 +20,7 @@ public class TagIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TagIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        TagIndex ti = new TagIndex(createConnection());
+        TagIndex ti = new TagIndex(conn);
         ti.init(writer);
         ti.addMetaInformation(writer);
         ti.indexData(writer, 0, Integer.MAX_VALUE);
@@ -30,9 +30,6 @@ public class TagIndexTest extends AbstractIndexTest {
     }
 
     private void addTagOne() throws Exception {
-        Connection conn = createConnection();
-        conn.setAutoCommit(true);
-
 
         Statement stmt = conn.createStatement();
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'rock', 1);");
