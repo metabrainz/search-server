@@ -26,7 +26,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseIndex ri = new ReleaseIndex(conn);
-        ri.init(writer, false, true);
+        ri.init(writer, false);
         ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
         ri.destroy();

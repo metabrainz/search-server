@@ -84,52 +84,38 @@ public class ReleaseIndex extends DatabaseIndex {
      *
      * @throws SQLException
      */
-    private void createReleasePuidTable(boolean isTest) throws SQLException
+    private void createReleasePuidTable() throws SQLException
     {
-        getDbConnection().createStatement().execute(
-                    "CREATE TEMP TABLE release_puid (release integer NOT NULL,puid character(36) NOT NULL)");
-        getDbConnection().commit();
-
-        System.out.println(" Started Populating ReleasePuid Temp Table");
+        System.out.println(" Started populating tmp_release_puid temporary table");
         StopWatch clock = new StopWatch();
         clock.start();
         getDbConnection().createStatement().execute(
-            "INSERT INTO release_puid(release,puid) " +
-            "SELECT m.release, p.puid " +
-            "FROM medium m " +
-            "INNER JOIN track t ON t.tracklist=m.tracklist " +
-            "INNER JOIN recording_puid rp ON rp.recording = t.recording " +
-            "INNER JOIN puid p ON rp.puid=p.id");
+            "CREATE TEMPORARY TABLE tmp_release_puid AS " +
+            "  SELECT m.release, p.puid " +
+            "  FROM medium m " +
+            "    INNER JOIN track t ON t.tracklist = m.tracklist " +
+            "    INNER JOIN recording_puid rp ON rp.recording = t.recording " +
+            "    INNER JOIN puid p ON rp.puid = p.id");
         clock.stop();
-        System.out.println(" Populated ReleasePuid Temp Table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println(" Populated tmp_release_puid temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
         clock.reset();
 
         clock.start();
         getDbConnection().createStatement().execute(
-             "CREATE INDEX releasepuid_idx_release ON release_puid (release) ");
+             "CREATE INDEX tmp_release_puid_idx_release ON tmp_release_puid (release) ");
         clock.stop();
-        System.out.println(" Created ReleasePuid Index in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println(" Created index on tmp_release_puid in " + Float.toString(clock.getTime()/1000) + " seconds");
         clock.reset();
 
-        if(!isTest)
-        {
-            getDbConnection().createStatement().execute("ANALYZE release_puid");
-        }
-
     }
 
-    @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
-        init(indexWriter, isUpdater, false);
-    }
-
-    public void init(IndexWriter indexWriter, boolean isUpdater, boolean isTest) throws SQLException {
 
         if(!isUpdater) {
-            createReleasePuidTable(isTest);
+            createReleasePuidTable();
             addPreparedStatement("PUIDS",
                 "SELECT release, puid " +
-                "FROM   release_puid " +
+                "FROM   tmp_release_puid " +
                 "WHERE  release BETWEEN ? AND ? ");
         }
         else {
