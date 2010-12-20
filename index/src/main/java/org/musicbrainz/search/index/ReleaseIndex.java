@@ -44,6 +44,12 @@ import java.util.*;
 
 public class ReleaseIndex extends DatabaseIndex {
 
+    private StopWatch labelClock = new StopWatch();
+    private StopWatch mediumClock = new StopWatch();
+    private StopWatch puidClock = new StopWatch();
+    private StopWatch artistClock = new StopWatch();
+    private StopWatch releaseClock = new StopWatch();
+
     private String              cacheType;
     private JCS                 jcsCache;
     private Map<Integer,String> mapCache;
@@ -51,6 +57,17 @@ public class ReleaseIndex extends DatabaseIndex {
     public ReleaseIndex(Connection dbConnection, String cacheType) {
         super(dbConnection);
         this.cacheType=cacheType;
+
+        labelClock.start();
+        mediumClock.start();
+        puidClock.start();
+        artistClock.start();
+        releaseClock.start();
+        labelClock.suspend();
+        mediumClock.suspend();
+        puidClock.suspend();
+        artistClock.suspend();
+        releaseClock.suspend();
     }
 
     public ReleaseIndex() {
@@ -139,7 +156,7 @@ public class ReleaseIndex extends DatabaseIndex {
 
 
         int          currReleaseId=-1;
-        StringBuffer currPuids=new StringBuffer();
+        StringBuilder currPuids=new StringBuilder();
         while (rs.next()) {
             int releaseId = rs.getInt("release");
             if(currReleaseId==-1)
@@ -155,7 +172,7 @@ public class ReleaseIndex extends DatabaseIndex {
             {
                 jcsCache.put(currReleaseId,currPuids.toString());
                 currReleaseId=releaseId;
-                currPuids=new StringBuffer(rs.getString("puid")+'\0');
+                currPuids=new StringBuilder(rs.getString("puid")+'\0');
             }
 
         }
@@ -197,7 +214,7 @@ public class ReleaseIndex extends DatabaseIndex {
 
 
         int          currReleaseId=-1;
-        StringBuffer currPuids=new StringBuffer();
+        StringBuilder currPuids=new StringBuilder();
         while (rs.next()) {
             int releaseId = rs.getInt("release");
             if(currReleaseId==-1)
@@ -213,7 +230,7 @@ public class ReleaseIndex extends DatabaseIndex {
             {
                 mapCache.put(currReleaseId,currPuids.toString());
                 currReleaseId=releaseId;
-                currPuids=new StringBuffer(rs.getString("puid")+'\0');
+                currPuids=new StringBuilder(rs.getString("puid")+'\0');
             }
 
         }
@@ -334,6 +351,12 @@ public class ReleaseIndex extends DatabaseIndex {
                 jcsCache.clear();
                 jcsCache =null;
             }
+            System.out.println(" Label Queries " + Float.toString(labelClock.getTime()/1000) + " seconds");
+            System.out.println(" Mediums Queries " + Float.toString(mediumClock.getTime()/1000) + " seconds");
+            System.out.println(" Artists Queries " + Float.toString(artistClock.getTime()/1000) + " seconds");
+            System.out.println(" Puids Queries " + Float.toString(puidClock.getTime()/1000) + " seconds");
+            System.out.println(" Releases Queries " + Float.toString(releaseClock.getTime()/1000) + " seconds");
+
         }
         catch(Exception ex)
         {
@@ -345,6 +368,7 @@ public class ReleaseIndex extends DatabaseIndex {
 
         //A particular release can have multiple catalog nos, labels when released as an imprint, typically used
         //by major labels
+        labelClock.resume();
         Map<Integer, List<List<String>>> labelInfo = new HashMap<Integer, List<List<String>>>();
         PreparedStatement st = getPreparedStatement("LABELINFOS");
         st.setInt(1, min);
@@ -365,11 +389,13 @@ public class ReleaseIndex extends DatabaseIndex {
             entry.add(rs.getString("catalog_number"));
             list.add(entry);
         }
+        labelClock.suspend();
 
 
         //Medium, NumTracks a release can be released on multiple mediums, and possibly involving different mediums,
         //i.e a release is on CD with
         //a special 7" single included. We also need total tracks and discs ids per medium
+        mediumClock.resume();
         Map<Integer, List<List<String>>> mediums = new HashMap<Integer, List<List<String>>>();
         st = getPreparedStatement("MEDIUMS");
         st.setInt(1, min);
@@ -390,11 +416,13 @@ public class ReleaseIndex extends DatabaseIndex {
             entry.add(String.valueOf(rs.getInt("discIdsOnMedium")));
             list.add(entry);
         }
+        mediumClock.suspend();
 
 
         //Puids
         Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
         if(cacheType.equals(CacheType.NONE) || cacheType.equals(CacheType.TEMPTABLE)) {
+            puidClock.resume();
             st = getPreparedStatement("PUIDS");
             st.setInt(1, min);
             st.setInt(2, max);
@@ -411,9 +439,12 @@ public class ReleaseIndex extends DatabaseIndex {
                 String puid = new String(rs.getString("puid"));
                 list.add(puid);
             }
+            puidClock.suspend();
+
         }
 
         //Artist Credits
+        artistClock.resume();
         st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -428,11 +459,14 @@ public class ReleaseIndex extends DatabaseIndex {
                       "comment",
                       "joinphrase",
                       "artistCreditName");
+        artistClock.suspend();
 
         st = getPreparedStatement("RELEASES");
         st.setInt(1, min);
         st.setInt(2, max);
+        releaseClock.resume();
         rs = st.executeQuery();
+        releaseClock.suspend();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, labelInfo, mediums, puidWrapper, artistCredits));
         }
@@ -496,21 +530,27 @@ public class ReleaseIndex extends DatabaseIndex {
 
         if(cacheType.equals(CacheType.JCSCACHE)) {
             //************* This get hangs....
+            puidClock.resume();
             String puidKeys = (String) jcsCache.get(id);
             if(puidKeys!=null)  {
                 for (String puid : puidKeys.split("\0")) {
                      doc.addField(ReleaseIndexField.PUID, puid);
                 }
             }
+            puidClock.suspend();
+
 
         }
         else if(cacheType.equals(CacheType.MAP)) {
-            String puidKeys = (String) mapCache.get(id);
+            puidClock.resume();
+            String puidKeys = mapCache.get(id);
             if(puidKeys!=null)  {
                 for (String puid : puidKeys.split("\0")) {
                      doc.addField(ReleaseIndexField.PUID, puid);
                 }
             }
+            puidClock.suspend();
+
 
         }
         else {
