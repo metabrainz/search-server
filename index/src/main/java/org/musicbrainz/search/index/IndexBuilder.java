@@ -103,7 +103,7 @@ public class IndexBuilder
         // MusicBrainz data indexing
         DatabaseIndex[] indexes = {
                 new ArtistIndex(mainDbConn),
-                new ReleaseIndex(mainDbConn),
+                new ReleaseIndex(mainDbConn,options.getCacheType()),
                 new ReleaseGroupIndex(mainDbConn),
                 new RecordingIndex(mainDbConn),
                 new LabelIndex(mainDbConn),

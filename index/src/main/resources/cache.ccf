@@ -1,0 +1,26 @@
+##############################################################
+##### Default Region Configuration
+jcs.default=DC
+jcs.default.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
+jcs.default.cacheattributes.MaxObjects=1000000
+jcs.default.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
+
+##############################################################
+##### CACHE REGIONS
+jcs.region.myRegion1=DC
+jcs.region.myRegion1.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
+jcs.region.myRegion1.cacheattributes.MaxObjects=1000000
+jcs.region.myRegion1.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
+
+##############################################################
+##### AUXILIARY CACHES
+# Indexed Disk Cache
+jcs.auxiliary.DC=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheFactory
+jcs.auxiliary.DC.attributes=org.apache.jcs.auxiliary.disk.indexed.IndexedDiskCacheAttributes
+jcs.auxiliary.DC.attributes.DiskPath=/Users/paul/diskcache
+jcs.auxiliary.DC.attributes.MaxPurgatorySize=10000
+jcs.auxiliary.DC.attributes.MaxKeySize=-1
+jcs.auxiliary.DC.attributes.OptimizeAtRemoveCount=300000
+jcs.auxiliary.DC.attributes.OptimizeOnShutdown=true
+jcs.auxiliary.DC.attributes.MaxRecycleBinSize=7500
+

@@ -29,6 +29,8 @@
 package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.jcs.JCS;
+import org.apache.jcs.access.exception.CacheException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -42,9 +44,13 @@ import java.util.*;
 
 public class ReleaseIndex extends DatabaseIndex {
 
+    private String              cacheType;
+    private JCS                 jcsCache;
+    private Map<Integer,String> mapCache;
 
-    public ReleaseIndex(Connection dbConnection) {
+    public ReleaseIndex(Connection dbConnection, String cacheType) {
         super(dbConnection);
+        this.cacheType=cacheType;
     }
 
     public ReleaseIndex() {
@@ -78,13 +84,13 @@ public class ReleaseIndex extends DatabaseIndex {
     }
 
 
-    /**
+     /**
      * Create table mapping a release to all that puids that tracks within the release contain, then create index
      * and vacuum analyze the table ready for use.
      *
      * @throws SQLException
      */
-    private void createReleasePuidTable() throws SQLException
+    private void createReleasePuidTableUsingDb() throws SQLException
     {
         System.out.println(" Started populating tmp_release_puid temporary table");
         StopWatch clock = new StopWatch();
@@ -109,14 +115,154 @@ public class ReleaseIndex extends DatabaseIndex {
 
     }
 
+    /**
+     * Create table mapping a release to all that puids that tracks within the release contain, then create index
+     * and vacuum analyze the table ready for use.
+     *
+     * @throws SQLException
+     */
+    private void createReleasePuidTableUsingCache() throws SQLException, CacheException
+    {
+        System.out.println(" Started Populating ReleasePuid Cache Table");
+        StopWatch clock = new StopWatch();
+        clock.start();
+        System.out.println("Memory 1 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        ResultSet rs = getDbConnection().createStatement().executeQuery(
+            "SELECT m.release as release, p.puid " +
+            "FROM medium m " +
+            "INNER JOIN track t ON t.tracklist=m.tracklist " +
+            "INNER JOIN recording_puid rp ON rp.recording = t.recording " +
+            "INNER JOIN puid p ON rp.puid=p.id " +
+            "ORDER BY m.release");
+
+        jcsCache = JCS.getInstance("myRegion1");
+
+
+        int          currReleaseId=-1;
+        StringBuffer currPuids=new StringBuffer();
+        while (rs.next()) {
+            int releaseId = rs.getInt("release");
+            if(currReleaseId==-1)
+            {
+                currReleaseId=releaseId;
+                currPuids.append(rs.getString("puid")+'\0');
+            }
+            else if(releaseId==currReleaseId)
+            {
+                currPuids.append(rs.getString("puid")+'\0');
+            }
+            else
+            {
+                jcsCache.put(currReleaseId,currPuids.toString());
+                currReleaseId=releaseId;
+                currPuids=new StringBuffer(rs.getString("puid")+'\0');
+            }
+
+        }
+        jcsCache.put(currReleaseId,currPuids.toString());
+
+
+        System.out.println("Memory 2 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        rs.close();
+        Runtime.getRuntime().gc();
+        System.out.println("Memory 3 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+
+        System.out.println("stats is"+ jcsCache.getStats());
+        clock.stop();
+        System.out.println(" Populated ReleasePuid Cache in " + Float.toString(clock.getTime()/1000) + " seconds");
+    }
+
+
+    /**
+     * Create table mapping a release to all that puids that tracks within the release contain, then create index
+     * and vacuum analyze the table ready for use.
+     *
+     * @throws SQLException
+     */
+    private void createReleasePuidTableUsingMap() throws SQLException
+    {
+        System.out.println(" Started Populating ReleasePuid Map");
+        StopWatch clock = new StopWatch();
+        clock.start();
+        System.out.println("Memory 1 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        ResultSet rs = getDbConnection().createStatement().executeQuery(
+            "SELECT m.release as release, p.puid " +
+            "FROM medium m " +
+            "INNER JOIN track t ON t.tracklist=m.tracklist " +
+            "INNER JOIN recording_puid rp ON rp.recording = t.recording " +
+            "INNER JOIN puid p ON rp.puid=p.id " +
+            "ORDER BY m.release");
+
+        mapCache = new HashMap<Integer,String> (500000);
+
+
+        int          currReleaseId=-1;
+        StringBuffer currPuids=new StringBuffer();
+        while (rs.next()) {
+            int releaseId = rs.getInt("release");
+            if(currReleaseId==-1)
+            {
+                currReleaseId=releaseId;
+                currPuids.append(rs.getString("puid")+'\0');
+            }
+            else if(releaseId==currReleaseId)
+            {
+                currPuids.append(rs.getString("puid")+'\0');
+            }
+            else
+            {
+                mapCache.put(currReleaseId,currPuids.toString());
+                currReleaseId=releaseId;
+                currPuids=new StringBuffer(rs.getString("puid")+'\0');
+            }
+
+        }
+        mapCache.put(currReleaseId,currPuids.toString());
+
+
+        System.out.println("Memory 2 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        rs.close();
+        Runtime.getRuntime().gc();
+        System.out.println("Memory 3 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+        clock.stop();
+        System.out.println(" Populated ReleasePuid Map in " + Float.toString(clock.getTime()/1000) + " seconds");
+    }
+
+
+    @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         if(!isUpdater) {
-            createReleasePuidTable();
-            addPreparedStatement("PUIDS",
+            if(cacheType.equals(CacheType.JCSCACHE)) {
+                try
+                {
+                    createReleasePuidTableUsingCache();
+                }
+                catch(CacheException ce)
+                {
+                    ce.printStackTrace();
+                    throw new RuntimeException(ce.getMessage());
+                }
+            }
+            else if(cacheType.equals(CacheType.MAP))
+            {
+                createReleasePuidTableUsingMap();    
+            }
+            else if(cacheType.equals(CacheType.TEMPTABLE))  {
+               createReleasePuidTableUsingDb();
+               addPreparedStatement("PUIDS",
                 "SELECT release, puid " +
                 "FROM   tmp_release_puid " +
                 "WHERE  release BETWEEN ? AND ? ");
+            }
+            else if(cacheType.equals(CacheType.NONE))  {
+               addPreparedStatement("PUIDS",
+                "SELECT m.release, p.puid " +
+                "FROM medium m " +
+                " INNER JOIN track t ON (t.tracklist=m.tracklist AND m.release BETWEEN ? AND ?) " +
+                " INNER JOIN recording_puid rp ON rp.recording = t.recording " +
+                " INNER JOIN puid p ON rp.puid=p.id");
+            }
         }
         else {
             addPreparedStatement("PUIDS",
@@ -178,6 +324,23 @@ public class ReleaseIndex extends DatabaseIndex {
                 " WHERE rl.id BETWEEN ? AND ?");
     }
 
+
+    public void destroy() throws SQLException {
+        try
+        {
+            super.destroy();
+            if(jcsCache !=null)
+            {
+                jcsCache.clear();
+                jcsCache =null;
+            }
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         //A particular release can have multiple catalog nos, labels when released as an imprint, typically used
@@ -231,21 +394,23 @@ public class ReleaseIndex extends DatabaseIndex {
 
         //Puids
         Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
-        st = getPreparedStatement("PUIDS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        while (rs.next()) {
-            int releaseId = rs.getInt("release");
-            List<String> list;
-            if (!puidWrapper.containsKey(releaseId)) {
-                list = new LinkedList<String>();
-                puidWrapper.put(releaseId, list);
-            } else {
-                list = puidWrapper.get(releaseId);
+        if(cacheType.equals(CacheType.NONE) || cacheType.equals(CacheType.TEMPTABLE)) {
+            st = getPreparedStatement("PUIDS");
+            st.setInt(1, min);
+            st.setInt(2, max);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                int releaseId = rs.getInt("release");
+                List<String> list;
+                if (!puidWrapper.containsKey(releaseId)) {
+                    list = new LinkedList<String>();
+                    puidWrapper.put(releaseId, list);
+                } else {
+                    list = puidWrapper.get(releaseId);
+                }
+                String puid = new String(rs.getString("puid"));
+                list.add(puid);
             }
-            String puid = new String(rs.getString("puid"));
-            list.add(puid);
         }
 
         //Artist Credits
@@ -329,9 +494,30 @@ public class ReleaseIndex extends DatabaseIndex {
 
         }
 
-        if (puids.containsKey(id)) {
-            for (String puid : puids.get(id)) {
-                 doc.addField(ReleaseIndexField.PUID, puid);
+        if(cacheType.equals(CacheType.JCSCACHE)) {
+            //************* This get hangs....
+            String puidKeys = (String) jcsCache.get(id);
+            if(puidKeys!=null)  {
+                for (String puid : puidKeys.split("\0")) {
+                     doc.addField(ReleaseIndexField.PUID, puid);
+                }
+            }
+
+        }
+        else if(cacheType.equals(CacheType.MAP)) {
+            String puidKeys = (String) mapCache.get(id);
+            if(puidKeys!=null)  {
+                for (String puid : puidKeys.split("\0")) {
+                     doc.addField(ReleaseIndexField.PUID, puid);
+                }
+            }
+
+        }
+        else {
+            if (puids.containsKey(id)) {
+                for (String puid : puids.get(id)) {
+                     doc.addField(ReleaseIndexField.PUID, puid);
+                }
             }
         }
 

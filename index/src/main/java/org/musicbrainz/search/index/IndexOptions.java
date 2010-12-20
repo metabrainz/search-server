@@ -113,8 +113,11 @@ public class IndexOptions {
     @Option(name="--chunksize", aliases = { "-c" }, usage="Chunk Size, The number of rows to return in each SQL query. (default: -10000)")
     private int databaseChunkSize = IDS_PER_CHUNK;
     public int getDatabaseChunkSize() { return databaseChunkSize; }
-    
-    
+
+    @Option(name="--cacheType", usage="Use Caches in building release indexes (none,temptable,map,jcscache")
+    private String cacheType = CacheType.TEMPTABLE;
+    public String getCacheType() { return cacheType; }
+
     /**
      * Prepare a database connection, and set its default Postgres schema
      * 
