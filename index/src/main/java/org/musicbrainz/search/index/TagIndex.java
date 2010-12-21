@@ -85,6 +85,7 @@ public class TagIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs));
         }
+        rs.close();
 
     }
 

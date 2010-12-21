@@ -133,6 +133,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release_group");
+        rs.close();
 
         //Releases
         Map<Integer, List<ReleaseWrapper>> releases = new HashMap<Integer, List<ReleaseWrapper>>();
@@ -154,6 +155,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
             rw.setReleaseName(rs.getString("name"));
             list.add(rw);
         }
+        rs.close();
 
         //Artist Credits
         st = getPreparedStatement("ARTISTCREDITS");
@@ -170,6 +172,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                   "comment",
                   "joinphrase",
                   "artistCreditName");
+        rs.close();
 
         //ReleaseGroups
         st = getPreparedStatement("RELEASEGROUPS");
@@ -179,6 +182,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, tags, releases, artistCredits));
         }
+        rs.close();
 
     }
 

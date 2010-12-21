@@ -118,6 +118,7 @@ public class ArtistIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"artist");
+        rs.close();
 
         //Aliases (and Artist Credits)
         Map<Integer, Set<String>> aliases = new HashMap<Integer, Set<String>>();
@@ -138,6 +139,7 @@ public class ArtistIndex extends DatabaseIndex {
             }
             list.add(rs.getString("alias"));
         }
+        rs.close();
 
         st = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
@@ -150,6 +152,7 @@ public class ArtistIndex extends DatabaseIndex {
             }
             indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
+        rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,

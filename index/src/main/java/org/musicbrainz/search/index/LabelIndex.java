@@ -123,6 +123,7 @@ public class LabelIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"label");
+        rs.close();
 
         // Get labels aliases
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
@@ -142,7 +143,7 @@ public class LabelIndex extends DatabaseIndex {
             }
             list.add(rs.getString("alias"));
         }
-
+        rs.close();
 
         // Get labels
         st = getPreparedStatement("LABELS");
@@ -157,6 +158,7 @@ public class LabelIndex extends DatabaseIndex {
             }
             indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
+        rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,

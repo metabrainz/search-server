@@ -87,6 +87,7 @@ public class CDStubIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs));
         }
+        rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs) throws SQLException {

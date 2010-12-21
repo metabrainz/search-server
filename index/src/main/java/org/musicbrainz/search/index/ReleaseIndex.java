@@ -389,6 +389,7 @@ public class ReleaseIndex extends DatabaseIndex {
             entry.add(rs.getString("catalog_number"));
             list.add(entry);
         }
+        rs.close();
         labelClock.suspend();
 
 
@@ -416,6 +417,7 @@ public class ReleaseIndex extends DatabaseIndex {
             entry.add(String.valueOf(rs.getInt("discIdsOnMedium")));
             list.add(entry);
         }
+        rs.close();
         mediumClock.suspend();
 
 
@@ -439,6 +441,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 String puid = new String(rs.getString("puid"));
                 list.add(puid);
             }
+            rs.close();
             puidClock.suspend();
 
         }
@@ -459,6 +462,7 @@ public class ReleaseIndex extends DatabaseIndex {
                       "comment",
                       "joinphrase",
                       "artistCreditName");
+        rs.close();
         artistClock.suspend();
 
         st = getPreparedStatement("RELEASES");
@@ -470,6 +474,7 @@ public class ReleaseIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, labelInfo, mediums, puidWrapper, artistCredits));
         }
+        rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,

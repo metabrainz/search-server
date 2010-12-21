@@ -173,6 +173,7 @@ public class RecordingIndex extends DatabaseIndex {
             String puid = new String(rs.getString("puid"));
             list.add(puid);
         }
+        rs.close();
         return puidWrapper;
     }
 
@@ -194,6 +195,7 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs, "recording");
+        rs.close();
         return tags;
     }
 
@@ -226,6 +228,7 @@ public class RecordingIndex extends DatabaseIndex {
             String isrc = new String(rs.getString("isrc"));
             list.add(isrc);
         }
+        rs.close();
         return isrcWrapper;
     }
 
@@ -256,6 +259,7 @@ public class RecordingIndex extends DatabaseIndex {
                         "comment",
                         "joinphrase",
                         "artistCreditName");
+        rs.close();
         return artistCredits;
     }
 
@@ -296,6 +300,7 @@ public class RecordingIndex extends DatabaseIndex {
             tw.setMediumPosition(rs.getInt("medium_position"));
             list.add(tw);
         }
+        rs.close();
         return tracks;
     }
 
@@ -379,6 +384,7 @@ public class RecordingIndex extends DatabaseIndex {
             release.setReleaseGroup(rg);
             release.setMediumList(ml);
         }
+        rs.close();
         return releases;
     }
 
@@ -400,6 +406,7 @@ public class RecordingIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, puids, tags, isrcs, artistCredits, tracks, releases));
         }
+        rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,

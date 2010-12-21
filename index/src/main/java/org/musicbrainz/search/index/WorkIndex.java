@@ -122,6 +122,7 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"work");
+        rs.close();
 
         //Artist Credits
         st = getPreparedStatement("ARTISTCREDITS");
@@ -138,6 +139,7 @@ public class WorkIndex extends DatabaseIndex {
                       "comment",
                       "joinphrase",
                       "artistCreditName");
+        rs.close();
 
         // Get works aliases
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
@@ -157,6 +159,7 @@ public class WorkIndex extends DatabaseIndex {
             }
             list.add(rs.getString("alias"));
         }
+        rs.close();
 
         //Works
         st = getPreparedStatement("WORKS");
@@ -166,6 +169,7 @@ public class WorkIndex extends DatabaseIndex {
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, tags, artistCredits, aliases));
         }
+        rs.close();
 
     }
 
