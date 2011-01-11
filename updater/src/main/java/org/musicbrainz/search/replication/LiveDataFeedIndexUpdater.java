@@ -36,18 +36,7 @@ import org.jdom.input.SAXBuilder;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.AnnotationIndex;
-import org.musicbrainz.search.index.ArtistIndex;
-import org.musicbrainz.search.index.DatabaseIndex;
-import org.musicbrainz.search.index.IndexOptions;
-import org.musicbrainz.search.index.LabelIndex;
-import org.musicbrainz.search.index.MetaIndexField;
-import org.musicbrainz.search.index.RecordingIndex;
-import org.musicbrainz.search.index.ReleaseGroupIndex;
-import org.musicbrainz.search.index.ReleaseIndex;
-import org.musicbrainz.search.index.TagIndex;
-import org.musicbrainz.search.index.ThreadedIndexWriter;
-import org.musicbrainz.search.index.WorkIndex;
+import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.replication.packet.ReplicationChange;
 import org.musicbrainz.search.replication.packet.ReplicationPacket;
 
@@ -90,7 +79,7 @@ public class LiveDataFeedIndexUpdater {
         // MusicBrainz data indexing
         DatabaseIndex[] indices = {
                 new ArtistIndex(mainDbConn),
-                new ReleaseIndex(mainDbConn),
+                new ReleaseIndex(mainDbConn, CacheType.NONE),
                 new ReleaseGroupIndex(mainDbConn),
                 new RecordingIndex(mainDbConn),
                 new LabelIndex(mainDbConn),
