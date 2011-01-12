@@ -51,7 +51,6 @@ public class ReleaseIndex extends DatabaseIndex {
     private StopWatch releaseClock = new StopWatch();
 
     private String              cacheType;
-    private JCS                 jcsCache;
     private Map<Integer,String> mapCache;
 
     public ReleaseIndex(Connection dbConnection, String cacheType) {
@@ -132,62 +131,7 @@ public class ReleaseIndex extends DatabaseIndex {
 
     }
 
-    /**
-     * Create table mapping a release to all that puids that tracks within the release contain, then create index
-     * and vacuum analyze the table ready for use.
-     *
-     * @throws SQLException
-     */
-    private void createReleasePuidTableUsingCache() throws SQLException, CacheException
-    {
-        System.out.println(" Started Populating ReleasePuid Cache Table");
-        StopWatch clock = new StopWatch();
-        clock.start();
-        System.out.println("Memory 1 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-        ResultSet rs = getDbConnection().createStatement().executeQuery(
-            "SELECT m.release as release, p.puid " +
-            "FROM medium m " +
-            "INNER JOIN track t ON t.tracklist=m.tracklist " +
-            "INNER JOIN recording_puid rp ON rp.recording = t.recording " +
-            "INNER JOIN puid p ON rp.puid=p.id " +
-            "ORDER BY m.release");
 
-        jcsCache = JCS.getInstance("myRegion1");
-
-
-        int          currReleaseId=-1;
-        StringBuilder currPuids=new StringBuilder();
-        while (rs.next()) {
-            int releaseId = rs.getInt("release");
-            if(currReleaseId==-1)
-            {
-                currReleaseId=releaseId;
-                currPuids.append(rs.getString("puid")+'\0');
-            }
-            else if(releaseId==currReleaseId)
-            {
-                currPuids.append(rs.getString("puid")+'\0');
-            }
-            else
-            {
-                jcsCache.put(currReleaseId,currPuids.toString());
-                currReleaseId=releaseId;
-                currPuids=new StringBuilder(rs.getString("puid")+'\0');
-            }
-
-        }
-        jcsCache.put(currReleaseId,currPuids.toString());
-
-
-        System.out.println("Memory 2 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-        rs.close();
-        Runtime.getRuntime().gc();
-        System.out.println("Memory 3 "+ (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-
-        System.out.println("stats is"+ jcsCache.getStats());
-        clock.stop();
-        System.out.println(" Populated ReleasePuid Cache in " + Float.toString(clock.getTime()/1000) + " seconds");
-    }
 
 
     /**
@@ -250,18 +194,7 @@ public class ReleaseIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         if(!isUpdater) {
-            if(cacheType.equals(CacheType.JCSCACHE)) {
-                try
-                {
-                    createReleasePuidTableUsingCache();
-                }
-                catch(CacheException ce)
-                {
-                    ce.printStackTrace();
-                    throw new RuntimeException(ce.getMessage());
-                }
-            }
-            else if(cacheType.equals(CacheType.MAP))
+            if(cacheType.equals(CacheType.MAP))
             {
                 createReleasePuidTableUsingMap();    
             }
@@ -346,11 +279,6 @@ public class ReleaseIndex extends DatabaseIndex {
         try
         {
             super.destroy();
-            if(jcsCache !=null)
-            {
-                jcsCache.clear();
-                jcsCache =null;
-            }
             System.out.println(" Label Queries " + Float.toString(labelClock.getTime()/1000) + " seconds");
             System.out.println(" Mediums Queries " + Float.toString(mediumClock.getTime()/1000) + " seconds");
             System.out.println(" Artists Queries " + Float.toString(artistClock.getTime()/1000) + " seconds");
@@ -533,20 +461,7 @@ public class ReleaseIndex extends DatabaseIndex {
 
         }
 
-        if(cacheType.equals(CacheType.JCSCACHE)) {
-            //************* This get hangs....
-            puidClock.resume();
-            String puidKeys = (String) jcsCache.get(id);
-            if(puidKeys!=null)  {
-                for (String puid : puidKeys.split("\0")) {
-                     doc.addField(ReleaseIndexField.PUID, puid);
-                }
-            }
-            puidClock.suspend();
-
-
-        }
-        else if(cacheType.equals(CacheType.MAP)) {
+        if(cacheType.equals(CacheType.MAP)) {
             puidClock.resume();
             String puidKeys = mapCache.get(id);
             if(puidKeys!=null)  {
