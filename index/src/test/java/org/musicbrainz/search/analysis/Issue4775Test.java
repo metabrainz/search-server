@@ -23,7 +23,8 @@ public class Issue4775Test extends TestCase {
         doc.add(new Field("name", "O'reilly", Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("name", "There's", Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("name", "its", Field.Store.YES, Field.Index.ANALYZED));
-                
+        doc.add(new Field("name", "John’s", Field.Store.YES, Field.Index.ANALYZED));
+
         writer.addDocument(doc);
         writer.close();
 
@@ -50,6 +51,11 @@ public class Issue4775Test extends TestCase {
 
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("it's'");
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("johns");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }

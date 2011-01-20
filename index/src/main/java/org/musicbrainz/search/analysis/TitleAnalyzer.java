@@ -55,6 +55,7 @@ public class TitleAnalyzer extends Analyzer {
     private void setCharConvertMap() {
         charConvertMap = new NormalizeCharMap();
         AmpersandToAndMappingHelper.addToMap(charConvertMap);
+        CharEquivToCharHelper.addToMap(charConvertMap);
         HebrewCharMappingHelper.addToMap(charConvertMap);
     }
 

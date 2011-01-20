@@ -46,6 +46,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
     protected void setCharConvertMap() {
         charConvertMap = new NormalizeCharMap();
         AmpersandToAndMappingHelper.addToMap(charConvertMap);
+        CharEquivToCharHelper.addToMap(charConvertMap);
         HebrewCharMappingHelper.addToMap(charConvertMap);
 
     }
