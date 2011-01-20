@@ -239,21 +239,17 @@ public class ReleaseIndex extends DatabaseIndex {
 
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT r.id as releaseId, " +
-                "  acn.position as pos, " +
-                "  acn.join_phrase as joinphrase, " +
-                "  a.gid as artistId,  " +
-                "  a.comment as comment, " +
-                "  an.name as artistName, " +
-                "  an2.name as artistCreditName, " +
-                "  an3.name as artistSortName " +
+                "  a.pos, " +
+                "  a.joinphrase, " +
+                "  a.artistId,  " +
+                "  a.comment, " +
+                "  a.artistName, " +
+                "  a.artistCreditName, " +
+                "  a.artistSortName " +
                 " FROM release AS r " +
-                "  INNER JOIN artist_credit_name acn ON r.artist_credit=acn.artist_credit " +
-                "  INNER JOIN artist a ON a.id=acn.artist " +
-                "  INNER JOIN artist_name an ON a.name=an.id " +
-                "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
+                "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
                 " WHERE r.id BETWEEN ? AND ?  " +
-                " ORDER BY r.id, acn.position");
+                " ORDER BY r.id, a.pos");
 
         addPreparedStatement("RELEASES",
                 "SELECT rl.id, rl.gid, rn.name as name, " +

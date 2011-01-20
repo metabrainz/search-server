@@ -97,22 +97,18 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 " WHERE release_group BETWEEN ? AND ?");
 
         addPreparedStatement("ARTISTCREDITS",
-                "SELECT rg.id as releaseGroupId, " +
-                "  acn.position as pos, " +
-                "  acn.join_phrase as joinphrase, " +
-                "  a.gid as artistId,  " +
-                "  a.comment as comment, " +
-                "  an.name as artistName, " +
-                "  an2.name as artistCreditName, " +
-                "  an3.name as artistSortName " +
-                " FROM release_group AS rg " +
-                "  INNER JOIN artist_credit_name acn ON rg.artist_credit=acn.artist_credit " +
-                "  INNER JOIN artist a ON a.id=acn.artist " +
-                "  INNER JOIN artist_name an ON a.name=an.id " +
-                "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
-                " WHERE rg.id BETWEEN ? AND ?  " +
-                " ORDER BY rg.id, acn.position ");          //Order by pos so come in expected order
+                "SELECT r.id as releaseGroupId, " +
+                "  a.pos, " +
+                "  a.joinphrase, " +
+                "  a.artistId,  " +
+                "  a.comment, " +
+                "  a.artistName, " +
+                "  a.artistCreditName, " +
+                "  a.artistSortName " +
+                " FROM release_group AS r " +
+                "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
+                " WHERE r.id BETWEEN ? AND ?  " +
+                " ORDER BY r.id, a.pos");
 
         addPreparedStatement("RELEASEGROUPS",
                 "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +

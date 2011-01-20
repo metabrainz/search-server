@@ -19,6 +19,7 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -33,11 +34,31 @@ import java.util.*;
 
 public class RecordingIndex extends DatabaseIndex {
 
+    private StopWatch trackClock = new StopWatch();
+    private StopWatch isrcClock = new StopWatch();
+    private StopWatch puidClock = new StopWatch();
+    private StopWatch artistClock = new StopWatch();
+    private StopWatch releaseClock = new StopWatch();
+    private StopWatch recordingClock = new StopWatch();
+
 
     private final static int QUANTIZED_DURATION = 2000;
 
     public RecordingIndex(Connection dbConnection) {
         super(dbConnection);
+
+        trackClock.start();
+        isrcClock.start();
+        puidClock.start();
+        artistClock.start();
+        releaseClock.start();
+        recordingClock.start();
+        trackClock.suspend();
+        isrcClock.suspend();
+        puidClock.suspend();
+        artistClock.suspend();
+        releaseClock.suspend();
+        recordingClock.suspend();
     }
 
     public RecordingIndex() {
@@ -79,12 +100,12 @@ public class RecordingIndex extends DatabaseIndex {
                  "SELECT recording as recordingId, puid.puid " +
                  " FROM recording_puid " +
                  " INNER JOIN puid ON recording_puid.puid = puid.id " +
-                 " WHERE recording between ? AND ?");
+                 " AND   recording between ? AND ?");
 
         addPreparedStatement("TAGS",
                  "SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count " +
                  " FROM recording_tag " +
-                 "  INNER JOIN tag ON tag=id " +
+                 " INNER JOIN tag ON tag=id " +
                  " WHERE recording between ? AND ?");
 
         addPreparedStatement("ISRCS",
@@ -94,31 +115,26 @@ public class RecordingIndex extends DatabaseIndex {
                 " ORDER BY recording, id");
 
         addPreparedStatement("ARTISTCREDITS",
-                "SELECT re.id as recordingId, " +
-                "  acn.position as pos, " +
-                "  acn.join_phrase as joinphrase, " +
-                "  a.gid as artistId,  " +
-                "  a.comment as comment, " +
-                "  an.name as artistName, " +
-                "  an2.name as artistCreditName, " +
-                "  an3.name as artistSortName " +
-                " FROM recording AS re " +
-                "  INNER JOIN artist_credit_name acn ON re.artist_credit=acn.artist_credit " +
-                "  INNER JOIN artist a ON a.id=acn.artist " +
-                "  INNER JOIN artist_name an ON a.name=an.id " +
-                "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
-                " WHERE re.id BETWEEN ? AND ?  " +
-                " ORDER BY re.id, acn.position ");
+                "SELECT r.id as recordingId, " +
+                "  a.pos, " +
+                "  a.joinphrase, " +
+                "  a.artistId,  " +
+                "  a.comment, " +
+                "  a.artistName, " +
+                "  a.artistCreditName, " +
+                "  a.artistSortName " +
+                " FROM recording AS r " +
+                "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
+                " WHERE r.id BETWEEN ? AND ?  " +
+                " ORDER BY r.id, a.pos");
 
         addPreparedStatement("TRACKS",
                 "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
                 "  m.release as release_id, m.position as medium_position " +
                 " FROM track t " +
-                "  INNER JOIN track_name tn ON t.name=tn.id " +
+                "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
                 "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                "  INNER JOIN medium m ON m.tracklist=tl.id " +
-                " WHERE t.recording BETWEEN ? AND ?");
+                "  INNER JOIN medium m ON m.tracklist=tl.id ");
 
         releases =
                 "SELECT " +
@@ -140,7 +156,19 @@ public class RecordingIndex extends DatabaseIndex {
                 "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname " +
                 " FROM recording re " +
                 "  INNER JOIN track_name tn ON re.name=tn.id " +
-                " WHERE re.id BETWEEN ? AND ?");
+                "  AND re.id BETWEEN ? AND ?");
+    }
+
+    public void destroy() throws SQLException {
+
+        super.destroy();
+        System.out.println(" Isrcs Queries " + Float.toString(isrcClock.getTime()/1000) + " seconds");
+        System.out.println(" Track Queries " + Float.toString(trackClock.getTime()/1000) + " seconds");
+        System.out.println(" Artists Queries " + Float.toString(artistClock.getTime()/1000) + " seconds");
+        System.out.println(" Puids Queries " + Float.toString(puidClock.getTime()/1000) + " seconds");
+        System.out.println(" Releases Queries " + Float.toString(releaseClock.getTime()/1000) + " seconds");
+        System.out.println(" Recording Queries " + Float.toString(recordingClock.getTime()/1000) + " seconds");
+
     }
 
     /**
@@ -156,6 +184,7 @@ public class RecordingIndex extends DatabaseIndex {
     private Map<Integer, List<String>> loadPUIDs(int min, int max) throws SQLException, IOException {
 
         //PUID
+        puidClock.resume();
         Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
         PreparedStatement st = getPreparedStatement("PUIDS");
         st.setInt(1, min);
@@ -174,6 +203,7 @@ public class RecordingIndex extends DatabaseIndex {
             list.add(puid);
         }
         rs.close();
+        puidClock.suspend();
         return puidWrapper;
     }
 
@@ -211,6 +241,7 @@ public class RecordingIndex extends DatabaseIndex {
     private Map<Integer, List<String>> loadISRCs(int min, int max) throws SQLException, IOException {
 
         //ISRC
+        isrcClock.resume();
         Map<Integer, List<String>> isrcWrapper = new HashMap<Integer, List<String>>();
         PreparedStatement st = getPreparedStatement("ISRCS");
         st.setInt(1, min);
@@ -229,6 +260,7 @@ public class RecordingIndex extends DatabaseIndex {
             list.add(isrc);
         }
         rs.close();
+        isrcClock.suspend();
         return isrcWrapper;
     }
 
@@ -245,6 +277,7 @@ public class RecordingIndex extends DatabaseIndex {
     private Map<Integer, ArtistCredit> loadArtists(int min, int max) throws SQLException, IOException {
 
         //Artists
+        artistClock.resume();
         PreparedStatement st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -260,6 +293,7 @@ public class RecordingIndex extends DatabaseIndex {
                         "joinphrase",
                         "artistCreditName");
         rs.close();
+        artistClock.suspend();
         return artistCredits;
     }
 
@@ -278,6 +312,7 @@ public class RecordingIndex extends DatabaseIndex {
     private Map<Integer, List<TrackWrapper>> loadTracks(int min, int max) throws SQLException, IOException {
 
         //Tracks and Release Info
+        trackClock.resume();
         Map<Integer, List<TrackWrapper>> tracks = new HashMap<Integer, List<TrackWrapper>>();
         PreparedStatement st = getPreparedStatement("TRACKS");
         st.setInt(1, min);
@@ -301,6 +336,7 @@ public class RecordingIndex extends DatabaseIndex {
             list.add(tw);
         }
         rs.close();
+        trackClock.suspend();
         return tracks;
     }
 
@@ -339,8 +375,12 @@ public class RecordingIndex extends DatabaseIndex {
     private Map<Integer, Release>  loadReleases
             (Map<Integer, List<TrackWrapper>> tracks) throws SQLException, IOException {
 
+
         Map<Integer, Release> releases = new HashMap<Integer, Release>();
         ObjectFactory of = new ObjectFactory();
+
+        releaseClock.resume();
+
 
         // Add all the releaseKeys to a set to prevent duplicates
         Set<Integer> releaseKeys = new HashSet<Integer>();
@@ -360,9 +400,9 @@ public class RecordingIndex extends DatabaseIndex {
             stmt.setInt(count, key);
             count++;
         }
-        ResultSet rs = stmt.executeQuery();
-        
+
         Release release;
+        ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
             int releaseKey = rs.getInt("releaseKey");
             if (!releases.containsKey(releaseKey)) {
@@ -385,6 +425,7 @@ public class RecordingIndex extends DatabaseIndex {
             release.setMediumList(ml);
         }
         rs.close();
+        releaseClock.suspend();
         return releases;
     }
 
@@ -402,11 +443,13 @@ public class RecordingIndex extends DatabaseIndex {
         PreparedStatement st = getPreparedStatement("RECORDINGS");
         st.setInt(1, min);
         st.setInt(2, max);
+        recordingClock.resume();
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, puids, tags, isrcs, artistCredits, tracks, releases));
         }
         rs.close();
+        recordingClock.suspend();
     }
 
     public Document documentFromResultSet(ResultSet rs,

@@ -79,24 +79,19 @@ public class WorkIndex extends DatabaseIndex {
                        "  INNER JOIN tag ON tag=id " +
                        " WHERE work between ? AND ?");
 
-
         addPreparedStatement("ARTISTCREDITS",
-                        "SELECT w.id as wid, " +
-                        "  acn.position as pos, " +
-                        "  acn.join_phrase as joinphrase, " +
-                        "  a.gid as artistId,  " +
-                        "  a.comment as comment, " +
-                        "  an.name as artistName, " +
-                        "  an2.name as artistCreditName, " +
-                        "  an3.name as artistSortName " +
-                        " FROM work AS w " +
-                        "  INNER JOIN artist_credit_name acn ON w.artist_credit=acn.artist_credit " +
-                        "  INNER JOIN artist a ON a.id=acn.artist " +
-                        "  INNER JOIN artist_name an ON a.name=an.id " +
-                        "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                        "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
-                        " WHERE w.id BETWEEN ? AND ?  " +
-                        " ORDER BY w.id, acn.position");          //Order by pos so come in expected order
+                "SELECT w.id as wid, " +
+                "  a.pos, " +
+                "  a.joinphrase, " +
+                "  a.artistId,  " +
+                "  a.comment, " +
+                "  a.artistName, " +
+                "  a.artistCreditName, " +
+                "  a.artistSortName " +
+                " FROM work AS w " +
+                "  INNER JOIN tmp_artistcredit a ON w.artist_credit=a.artist_credit " +
+                " WHERE w.id BETWEEN ? AND ?  " +
+                " ORDER BY w.id, a.pos");
 
         addPreparedStatement("ALIASES",
                 "SELECT work_alias.work as work, n.name as alias " +

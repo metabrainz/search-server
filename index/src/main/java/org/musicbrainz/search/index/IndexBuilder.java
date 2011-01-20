@@ -113,6 +113,10 @@ public class IndexBuilder
                 new CDStubIndex(rawDbConn), //Note different db
         };
 
+        //Create temporary tables used by multiple indexes
+        CommonTables commonTables = new CommonTables(mainDbConn);
+        commonTables.createTemporaryTables();
+
         for (DatabaseIndex index : indexes) {
 
             // Check if this index should be built
