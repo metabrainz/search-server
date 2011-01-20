@@ -17,6 +17,8 @@ public class WorkIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
+        CommonTables ct = new CommonTables(conn);
+        ct.createTemporaryTables();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         WorkIndex wi = new WorkIndex(conn);
