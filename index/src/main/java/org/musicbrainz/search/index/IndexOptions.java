@@ -106,15 +106,15 @@ public class IndexOptions {
     private boolean help = false;
     public boolean isHelp() { return help; }
 
-    @Option(name="--testindexsize", aliases = { "-b" }, usage="The number of rows to index when using the test option. (default: -10000)")
+    @Option(name="--testindexsize", aliases = { "-b" }, usage="The number of rows to index when using the test option. (default: "+MAX_TEST_ID+")")
     private int testIndexSize = MAX_TEST_ID;
     public int getTestIndexSize() { return testIndexSize; }
 
-    @Option(name="--chunksize", aliases = { "-c" }, usage="Chunk Size, The number of rows to return in each SQL query. (default: -10000)")
+    @Option(name="--chunksize", aliases = { "-c" }, usage="Chunk Size, The number of rows to return in each SQL query. (default: -"+IDS_PER_CHUNK+")")
     private int databaseChunkSize = IDS_PER_CHUNK;
     public int getDatabaseChunkSize() { return databaseChunkSize; }
 
-    @Option(name="--cacheType", usage="Use Caches in building release indexes (none,temptable,map,jcscache")
+    @Option(name="--cacheType", usage="Use Caches in building release indexes (none,temptable,map)")
     private String cacheType = CacheType.TEMPTABLE;
     public String getCacheType() { return cacheType; }
 
