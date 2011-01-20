@@ -29,8 +29,6 @@
 package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.jcs.JCS;
-import org.apache.jcs.access.exception.CacheException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
