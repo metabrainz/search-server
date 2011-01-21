@@ -31,6 +31,8 @@ import java.sql.*;
 
 public class CDStubIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "cdstub";
+
     public CDStubIndex() {
     }
 
@@ -39,7 +41,7 @@ public class CDStubIndex extends DatabaseIndex {
     }
 
     public String getName() {
-        return "cdstub";
+        return CDStubIndex.INDEX_NAME;
     }
 
     public Analyzer getAnalyzer()

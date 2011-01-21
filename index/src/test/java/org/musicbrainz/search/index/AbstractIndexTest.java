@@ -127,7 +127,10 @@ public abstract class AbstractIndexTest extends TestCase {
             }
             catch (BatchUpdateException bue) {
                 //Ignore errors, because will just be that tables does not exist
-                System.err.println(bue.getMessage());
+                if(bue.getMessage()!=null)
+                {
+                    System.err.println(bue.getMessage());
+                }
             }
 
             //Create tables and data for Artist Index

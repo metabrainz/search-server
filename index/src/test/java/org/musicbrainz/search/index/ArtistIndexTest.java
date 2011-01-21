@@ -18,11 +18,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        CommonTables ct = new CommonTables(conn);
-        ct.createTemporaryTables();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ArtistIndex ai = new ArtistIndex(conn);
+        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ai.getName());
+        ct.createTemporaryTables();
         ai.init(writer, false);
         ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);

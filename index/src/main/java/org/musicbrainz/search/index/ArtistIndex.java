@@ -33,6 +33,8 @@ import java.util.*;
 
 public class ArtistIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "artist";
+
     //Special purpose Artist
     private static final String DELETED_ARTIST_MBID = "c06aa285-520e-40c0-b776-83d2c9e8a6d1";
 
@@ -44,7 +46,7 @@ public class ArtistIndex extends DatabaseIndex {
     }
 
     public String getName() {
-        return "artist";
+        return ArtistIndex.INDEX_NAME;
     }
 
     public Analyzer getAnalyzer() {

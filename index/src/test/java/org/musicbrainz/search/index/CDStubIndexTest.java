@@ -17,11 +17,12 @@ public class CDStubIndexTest extends AbstractIndexTest{
     }
 
      private void createIndex(RAMDirectory ramDir) throws Exception {
-        CommonTables ct = new CommonTables(conn);
-        ct.createTemporaryTables();
+
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(CDStubIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         CDStubIndex ci = new CDStubIndex(conn);
+        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ci.getName());
+        ct.createTemporaryTables();
         ci.init(writer, false);
         ci.addMetaInformation(writer);
         ci.indexData(writer, 0, Integer.MAX_VALUE);

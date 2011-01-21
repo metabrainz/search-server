@@ -42,6 +42,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class IndexBuilder
 {
@@ -105,7 +106,7 @@ public class IndexBuilder
                 new ArtistIndex(mainDbConn),
                 new ReleaseIndex(mainDbConn,options.getCacheType()),
                 new ReleaseGroupIndex(mainDbConn),
-                new RecordingIndex(mainDbConn),
+                new RecordingIndex(mainDbConn, options.getCacheType()),
                 new LabelIndex(mainDbConn),
                 new WorkIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
@@ -113,8 +114,17 @@ public class IndexBuilder
                 new CDStubIndex(rawDbConn), //Note different db
         };
 
+        List<String> indexesToBeBuilt = new ArrayList<String>();
+        for (DatabaseIndex index : indexes) {
+
+            // Check if this index should be built
+            if (options.buildIndex(index.getName())) {
+                indexesToBeBuilt.add(index.getName());
+            }
+        }
+
         //Create temporary tables used by multiple indexes
-        CommonTables commonTables = new CommonTables(mainDbConn);
+        CommonTables commonTables = new CommonTables(mainDbConn, options.getCacheType(), indexesToBeBuilt);
         commonTables.createTemporaryTables();
 
         for (DatabaseIndex index : indexes) {

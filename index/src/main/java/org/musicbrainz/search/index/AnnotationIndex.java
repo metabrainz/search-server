@@ -12,6 +12,8 @@ import java.util.EnumMap;
 
 public class AnnotationIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "annotation";
+
     // Private class for storing specific information about each annotation type
     private class AnnotationTypeInfo {
         public String entityDbName;
@@ -31,7 +33,7 @@ public class AnnotationIndex extends DatabaseIndex {
     }
 
     public String getName() {
-        return "annotation";
+        return AnnotationIndex.INDEX_NAME;
     }
 
     public Analyzer getAnalyzer()

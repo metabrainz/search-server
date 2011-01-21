@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 
 public class LabelIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "label";
 
     private Pattern stripLabelCodeOfLeadingZeroes;
     private static final String DELETED_LABEL_MBID = "f43e252d-9ebf-4e8e-bba8-36d080756cc1";
@@ -52,7 +53,7 @@ public class LabelIndex extends DatabaseIndex {
 
 
     public String getName() {
-        return "label";
+        return LabelIndex.INDEX_NAME;
     }
 
     public Analyzer getAnalyzer() {

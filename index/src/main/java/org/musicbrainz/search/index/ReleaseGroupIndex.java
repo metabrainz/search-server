@@ -45,6 +45,8 @@ import java.util.Map;
 
 public class ReleaseGroupIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "releasegroup";
+
     public ReleaseGroupIndex(Connection dbConnection) {
         super(dbConnection);
     }
@@ -54,7 +56,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
     }
 
     public String getName() {
-        return "releasegroup";
+        return ReleaseGroupIndex.INDEX_NAME;
     }
 
     public Analyzer getAnalyzer() {

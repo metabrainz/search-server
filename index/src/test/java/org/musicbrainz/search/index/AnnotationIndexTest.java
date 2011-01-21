@@ -8,6 +8,8 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AnnotationIndexTest extends AbstractIndexTest {
@@ -18,11 +20,11 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        CommonTables ct = new CommonTables(conn);
-        ct.createTemporaryTables();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         AnnotationIndex ai = new AnnotationIndex(conn);
+        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ai.getName());
+        ct.createTemporaryTables();
         ai.init(writer, false);
         ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);

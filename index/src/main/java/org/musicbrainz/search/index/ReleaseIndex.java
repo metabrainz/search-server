@@ -50,6 +50,8 @@ public class ReleaseIndex extends DatabaseIndex {
 
     private String              cacheType;
 
+    public static final String INDEX_NAME = "release";
+
     public ReleaseIndex(Connection dbConnection, String cacheType) {
         super(dbConnection);
         this.cacheType=cacheType;
@@ -74,7 +76,7 @@ public class ReleaseIndex extends DatabaseIndex {
     }
 
     public String getName() {
-        return "release";
+        return ReleaseIndex.INDEX_NAME;
     }
 
 	@Override
@@ -97,35 +99,7 @@ public class ReleaseIndex extends DatabaseIndex {
     }
 
 
-     /**
-     * Create table mapping a release to all that puids that tracks within the release contain, then create index
-     * and vacuum analyze the table ready for use.
-     *
-     * @throws SQLException
-     */
-    private void createReleasePuidTableUsingDb() throws SQLException
-    {
-        System.out.println(" Started populating tmp_release_puid temporary table");
-        StopWatch clock = new StopWatch();
-        clock.start();
-        getDbConnection().createStatement().execute(
-            "CREATE TEMPORARY TABLE tmp_release_puid AS " +
-            "  SELECT m.release, p.puid " +
-            "  FROM medium m " +
-            "    INNER JOIN track t ON t.tracklist = m.tracklist " +
-            "    INNER JOIN recording_puid rp ON rp.recording = t.recording " +
-            "    INNER JOIN puid p ON rp.puid = p.id");
-        clock.stop();
-        System.out.println(" Populated tmp_release_puid temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
-        clock.reset();
 
-        clock.start();
-        getDbConnection().createStatement().execute(
-             "CREATE INDEX tmp_release_puid_idx_release ON tmp_release_puid (release) ");
-        clock.stop();
-        System.out.println(" Created index on tmp_release_puid in " + Float.toString(clock.getTime()/1000) + " seconds");
-        clock.reset();
-    }
 
 
     @Override
@@ -133,7 +107,6 @@ public class ReleaseIndex extends DatabaseIndex {
 
         if(!isUpdater) {
             if(cacheType.equals(CacheType.TEMPTABLE))  {
-               createReleasePuidTableUsingDb();
                addPreparedStatement("PUIDS",
                 "SELECT release, puid " +
                 "FROM   tmp_release_puid " +

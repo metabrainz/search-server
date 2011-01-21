@@ -37,6 +37,8 @@ import java.util.Map;
 
 public class WorkIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "work";
+
     public WorkIndex(Connection dbConnection) {
         super(dbConnection);
     }
@@ -44,7 +46,7 @@ public class WorkIndex extends DatabaseIndex {
     public WorkIndex() { }
 
     public String getName() {
-        return "work";
+        return WorkIndex.INDEX_NAME;
     }
 
     public Analyzer getAnalyzer() {

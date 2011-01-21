@@ -31,6 +31,8 @@ import java.sql.*;
 
 public class TagIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "tag";
+
     public TagIndex(Connection dbConnection) {
         super(dbConnection);
     }
@@ -38,7 +40,7 @@ public class TagIndex extends DatabaseIndex {
     public TagIndex() { }
 
     public String getName() {
-        return "tag";
+        return TagIndex.INDEX_NAME;
     }
 
 	@Override

@@ -39,11 +39,12 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        CommonTables ct = new CommonTables(conn);
-        ct.createTemporaryTables();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseGroupIndex rgi = new ReleaseGroupIndex(conn);
+        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, rgi.getName());
+        ct.createTemporaryTables();
+
         rgi.init(writer, false);
         rgi.addMetaInformation(writer);
         rgi.indexData(writer, 0, Integer.MAX_VALUE);

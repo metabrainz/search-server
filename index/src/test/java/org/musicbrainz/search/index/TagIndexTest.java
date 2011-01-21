@@ -15,11 +15,12 @@ public class TagIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        CommonTables ct = new CommonTables(conn);
-        ct.createTemporaryTables();
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TagIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         TagIndex ti = new TagIndex(conn);
+        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ti.getName());
+        ct.createTemporaryTables();
+
         ti.init(writer, false);
         ti.addMetaInformation(writer);
         ti.indexData(writer, 0, Integer.MAX_VALUE);

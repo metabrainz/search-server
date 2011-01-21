@@ -34,6 +34,8 @@ import java.util.*;
 
 public class RecordingIndex extends DatabaseIndex {
 
+    public static final String INDEX_NAME = "recording";
+
     private StopWatch trackClock = new StopWatch();
     private StopWatch isrcClock = new StopWatch();
     private StopWatch puidClock = new StopWatch();
@@ -41,11 +43,13 @@ public class RecordingIndex extends DatabaseIndex {
     private StopWatch releaseClock = new StopWatch();
     private StopWatch recordingClock = new StopWatch();
 
+    private String    cacheType;
 
     private final static int QUANTIZED_DURATION = 2000;
 
-    public RecordingIndex(Connection dbConnection) {
+    public RecordingIndex(Connection dbConnection, String cacheType) {
         super(dbConnection);
+        this.cacheType=cacheType;
 
         trackClock.start();
         isrcClock.start();
@@ -65,7 +69,7 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     public String getName() {
-        return "recording";
+        return RecordingIndex.INDEX_NAME;
     }
 
     public Analyzer getAnalyzer() {
@@ -96,11 +100,30 @@ public class RecordingIndex extends DatabaseIndex {
 
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-        addPreparedStatement("PUIDS",
-                 "SELECT recording as recordingId, puid.puid " +
-                 " FROM recording_puid " +
-                 " INNER JOIN puid ON recording_puid.puid = puid.id " +
-                 " AND   recording between ? AND ?");
+         if(!isUpdater) {
+            if(cacheType.equals(CacheType.TEMPTABLE))  {
+                addPreparedStatement("PUIDS",
+                     "SELECT recording as recordingId, puid " +
+                     " FROM  tmp_release_puid " +
+                     " WHERE recording between ? AND ?");
+
+            }
+            else if(cacheType.equals(CacheType.NONE))  {
+                addPreparedStatement("PUIDS",
+                     "SELECT recording as recordingId, puid.puid " +
+                     " FROM recording_puid " +
+                     " INNER JOIN puid ON recording_puid.puid = puid.id " +
+                     " AND   recording between ? AND ?");
+            }
+        }
+        else {
+             addPreparedStatement("PUIDS",
+                  "SELECT recording as recordingId, puid.puid " +
+                  " FROM recording_puid " +
+                  " INNER JOIN puid ON recording_puid.puid = puid.id " +
+                  " AND   recording between ? AND ?");
+        }
+
 
         addPreparedStatement("TAGS",
                  "SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count " +

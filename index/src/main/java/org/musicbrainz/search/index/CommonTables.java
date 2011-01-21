@@ -20,15 +20,10 @@
 package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
-import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Build temporary tables that are used by multiple indexes
@@ -37,9 +32,21 @@ import java.sql.*;
 public class CommonTables  {
 
     protected Connection dbConnection;
+    private   String     cacheType;
+    private   List<String> indexesToBeBuilt ;
 
-    public CommonTables(Connection dbConnection) {
+
+    public CommonTables(Connection dbConnection, String cacheType, String indexToBeBuilt) {
         this.dbConnection=dbConnection;
+        this.cacheType=cacheType;
+        this.indexesToBeBuilt= new ArrayList<String>();
+        this.indexesToBeBuilt.add(indexToBeBuilt);
+    }
+
+    public CommonTables(Connection dbConnection, String cacheType, List<String> indexesToBeBuilt) {
+        this.dbConnection=dbConnection;
+        this.cacheType=cacheType;
+        this.indexesToBeBuilt= indexesToBeBuilt;
     }
 
     public Connection getDbConnection() {
@@ -47,8 +54,8 @@ public class CommonTables  {
         }
 
     /**
-     * Create table mapping a release to all that puids that tracks within the release contain, then create index
-     * and vacuum analyze the table ready for use.
+     * Create table showing all artist credits, then create index
+     * for the table.
      *
      * @throws SQLException
      */
@@ -81,12 +88,65 @@ public class CommonTables  {
         getDbConnection().createStatement().execute(
              "CREATE INDEX tmp_artistcredit_idx ON tmp_artistcredit (artist_credit) ");
         clock.stop();
-        System.out.println(" Created index on tmp_artist_credit in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println(" Created indexes on tmp_artist_credit in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+    }
+
+    /**
+     * Create table mapping a release to all that puids that tracks within the release contain, then create index
+     * for the table..
+     *
+     * @throws SQLException
+     */
+    private void createReleasePuidTableUsingDb() throws SQLException
+    {
+        System.out.println(" Started populating tmp_release_puid temporary table");
+        StopWatch clock = new StopWatch();
+        clock.start();
+        getDbConnection().createStatement().execute(
+            "CREATE TEMPORARY TABLE tmp_release_puid AS " +
+            "  SELECT m.release, rp.recording, p.puid " +
+            "  FROM medium m " +
+            "    INNER JOIN track t ON t.tracklist = m.tracklist " +
+            "    INNER JOIN recording_puid rp ON rp.recording = t.recording " +
+            "    INNER JOIN puid p ON rp.puid = p.id");
+        clock.stop();
+        System.out.println(" Populated tmp_release_puid temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+
+        clock.start();
+        getDbConnection().createStatement().execute(
+                "CREATE INDEX tmp_release_puid_idx_release ON tmp_release_puid (release) ");
+        getDbConnection().createStatement().execute(
+             "CREATE INDEX tmp_release_puid_idx_recording ON tmp_release_puid (recording) ");
+
+        clock.stop();
+        System.out.println(" Created indexes on tmp_release_puid in " + Float.toString(clock.getTime()/1000) + " seconds");
         clock.reset();
     }
 
     public void createTemporaryTables()  throws SQLException
     {
-        createArtistCreditdTableUsingDb();
+        if(
+            (indexesToBeBuilt.contains(ReleaseIndex.INDEX_NAME))||
+            (indexesToBeBuilt.contains(ReleaseGroupIndex.INDEX_NAME))||
+            (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))||
+            (indexesToBeBuilt.contains(WorkIndex.INDEX_NAME))
+          )
+        {
+            createArtistCreditdTableUsingDb();
+        }
+
+        if(
+           (indexesToBeBuilt.contains(ReleaseIndex.INDEX_NAME))||
+           (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))
+          )
+        {
+            if(cacheType.equals(CacheType.TEMPTABLE))
+            {
+                createReleasePuidTableUsingDb();
+            }
+        }
+
     }
 }
