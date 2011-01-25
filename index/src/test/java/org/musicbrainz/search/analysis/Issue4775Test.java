@@ -60,6 +60,33 @@ public class Issue4775Test extends TestCase {
         }
     }
 
+    public void testDashHandling() throws Exception {
+
+        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        Document doc = new Document();
+        doc.add(new Field("name", "1999-2000", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+
+        doc = new Document();
+        doc.add(new Field("name", "1999–2000", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("1999-2000");
+            assertEquals(2, searcher.search(q,10).totalHits);
+        }
+
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("1999–2000");
+            assertEquals(2, searcher.search(q,10).totalHits);
+        }
+
+    }
+
     /** Check same as standard filter
      *
      * @throws Exception

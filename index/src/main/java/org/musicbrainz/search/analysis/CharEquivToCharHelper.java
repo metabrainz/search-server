@@ -40,5 +40,6 @@ public class CharEquivToCharHelper {
     {
 
         charConvertMap.add("’","'");
+        charConvertMap.add("–","-");
     }
 }
