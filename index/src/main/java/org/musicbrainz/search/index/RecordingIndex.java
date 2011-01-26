@@ -96,7 +96,6 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     String releases;
-    String releasesGroupBy;
 
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
@@ -161,19 +160,10 @@ public class RecordingIndex extends DatabaseIndex {
 
         releases =
                 "SELECT " +
-                "  r.id as releaseKey, r.gid as releaseid, rn.name as releasename, rgt.name as type, "+
-                "  rs.name as status, sum(tr.track_count) as tracks, " +
-                "  date_year, date_month, date_day" +       
-                " FROM release r " +
-                "  INNER JOIN release_group rg ON rg.id = r.release_group " +
-                "  INNER JOIN medium m ON m.release=r.id " +
-                "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
-                "  LEFT JOIN release_group_type rgt ON rg.type = rgt.id " +
-                "  INNER JOIN release_name rn ON r.name=rn.id " +
-                "  LEFT JOIN release_status rs ON r.status = rs.id " +
-                " WHERE r.id in " ;
-
-        releasesGroupBy =  " GROUP BY r.id, r.gid, rn.name, rgt.name, rs.name, date_year, date_month, date_day";
+                "  id as releaseKey, gid as releaseid, name as releasename, type, "+
+                "  status, date_year, date_month, date_day, tracks" +
+                " FROM tmp_release r1 " +
+                " WHERE r1.id in " ;
 
         addPreparedStatement("RECORDINGS",
                 "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname " +
@@ -381,7 +371,7 @@ public class RecordingIndex extends DatabaseIndex {
             inClause.append('?');
         }
         PreparedStatement stmt = dbConnection.prepareStatement(
-                releases +"(" + inClause.toString() + ')' + releasesGroupBy);
+                releases +"(" + inClause.toString() + ')' );
         return stmt;
 
     }
@@ -403,7 +393,6 @@ public class RecordingIndex extends DatabaseIndex {
         ObjectFactory of = new ObjectFactory();
 
         releaseClock.resume();
-
 
         // Add all the releaseKeys to a set to prevent duplicates
         Set<Integer> releaseKeys = new HashSet<Integer>();

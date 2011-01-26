@@ -125,6 +125,45 @@ public class CommonTables  {
         clock.reset();
     }
 
+
+    private void createReleaseTableUsingDb() throws SQLException
+    {
+        System.out.println(" Started populating tmp_release temporary table");
+        StopWatch clock = new StopWatch();
+        clock.start();
+
+        getDbConnection().createStatement().execute(
+            "CREATE TEMPORARY TABLE tmp_release AS " +
+                "SELECT r.id, r.gid, rn.name as name, " +
+                "  barcode, lower(country.iso_code) as country, " +
+                "  date_year, date_month, date_day, rgt.name as type, rm.amazon_asin, " +
+                "  language.iso_code_3t as language, script.iso_code as script, rs.name as status, " +
+                "  sum(tr.track_count) as tracks" +
+                " FROM release r " +
+                "  LEFT JOIN release_meta rm ON r.id = rm.id " +
+                "  LEFT JOIN release_group rg ON rg.id = r.release_group " +
+                "  LEFT JOIN release_group_type rgt  ON rg.type = rgt.id " +
+                "  LEFT JOIN country ON r.country=country.id " +
+                "  LEFT JOIN release_name rn ON r.name = rn.id " +
+                "  LEFT JOIN release_status rs ON r.status = rs.id " +
+                "  LEFT JOIN language ON r.language=language.id " +
+                "  LEFT JOIN script ON r.script=script.id " +
+                "  LEFT JOIN medium m ON m.release=r.id" +
+                "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
+                " GROUP BY r.id,r.gid,rn.name,barcode,country.iso_code,date_year,date_month,date_day,rgt.name," +
+                "  rm.amazon_asin, language.iso_code_3t, script.iso_code,rs.name");
+        clock.stop();
+        System.out.println(" Populated tmp_release temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+
+        clock.start();
+        getDbConnection().createStatement().execute(
+                "CREATE INDEX tmp_release_idx_release ON tmp_release (id) ");
+        clock.stop();
+        System.out.println(" Created indexes on tmp_release  in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+    }
+
     public void createTemporaryTables()  throws SQLException
     {
         if(
@@ -146,6 +185,7 @@ public class CommonTables  {
             {
                 createReleasePuidTableUsingDb();
             }
+            createReleaseTableUsingDb();
         }
 
     }

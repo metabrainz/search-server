@@ -160,21 +160,14 @@ public class ReleaseIndex extends DatabaseIndex {
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
 
-        addPreparedStatement("RELEASES",
-                "SELECT rl.id, rl.gid, rn.name as name, " +
-                "  barcode, lower(country.iso_code) as country, " +
-                "  date_year, date_month, date_day, rgt.name as type, rm.amazon_asin, " +
-                "  language.iso_code_3t as language, script.iso_code as script, rs.name as status " +
-                " FROM release rl " +
-                "  INNER JOIN release_meta rm ON rl.id = rm.id " +
-                "  INNER JOIN release_group rg ON rg.id = rl.release_group " +
-                "  LEFT JOIN release_group_type rgt  ON rg.type = rgt.id " +
-                "  LEFT JOIN country ON rl.country=country.id " +
-                "  LEFT JOIN release_name rn ON rl.name = rn.id " +
-                "  LEFT JOIN release_status rs ON rl.status = rs.id " +
-                "  LEFT JOIN language ON rl.language=language.id " +
-                "  LEFT JOIN script ON rl.script=script.id " +
-                " WHERE rl.id BETWEEN ? AND ?");
+
+         addPreparedStatement("RELEASES",
+                " SELECT id, gid, name, " +
+                "  barcode, country, " +
+                "  date_year, date_month, date_day, type, amazon_asin, " +
+                "  language, script, status " +
+                " FROM tmp_release rl " +
+                "WHERE  id BETWEEN ? AND ? ");
     }
 
 
