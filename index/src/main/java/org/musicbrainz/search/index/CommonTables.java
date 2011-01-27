@@ -164,8 +164,38 @@ public class CommonTables  {
         clock.reset();
     }
 
+
+    private void createTrackTableUsingDb() throws SQLException
+    {
+        System.out.println(" Started populating tmp_track temporary table");
+        StopWatch clock = new StopWatch();
+        clock.start();
+
+        getDbConnection().createStatement().execute(
+            "CREATE TEMPORARY TABLE tmp_track AS " +
+                "SELECT t.recording, tn.name as track_name, t.position as track_position, tl.track_count, " +
+                "  m.release as release_id, m.position as medium_position " +
+                " FROM track t " +
+                "  INNER JOIN track_name tn ON t.name=tn.id" +
+                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
+                "  INNER JOIN medium m ON m.tracklist=tl.id ");
+
+        clock.stop();
+        System.out.println(" Populated tmp_track temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+
+        clock.start();
+        getDbConnection().createStatement().execute(
+                "CREATE INDEX tmp_track_idx_recording ON tmp_track (recording) ");
+        clock.stop();
+        System.out.println(" Created indexes on tmp_track  in " + Float.toString(clock.getTime()/1000) + " seconds");
+        clock.reset();
+    }
+
+
     public void createTemporaryTables()  throws SQLException
     {
+
         if(
             (indexesToBeBuilt.contains(ReleaseIndex.INDEX_NAME))||
             (indexesToBeBuilt.contains(ReleaseGroupIndex.INDEX_NAME))||
@@ -176,6 +206,7 @@ public class CommonTables  {
             createArtistCreditdTableUsingDb();
         }
 
+
         if(
            (indexesToBeBuilt.contains(ReleaseIndex.INDEX_NAME))||
            (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))
@@ -185,8 +216,18 @@ public class CommonTables  {
             {
                 createReleasePuidTableUsingDb();
             }
+
             createReleaseTableUsingDb();
         }
 
+        if(
+           (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))
+          )
+        {
+            if(cacheType.equals(CacheType.TEMPTABLE))
+            {
+                createTrackTableUsingDb();
+            }
+        }
     }
 }

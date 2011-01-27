@@ -106,6 +106,12 @@ public class RecordingIndex extends DatabaseIndex {
                      " FROM  tmp_release_puid " +
                      " WHERE recording between ? AND ?");
 
+                addPreparedStatement("TRACKS",
+                    "SELECT track_name, recording, track_position, track_count, " +
+                    "  release_id, medium_position " +
+                    " FROM tmp_track " +
+                    " WHERE recording between ? AND ?");
+
             }
             else if(cacheType.equals(CacheType.NONE))  {
                 addPreparedStatement("PUIDS",
@@ -113,6 +119,14 @@ public class RecordingIndex extends DatabaseIndex {
                      " FROM recording_puid " +
                      " INNER JOIN puid ON recording_puid.puid = puid.id " +
                      " AND   recording between ? AND ?");
+
+                addPreparedStatement("TRACKS",
+                "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
+                "  m.release as release_id, m.position as medium_position " +
+                " FROM track t " +
+                "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
+                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
+                "  INNER JOIN medium m ON m.tracklist=tl.id ");
             }
         }
         else {
@@ -121,6 +135,14 @@ public class RecordingIndex extends DatabaseIndex {
                   " FROM recording_puid " +
                   " INNER JOIN puid ON recording_puid.puid = puid.id " +
                   " AND   recording between ? AND ?");
+
+             addPreparedStatement("TRACKS",
+                "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
+                "  m.release as release_id, m.position as medium_position " +
+                " FROM track t " +
+                "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
+                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
+                "  INNER JOIN medium m ON m.tracklist=tl.id ");
         }
 
 
@@ -150,13 +172,7 @@ public class RecordingIndex extends DatabaseIndex {
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
 
-        addPreparedStatement("TRACKS",
-                "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
-                "  m.release as release_id, m.position as medium_position " +
-                " FROM track t " +
-                "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
-                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                "  INNER JOIN medium m ON m.tracklist=tl.id ");
+
 
         releases =
                 "SELECT " +
