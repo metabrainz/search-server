@@ -36,9 +36,11 @@ public class RecordingIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "recording";
 
+    private StopWatch trackClock = new StopWatch();
     private StopWatch isrcClock = new StopWatch();
     private StopWatch puidClock = new StopWatch();
     private StopWatch artistClock = new StopWatch();
+    private StopWatch releaseClock = new StopWatch();
     private StopWatch recordingClock = new StopWatch();
 
     private String    cacheType;
@@ -49,13 +51,17 @@ public class RecordingIndex extends DatabaseIndex {
         super(dbConnection);
         this.cacheType=cacheType;
 
+        trackClock.start();
         isrcClock.start();
         puidClock.start();
         artistClock.start();
+        releaseClock.start();
         recordingClock.start();
+        trackClock.suspend();
         isrcClock.suspend();
         puidClock.suspend();
         artistClock.suspend();
+        releaseClock.suspend();
         recordingClock.suspend();
     }
 
@@ -144,30 +150,38 @@ public class RecordingIndex extends DatabaseIndex {
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
 
+        addPreparedStatement("TRACKS",
+                "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
+                "  m.release as release_id, m.position as medium_position " +
+                " FROM track t " +
+                "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
+                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
+                "  INNER JOIN medium m ON m.tracklist=tl.id ");
+
+        releases =
+                "SELECT " +
+                "  id as releaseKey, gid as releaseid, name as releasename, type, "+
+                "  status, date_year, date_month, date_day, tracks" +
+                " FROM tmp_release r1 " +
+                " WHERE r1.id in " ;
+
         addPreparedStatement("RECORDINGS",
-                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname, " +
-                "  tn2.name as track_name, t.position as track_position, tl.track_count, " +
-                "  m.position as medium_position, " +
-                "  r.id as releaseKey, r.gid as releaseid, r.name as releasename, r.type, "+
-                "  r.status, r.date_year, r.date_month, r.date_day, tracks" +
+                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname " +
                 " FROM recording re " +
                 "  INNER JOIN track_name tn ON re.name=tn.id " +
-                "  INNER JOIN track t on t.recording=re.id " +
-                "  INNER JOIN track_name tn2 ON t.name=tn2.id " +
-                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                "  INNER JOIN medium m ON m.tracklist=tl.id " +
-                "  INNER  JOIN tmp_release r ON m.release=r.id " +
-                " WHERE re.id BETWEEN ? AND ? " +
-                "  ORDER BY re.id");
+                "  AND re.id BETWEEN ? AND ?");
     }
 
     public void destroy() throws SQLException {
 
         super.destroy();
         System.out.println(" Isrcs Queries " + Float.toString(isrcClock.getTime()/1000) + " seconds");
+        System.out.println(" Track Queries " + Float.toString(trackClock.getTime()/1000) + " seconds");
         System.out.println(" Artists Queries " + Float.toString(artistClock.getTime()/1000) + " seconds");
         System.out.println(" Puids Queries " + Float.toString(puidClock.getTime()/1000) + " seconds");
+        System.out.println(" Releases Queries " + Float.toString(releaseClock.getTime()/1000) + " seconds");
         System.out.println(" Recording Queries " + Float.toString(recordingClock.getTime()/1000) + " seconds");
+
     }
 
     /**
@@ -296,67 +310,222 @@ public class RecordingIndex extends DatabaseIndex {
         return artistCredits;
     }
 
+    /**
+     * Get track  information for recordings
+     * <p/>
+     * One recording can be linked to by multiple tracks
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     * @return A map of matches
+     */
+    private Map<Integer, List<TrackWrapper>> loadTracks(int min, int max) throws SQLException, IOException {
+
+        //Tracks and Release Info
+        trackClock.resume();
+        Map<Integer, List<TrackWrapper>> tracks = new HashMap<Integer, List<TrackWrapper>>();
+        PreparedStatement st = getPreparedStatement("TRACKS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int recordingId = rs.getInt("recording");
+            List<TrackWrapper> list;
+            if (!tracks.containsKey(recordingId)) {
+                list = new LinkedList<TrackWrapper>();
+                tracks.put(recordingId, list);
+            } else {
+                list = tracks.get(recordingId);
+            }
+            TrackWrapper tw = new TrackWrapper();
+            tw.setReleaseId(rs.getInt("release_id"));
+            tw.setTrackCount(rs.getInt("track_count"));
+            tw.setTrackPosition(rs.getInt("track_position"));
+            tw.setTrackName(rs.getString("track_name"));
+            tw.setMediumPosition(rs.getInt("medium_position"));
+            list.add(tw);
+        }
+        rs.close();
+        trackClock.suspend();
+        return tracks;
+    }
+
+    /** Create the release statement
+     *
+     * @param noOfElements
+     * @return
+     * @throws SQLException
+     */
+    private PreparedStatement createReleaseStatement(int noOfElements) throws SQLException {
+        StringBuilder inClause = new StringBuilder();
+        boolean firstValue = true;
+        for (int i = 0; i < noOfElements; i++) {
+            if (firstValue) {
+                firstValue = false;
+            } else {
+                inClause.append(',');
+            }
+            inClause.append('?');
+        }
+        PreparedStatement stmt = dbConnection.prepareStatement(
+                releases +"(" + inClause.toString() + ')' );
+        return stmt;
+
+    }
+
+    /**
+     * Get release information for recordings
+     *
+     * @param tracks
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     * @return A map of matches
+     */
+    private Map<Integer, Release>  loadReleases
+            (Map<Integer, List<TrackWrapper>> tracks) throws SQLException, IOException {
+
+
+        Map<Integer, Release> releases = new HashMap<Integer, Release>();
+        ObjectFactory of = new ObjectFactory();
+
+        releaseClock.resume();
+
+        // Add all the releaseKeys to a set to prevent duplicates
+        Set<Integer> releaseKeys = new HashSet<Integer>();
+        for(List<TrackWrapper> recording : tracks.values()) {
+            for(TrackWrapper track : recording) {
+                releaseKeys.add(track.getReleaseId());
+            }
+        }
+
+        if (releaseKeys.isEmpty()) {
+        	return releases;
+        }
+        
+        PreparedStatement stmt = createReleaseStatement(releaseKeys.size());
+        int count = 1;
+        for(Integer key : releaseKeys) {
+            stmt.setInt(count, key);
+            count++;
+        }
+
+        Release release;
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            int releaseKey = rs.getInt("releaseKey");
+            if (!releases.containsKey(releaseKey)) {
+                release = of.createRelease();
+                releases.put(releaseKey, release);
+            } else {
+                release = releases.get(releaseKey);
+            }
+
+            MediumList ml = of.createMediumList();
+            ReleaseGroup rg = of.createReleaseGroup();
+            release.setId(rs.getString("releaseId"));
+            release.setTitle(rs.getString("releasename"));
+            rg.setType(rs.getString("type"));
+            release.setReleaseGroup(rg);
+            release.setStatus(rs.getString("status"));
+            release.setDate(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
+            ml.setTrackCount(BigInteger.valueOf(rs.getInt("tracks")));
+            release.setReleaseGroup(rg);
+            release.setMediumList(ml);
+        }
+        rs.close();
+        releaseClock.suspend();
+        return releases;
+    }
+
+
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-
-        MbDocument      doc      = null;
-        int             lastId   = -1;
-        String          recordingName = null;
-        Set<String>     trackNames = new HashSet<String>();
-
+    	
         Map<Integer, List<Tag>> tags = loadTags(min, max);
         Map<Integer, List<String>> puids = loadPUIDs(min, max);
         Map<Integer, List<String>> isrcs = loadISRCs(min, max);
         Map<Integer, ArtistCredit> artistCredits = loadArtists(min, max);
-
+        Map<Integer, List<TrackWrapper>> tracks = loadTracks(min, max);
+        Map<Integer, Release> releases = loadReleases(tracks);
+        
         PreparedStatement st = getPreparedStatement("RECORDINGS");
         st.setInt(1, min);
         st.setInt(2, max);
         recordingClock.resume();
         ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs, puids, tags, isrcs, artistCredits, tracks, releases));
+        }
+        rs.close();
+        recordingClock.suspend();
+    }
 
-        while(rs.next())
-        {
-            int id = rs.getInt("recordingId");
-            if(id!=lastId)
-            {
-                //Check this isnt first result, and if not add the last one
-                if(doc!=null)
-                {
-                    indexWriter.addDocument(doc.getLuceneDocument());
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, List<String>> puids,
+                                          Map<Integer, List<Tag>> tags,
+                                          Map<Integer, List<String>> isrcs,
+                                          Map<Integer, ArtistCredit> artistCredits,
+                                          Map<Integer, List<TrackWrapper>> tracks,
+                                          Map<Integer, Release> releases) throws SQLException {
+
+        int id = rs.getInt("recordingId");
+
+        MbDocument doc = new MbDocument();
+        doc.addField(RecordingIndexField.ID, id);
+        doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
+        String recordingName = rs.getString("trackname");
+        doc.addNonEmptyField(RecordingIndexField.RECORDING, recordingName);         //Search
+        doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
+        doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
+        doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+
+        if (puids.containsKey(id)) {
+            // Add each puid for recording
+            for (String puid : puids.get(id)) {
+                doc.addField(RecordingIndexField.PUID, puid);
+            }
+        }
+
+        if (isrcs.containsKey(id)) {
+            // For each credit artist for this recording
+            for (String isrc : isrcs.get(id)) {
+                doc.addField(RecordingIndexField.ISRC, isrc);
+            }
+        }
+
+        if (tracks.containsKey(id)) {
+            // For each track for this recording
+            for (TrackWrapper track : tracks.get(id)) {
+                doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
+                doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
+                Release release = releases.get(track.getReleaseId());
+                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
+                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, release.getStatus());
+                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_DATE, release.getDate());
+
+                doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
+                doc.addField(RecordingIndexField.RELEASE, release.getTitle());
+                doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
+
+                // Added to TRACK_OUTPUT for outputting xml,
+                doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
+                // and if different to recording for searching
+                if(!track.getTrackName().equals(recordingName)) {
+                    doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
                 }
 
-                //New Recording
-                doc = new MbDocument();
-                lastId = id;
-                trackNames = new HashSet<String>();
+                doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
 
-                doc.addField(RecordingIndexField.ID, id);
-                doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
-                recordingName = rs.getString("trackname");
-                trackNames.add(recordingName);
-                doc.addNonEmptyField(RecordingIndexField.RECORDING, recordingName);         //Search
-                doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
-                doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
-                doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+            }
+        }
 
-                // Add each puid for recording
-                if (puids.containsKey(id)) {
-                    for (String puid : puids.get(id)) {
-                        doc.addField(RecordingIndexField.PUID, puid);
-                    }
-                }
-
-                // For each credit artist for this recording
-                if (isrcs.containsKey(id)) {
-                    for (String isrc : isrcs.get(id)) {
-                        doc.addField(RecordingIndexField.ISRC, isrc);
-                    }
-                }
-
-                //Artist Credit
-                ArtistCredit ac = artistCredits.get(id);
-                ArtistCreditHelper.buildIndexFieldsFromArtistCredit
-                       (doc,
+        ArtistCredit ac = artistCredits.get(id);
+        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+                (doc,
                         ac,
                         RecordingIndexField.ARTIST,
                         RecordingIndexField.ARTIST_NAMECREDIT,
@@ -364,46 +533,14 @@ public class RecordingIndex extends DatabaseIndex {
                         RecordingIndexField.ARTIST_NAME,
                         RecordingIndexField.ARTIST_CREDIT);
 
-                if (tags.containsKey(id)) {
-                    for (Tag tag : tags.get(id)) {
-                        doc.addField(RecordingIndexField.TAG, tag.getName());
-                        doc.addField(RecordingIndexField.TAGCOUNT, tag.getCount().toString());
-                    }
-                }
+        if (tags.containsKey(id)) {
+            for (Tag tag : tags.get(id)) {
+                doc.addField(RecordingIndexField.TAG, tag.getName());
+                doc.addField(RecordingIndexField.TAGCOUNT, tag.getCount().toString());
             }
-
-            //-- A recording can link to multiple tracks and those tracks are within tracklists
-            //-- than can be used by multiple mediums and hence releases.
-            //-- Each track/release combo will be an additional result set returned that needs processing
-
-            //Track Info
-            doc.addNumericField(RecordingIndexField.NUM_TRACKS, rs.getInt("track_count"));
-            doc.addNumericField(RecordingIndexField.TRACKNUM, rs.getInt("track_position"));
-            // Added to TRACK_OUTPUT for outputting xml,
-            String trackName = rs.getString("track_name");
-            doc.addField(RecordingIndexField.TRACK_OUTPUT, trackName);
-            // and if different to recoridng/other tracks names add for searching
-            if(!trackNames.contains(trackName)) {
-                doc.addField(RecordingIndexField.RECORDING, trackName);
-            }
-            doc.addField(RecordingIndexField.POSITION, String.valueOf(rs.getInt("medium_position")));
-
-            //Release Info
-            doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, rs.getString("type"));
-            doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, rs.getString("status"));
-            doc.addFieldOrHyphen(RecordingIndexField.RELEASE_DATE, Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
-            doc.addField(RecordingIndexField.RELEASE_ID, rs.getString("releaseid"));
-            doc.addField(RecordingIndexField.RELEASE, rs.getString("releasename"));
-            doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, rs.getInt("tracks"));
         }
 
-        //Add the last recording
-        if(doc!=null)
-        {
-            indexWriter.addDocument(doc.getLuceneDocument());
-        }
-        rs.close();
-        recordingClock.suspend();
+        return doc.getLuceneDocument();
     }
 
 }
