@@ -59,7 +59,7 @@ public class CommonTables  {
      *
      * @throws SQLException
      */
-    private void createArtistCreditdTableUsingDb() throws SQLException
+    private void createArtistCreditTableUsingDb() throws SQLException
     {
         System.out.println(" Started populating tmp_artistcredit temporary table");
         StopWatch clock = new StopWatch();
@@ -203,7 +203,7 @@ public class CommonTables  {
             (indexesToBeBuilt.contains(WorkIndex.INDEX_NAME))
           )
         {
-            createArtistCreditdTableUsingDb();
+            createArtistCreditTableUsingDb();
         }
 
 
