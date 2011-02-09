@@ -76,15 +76,13 @@ public class LiveDataFeedIndexUpdater {
     
         StopWatch clock = new StopWatch();
 
-        //At the moment doesn't seem to make sense to build the release Puid table when doing an update
-        String cacheType = CacheType.NONE;
 
         // MusicBrainz data indexing
         DatabaseIndex[] indices = {
                 new ArtistIndex(mainDbConn),
-                new ReleaseIndex(mainDbConn, cacheType),
+                new ReleaseIndex(mainDbConn),
                 new ReleaseGroupIndex(mainDbConn),
-                new RecordingIndex(mainDbConn, cacheType),
+                new RecordingIndex(mainDbConn),
                 new LabelIndex(mainDbConn),
                 new WorkIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
@@ -100,8 +98,8 @@ public class LiveDataFeedIndexUpdater {
             }
         }
         //Create temporary tables used by multiple indexes
-        CommonTables commonTables = new CommonTables(mainDbConn, cacheType, indexesToBeBuilt);
-        commonTables.createTemporaryTables();
+        CommonTables commonTables = new CommonTables(mainDbConn, indexesToBeBuilt);
+        commonTables.createTemporaryTables(true);
 
 
 

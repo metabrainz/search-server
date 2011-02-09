@@ -22,9 +22,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        RecordingIndex ri = new RecordingIndex(conn, CacheType.TEMPTABLE);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ri.getName());
-        ct.createTemporaryTables();
+        RecordingIndex ri = new RecordingIndex(conn);
+        CommonTables ct = new CommonTables(conn, ri.getName());
+        ct.createTemporaryTables(false);
         ri.init(writer, false);
         ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);

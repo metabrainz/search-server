@@ -32,20 +32,17 @@ import java.util.List;
 public class CommonTables  {
 
     protected Connection dbConnection;
-    private   String     cacheType;
     private   List<String> indexesToBeBuilt ;
 
 
-    public CommonTables(Connection dbConnection, String cacheType, String indexToBeBuilt) {
+    public CommonTables(Connection dbConnection, String indexToBeBuilt) {
         this.dbConnection=dbConnection;
-        this.cacheType=cacheType;
         this.indexesToBeBuilt= new ArrayList<String>();
         this.indexesToBeBuilt.add(indexToBeBuilt);
     }
 
-    public CommonTables(Connection dbConnection, String cacheType, List<String> indexesToBeBuilt) {
+    public CommonTables(Connection dbConnection, List<String> indexesToBeBuilt) {
         this.dbConnection=dbConnection;
-        this.cacheType=cacheType;
         this.indexesToBeBuilt= indexesToBeBuilt;
     }
 
@@ -193,7 +190,7 @@ public class CommonTables  {
     }
 
 
-    public void createTemporaryTables()  throws SQLException
+    public void createTemporaryTables(boolean isUpdater)  throws SQLException
     {
 
         if(
@@ -212,7 +209,7 @@ public class CommonTables  {
            (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))
           )
         {
-            if(cacheType.equals(CacheType.TEMPTABLE))
+            if(!isUpdater)
             {
                 createReleasePuidTableUsingDb();
             }
@@ -224,7 +221,7 @@ public class CommonTables  {
            (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))
           )
         {
-            if(cacheType.equals(CacheType.TEMPTABLE))
+            if(!isUpdater)
             {
                 createTrackTableUsingDb();
             }

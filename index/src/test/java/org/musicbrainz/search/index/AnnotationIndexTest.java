@@ -23,8 +23,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         AnnotationIndex ai = new AnnotationIndex(conn);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ai.getName());
-        ct.createTemporaryTables();
+        CommonTables ct = new CommonTables(conn, ai.getName());
+        ct.createTemporaryTables(false);
         ai.init(writer, false);
         ai.addMetaInformation(writer);
         ai.indexData(writer, 0, Integer.MAX_VALUE);

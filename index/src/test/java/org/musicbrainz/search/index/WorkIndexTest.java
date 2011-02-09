@@ -20,8 +20,8 @@ public class WorkIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         WorkIndex wi = new WorkIndex(conn);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, wi.getName());
-        ct.createTemporaryTables();
+        CommonTables ct = new CommonTables(conn,  wi.getName());
+        ct.createTemporaryTables(false);
 
         wi.init(writer, false);
         wi.addMetaInformation(writer);

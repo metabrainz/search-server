@@ -24,9 +24,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     private void createIndex(RAMDirectory ramDir) throws Exception {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        ReleaseIndex ri = new ReleaseIndex(conn,CacheType.TEMPTABLE);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ri.getName());
-        ct.createTemporaryTables();
+        ReleaseIndex ri = new ReleaseIndex(conn);
+        CommonTables ct = new CommonTables(conn, ri.getName());
+        ct.createTemporaryTables(false);
 
         ri.init(writer, false);
         ri.addMetaInformation(writer);

@@ -42,8 +42,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         ReleaseGroupIndex rgi = new ReleaseGroupIndex(conn);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, rgi.getName());
-        ct.createTemporaryTables();
+        CommonTables ct = new CommonTables(conn, rgi.getName());
+        ct.createTemporaryTables(false);
 
         rgi.init(writer, false);
         rgi.addMetaInformation(writer);

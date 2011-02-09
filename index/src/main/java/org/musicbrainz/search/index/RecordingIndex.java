@@ -43,14 +43,11 @@ public class RecordingIndex extends DatabaseIndex {
     private StopWatch releaseClock = new StopWatch();
     private StopWatch recordingClock = new StopWatch();
 
-    private String    cacheType;
 
     private final static int QUANTIZED_DURATION = 2000;
 
-    public RecordingIndex(Connection dbConnection, String cacheType) {
+    public RecordingIndex(Connection dbConnection) {
         super(dbConnection);
-        this.cacheType=cacheType;
-
         trackClock.start();
         isrcClock.start();
         puidClock.start();
@@ -99,35 +96,17 @@ public class RecordingIndex extends DatabaseIndex {
 
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-         if(!isUpdater) {
-            if(cacheType.equals(CacheType.TEMPTABLE))  {
-                addPreparedStatement("PUIDS",
-                     "SELECT recording as recordingId, puid " +
-                     " FROM  tmp_release_puid " +
-                     " WHERE recording between ? AND ?");
+        if(!isUpdater) {
+            addPreparedStatement("PUIDS",
+                 "SELECT recording as recordingId, puid " +
+                 " FROM  tmp_release_puid " +
+                 " WHERE recording between ? AND ?");
 
-                addPreparedStatement("TRACKS",
-                    "SELECT track_name, recording, track_position, track_count, " +
-                    "  release_id, medium_position " +
-                    " FROM tmp_track " +
-                    " WHERE recording between ? AND ?");
-
-            }
-            else if(cacheType.equals(CacheType.NONE))  {
-                addPreparedStatement("PUIDS",
-                     "SELECT recording as recordingId, puid.puid " +
-                     " FROM recording_puid " +
-                     " INNER JOIN puid ON recording_puid.puid = puid.id " +
-                     " AND   recording between ? AND ?");
-
-                addPreparedStatement("TRACKS",
-                "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
-                "  m.release as release_id, m.position as medium_position " +
-                " FROM track t " +
-                "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
-                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                "  INNER JOIN medium m ON m.tracklist=tl.id ");
-            }
+            addPreparedStatement("TRACKS",
+                "SELECT track_name, recording, track_position, track_count, " +
+                "  release_id, medium_position " +
+                " FROM tmp_track " +
+                " WHERE recording between ? AND ?");
         }
         else {
              addPreparedStatement("PUIDS",
@@ -147,10 +126,10 @@ public class RecordingIndex extends DatabaseIndex {
 
 
         addPreparedStatement("TAGS",
-                 "SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count " +
-                 " FROM recording_tag " +
-                 " INNER JOIN tag ON tag=id " +
-                 " WHERE recording between ? AND ?");
+                "SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count " +
+                        " FROM recording_tag " +
+                        " INNER JOIN tag ON tag=id " +
+                        " WHERE recording between ? AND ?");
 
         addPreparedStatement("ISRCS",
                 "SELECT recording as recordingId, isrc " +
@@ -183,19 +162,19 @@ public class RecordingIndex extends DatabaseIndex {
 
         addPreparedStatement("RECORDINGS",
                 "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname " +
-                " FROM recording re " +
-                "  INNER JOIN track_name tn ON re.name=tn.id " +
-                "  AND re.id BETWEEN ? AND ?");
+                        " FROM recording re " +
+                        "  INNER JOIN track_name tn ON re.name=tn.id " +
+                        "  AND re.id BETWEEN ? AND ?");
     }
 
     public void destroy() throws SQLException {
 
         super.destroy();
-        System.out.println(" Isrcs Queries " + Float.toString(isrcClock.getTime()/1000) + " seconds");
-        System.out.println(" Track Queries " + Float.toString(trackClock.getTime()/1000) + " seconds");
+        System.out.println(" Isrcs Queries " + Float.toString(isrcClock.getTime() / 1000) + " seconds");
+        System.out.println(" Track Queries " + Float.toString(trackClock.getTime() / 1000) + " seconds");
         System.out.println(" Artists Queries " + Float.toString(artistClock.getTime()/1000) + " seconds");
         System.out.println(" Puids Queries " + Float.toString(puidClock.getTime()/1000) + " seconds");
-        System.out.println(" Releases Queries " + Float.toString(releaseClock.getTime()/1000) + " seconds");
+        System.out.println(" Releases Queries " + Float.toString(releaseClock.getTime() / 1000) + " seconds");
         System.out.println(" Recording Queries " + Float.toString(recordingClock.getTime()/1000) + " seconds");
 
     }

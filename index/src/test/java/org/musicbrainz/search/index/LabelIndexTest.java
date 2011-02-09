@@ -21,8 +21,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(LabelIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         LabelIndex li = new LabelIndex(conn);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, li.getName());
-        ct.createTemporaryTables();
+        CommonTables ct = new CommonTables(conn,  li.getName());
+        ct.createTemporaryTables(false);
         li.init(writer, false);
         li.addMetaInformation(writer);
         li.indexData(writer, 0, Integer.MAX_VALUE);

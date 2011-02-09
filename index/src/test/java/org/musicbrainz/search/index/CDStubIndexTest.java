@@ -21,8 +21,8 @@ public class CDStubIndexTest extends AbstractIndexTest{
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(CDStubIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         CDStubIndex ci = new CDStubIndex(conn);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ci.getName());
-        ct.createTemporaryTables();
+        CommonTables ct = new CommonTables(conn, ci.getName());
+        ct.createTemporaryTables(false);
         ci.init(writer, false);
         ci.addMetaInformation(writer);
         ci.indexData(writer, 0, Integer.MAX_VALUE);

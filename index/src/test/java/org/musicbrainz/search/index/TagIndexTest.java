@@ -18,8 +18,8 @@ public class TagIndexTest extends AbstractIndexTest {
         PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TagIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         TagIndex ti = new TagIndex(conn);
-        CommonTables ct = new CommonTables(conn, CacheType.TEMPTABLE, ti.getName());
-        ct.createTemporaryTables();
+        CommonTables ct = new CommonTables(conn, ti.getName());
+        ct.createTemporaryTables(false);
 
         ti.init(writer, false);
         ti.addMetaInformation(writer);

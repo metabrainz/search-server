@@ -52,10 +52,8 @@ public class ReleaseIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "release";
 
-    public ReleaseIndex(Connection dbConnection, String cacheType) {
+    public ReleaseIndex(Connection dbConnection) {
         super(dbConnection);
-        this.cacheType=cacheType;
-
         labelClock.start();
         mediumClock.start();
         puidClock.start();
@@ -106,20 +104,11 @@ public class ReleaseIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         if(!isUpdater) {
-            if(cacheType.equals(CacheType.TEMPTABLE))  {
-               addPreparedStatement("PUIDS",
+           addPreparedStatement("PUIDS",
                 "SELECT release, puid " +
                 "FROM   tmp_release_puid " +
                 "WHERE  release BETWEEN ? AND ? ");
-            }
-            else if(cacheType.equals(CacheType.NONE))  {
-               addPreparedStatement("PUIDS",
-                "SELECT m.release, p.puid " +
-                "FROM medium m " +
-                " INNER JOIN track t ON (t.tracklist=m.tracklist AND m.release BETWEEN ? AND ?) " +
-                " INNER JOIN recording_puid rp ON rp.recording = t.recording " +
-                " INNER JOIN puid p ON rp.puid=p.id");
-            }
+
         }
         else {
             addPreparedStatement("PUIDS",
