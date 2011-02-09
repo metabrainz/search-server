@@ -101,14 +101,15 @@ public class IndexBuilder
     
         StopWatch clock = new StopWatch();
 
-        // MusicBrainz data indexing
+        // MusicBrainz data indexing do the largest indexes first so can run optimizer whilst strat building
+        // te indexes on subsuent tables
         DatabaseIndex[] indexes = {
-                new ArtistIndex(mainDbConn),
-                new ReleaseIndex(mainDbConn,options.getCacheType()),
-                new ReleaseGroupIndex(mainDbConn),
-                new RecordingIndex(mainDbConn, options.getCacheType()),
-                new LabelIndex(mainDbConn),
+                new RecordingIndex(mainDbConn),
+                new ReleaseIndex(mainDbConn),
                 new WorkIndex(mainDbConn),
+                new ArtistIndex(mainDbConn),
+                new ReleaseGroupIndex(mainDbConn),
+                new LabelIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
                 new TagIndex(mainDbConn),
                 new CDStubIndex(rawDbConn), //Note different db
@@ -124,8 +125,8 @@ public class IndexBuilder
         }
 
         //Create temporary tables used by multiple indexes
-        CommonTables commonTables = new CommonTables(mainDbConn, options.getCacheType(), indexesToBeBuilt);
-        commonTables.createTemporaryTables();
+        CommonTables commonTables = new CommonTables(mainDbConn, indexesToBeBuilt);
+        commonTables.createTemporaryTables(false);
 
         for (DatabaseIndex index : indexes) {
 
