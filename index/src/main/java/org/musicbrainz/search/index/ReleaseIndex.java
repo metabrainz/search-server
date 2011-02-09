@@ -164,11 +164,11 @@ public class ReleaseIndex extends DatabaseIndex {
         try
         {
             super.destroy();
-            System.out.println(" Label Queries " + Float.toString(labelClock.getTime()/1000) + " seconds");
-            System.out.println(" Mediums Queries " + Float.toString(mediumClock.getTime()/1000) + " seconds");
-            System.out.println(" Artists Queries " + Float.toString(artistClock.getTime()/1000) + " seconds");
-            System.out.println(" Puids Queries " + Float.toString(puidClock.getTime()/1000) + " seconds");
-            System.out.println(" Releases Queries " + Float.toString(releaseClock.getTime()/1000) + " seconds");
+            System.out.println(this.getName()+":Label Queries " + Float.toString(labelClock.getTime()/1000) + " secs");
+            System.out.println(this.getName()+":Mediums Queries " + Float.toString(mediumClock.getTime()/1000) + " secs");
+            System.out.println(this.getName()+":Artists Queries " + Float.toString(artistClock.getTime()/1000) + " secs");
+            System.out.println(this.getName()+":Puids Queries " + Float.toString(puidClock.getTime()/1000) + " secs");
+            System.out.println(this.getName()+":Releases Queries " + Float.toString(releaseClock.getTime()/1000) + " secs");
 
         }
         catch(Exception ex)

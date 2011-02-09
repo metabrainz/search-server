@@ -76,7 +76,7 @@ public abstract class DatabaseIndex implements Index {
 	        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, rs.getString("current_replication_sequence"));
 	        doc.addNonEmptyField(MetaIndexField.LAST_CHANGE_SEQUENCE, rs.getString("max_seq_id"));
 		} catch (SQLException e) {
-			System.err.println("Unable to get replication information");
+			System.err.println(getName()+":Unable to get replication information");
 		}
         
         indexWriter.addDocument(doc.getLuceneDocument());

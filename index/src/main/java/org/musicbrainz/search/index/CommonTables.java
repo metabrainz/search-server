@@ -22,8 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.commons.lang.time.StopWatch;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Build temporary tables that are used by multiple indexes
@@ -58,7 +57,7 @@ public class CommonTables  {
      */
     private void createArtistCreditTableUsingDb() throws SQLException
     {
-        System.out.println(" Started populating tmp_artistcredit temporary table");
+        System.out.println("tmp_artistcredit:Started at:"+new java.util.Date());
         StopWatch clock = new StopWatch();
         clock.start();
         getDbConnection().createStatement().execute(
@@ -78,14 +77,14 @@ public class CommonTables  {
                 "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
                 " ORDER BY acn.artist_credit,acn.position ");
         clock.stop();
-        System.out.println(" Populated tmp_artistcredit temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_artistcredit:Finished:"+ Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
 
         clock.start();
         getDbConnection().createStatement().execute(
              "CREATE INDEX tmp_artistcredit_idx ON tmp_artistcredit (artist_credit) ");
         clock.stop();
-        System.out.println(" Created indexes on tmp_artist_credit in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_artistcredit:Created Indexes:"+Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
     }
 
@@ -97,7 +96,7 @@ public class CommonTables  {
      */
     private void createReleasePuidTableUsingDb() throws SQLException
     {
-        System.out.println(" Started populating tmp_release_puid temporary table");
+        System.out.println("tmp_release_puid:Started at:"+new java.util.Date());
         StopWatch clock = new StopWatch();
         clock.start();
         getDbConnection().createStatement().execute(
@@ -108,7 +107,7 @@ public class CommonTables  {
             "    INNER JOIN recording_puid rp ON rp.recording = t.recording " +
             "    INNER JOIN puid p ON rp.puid = p.id");
         clock.stop();
-        System.out.println(" Populated tmp_release_puid temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_release_puid:Finished:"+ Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
 
         clock.start();
@@ -118,14 +117,14 @@ public class CommonTables  {
              "CREATE INDEX tmp_release_puid_idx_recording ON tmp_release_puid (recording) ");
 
         clock.stop();
-        System.out.println(" Created indexes on tmp_release_puid in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_release_puid:Created Indexes:"+ Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
     }
 
 
     private void createReleaseTableUsingDb() throws SQLException
     {
-        System.out.println(" Started populating tmp_release temporary table");
+        System.out.println("tmp_release     :Started at:"+new java.util.Date());
         StopWatch clock = new StopWatch();
         clock.start();
 
@@ -150,21 +149,21 @@ public class CommonTables  {
                 " GROUP BY r.id,r.gid,rn.name,barcode,country.iso_code,date_year,date_month,date_day,rgt.name," +
                 "  rm.amazon_asin, language.iso_code_3t, script.iso_code,rs.name");
         clock.stop();
-        System.out.println(" Populated tmp_release temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_release     :Finished:"+ Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
 
         clock.start();
         getDbConnection().createStatement().execute(
                 "CREATE INDEX tmp_release_idx_release ON tmp_release (id) ");
         clock.stop();
-        System.out.println(" Created indexes on tmp_release  in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_release     :Created Indexes:"+ Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
     }
 
 
     private void createTrackTableUsingDb() throws SQLException
     {
-        System.out.println(" Started populating tmp_track temporary table");
+        System.out.println("tmp_track       :Started at:"+new java.util.Date());
         StopWatch clock = new StopWatch();
         clock.start();
 
@@ -178,14 +177,14 @@ public class CommonTables  {
                 "  INNER JOIN medium m ON m.tracklist=tl.id ");
 
         clock.stop();
-        System.out.println(" Populated tmp_track temporary table in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_track       :Finished:"+ Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
 
         clock.start();
         getDbConnection().createStatement().execute(
                 "CREATE INDEX tmp_track_idx_recording ON tmp_track (recording) ");
         clock.stop();
-        System.out.println(" Created indexes on tmp_track  in " + Float.toString(clock.getTime()/1000) + " seconds");
+        System.out.println("tmp_track       :Created Indexes"+ Float.toString(clock.getTime()/1000) + " secs");
         clock.reset();
     }
 

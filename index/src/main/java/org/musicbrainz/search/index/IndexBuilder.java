@@ -43,11 +43,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class IndexBuilder
 {
 
-    public static void main(String[] args) throws SQLException, IOException
+    private static final int MAX_THREADS_FOR_CONCURRENT_OPTIMIZATION = 2;
+
+    public static void main(String[] args) throws SQLException, IOException, InterruptedException
     {
 
         IndexOptions options = new IndexOptions();
@@ -99,10 +102,9 @@ public class IndexBuilder
 			rawDbConn = options.getRawDatabaseConnection();
         }
     
-        StopWatch clock = new StopWatch();
 
-        // MusicBrainz data indexing do the largest indexes first so can run optimizer whilst strat building
-        // te indexes on subsuent tables
+        // MusicBrainz data indexing do the largest indexes first then can run optimizer whilst start building
+        // the indexes on subsequent tables
         DatabaseIndex[] indexes = {
                 new RecordingIndex(mainDbConn),
                 new ReleaseIndex(mainDbConn),
@@ -128,6 +130,8 @@ public class IndexBuilder
         CommonTables commonTables = new CommonTables(mainDbConn, indexesToBeBuilt);
         commonTables.createTemporaryTables(false);
 
+        ExecutorService es = Executors.newFixedThreadPool(MAX_THREADS_FOR_CONCURRENT_OPTIMIZATION);
+        CompletionService<Boolean> cs = new ExecutorCompletionService<Boolean>(es);
         for (DatabaseIndex index : indexes) {
 
             // Check if this index should be built
@@ -136,11 +140,10 @@ public class IndexBuilder
                 continue;
             }
 
-            clock.start();
-            buildDatabaseIndex(index, options);
-            clock.stop();
-            System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
-            clock.reset();
+
+            IndexWriter indexWriter = createIndexWriter(index,options);
+            int maxId = buildDatabaseIndex(indexWriter, index, options);
+            cs.submit(new IndexWriterOptimizerAndClose(maxId,indexWriter, index, options));
         }
 
         // FreeDB data indexing
@@ -150,36 +153,42 @@ public class IndexBuilder
             //If they have set freedbdump file 
             if (options.getFreeDBDump() != null && options.getFreeDBDump().length()!=0)  {
                 if( dumpFile.isFile()) {
-                    clock.start();
                     buildFreeDBIndex(dumpFile, options);
-                    clock.stop();
-                    System.out.println("  Finished in " + Float.toString(clock.getTime()/1000) + " seconds");
                 } else {
                     System.out.println("  Can't build FreeDB index: invalid file "+options.getFreeDBDump());
                 }
             }
         }
+
+        //Wait for each index to be optimized and closed before exiting from Index Build
+        System.out.println("Waiting for any indexes to finish optimizing");
+        for (int i =0;i<indexesToBeBuilt.size();i++) {
+            cs.take();
+        }
+        es.shutdown();
     }
 
+
     /**
-     * Build an index from database
-     * 
+     * Initialize IndexWriter for populating index
+     *
+     * All addDocuments request are put on a queue to allow another query to be made to database without waiting
+     * for all added documents to be analysed, queue is serviced by available processer no of threads.
+     * If the max query outperforms the lucene analysis then analysis will switch to main thread because
+     * the pool queue size cannot be larger than the max number of documents returned from one query.
+     * Will get best results on multicpu systems accessing database on another system.
+     *
+     * @param index
      * @param options
-     * @throws IOException 
-     * @throws SQLException 
+     * @return
+     * @throws IOException
+     * @throws SQLException
      */
-    private static void buildDatabaseIndex(DatabaseIndex index, IndexOptions options) throws IOException, SQLException
+    private static IndexWriter createIndexWriter(DatabaseIndex index, IndexOptions options) throws IOException, SQLException
     {
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
-        System.out.println("Started Building index: " + path + " at "+new Date());
 
-        /* All addDocuments request are put on a queue to allow another query to be made to database without waiting
-         * for all added documents to be analysed, queue is serviced by available processer no of threads.
-         * If the max query outperforms the lucene analysis then analysis will switch to main thread because
-         * the pool queue size cannot be larger than the max number of documents returned from one query.
-         * Will get best results on multicpu systems accessing database on another system.
-         */
         indexWriter = new ThreadedIndexWriter(FSDirectory.open(new File(path)),
                 index.getAnalyzer(),
                 true,
@@ -189,7 +198,23 @@ public class IndexBuilder
 
         indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
+        return indexWriter;
 
+    }
+
+    /**
+     * Build an index from database
+     * 
+     * @param options
+     * @throws IOException 
+     * @throws SQLException 
+     */
+    private static int buildDatabaseIndex(IndexWriter indexWriter, DatabaseIndex index, IndexOptions options) throws IOException, SQLException
+    {
+        StopWatch clock = new StopWatch();
+        clock.start();
+        System.out.println(index.getName()+":Started at "+new Date());
+        String path = options.getIndexesDir() + index.getFilename();
         index.init(indexWriter, false);
         index.addMetaInformation(indexWriter);
         int maxId = index.getMaxId();
@@ -198,27 +223,21 @@ public class IndexBuilder
         int j = 0;
         while (j <= maxId) {
         	int k = Math.min(j + options.getDatabaseChunkSize() - 1, maxId);
-            System.out.print("  Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
+            System.out.print(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
             index.indexData(indexWriter, j, k);
             j += options.getDatabaseChunkSize();
         }
 
         index.destroy();
-        System.out.println("\n  Started Optimizing at "+new Date());
-        indexWriter.optimize();
-        indexWriter.close();
-
-        // For debugging to check sql is not creating too few/many rows
-        if(true) {
-            int dbRows = index.getNoOfRows(maxId);
-            IndexReader reader = IndexReader.open(FSDirectory.open(new File(path)),true);
-            System.out.println("  Indexed "+dbRows+" rows, creating "+(reader.maxDoc() - 1)+" lucene documents");
-            reader.close();
-        }
-        System.out.println("  Completed Optimizing at "+new Date());
+        clock.stop();
+        System.out.println(index.getName()+":Finished:" + Float.toString(clock.getTime()/1000) + " secs");
+        return maxId;
 
     }
-    
+
+
+
+
     /**
      * Build a FreeDB index from a FreeDB dump
      * 
@@ -231,6 +250,10 @@ public class IndexBuilder
         FreeDBIndex index = new FreeDBIndex();
         index.setDumpFile(dumpFile);
 
+        StopWatch clock = new StopWatch();
+        clock.start();
+        System.out.println(index.getName()+":Started at "+new Date());
+
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
@@ -241,9 +264,62 @@ public class IndexBuilder
         index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
 
-        System.out.println("  Optimizing");
         indexWriter.optimize();
         indexWriter.close();
+        System.out.println(index.getName()+":Finished:" + Float.toString(clock.getTime()/1000) + " secs");
+
     }
-    
+
+    /*
+     * Optimize the index in and close writer once index has been optimized
+     *
+     *
+     * We run this as a future task so we can be optimizing the last index whilst the next index is being built.
+     *
+     */
+   static class IndexWriterOptimizerAndClose implements Callable<Boolean>
+    {
+        private int             maxId;
+        private IndexWriter     indexWriter;
+        private DatabaseIndex   index;
+        private IndexOptions    options;
+
+        /**
+         *
+         * @param maxId
+         * @param indexWriter
+         * @param index
+         * @param options
+         */
+        public IndexWriterOptimizerAndClose(int maxId, IndexWriter indexWriter, DatabaseIndex index, IndexOptions options)
+        {
+            this.maxId=maxId;
+            this.indexWriter= indexWriter;
+            this.index=index;
+            this.options=options;
+        }
+
+        public Boolean call() throws IOException, SQLException
+        {
+
+            StopWatch clock = new StopWatch();
+            clock.start();
+            String path = options.getIndexesDir() + index.getFilename();
+            System.out.println(index.getName()+":Started Optimization at "+new Date());
+
+            indexWriter.optimize();
+            indexWriter.close();
+            clock.stop();
+            // For debugging to check sql is not creating too few/many rows
+            if(true) {
+                int dbRows = index.getNoOfRows(maxId);
+                IndexReader reader = IndexReader.open(FSDirectory.open(new File(path)),true);
+                System.out.println(index.getName()+":"+dbRows+" db rows:"+(reader.maxDoc() - 1)+" lucene docs");
+                reader.close();
+            }
+            System.out.println(index.getName()+":Finished Optimization:" + Float.toString(clock.getTime()/1000) + " secs");
+
+            return true;
+        }
+    }
 }

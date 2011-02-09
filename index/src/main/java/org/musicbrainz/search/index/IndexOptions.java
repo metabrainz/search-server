@@ -127,7 +127,7 @@ public class IndexOptions {
         // Forces Query Analyser to take advantage of indexes when they exist, this works round the problem with the
         // explain sometimes deciding to do full table scans when building recording index causing query to run unacceptably slow.
         st.executeUpdate("SET enable_seqscan = off");
-		st.executeUpdate("SET search_path TO '" + IndexOptions.DB_SCHEMA + "'");
+		//st.executeUpdate("SET search_path TO '" + IndexOptions.DB_SCHEMA + "'");
     }
     
 }
