@@ -66,12 +66,12 @@ public class ReleaseWriter extends ResultsWriter {
             ReleaseGroup rg = of.createReleaseGroup();
             release.setReleaseGroup(rg);
             if (type != null) {
-                release.getReleaseGroup().setType(type.toLowerCase(Locale.US));
+                release.getReleaseGroup().setType(type);
             }
 
             String status = doc.get(ReleaseIndexField.STATUS);
             if (status != null) {
-                release.setStatus(status.toLowerCase(Locale.US));
+                release.setStatus(status);
             }
 
             String country = doc.get(ReleaseIndexField.COUNTRY);
@@ -156,7 +156,7 @@ public class ReleaseWriter extends ResultsWriter {
                 Medium medium = of.createMedium();
 
                 if(!formats[i].toLowerCase(Locale.US).equals("-")) {
-                    medium.setFormat(formats[i].toLowerCase(Locale.US));
+                    medium.setFormat(formats[i]);
                 }
                 org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
                 trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));

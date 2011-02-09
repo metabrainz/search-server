@@ -21,7 +21,7 @@ public enum WorkIndexField implements IndexField {
     WORK_ID		        ("wid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     WORK			    ("work",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
     ISWC		        ("iswc",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    TYPE		        ("type",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    TYPE		        ("type",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ALIAS		        ("alias",		Field.Store.YES, 	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     TAG		            ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	Field.Store.YES,	Field.Index.NO)

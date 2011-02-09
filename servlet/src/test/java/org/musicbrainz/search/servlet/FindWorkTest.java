@@ -48,7 +48,7 @@ public class FindWorkTest extends TestCase {
             doc.addField(WorkIndexField.ARTIST, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
             doc.addField(WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
-            doc.addField(WorkIndexField.TYPE, "opera");
+            doc.addField(WorkIndexField.TYPE, "Opera");
             doc.addField(WorkIndexField.ALIAS, "Symp5");
             doc.addField(WorkIndexField.TAG, "classical");
             doc.addField(WorkIndexField.TAGCOUNT, "10");
@@ -176,7 +176,7 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("<name>Ludwig van Beethoven</name>"));
         assertTrue(output.contains("<sort-name>Beethoven, Ludwig van</sort-name>"));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
-        assertTrue(output.contains("type=\"opera\""));
+        assertTrue(output.contains("type=\"Opera\""));
         assertTrue(output.contains("<alias-list><alias>Symp5</alias></alias-list>"));
         assertTrue(output.contains("<tag-list><tag count=\"10\"><name>classical</name></tag></tag-list>"));
 

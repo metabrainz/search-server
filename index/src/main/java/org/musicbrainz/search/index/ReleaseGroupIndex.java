@@ -113,7 +113,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 " ORDER BY r.id, a.pos");
 
         addPreparedStatement("RELEASEGROUPS",
-                "SELECT rg.id, rg.gid, n0.name as name, lower(release_group_type.name) as type " +
+                "SELECT rg.id, rg.gid, n0.name as name, release_group_type.name as type " +
                 " FROM release_group AS rg " +
                 "  LEFT JOIN release_name n0 ON rg.name = n0.id " +
                 "  LEFT JOIN release_group_type ON rg.type = release_group_type.id " +

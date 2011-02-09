@@ -102,7 +102,7 @@ public class WorkIndex extends DatabaseIndex {
                 " WHERE work BETWEEN ? AND ?");
 
         addPreparedStatement("WORKS",
-                        "SELECT w.id as wid, w.gid, wn.name as name, lower(wt.name) as type, iswc " +
+                        "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, iswc " +
                         " FROM work AS w " +
                         "  LEFT JOIN work_name wn ON w.name = wn.id " +
                         "  LEFT JOIN work_type wt ON w.type = wt.id " +

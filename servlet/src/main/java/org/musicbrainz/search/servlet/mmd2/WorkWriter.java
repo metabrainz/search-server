@@ -64,7 +64,7 @@ public class WorkWriter extends ResultsWriter {
 
             String type = doc.get(WorkIndexField.TYPE);
             if (type != null) {
-                work.setType(type.toLowerCase(Locale.US));
+                work.setType(type);
             }
 
             String iswc = doc.get(WorkIndexField.ISWC);

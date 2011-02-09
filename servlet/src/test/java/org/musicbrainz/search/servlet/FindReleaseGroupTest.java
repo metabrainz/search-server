@@ -48,7 +48,7 @@ public class FindReleaseGroupTest extends TestCase {
         doc.addField(ReleaseGroupIndexField.TAG, "indie");
         doc.addField(ReleaseGroupIndexField.TAGCOUNT, "101");
 
-        doc.addField(ReleaseGroupIndexField.TYPE, ReleaseGroupType.SINGLE.getName());
+        doc.addField(ReleaseGroupIndexField.TYPE, "Single");
         doc.addField(ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
         doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
         doc.addField(ReleaseGroupIndexField.ARTIST, "The Wedding Present");
@@ -114,7 +114,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
         assertEquals("secret", doc.get(ReleaseGroupIndexField.RELEASE));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseGroupByName() throws Exception {
@@ -124,7 +124,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseGroupByRelease() throws Exception {
@@ -136,7 +136,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseGroupByReleaseId() throws Exception {
@@ -148,7 +148,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     //release
@@ -159,7 +159,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
 
@@ -172,7 +172,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseGroupByNumericType() throws Exception {
@@ -182,7 +182,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseGroupByDefault() throws Exception {
@@ -194,7 +194,7 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-        assertEquals("single", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
         assertEquals("secret", doc.get(ReleaseGroupIndexField.RELEASE));
 
     }
@@ -302,7 +302,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("<name-credit>"));
         assertTrue(output.contains("<artist-credit>"));
         assertTrue(output.contains("artist id=\"707622da-475f-48e1-905d-248718df6521\""));
-        assertTrue(output.contains("type=\"single\""));
+        assertTrue(output.contains("type=\"Single\""));
         assertTrue(output.contains("release-list count=\"1\""));
         assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title></release>"));
         assertTrue(output.contains("indie</name>"));

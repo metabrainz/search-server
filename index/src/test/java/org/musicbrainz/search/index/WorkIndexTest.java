@@ -124,7 +124,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
-            assertEquals("opera", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
+            assertEquals("Opera", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
             ir.close();
         }
     }

@@ -59,17 +59,17 @@ public class ArtistWriter extends ResultsWriter {
 
             String artype = doc.get(ArtistIndexField.TYPE);
             if (artype != null) {
-                artist.setType(artype.toLowerCase(Locale.US));
+                artist.setType(artype);
             }
 
             String gender = doc.get(ArtistIndexField.GENDER);
             if (gender != null) {
-                artist.setGender(gender.toLowerCase(Locale.US));
+                artist.setGender(gender);
             }
 
             String country = doc.get(ArtistIndexField.COUNTRY);
             if (country != null) {
-                artist.setCountry(country);
+                artist.setCountry(country.toUpperCase(Locale.US));
 
             }
 

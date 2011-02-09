@@ -43,7 +43,7 @@ public class FindArtistTest extends TestCase {
             doc.addField(ArtistIndexField.ARTIST, "Farming Incident");
             doc.addField(ArtistIndexField.SORTNAME, "Incident, Farming");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
-            doc.addField(ArtistIndexField.TYPE, ArtistType.GROUP.getName());
+            doc.addField(ArtistIndexField.TYPE, "Group");
             doc.addField(ArtistIndexField.COMMENT, "the real one");
             doc.addField(ArtistIndexField.COUNTRY, "AF");
             doc.addField(ArtistIndexField.GENDER, "male");
@@ -86,7 +86,7 @@ public class FindArtistTest extends TestCase {
         assertNull(doc.get(ArtistIndexField.END));
         assertNull(doc.get(ArtistIndexField.ALIAS));
         assertEquals("Incident, Farming", doc.get(ArtistIndexField.SORTNAME));
-        assertEquals("group", doc.get(ArtistIndexField.TYPE));
+        assertEquals("Group", doc.get(ArtistIndexField.TYPE));
     }
 
     public void testFindArtistByName() throws Exception {
@@ -281,7 +281,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
-        assertTrue(output.contains("type=\"group\""));
+        assertTrue(output.contains("type=\"Group\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
@@ -359,7 +359,7 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("id\":\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
-        assertTrue(output.contains("\"type\":\"group\""));
+        assertTrue(output.contains("\"type\":\"Group\""));
         assertTrue(output.contains("name\":\"Farming Incident\""));
         assertTrue(output.contains("\"sort-name\":\"Incident, Farming\""));
         assertTrue(output.contains("\"life-span\":{\"begin\":\"1999-04\"}"));

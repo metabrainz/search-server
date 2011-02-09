@@ -31,6 +31,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 import org.musicbrainz.search.analysis.LabelNameAnalyzer;
 import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
@@ -50,7 +51,7 @@ public enum LabelIndexField implements IndexField {
     BEGIN		("begin",		Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COMMENT		("comment",		Field.Store.YES, 	Field.Index.ANALYZED),
-    TYPE		("type",		Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    TYPE		("type",		Field.Store.YES, 	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO)
     ;

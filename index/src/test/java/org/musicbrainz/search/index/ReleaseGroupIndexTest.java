@@ -227,7 +227,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
-            assertEquals("album", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
+            assertEquals("Album", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
 

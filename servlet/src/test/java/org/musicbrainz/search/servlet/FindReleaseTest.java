@@ -78,7 +78,7 @@ public class FindReleaseTest extends TestCase {
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, 3);
 
         doc.addField(ReleaseIndexField.STATUS, "Official");
-        doc.addField(ReleaseIndexField.TYPE, "album");
+        doc.addField(ReleaseIndexField.TYPE, "Album");
         doc.addField(ReleaseIndexField.AMAZON_ID, "B00004Y6O9");
 
         doc.addField(ReleaseIndexField.COUNTRY, "GB");
@@ -178,7 +178,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
         assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
-        assertEquals("album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseIndexField.TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
         assertEquals("B00004Y6O9", doc.get(ReleaseIndexField.AMAZON_ID));
 
@@ -414,7 +414,7 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseByTypeTitleCase() throws Exception {
@@ -424,7 +424,7 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseByNumericType() throws Exception {
@@ -434,7 +434,7 @@ public class FindReleaseTest extends TestCase {
            MbDocument doc = result.doc;
            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-           assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+           assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
        }
 
      public void testFindReleaseByStatusLowercase() throws Exception {
@@ -444,7 +444,7 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     public void testFindReleaseByStatusTitleCase() throws Exception {
@@ -454,7 +454,7 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
     public void testFindReleaseByNumericstatus() throws Exception {
            Results res = ss.searchLucene("status:1", 0, 10);
@@ -463,7 +463,7 @@ public class FindReleaseTest extends TestCase {
            MbDocument doc = result.doc;
            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-           assertEquals("album", doc.get(ReleaseGroupIndexField.TYPE));
+           assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
        }
 
     public void testFindReleaseGroupByArtist2() throws Exception {
@@ -565,7 +565,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<language>eng</language>"));
         assertTrue(output.contains("<script>Latn</script>"));
-        assertTrue(output.contains("<release-group type=\"album\""));
+        assertTrue(output.contains("<release-group type=\"Album\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
@@ -574,7 +574,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<track-list count=\"10\""));
         assertTrue(output.contains("<date>2005</date>"));
         assertTrue(output.contains("<country>GB</country>"));
-        assertTrue(output.contains("<format>vinyl</format>"));
+        assertTrue(output.contains("<format>Vinyl</format>"));
         assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
         assertTrue(output.contains("<track-count>17</track-count>"));
         assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
@@ -598,9 +598,9 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("id\":\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
-        assertTrue(output.contains("\"type\":\"album\""));
+        assertTrue(output.contains("\"type\":\"Album\""));
         assertTrue(output.contains("title\":\"Our Glorious 5 Year Plan\""));
-        assertTrue(output.contains("\"status\":\"official\""));
+        assertTrue(output.contains("\"status\":\"Official\""));
         assertTrue(output.contains("\"language\":\"eng\""));
         assertTrue(output.contains("\"script\":\"Latn\""));
         assertTrue(output.contains("\"barcode\":\"07599273202\""));

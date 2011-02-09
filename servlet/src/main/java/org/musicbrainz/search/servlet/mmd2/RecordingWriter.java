@@ -113,7 +113,7 @@ public class RecordingWriter extends ResultsWriter {
                     release.setId(releaseIds[i]);
                     release.setTitle(releaseNames[i]);
                     if (!releaseStatus[i].equals("-")) {
-                        release.setStatus(releaseStatus[i].toLowerCase(Locale.US));
+                        release.setStatus(releaseStatus[i]);
                     }
 
                     if (!releaseDate[i].equals("-")) {
@@ -123,7 +123,7 @@ public class RecordingWriter extends ResultsWriter {
                     ReleaseGroup rg = of.createReleaseGroup();
                     release.setReleaseGroup(rg);
                     if (!releaseTypes[i].equals("-")) {
-                        release.getReleaseGroup().setType(releaseTypes[i].toLowerCase(Locale.US));
+                        release.getReleaseGroup().setType(releaseTypes[i]);
                     }
 
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();

@@ -100,7 +100,7 @@ public class ArtistIndex extends DatabaseIndex {
 
         addPreparedStatement("ARTISTS",
                 "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
-                "  lower(artist_type.name) as type, begin_date_year, begin_date_month, begin_date_day, " +
+                "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
                 "  end_date_year, end_date_month, end_date_day, " +
                 "  comment, lower(iso_code) as country, lower(gender.name) as gender " +
                 " FROM artist " +

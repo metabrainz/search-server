@@ -53,7 +53,7 @@ public class LabelWriter extends ResultsWriter {
             label.setId(doc.get(LabelIndexField.LABEL_ID));
             String type = doc.get(LabelIndexField.TYPE);
             if(type!=null) {
-                label.setType(type.toLowerCase((Locale.US)));
+                label.setType(type);
             }
             label.setScore(String.valueOf((int)(result.score * 100)));
             String name = doc.get(LabelIndexField.LABEL);
@@ -70,7 +70,7 @@ public class LabelWriter extends ResultsWriter {
 
             String countryCode = doc.get(LabelIndexField.COUNTRY);
             if (countryCode != null) {
-                label.setCountry(countryCode);
+                label.setCountry(countryCode.toUpperCase(Locale.US));
 
             }
 

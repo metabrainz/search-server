@@ -72,7 +72,7 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
         doc.addField(RecordingIndexField.POSITION, "1");
-        doc.addField(RecordingIndexField.RELEASE_TYPE, ReleaseGroupType.ALBUM.getName());
+        doc.addField(RecordingIndexField.RELEASE_TYPE, "Album");
         doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
         doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
         doc.addField(RecordingIndexField.ISRC, "123456789");
@@ -368,7 +368,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("release id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
-        assertTrue(output.contains("release-group type=\"album\""));
+        assertTrue(output.contains("release-group type=\"Album\""));
         assertTrue(output.contains("track-list offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
         assertTrue(output.contains("offset=\"0\""));
@@ -376,7 +376,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<isrc id=\"123456789\"/>"));
         assertTrue(output.contains("<isrc id=\"abcdefghi\"/>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
-        assertTrue(output.contains("<status>official</status>"));
+        assertTrue(output.contains("<status>Official</status>"));
         assertTrue(output.contains("<date>1970-01-01</date>"));
         assertTrue(output.contains("<track-count>10</track-count>"));
         assertTrue(output.contains("indie</name>"));
@@ -401,12 +401,12 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"score\":\"100\""));
-        assertTrue(output.contains("\"type\":\"album\""));
+        assertTrue(output.contains("\"type\":\"Album\""));
         assertTrue(output.contains("title\":\"Gravitational Lenz\""));
         assertTrue(output.contains("\"length\":234000"));
         assertTrue(output.contains("\"isrc\":[{\"id\":\"123456789"));
         assertTrue(output.contains("\"position\":1"));
-        assertTrue(output.contains("\"status\":\"official\""));
+        assertTrue(output.contains("\"status\":\"Official\""));
         assertTrue(output.contains("\"track-count\":10"));
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
         assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
