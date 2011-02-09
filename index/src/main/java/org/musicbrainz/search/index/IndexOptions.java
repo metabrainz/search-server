@@ -18,7 +18,7 @@ public class IndexOptions {
     // Lucene parameters
     public static final int MAX_BUFFERED_DOCS = 10000;
     public static final int MERGE_FACTOR = 3000;
-    
+
     // PostgreSQL schema that holds MB data
 	public static final String DB_SCHEMA = "musicbrainz";
 	
@@ -114,9 +114,6 @@ public class IndexOptions {
     private int databaseChunkSize = IDS_PER_CHUNK;
     public int getDatabaseChunkSize() { return databaseChunkSize; }
 
-    @Option(name="--cacheType", usage="Use Caches in building release indexes (none,temptable,map)")
-    private String cacheType = CacheType.TEMPTABLE;
-    public String getCacheType() { return cacheType; }
 
     /**
      * Prepare a database connection, and set its default Postgres schema
