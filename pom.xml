@@ -9,7 +9,7 @@
   <url>http://maven.apache.org</url>
   <modules>
     <module>index</module>
-    <module>updater</module>
     <module>servlet</module>
+    <module>updater</module>
   </modules>
 </project>
