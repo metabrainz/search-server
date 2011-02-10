@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -82,7 +81,10 @@ public class IndexBuilder
 
         Connection mainDbConn = null;
         Connection rawDbConn = null; 
-        
+
+        System.out.println("Index Builder Started:"+ Utils.formatCurrentTimeForOutput());
+
+
         // Check that FreeDB is not the only index requested for build
         if (options.selectedIndexes().size() > 1 || !options.buildIndex("freedb")) {
 
@@ -161,11 +163,13 @@ public class IndexBuilder
         }
 
         //Wait for each index to be optimized and closed before exiting from Index Build
-        System.out.println("Waiting for any indexes to finish optimizing");
+        System.out.println("Waiting for any indexes to finish optimizing:"+ Utils.formatCurrentTimeForOutput());
         for (int i =0;i<indexesToBeBuilt.size();i++) {
             cs.take();
         }
         es.shutdown();
+        System.out.println("Index Builder Finished:"+ Utils.formatCurrentTimeForOutput());
+
     }
 
 
@@ -213,7 +217,7 @@ public class IndexBuilder
     {
         StopWatch clock = new StopWatch();
         clock.start();
-        System.out.println(index.getName()+":Started at "+new Date());
+        System.out.println(index.getName()+":Started at "+ Utils.formatCurrentTimeForOutput());
         String path = options.getIndexesDir() + index.getFilename();
         index.init(indexWriter, false);
         index.addMetaInformation(indexWriter);
@@ -230,7 +234,7 @@ public class IndexBuilder
 
         index.destroy();
         clock.stop();
-        System.out.println(index.getName()+":Finished:" + Float.toString(clock.getTime()/1000) + " secs");
+        System.out.println("\n"+index.getName()+":Finished:" + Utils.formatClock(clock));
         return maxId;
 
     }
@@ -252,7 +256,7 @@ public class IndexBuilder
 
         StopWatch clock = new StopWatch();
         clock.start();
-        System.out.println(index.getName()+":Started at "+new Date());
+        System.out.println(index.getName()+":Started at "+ Utils.formatCurrentTimeForOutput());
 
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
@@ -266,7 +270,7 @@ public class IndexBuilder
 
         indexWriter.optimize();
         indexWriter.close();
-        System.out.println(index.getName()+":Finished:" + Float.toString(clock.getTime()/1000) + " secs");
+        System.out.println(index.getName()+":Finished:" + Utils.formatClock(clock));
 
     }
 
@@ -305,7 +309,7 @@ public class IndexBuilder
             StopWatch clock = new StopWatch();
             clock.start();
             String path = options.getIndexesDir() + index.getFilename();
-            System.out.println(index.getName()+":Started Optimization at "+new Date());
+            System.out.println(index.getName()+":Started Optimization at "+Utils.formatCurrentTimeForOutput());
 
             indexWriter.optimize();
             indexWriter.close();
@@ -317,7 +321,7 @@ public class IndexBuilder
                 System.out.println(index.getName()+":"+dbRows+" db rows:"+(reader.maxDoc() - 1)+" lucene docs");
                 reader.close();
             }
-            System.out.println(index.getName()+":Finished Optimization:" + Float.toString(clock.getTime()/1000) + " secs");
+            System.out.println(index.getName()+":Finished Optimization:" + Utils.formatClock(clock));
 
             return true;
         }

@@ -170,12 +170,12 @@ public class RecordingIndex extends DatabaseIndex {
     public void destroy() throws SQLException {
 
         super.destroy();
-        System.out.println(this.getName()+":Isrcs Queries " + Float.toString(isrcClock.getTime() / 1000) + " secs");
-        System.out.println(this.getName()+":Track Queries " + Float.toString(trackClock.getTime() / 1000) + " secs");
-        System.out.println(this.getName()+":Artists Queries " + Float.toString(artistClock.getTime()/1000) + " secs");
-        System.out.println(this.getName()+":Puids Queries " + Float.toString(puidClock.getTime()/1000) + " secs");
-        System.out.println(this.getName()+":Releases Queries " + Float.toString(releaseClock.getTime() / 1000) + " secs");
-        System.out.println(this.getName()+":Recording Queries " + Float.toString(recordingClock.getTime()/1000) + " secs");
+        System.out.println(this.getName()+":Isrcs Queries "     + Utils.formatClock(isrcClock));
+        System.out.println(this.getName()+":Track Queries "     + Utils.formatClock(trackClock));
+        System.out.println(this.getName()+":Artists Queries "   + Utils.formatClock(artistClock));
+        System.out.println(this.getName()+":Puids Queries "     + Utils.formatClock(puidClock));
+        System.out.println(this.getName()+":Releases Queries "  + Utils.formatClock(releaseClock));
+        System.out.println(this.getName()+":Recording Queries " + Utils.formatClock(recordingClock));
 
     }
 

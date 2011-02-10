@@ -1,8 +1,14 @@
 package org.musicbrainz.search.index;
 
+import org.apache.commons.lang.time.StopWatch;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Formatter;
 
 public class Utils {
+
+    private static SimpleDateFormat TIME_OUTPUT = new SimpleDateFormat("HH:mm:ss");
 
 	public static String formatDate(Integer year, Integer month, Integer day)
 	{
@@ -30,5 +36,28 @@ public class Utils {
 		
 		return "";
 	}
+
+    /**
+     * Format clock for output
+     *
+     * @param clock
+     * @return
+     */
+    public static String formatClock(StopWatch clock)
+    {
+        return Float.toString(clock.getTime()/1000) + " secs";
+    }
+
+    /**
+     * Format current date as time for output
+     *
+     * (Must be synchronized because DateFormat is not thread safe)
+     *
+     * @return
+     */
+    public synchronized static String formatCurrentTimeForOutput()
+    {
+        return TIME_OUTPUT.format(new Date());
+    }
 
 }

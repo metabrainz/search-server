@@ -48,8 +48,6 @@ public class ReleaseIndex extends DatabaseIndex {
     private StopWatch artistClock = new StopWatch();
     private StopWatch releaseClock = new StopWatch();
 
-    private String              cacheType;
-
     public static final String INDEX_NAME = "release";
 
     public ReleaseIndex(Connection dbConnection) {
@@ -164,11 +162,11 @@ public class ReleaseIndex extends DatabaseIndex {
         try
         {
             super.destroy();
-            System.out.println(this.getName()+":Label Queries " + Float.toString(labelClock.getTime()/1000) + " secs");
-            System.out.println(this.getName()+":Mediums Queries " + Float.toString(mediumClock.getTime()/1000) + " secs");
-            System.out.println(this.getName()+":Artists Queries " + Float.toString(artistClock.getTime()/1000) + " secs");
-            System.out.println(this.getName()+":Puids Queries " + Float.toString(puidClock.getTime()/1000) + " secs");
-            System.out.println(this.getName()+":Releases Queries " + Float.toString(releaseClock.getTime()/1000) + " secs");
+            System.out.println(this.getName()+":Label Queries "    + Utils.formatClock(labelClock));
+            System.out.println(this.getName()+":Mediums Queries "  + Utils.formatClock(mediumClock));
+            System.out.println(this.getName()+":Artists Queries "  + Utils.formatClock(artistClock));
+            System.out.println(this.getName()+":Puids Queries "    + Utils.formatClock(puidClock));
+            System.out.println(this.getName()+":Releases Queries " + Utils.formatClock(releaseClock));
 
         }
         catch(Exception ex)
