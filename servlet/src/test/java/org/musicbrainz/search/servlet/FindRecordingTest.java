@@ -80,6 +80,8 @@ public class FindRecordingTest extends TestCase {
 
         doc.addField(RecordingIndexField.TAG, "indie");
         doc.addField(RecordingIndexField.TAGCOUNT, "101");
+        doc.addField(RecordingIndexField.RELEASE_AC_VA,"1");
+
 
         writer.addDocument(doc.getLuceneDocument());
         writer.close();
@@ -379,6 +381,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<status>Official</status>"));
         assertTrue(output.contains("<date>1970-01-01</date>"));
         assertTrue(output.contains("<track-count>10</track-count>"));
+        assertTrue(output.contains("<artist-credit><name-credit><artist id=\"89ad4ac3-39f7-470e-963a-56509c546377\"><name>Various Artists</name></artist></name-credit></artist-credit>"));
         assertTrue(output.contains("indie</name>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
         
@@ -410,7 +413,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"track-count\":10"));
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
         assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
-
+        assertTrue(output.contains("\"artist-credit\":{\"name-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}"));
     }
 
 }

@@ -43,6 +43,27 @@ import java.util.Locale;
 
 public class RecordingWriter extends ResultsWriter {
 
+    private static final String VARIOUS_ARTISTS_GUID = "89ad4ac3-39f7-470e-963a-56509c546377";
+    private static final String VARIOUS_ARTISTS_NAME = "Various Artists";
+
+    /**
+     * Create various artist credits
+     *
+     * @return
+     */
+    private ArtistCredit createVariousArtistsCredit()
+    {
+        ObjectFactory of = new ObjectFactory();
+        Artist       artist   = of.createArtist();
+        artist.setId(VARIOUS_ARTISTS_GUID);
+        artist.setName(VARIOUS_ARTISTS_NAME);
+        NameCredit   naCredit = of.createNameCredit();
+        naCredit.setArtist(artist);
+        ArtistCredit vaCredit = of.createArtistCredit();
+        vaCredit.getNameCredit().add(naCredit);
+        return vaCredit;
+    }
+
     public Metadata write(Results results) throws IOException {
 
 
@@ -103,6 +124,7 @@ public class RecordingWriter extends ResultsWriter {
             String[] trackName          = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
             String[] mediumPos          = doc.getValues(RecordingIndexField.POSITION);
             String[] numTracksRelease   = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
+            String[] releaseVA          = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
 
             if(releaseNames.length>0)
             {
@@ -118,6 +140,10 @@ public class RecordingWriter extends ResultsWriter {
 
                     if (!releaseDate[i].equals("-")) {
                         release.setDate(releaseDate[i].toLowerCase(Locale.US));
+                    }
+
+                    if (!releaseVA[i].equals("-")) {
+                        release.setArtistCredit(createVariousArtistsCredit());
                     }
 
                     ReleaseGroup rg = of.createReleaseGroup();

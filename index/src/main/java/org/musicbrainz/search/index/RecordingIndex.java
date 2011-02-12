@@ -34,6 +34,8 @@ import java.util.*;
 
 public class RecordingIndex extends DatabaseIndex {
 
+    private static final int VARIOUS_ARTIST_CREDIT_ID = 1;
+
     public static final String INDEX_NAME = "recording";
 
     private StopWatch trackClock = new StopWatch();
@@ -156,7 +158,7 @@ public class RecordingIndex extends DatabaseIndex {
         releases =
                 "SELECT " +
                 "  id as releaseKey, gid as releaseid, name as releasename, type, "+
-                "  status, date_year, date_month, date_day, tracks" +
+                "  status, date_year, date_month, date_day, tracks,artist_credit " +
                 " FROM tmp_release r1 " +
                 " WHERE r1.id in " ;
 
@@ -430,6 +432,12 @@ public class RecordingIndex extends DatabaseIndex {
             ml.setTrackCount(BigInteger.valueOf(rs.getInt("tracks")));
             release.setReleaseGroup(rg);
             release.setMediumList(ml);
+
+            if(rs.getInt("artist_credit")==VARIOUS_ARTIST_CREDIT_ID)
+            {
+                ArtistCredit ac = of.createArtistCredit();
+                release.setArtistCredit(ac);
+            }
         }
         rs.close();
         releaseClock.suspend();
@@ -506,6 +514,15 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addField(RecordingIndexField.RELEASE, release.getTitle());
                 doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
 
+                //Is Various Artist Release
+                if(release.getArtistCredit()!=null)
+                {
+                    doc.addField(RecordingIndexField.RELEASE_AC_VA, "1");
+                }
+                else
+                {
+                    doc.addField(RecordingIndexField.RELEASE_AC_VA, "-");
+                }
                 // Added to TRACK_OUTPUT for outputting xml,
                 doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
                 // and if different to recording for searching

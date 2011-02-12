@@ -134,7 +134,8 @@ public class CommonTables  {
                 "  barcode, lower(country.iso_code) as country, " +
                 "  date_year, date_month, date_day, rgt.name as type, rm.amazon_asin, " +
                 "  language.iso_code_3t as language, script.iso_code as script, rs.name as status, " +
-                "  sum(tr.track_count) as tracks" +
+                "  sum(tr.track_count) as tracks," +
+                "  r.artist_credit" +
                 " FROM release r " +
                 "  LEFT JOIN release_meta rm ON r.id = rm.id " +
                 "  LEFT JOIN release_group rg ON rg.id = r.release_group " +
@@ -147,7 +148,7 @@ public class CommonTables  {
                 "  LEFT JOIN medium m ON m.release=r.id" +
                 "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
                 " GROUP BY r.id,r.gid,rn.name,barcode,country.iso_code,date_year,date_month,date_day,rgt.name," +
-                "  rm.amazon_asin, language.iso_code_3t, script.iso_code,rs.name");
+                "  rm.amazon_asin, language.iso_code_3t, script.iso_code,rs.name,r.artist_credit");
         clock.stop();
         System.out.println("tmp_release     :Finished:" + Utils.formatClock(clock));
         clock.reset();
