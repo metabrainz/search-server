@@ -35,6 +35,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.util.NumericUtils;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -42,31 +43,33 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
-import java.util.Arrays;
-import java.util.Date;
+import java.security.PrivateKey;
+import java.util.*;
 
 public class FreeDBIndex implements Index {
 
     private int emptyCount=0;
     private int failedCount=0;
-    private int utfCount =0;
-    private int iso8859Count =0;
 
 
-    private CharsetDecoder utf8Decoder;
-    private CharsetDecoder iso8859Decoder;
+    private Set<String>                 unknownCharsets = new HashSet<String>();
+    private Map<String,CharsetDecoder>  decoderMap      = new HashMap<String,CharsetDecoder> ();
+    private Map<String,Integer>         countMap        = new TreeMap<String,Integer> ();
 
     private void initDecoders() {
+        CharsetDecoder decoder;
+        decoder = Charset.forName("UTF8").newDecoder();
+        decoder.onMalformedInput(CodingErrorAction.REPORT);
+        decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+        decoderMap.put("UTF8",decoder);
+        countMap.put("UTF8",0);
 
-        //UTF8 Format
-        utf8Decoder = Charset.forName("UTF8").newDecoder();
-        utf8Decoder.onMalformedInput(CodingErrorAction.REPORT);
-        utf8Decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+        decoder = Charset.forName("ISO-8859-1").newDecoder();
+        decoder.onMalformedInput(CodingErrorAction.REPORT);
+        decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+        decoderMap.put("ISO-8859-1", decoder);
+        countMap.put("ISO-8859-1",0);
 
-        //ISO8859 Format
-        iso8859Decoder = Charset.forName("ISO-8859-1").newDecoder();
-        iso8859Decoder.onMalformedInput(CodingErrorAction.REPORT);
-        iso8859Decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
     }
 
     public FreeDBIndex() {
@@ -150,11 +153,30 @@ public class FreeDBIndex implements Index {
             }
         }
 
-        System.out.println("  No of UTF8 entries " + utfCount);
-        System.out.println("  No of ISO-8859-1 entries " + iso8859Count);
+        for(Map.Entry<String,Integer> charsetCounter:countMap.entrySet())
+        {
+            System.out.println("No of "+charsetCounter.getKey()+ " entries "+charsetCounter.getValue());
+        }
         System.out.println("  No of empty entries " + emptyCount);
         System.out.println("  No of failed entries " + failedCount);
 
+    }
+
+
+    /**
+     * Uses heuristics to identify the most likely encoding for the data
+     *
+     * @param content
+     * @return
+     */
+    private String detectCharset(byte[] content)
+    {
+        UniversalDetector detector = new UniversalDetector(null);
+        detector.handleData(content, 0, content.length);
+        detector.dataEnd();
+        String charSet = detector.getDetectedCharset();
+        detector.reset();
+        return charSet;
     }
 
     /**
@@ -166,9 +188,11 @@ public class FreeDBIndex implements Index {
      * @param cd
      * @return
      */
-    private MbDocument parseEntryAndCreateDocument(String entryName, String category, byte[] content, CharsetDecoder cd) {
+    private Document parseEntryAndCreateDocument(String entryName, String category, byte[] content, CharsetDecoder cd, String charsetName) {
         MbDocument doc = new MbDocument();
         BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(content), cd));
+
+        cd.reset();
 
         String title = "";
         String artist = "";
@@ -235,7 +259,8 @@ public class FreeDBIndex implements Index {
 
         //TODO should really index as number
         doc.addField(FreeDBIndexField.TRACKS, numTracks.toString());
-        return doc;
+        countMap.put(charsetName, Integer.valueOf(countMap.get(charsetName).intValue()+1));
+        return doc.getLuceneDocument();
     }
 
     /**
@@ -248,26 +273,53 @@ public class FreeDBIndex implements Index {
      */
     protected Document documentFromFreeDBEntry(String entryName, String category, byte[] content) {
 
-        //Is it UTF8
-        utf8Decoder.reset();
-        MbDocument doc = parseEntryAndCreateDocument(entryName, category, content, utf8Decoder);
+        CharsetDecoder decoder=null;
+        String charsetName = detectCharset(content);
+        if(charsetName!=null)
+        {
+            decoder = decoderMap.get(charsetName);
+            if(decoder==null)
+            {
+                if(!unknownCharsets.contains(charsetName))
+                {
+                    Charset charset = Charset.forName(charsetName);
+                    if(charset!=null)
+                    {
+                        CharsetDecoder charsetDecoder = charset.newDecoder();
+                        charsetDecoder.onMalformedInput(CodingErrorAction.REPORT);
+                        charsetDecoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+                        decoderMap.put(charsetName,charsetDecoder);
+                        countMap.put(charsetName,0);
+                        decoder=charsetDecoder;
+                    }
+                }
+            }
+        }
+
+        if(decoder!=null)
+        {
+            Document doc = parseEntryAndCreateDocument(entryName, category, content, decoder,charsetName);
+            if (doc != null) {
+                return doc;
+            }
+            return doc;
+        }
+
+
+        //Is it UTF8 then
+        charsetName="UTF8";
+        Document doc = parseEntryAndCreateDocument(entryName, category, content, decoderMap.get(charsetName),charsetName);
         if (doc != null) {
-            //System.out.println("  Processed entry as utf8:" +entryName);
-            utfCount++;
-            return doc.getLuceneDocument();
+            return doc;
         }
 
         //If not try ISO-8859-1
-        iso8859Decoder.reset();
-        doc = parseEntryAndCreateDocument(entryName, category, content, iso8859Decoder);
+        charsetName="ISO-8859-1";
+        doc = parseEntryAndCreateDocument(entryName, category, content, decoderMap.get(charsetName),charsetName);
         if (doc != null) {
-            //System.out.println("  Processed entry as iso8859-1:"+entryName);
-            iso8859Count++;
-            return doc.getLuceneDocument();
+            return doc;
         }
 
-
-        //System.out.println("  " + entryName + " Skipping because unable to decode");
         failedCount++;
         return null;
     }
