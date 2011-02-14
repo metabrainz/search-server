@@ -102,8 +102,6 @@ public class ArtistCreditHelper {
             artist.setDisambiguation(rs.getString(comment));
             nc.setArtist(artist);
             nc.setJoinphrase(rs.getString(joinPhrase));
-
-
             String nameCredit = rs.getString(artistCreditName);
             if (!nameCredit.equals(artist.getName())) {
                 nc.setName(nameCredit);
@@ -136,15 +134,20 @@ public class ArtistCreditHelper {
          if (ac!=null) {
 
             //Search Fields
+
+            //The ful artist credit as it appears on the release
             doc.addField(artist, ArtistCreditHelper.buildFullArtistCreditName(ac));
             for(NameCredit nc:ac.getNameCredit()) {
+
+                //Each individual name credit (uses artist if name credit is unchanged form artist name)
                 if(nc.getName()!=null) {
-                    doc.addField(artist, nc.getName());
                     doc.addField(artistNameCredit, nc.getName());
                 }
                 else {
                     doc.addField(artistNameCredit, nc.getArtist().getName());
                 }
+
+                //Each artist id and name on the release
                 doc.addField(artistId, nc.getArtist().getId());
                 doc.addField(artistName, nc.getArtist().getName());
             }
