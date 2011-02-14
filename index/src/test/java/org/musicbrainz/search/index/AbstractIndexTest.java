@@ -217,6 +217,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  id serial NOT NULL," +
                 "  artist integer NOT NULL," +
                 "  name integer NOT NULL," +
+                "  locale text," +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");

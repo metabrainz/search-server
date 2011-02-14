@@ -30,6 +30,7 @@ import java.util.*;
  */
 public class CommonTables  {
 
+    private static final String ENGLISH_ISO_CODE = "eng";
     protected Connection dbConnection;
     private   List<String> indexesToBeBuilt ;
 
@@ -69,12 +70,19 @@ public class CommonTables  {
                 "  a.comment as comment, " +
                 "  an.name as artistName, " +
                 "  an2.name as artistCreditName, " +
-                "  an3.name as artistSortName " +
+                "  an3.name as artistSortName, " +
+                "  aa1.aliasName " +
                 " FROM artist_credit_name acn  " +
                 "  INNER JOIN artist a ON a.id=acn.artist " +
                 "  INNER JOIN artist_name an ON a.name=an.id " +
                 "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
                 "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
+                "  LEFT JOIN ( SELECT aa.artist, MAX(an4.name) AS aliasName FROM" +
+                "     artist_alias aa " +
+                "     INNER JOIN artist_name an4 ON aa.name=an4.id " +
+                    "     WHERE aa.locale='" + ENGLISH_ISO_CODE + "'" +
+                "     GROUP BY aa.artist) AS aa1"  +
+                "     ON a.id=aa1.artist " +
                 " ORDER BY acn.artist_credit,acn.position ");
         clock.stop();
         System.out.println("tmp_artistcredit:Finished:"+ Utils.formatClock(clock));

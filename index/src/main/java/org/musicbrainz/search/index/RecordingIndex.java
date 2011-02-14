@@ -147,7 +147,8 @@ public class RecordingIndex extends DatabaseIndex {
                 "  a.comment, " +
                 "  a.artistName, " +
                 "  a.artistCreditName, " +
-                "  a.artistSortName " +
+                "  a.artistSortName, " +
+                "  a.aliasName " +
                 " FROM recording AS r " +
                 "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
                 " WHERE r.id BETWEEN ? AND ?  " +
@@ -301,7 +302,8 @@ public class RecordingIndex extends DatabaseIndex {
                         "artistSortName",
                         "comment",
                         "joinphrase",
-                        "artistCreditName");
+                        "artistCreditName",
+                        "aliasName");
         rs.close();
         artistClock.suspend();
         return artistCredits;

@@ -89,7 +89,8 @@ public class WorkIndex extends DatabaseIndex {
                 "  a.comment, " +
                 "  a.artistName, " +
                 "  a.artistCreditName, " +
-                "  a.artistSortName " +
+                "  a.artistSortName, " +
+                "  a.aliasName " +
                 " FROM work AS w " +
                 "  INNER JOIN tmp_artistcredit a ON w.artist_credit=a.artist_credit " +
                 " WHERE w.id BETWEEN ? AND ?  " +
@@ -135,7 +136,8 @@ public class WorkIndex extends DatabaseIndex {
                       "artistSortName",
                       "comment",
                       "joinphrase",
-                      "artistCreditName");
+                      "artistCreditName",
+                      "aliasName");
         rs.close();
 
         // Get works aliases

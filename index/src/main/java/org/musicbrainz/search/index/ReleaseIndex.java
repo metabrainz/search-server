@@ -141,7 +141,8 @@ public class ReleaseIndex extends DatabaseIndex {
                 "  a.comment, " +
                 "  a.artistName, " +
                 "  a.artistCreditName, " +
-                "  a.artistSortName " +
+                "  a.artistSortName, " +
+                "  a.aliasName " +
                 " FROM release AS r " +
                 "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
                 " WHERE r.id BETWEEN ? AND ?  " +
@@ -270,7 +271,8 @@ public class ReleaseIndex extends DatabaseIndex {
                       "artistSortName",
                       "comment",
                       "joinphrase",
-                      "artistCreditName");
+                      "artistCreditName",
+                      "aliasName");
         rs.close();
         artistClock.suspend();
 

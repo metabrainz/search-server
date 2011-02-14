@@ -45,9 +45,11 @@ public class FindWorkTest extends TestCase {
             doc.addField(WorkIndexField.WORK, "Symphony No. 5");
             doc.addField(WorkIndexField.ISWC, "T-101779304-1");
             doc.addField(WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
-            doc.addField(WorkIndexField.ARTIST, "Ludwig van Beethoven");
-            doc.addField(WorkIndexField.ARTIST_NAME, "Ludwig van Beethoven");
-            doc.addField(WorkIndexField.ARTIST_NAMECREDIT, "Ludwig van Beethoven");
+            doc.addField(WorkIndexField.ARTIST, "Пётр Ильич Чайковский");
+            doc.addField(WorkIndexField.ARTIST_NAME, "Пётр Ильич Чайковский");
+            doc.addField(WorkIndexField.ARTIST_NAME, "Tchaikovsky");             //Eng Alias
+
+            doc.addField(WorkIndexField.ARTIST_NAMECREDIT, "Пётр Ильич Чайковский");
             doc.addField(WorkIndexField.TYPE, "Opera");
             doc.addField(WorkIndexField.ALIAS, "Symp5");
             doc.addField(WorkIndexField.TAG, "classical");
@@ -58,8 +60,8 @@ public class FindWorkTest extends TestCase {
             NameCredit nc = of.createNameCredit();
             Artist artist = of.createArtist();
             artist.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
-            artist.setName("Ludwig van Beethoven");
-            artist.setSortName("Beethoven, Ludwig van");
+            artist.setName("Пётр Ильич Чайковский");
+            artist.setSortName("Пётр Ильич Чайковский");
             nc.setArtist(artist);
             ac.getNameCredit().add(nc);
             doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
@@ -89,13 +91,33 @@ public class FindWorkTest extends TestCase {
     }
 
     public void testFindWorkByArtist() throws Exception {
-        Results res = ss.searchLucene("artist:\"Ludwig van Beethoven\"", 0, 10);
+            Results res = ss.searchLucene("artist:\"Пётр Ильич Чайковский\"", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+            assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+        }
+
+
+    public void testFindWorkByArtistName() throws Exception {
+        Results res = ss.searchLucene("artistname:\"Пётр Ильич Чайковский\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
         assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
     }
+
+    public void testFindWorkByArtistNameEnglishAlias() throws Exception {
+        Results res = ss.searchLucene("artistname:\"Tchaikovsky\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
 
     public void testFindWorkByISWC() throws Exception {
         Results res = ss.searchLucene("iswc:\"T-101779304-1\"", 0, 10);
@@ -173,8 +195,8 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("id=\"4ff89cf0-86af-11de-90ed-001fc6f176ff\""));
         assertTrue(output.contains("<title>Symphony No. 5</title>"));
-        assertTrue(output.contains("<name>Ludwig van Beethoven</name>"));
-        assertTrue(output.contains("<sort-name>Beethoven, Ludwig van</sort-name>"));
+        assertTrue(output.contains("<name>Пётр Ильич Чайковский</name>"));
+        assertTrue(output.contains("<sort-name>Пётр Ильич Чайковский</sort-name>"));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
         assertTrue(output.contains("type=\"Opera\""));
         assertTrue(output.contains("<alias-list><alias>Symp5</alias></alias-list>"));

@@ -19,10 +19,7 @@
 
 package org.musicbrainz.search.index;
 
-import org.musicbrainz.mmd2.Artist;
-import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.NameCredit;
-import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 
 import java.sql.ResultSet;
@@ -70,19 +67,21 @@ public class ArtistCreditHelper {
     /**
      * Complete Artist Credits for Database results
      *
+     *
      * @param rs
      * @param entityKey
+     * @param aliasName
      * @return
      * @throws SQLException
      */
     public static Map<Integer, ArtistCredit> completeArtistCreditFromDbResults(ResultSet rs,
-                                                                              String entityKey,
-                                                                              String artistId,
-                                                                              String artistName,
-                                                                              String artistSortName,
-                                                                              String comment,
-                                                                              String joinPhrase,
-                                                                              String artistCreditName) throws SQLException {
+                                                                               String entityKey,
+                                                                               String artistId,
+                                                                               String artistName,
+                                                                               String artistSortName,
+                                                                               String comment,
+                                                                               String joinPhrase,
+                                                                               String artistCreditName, String aliasName) throws SQLException {
         Map<Integer, ArtistCredit> artistCredits = new HashMap<Integer, ArtistCredit>();
         ObjectFactory of = new ObjectFactory();
         ArtistCredit ac;
@@ -100,6 +99,16 @@ public class ArtistCreditHelper {
             artist.setName(rs.getString(artistName));
             artist.setSortName(rs.getString(artistSortName));
             artist.setDisambiguation(rs.getString(comment));
+
+            String engAlias = rs.getString(aliasName);
+            if(engAlias!=null && engAlias.length()>0)
+            {
+                Alias alias  =of.createAlias();
+                alias.getContent().add(engAlias);
+                AliasList al =of.createAliasList();
+                al.getAlias().add(alias);
+                artist.setAliasList(al);
+            }
             nc.setArtist(artist);
             nc.setJoinphrase(rs.getString(joinPhrase));
             String nameCredit = rs.getString(artistCreditName);
@@ -135,7 +144,7 @@ public class ArtistCreditHelper {
 
             //Search Fields
 
-            //The ful artist credit as it appears on the release
+            //The full artist credit as it appears on the release
             doc.addField(artist, ArtistCreditHelper.buildFullArtistCreditName(ac));
             for(NameCredit nc:ac.getNameCredit()) {
 
@@ -150,6 +159,13 @@ public class ArtistCreditHelper {
                 //Each artist id and name on the release
                 doc.addField(artistId, nc.getArtist().getId());
                 doc.addField(artistName, nc.getArtist().getName());
+
+                //If there is an english locale based alias we add this to help when looking up releases
+                //by artists who name is in non-latin script
+                if(nc.getArtist().getAliasList()!=null)
+                {
+                    doc.addField(artistName,(String)nc.getArtist().getAliasList().getAlias().get(0).getContent().get(0));
+                }
             }
 
             //Display Field
