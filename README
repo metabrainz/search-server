@@ -63,9 +63,10 @@ If you haven't already done so, check out the server source code using Subversio
 
     svn co http://svn.musicbrainz.org/search_server/trunk search_server
 
-Then build the indexer and the search application with this command:
+Then build the indexer and the search application as follows:
 
     cd search_server
+    ./makeinstall.sh
     mvn package
 
 This step will download any required java components and then compile and test
