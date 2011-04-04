@@ -17,7 +17,7 @@ public class IndexOptions {
 
     // Lucene parameters
     public static final int MAX_BUFFERED_DOCS = 10000;
-    public static final int MERGE_FACTOR = 3000;
+    public static final int MERGE_FACTOR = 10;
 
     // PostgreSQL schema that holds MB data
 	public static final String DB_SCHEMA = "musicbrainz";
@@ -127,7 +127,7 @@ public class IndexOptions {
         // Forces Query Analyser to take advantage of indexes when they exist, this works round the problem with the
         // explain sometimes deciding to do full table scans when building recording index causing query to run unacceptably slow.
         st.executeUpdate("SET enable_seqscan = off");
-		st.executeUpdate("SET search_path TO '" + IndexOptions.DB_SCHEMA + "'");
+		//st.executeUpdate("SET search_path TO '" + IndexOptions.DB_SCHEMA + "'");
     }
     
 }
