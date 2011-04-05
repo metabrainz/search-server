@@ -73,7 +73,7 @@ public class WorkWriter extends ResultsWriter {
             }
 
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(WorkIndexField.ARTIST_CREDIT));
             work.setArtistCredit(ac);
 
             String[] aliases = doc.getValues(WorkIndexField.ALIAS);
