@@ -47,7 +47,7 @@ import java.util.concurrent.*;
 public class IndexBuilder
 {
 
-    private static final int MAX_THREADS_FOR_CONCURRENT_OPTIMIZATION = 2;
+    private static final int MAX_THREADS_FOR_CONCURRENT_OPTIMIZATION = 1;
 
     public static void main(String[] args) throws SQLException, IOException, InterruptedException
     {
