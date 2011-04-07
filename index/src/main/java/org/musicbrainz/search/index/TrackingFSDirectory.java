@@ -9,6 +9,7 @@ import java.util.Set;
 
 public class TrackingFSDirectory extends SimpleFSDirectory {
 
+    private int maxOpenFileDescriptors =0;
     private Set<String> openOutputs = new HashSet<String>();
     private Set<String> openInputs  = new HashSet<String>();
 
@@ -16,6 +17,12 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
     {
         super(path);
     }
+
+    public int getMaxFilesDescriptorsOpen()
+    {
+        return maxOpenFileDescriptors;
+    }
+
 
     synchronized public int getFileDescriptorCount()
     {
@@ -35,7 +42,11 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
     synchronized public IndexInput openInput(String name, int bufferSize) throws IOException
     {
         openInputs.add(name);
-        report("Open Input:"+name);
+        if(getFileDescriptorCount() > maxOpenFileDescriptors)
+        {
+            maxOpenFileDescriptors = getFileDescriptorCount();
+        }
+        //report("Open Input:"+name);
         return new TrackingFSIndexInput(name, bufferSize);
     }
 
@@ -43,7 +54,11 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
     synchronized public IndexOutput createOutput(String name) throws IOException
     {
         openOutputs.add(name);
-        report("Open Output:"+name);
+        if(getFileDescriptorCount() > maxOpenFileDescriptors)
+        {
+            maxOpenFileDescriptors = getFileDescriptorCount();
+        }
+        //report("Open Output:"+name);
         File file = new File(getFile(),name);
         if(file.exists() && !file.delete())
         {
@@ -81,7 +96,7 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
                     openInputs.remove(name);
                 }
             }
-            report("Close Input:" + name);
+            //report("Close Input:" + name);
         }
 
 
@@ -105,7 +120,7 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
             {
                 openOutputs.remove(name);
             }
-            report("Close Output:"+name);
+            //report("Close Output:"+name);
         }
 
     }

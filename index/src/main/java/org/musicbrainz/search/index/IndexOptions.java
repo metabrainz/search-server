@@ -98,7 +98,7 @@ public class IndexOptions {
     public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
 
     // Test mode
-    @Option(name="--test", aliases = { "-t" }, usage="Test the index builder by creating small text indexes.")
+    @Option(name="--test", aliases = { "-t" }, usage="Test the index builder by creating small test indexes.")
     private boolean test = false;
     public boolean isTest() { return test; }
 
@@ -120,7 +120,7 @@ public class IndexOptions {
     public boolean isCheckFileLimit() { return checkFileLimit; }
 
     // Check Open File Limit
-    @Option(name="--debug", usage="Debug Mode, provides additional info, only use fore debugging because runs slower.")
+    @Option(name="--debug", usage="Debug Mode, provides additional info, only use for debugging because runs slower.")
     private boolean debug = false;
     public boolean isDebug() { return debug; }
 

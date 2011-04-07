@@ -230,34 +230,42 @@ public class IndexBuilder
      */
     private static int buildDatabaseIndex(IndexWriter indexWriter, DatabaseIndex index, IndexOptions options) throws IOException, SQLException
     {
-        StopWatch clock = new StopWatch();
-        clock.start();
-        System.out.println(index.getName()+":Started at "+ Utils.formatCurrentTimeForOutput());
-        String path = options.getIndexesDir() + index.getFilename();
-        index.init(indexWriter, false);
-        index.addMetaInformation(indexWriter);
-        int maxId = index.getMaxId();
-        if (options.isTest() && options.getTestIndexSize() < maxId)
-            maxId = options.getTestIndexSize();
-        int j = 0;
-        while (j <= maxId) {
-        	int k = Math.min(j + options.getDatabaseChunkSize() - 1, maxId);
+        try
+        {
+            StopWatch clock = new StopWatch();
+            clock.start();
+            System.out.println(index.getName()+":Started at "+ Utils.formatCurrentTimeForOutput());
+            String path = options.getIndexesDir() + index.getFilename();
+            index.init(indexWriter, false);
+            index.addMetaInformation(indexWriter);
+            int maxId = index.getMaxId();
+            if (options.isTest() && options.getTestIndexSize() < maxId)
+                maxId = options.getTestIndexSize();
+            int j = 0;
+            while (j <= maxId) {
+                int k = Math.min(j + options.getDatabaseChunkSize() - 1, maxId);
+                System.out.print(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
+                index.indexData(indexWriter, j, k);
+                j += options.getDatabaseChunkSize();
+            }
+
+            index.destroy();
+            clock.stop();
+            System.out.println("\n"+index.getName()+":Finished:" + Utils.formatClock(clock));
+
+            return maxId;
+        }
+        finally
+        {
             if(options.isDebug())
             {
-                System.out.println(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)");
-            }
-            else
-            {
-                System.out.print(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
-            }
-            index.indexData(indexWriter, j, k);
-            j += options.getDatabaseChunkSize();
-        }
+                if(indexWriter.getDirectory() instanceof TrackingFSDirectory)
+                {
+                    System.out.println(index.getName()+":Max File Descriptors:"+((TrackingFSDirectory)indexWriter.getDirectory()).getMaxFilesDescriptorsOpen());
+                }
 
-        index.destroy();
-        clock.stop();
-        System.out.println("\n"+index.getName()+":Finished:" + Utils.formatClock(clock));
-        return maxId;
+            }
+        }
 
     }
 
