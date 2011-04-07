@@ -119,4 +119,9 @@ public class IndexOptions {
     private boolean checkFileLimit = false;
     public boolean isCheckFileLimit() { return checkFileLimit; }
 
+    // Check Open File Limit
+    @Option(name="--debug", usage="Debug Mode, provides additional info, only use fore debugging because runs slower.")
+    private boolean debug = false;
+    public boolean isDebug() { return debug; }
+
 }

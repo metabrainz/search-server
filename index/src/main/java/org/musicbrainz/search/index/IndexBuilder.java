@@ -199,7 +199,16 @@ public class IndexBuilder
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
 
-        indexWriter = new ThreadedIndexWriter(FSDirectory.open(new File(path)),
+        FSDirectory fsDir;
+        if(options.isDebug())
+        {
+            fsDir = new TrackingFSDirectory(new File(path));
+        }
+        else
+        {
+            fsDir = FSDirectory.open(new File(path));
+        }
+        indexWriter = new ThreadedIndexWriter(fsDir,
                 index.getAnalyzer(),
                 true,
                 Runtime.getRuntime().availableProcessors(),
@@ -233,7 +242,14 @@ public class IndexBuilder
         int j = 0;
         while (j <= maxId) {
         	int k = Math.min(j + options.getDatabaseChunkSize() - 1, maxId);
-            System.out.print(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
+            if(options.isDebug())
+            {
+                System.out.println(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)");
+            }
+            else
+            {
+                System.out.print(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
+            }
             index.indexData(indexWriter, j, k);
             j += options.getDatabaseChunkSize();
         }
