@@ -114,6 +114,10 @@ public class IndexOptions {
     private int databaseChunkSize = IDS_PER_CHUNK;
     public int getDatabaseChunkSize() { return databaseChunkSize; }
 
+    // Check Open File Limit
+    @Option(name="--checkfilelimit", usage="Check Open File Limit, all other options are ignored and no indexes are built.")
+    private boolean checkFileLimit = false;
+    public boolean isCheckFileLimit() { return checkFileLimit; }
 
     /**
      * Prepare a database connection, and set its default Postgres schema

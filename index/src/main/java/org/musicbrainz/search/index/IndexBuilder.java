@@ -63,6 +63,12 @@ public class IndexBuilder
             System.exit(1);
         }
 
+
+        if(options.isCheckFileLimit())
+        {
+            OpenFileLimitCheck.checkOpenFileLimit();
+            System.exit(0);
+        }
         // On request, print command line usage
         if (options.isHelp()) {
             parser.printUsage(System.out);
