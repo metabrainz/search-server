@@ -124,4 +124,15 @@ public class IndexOptions {
     private boolean debug = false;
     public boolean isDebug() { return debug; }
 
+    // Merge Factor
+    @Option(name="--mergefactor", usage="The Merge factor used during Indexing. (default: "+MERGE_FACTOR+")")
+    private int mergeFactor = MERGE_FACTOR;
+    public int getMergeFactor() { return mergeFactor; }
+
+    // Max Buffered Docs
+    @Option(name="--maxbuffereddocs", usage="The Max Buffered docs before writing to index segment during Indexing. (default: "+MAX_BUFFERED_DOCS+")")
+    private int maxBufferedDocs = MAX_BUFFERED_DOCS;
+    public int getMaxBufferedDocs() { return maxBufferedDocs; }
+
+
 }

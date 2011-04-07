@@ -215,8 +215,8 @@ public class IndexBuilder
                 options.getDatabaseChunkSize(),
                 IndexWriter.MaxFieldLength.LIMITED);
 
-        indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
-        indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
+        indexWriter.setMaxBufferedDocs(options.getMaxBufferedDocs());
+        indexWriter.setMergeFactor(options.getMergeFactor());
         return indexWriter;
 
     }
@@ -284,8 +284,8 @@ public class IndexBuilder
         String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
         indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer() , true, IndexWriter.MaxFieldLength.LIMITED);
-        indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
-        indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
+        indexWriter.setMaxBufferedDocs(options.getMaxBufferedDocs());
+        indexWriter.setMergeFactor(options.getMergeFactor());
 
         index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
