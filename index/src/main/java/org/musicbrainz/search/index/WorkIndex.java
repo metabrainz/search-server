@@ -22,8 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
@@ -43,7 +42,8 @@ public class WorkIndex extends DatabaseIndex {
         super(dbConnection);
     }
 
-    public WorkIndex() { }
+    public WorkIndex() {
+    }
 
     public String getName() {
         return WorkIndex.INDEX_NAME;
@@ -53,11 +53,11 @@ public class WorkIndex extends DatabaseIndex {
         return new PerFieldEntityAnalyzer(WorkIndexField.class);
     }
 
-	@Override
-	public IndexField getIdentifierField() {
-		return WorkIndexField.ID;
-	}
-	
+    @Override
+    public IndexField getIdentifierField() {
+        return WorkIndexField.ID;
+    }
+
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM work");
@@ -67,7 +67,7 @@ public class WorkIndex extends DatabaseIndex {
 
     public int getNoOfRows(int maxId) throws SQLException {
         Statement st = dbConnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT count(*) FROM work WHERE id<="+maxId);
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM work WHERE id<=" + maxId);
         rs.next();
         return rs.getInt(1);
     }
@@ -76,34 +76,32 @@ public class WorkIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         addPreparedStatement("TAGS",
-                       "SELECT work_tag.work, tag.name as tag, work_tag.count as count " +
-                       " FROM work_tag " +
-                       "  INNER JOIN tag ON tag=id " +
-                       " WHERE work between ? AND ?");
+                "SELECT work_tag.work, tag.name as tag, work_tag.count as count " +
+                        " FROM work_tag " +
+                        "  INNER JOIN tag ON tag=id " +
+                        " WHERE work between ? AND ?");
 
-        addPreparedStatement("ARTISTCREDITS",
-                "SELECT w.id as wid, " +
-                "  a.pos, " +
-                "  a.joinphrase, " +
-                "  a.artistId,  " +
-                "  a.comment, " +
-                "  a.artistName, " +
-                "  a.artistCreditName, " +
-                "  a.artistSortName, " +
-                "  a.aliasName " +
-                " FROM work AS w " +
-                "  INNER JOIN tmp_artistcredit a ON w.artist_credit=a.artist_credit " +
-                " WHERE w.id BETWEEN ? AND ?  " +
-                " ORDER BY w.id, a.pos");
+        addPreparedStatement("ARTISTS",
+                " SELECT w.id as wid, w.gid, a.gid as aid, an.name as artist_name, sn.name as artist_sortname," +
+                        " lt.short_link_phrase as link" +
+                        " FROM l_artist_work aw" +
+                        " INNER JOIN artist a ON a.id    = aw.entity0" +
+                        " INNER JOIN work   w ON w.id     = aw.entity1" +
+                        " INNER JOIN artist_name an ON an.id = a.name" +
+                        " INNER JOIN artist_name sn ON sn.id = a.sort_name" +
+                        " INNER JOIN link l ON aw.link = l.id " +
+                        " INNER JOIN link_type lt on l.link_type=lt.id" +
+                        " WHERE w.id BETWEEN ? AND ?  ");
+
 
         addPreparedStatement("ALIASES",
                 "SELECT work_alias.work as work, n.name as alias " +
-                " FROM work_alias " +
-                "  JOIN work_name n ON (work_alias.name = n.id) " +
-                " WHERE work BETWEEN ? AND ?");
+                        " FROM work_alias " +
+                        "  JOIN work_name n ON (work_alias.name = n.id) " +
+                        " WHERE work BETWEEN ? AND ?");
 
         addPreparedStatement("WORKS",
-                        "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, iswc " +
+                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, iswc " +
                         " FROM work AS w " +
                         "  LEFT JOIN work_name wn ON w.name = wn.id " +
                         "  LEFT JOIN work_type wt ON w.type = wt.id " +
@@ -119,26 +117,37 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"work");
+        Map<Integer, List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs, "work");
         rs.close();
 
-        //Artist Credits
-        st = getPreparedStatement("ARTISTCREDITS");
+        //Artist Relations
+        Map<Integer, RelationList> artists = new HashMap<Integer, RelationList>();
+        st = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
-        Map<Integer, ArtistCredit> artistCredits
-                = ArtistCreditHelper.completeArtistCreditFromDbResults
-                     (rs,
-                      "wid",
-                      "artistId",
-                      "artistName",
-                      "artistSortName",
-                      "comment",
-                      "joinphrase",
-                      "artistCreditName",
-                      "aliasName");
+        while (rs.next()) {
+            int workId = rs.getInt("wid");
+
+            RelationList list;
+            if (!artists.containsKey(workId)) {
+                list = new ObjectFactory().createRelationList();
+                artists.put(workId, list);
+            } else {
+                list = artists.get(workId);
+            }
+
+            Relation relation = new ObjectFactory().createRelation();
+            Artist artist = new ObjectFactory().createArtist();
+            artist.setId(rs.getString("aid"));
+            artist.setName(rs.getString("artist_name"));
+            artist.setSortName(rs.getString("artist_sortname"));
+            relation.setArtist(artist);
+            relation.setType(rs.getString("link"));
+            list.getRelation().add(relation);
+        }
         rs.close();
+
 
         // Get works aliases
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
@@ -166,15 +175,15 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, artistCredits, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, artists, aliases));
         }
         rs.close();
 
     }
 
     public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer,List<Tag>> tags,
-                                          Map<Integer, ArtistCredit> artistCredits,
+                                          Map<Integer, List<Tag>> tags,
+                                          Map<Integer, RelationList> artists,
                                           Map<Integer, List<String>> aliases) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("wid");
@@ -184,15 +193,16 @@ public class WorkIndex extends DatabaseIndex {
         doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
 
-        ArtistCredit ac = artistCredits.get(id);
-        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
-               (doc,
-                ac,
-                WorkIndexField.ARTIST,
-                WorkIndexField.ARTIST_NAMECREDIT,
-                WorkIndexField.ARTIST_ID,
-                WorkIndexField.ARTIST_NAME,
-                WorkIndexField.ARTIST_CREDIT);
+        if (artists.containsKey(id)) {
+            RelationList rl = artists.get(id);
+            if (rl.getRelation().size() > 0) {
+                doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
+                for (Relation r : artists.get(id).getRelation()) {
+                    doc.addField(WorkIndexField.ARTIST_ID, r.getArtist().getId());
+                    doc.addField(WorkIndexField.ARTIST, r.getArtist().getName());
+                }
+            }
+        }
 
         if (aliases.containsKey(id)) {
             for (String alias : aliases.get(id)) {
@@ -206,7 +216,6 @@ public class WorkIndex extends DatabaseIndex {
                 doc.addField(WorkIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }
-
         return doc.getLuceneDocument();
     }
 

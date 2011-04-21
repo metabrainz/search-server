@@ -117,6 +117,9 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work_type");
                 stmt.addBatch("DROP TABLE work_tag");
+                stmt.addBatch("DROP TABLE l_artist_work");
+                stmt.addBatch("DROP TABLE link");
+                stmt.addBatch("DROP TABLE link_type");
                 
                 stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE dbmirror_pending");
@@ -598,6 +601,48 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  count integer NOT NULL," +
                 "  last_updated timestamp" +
                 ")");
+
+        stmt.addBatch("CREATE TABLE l_artist_work" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  link integer NOT NULL," +
+                "  entity0 integer NOT NULL," +
+                "  entity1 integer NOT NULL," +
+                "  edits_pending integer," +
+                "  last_updated timestamp" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE link" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  link_type integer NOT NULL," +
+                "  begin_date_year smallint," +
+                "  begin_date_month smallint," +
+                "  begin_date_day smallint," +
+                "  end_date_year smallint," +
+                "  end_date_month smallint," +
+                "  end_date_day smallint," +
+                "  attribute_count integer," +
+                "  created timestamp" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE link_type" +
+                "(" +
+                "  id serial ," +
+                "  parent integer," +
+                "  child_order integer," +
+                "  gid uuid," +
+                "  entity_type0 character varying(50)," +
+                "  entity_type1 character varying(50)," +
+                "  name character varying(50)," +
+                "  description text," +
+                "  link_phrase character varying(50)," +
+                "  reverse_link_phrase character varying(50)," +
+                "  short_link_phrase character varying(50)," +
+                "  priority integer," +
+                "  last_updated timestamp" +
+                ")");
+
     }
 
     protected void setupReplicationTables(Statement stmt) throws Exception {

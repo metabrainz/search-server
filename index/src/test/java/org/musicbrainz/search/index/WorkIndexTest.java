@@ -5,6 +5,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.RelationList;
 import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Statement;
@@ -52,7 +54,9 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Classical', 2);");
         stmt.addBatch("INSERT INTO work_tag (work, tag, count) VALUES (1, 1, 10)");
-
+        stmt.addBatch("INSERT INTO l_artist_work(id, link, entity0, entity1) VALUES (1, 1, 16153, 1)");
+        stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
+        stmt.addBatch("INSERT INTO link_type(id,short_link_phrase) VALUES (1, 'composer')");
 
         stmt.executeBatch();
         stmt.close();
@@ -77,6 +81,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         
         stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, type, iswc)" +
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1, 'T-101779304-1')");
+        stmt.addBatch("INSERT INTO l_artist_work(id, link, entity0, entity1) VALUES (1, 1, 16153, 1);");
+        stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
+        stmt.addBatch("INSERT INTO link_type(id,short_link_phrase) VALUES (1, 'composer')");
 
         stmt.executeBatch();
         stmt.close();
@@ -96,6 +103,7 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(WorkIndexField.ISWC.getName()).length);
             assertEquals("T-101779304-1", doc.getField(WorkIndexField.ISWC.getName()).stringValue());
             assertEquals(0, doc.getFields(WorkIndexField.TYPE.getName()).length);
+            assertEquals(1, doc.getFields(WorkIndexField.ARTIST_RELATION.getName()).length);
             ir.close();
         }
     }
@@ -125,6 +133,26 @@ public class WorkIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
             assertEquals("Opera", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
+            ir.close();
+        }
+    }
+
+    public void testIndexWorkWithArtistRelation() throws Exception {
+
+        addWorkOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            RelationList rc = (RelationList) MMDSerializer
+                    .unserialize(doc.get(WorkIndexField.ARTIST_RELATION.getName()), RelationList.class);
+            assertNotNull(rc);
+            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245",rc.getRelation().get(0).getArtist().getId());
+            assertEquals("Echo & The Bunnymen",rc.getRelation().get(0).getArtist().getName());
+            assertEquals("composer",rc.getRelation().get(0).getType());
+
             ir.close();
         }
     }

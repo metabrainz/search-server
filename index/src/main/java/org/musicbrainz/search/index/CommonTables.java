@@ -204,8 +204,7 @@ public class CommonTables  {
         if(
             (indexesToBeBuilt.contains(ReleaseIndex.INDEX_NAME))||
             (indexesToBeBuilt.contains(ReleaseGroupIndex.INDEX_NAME))||
-            (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))||
-            (indexesToBeBuilt.contains(WorkIndex.INDEX_NAME))
+            (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))
           )
         {
             createArtistCreditTableUsingDb();
