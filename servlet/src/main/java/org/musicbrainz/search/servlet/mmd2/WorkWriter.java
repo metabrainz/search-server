@@ -70,9 +70,12 @@ public class WorkWriter extends ResultsWriter {
                 work.setIswc(iswc);
             }
 
-
-            RelationList rc = (RelationList) MMDSerializer.unserialize(doc.get(WorkIndexField.ARTIST_RELATION), RelationList.class);
-            work.getRelationList().add(rc);
+            String artistRelation = doc.get(WorkIndexField.ARTIST_RELATION);
+            if(artistRelation!=null)
+            {
+                RelationList rc = (RelationList) MMDSerializer.unserialize(artistRelation, RelationList.class);
+                work.getRelationList().add(rc);
+            }
 
             String[] aliases = doc.getValues(WorkIndexField.ALIAS);
             if(aliases.length>0)
