@@ -87,7 +87,7 @@ public class MMDSerializer {
 
     public static Object unserialize(String string, Class classType) {
         try {
-            JSONUnmarshaller m = initJsonContext().createJSONUnmarshaller();
+            JSONUnmarshaller m = jsoncontext.createJSONUnmarshaller();
             return m.unmarshalFromJSON(new StringReader(string), classType);
 
         }
