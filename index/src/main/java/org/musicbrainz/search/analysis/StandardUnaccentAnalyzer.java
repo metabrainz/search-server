@@ -55,7 +55,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         setCharConvertMap();
     }
 
-    public TokenStream tokenStream(String fieldName, Reader reader) {
+    public final TokenStream tokenStream(String fieldName, Reader reader) {
         CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap,reader);
         StandardTokenizer tokenStream = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, mappingCharFilter);
         TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
@@ -71,7 +71,7 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         TokenStream filteredTokenStream;
     }
 
-    public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
+    public final TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
         SavedStreams streams = (SavedStreams)getPreviousTokenStream();
         if (streams == null) {
             streams = new SavedStreams();

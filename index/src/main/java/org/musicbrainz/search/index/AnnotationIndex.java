@@ -4,7 +4,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -38,7 +37,7 @@ public class AnnotationIndex extends DatabaseIndex {
 
     public Analyzer getAnalyzer()
     {
-        return new PerFieldEntityAnalyzer(AnnotationIndexField.class);
+        return super.getAnalyzer(AnnotationIndexField.class);
     }
 
 	@Override

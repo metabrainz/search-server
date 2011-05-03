@@ -3,8 +3,8 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ArtistWriter;
 
@@ -20,7 +20,7 @@ public class ArtistSearch extends SearchServer {
         defaultFields.add(ArtistIndexField.ARTIST.getName());
         defaultFields.add(ArtistIndexField.ALIAS.getName());
         defaultFields.add(ArtistIndexField.SORTNAME.getName());
-        analyzer = new PerFieldEntityAnalyzer(ArtistIndexField.class);
+        analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
     }
 
     public ArtistSearch(IndexSearcher searcher) throws Exception {

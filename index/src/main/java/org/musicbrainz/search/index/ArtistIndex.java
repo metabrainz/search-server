@@ -25,7 +25,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -50,7 +49,7 @@ public class ArtistIndex extends DatabaseIndex {
     }
 
     public Analyzer getAnalyzer() {
-        return new PerFieldEntityAnalyzer(ArtistIndexField.class);
+        return super.getAnalyzer(ArtistIndexField.class);
     }
 
 	@Override

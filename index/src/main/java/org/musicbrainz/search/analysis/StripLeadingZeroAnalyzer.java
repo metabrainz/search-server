@@ -17,7 +17,7 @@ public class StripLeadingZeroAnalyzer extends Analyzer {
 
     }
 
-    public TokenStream tokenStream(String fieldName,
+    public final TokenStream tokenStream(String fieldName,
                                    final Reader reader) {
         TokenStream result = new KeywordTokenizer(reader);
         result = new StripLeadingZeroFilter(result);
@@ -29,7 +29,7 @@ public class StripLeadingZeroAnalyzer extends Analyzer {
         TokenStream filteredTokenStream;
     }
 
-    public TokenStream reusableTokenStream(String fieldName,
+    public final TokenStream reusableTokenStream(String fieldName,
                                            final Reader reader) throws IOException {
 
         SavedStreams streams = (SavedStreams) getPreviousTokenStream();

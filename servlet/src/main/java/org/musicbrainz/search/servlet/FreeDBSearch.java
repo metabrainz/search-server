@@ -4,7 +4,7 @@ import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.LuceneVersion;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.FreeDBIndexField;
 import org.musicbrainz.search.servlet.mmd2.FreeDBWriter;
 
@@ -19,7 +19,7 @@ public class FreeDBSearch extends SearchServer {
         defaultFields = new ArrayList<String>();
         defaultFields.add(FreeDBIndexField.ARTIST.getName());
         defaultFields.add(FreeDBIndexField.TITLE.getName());
-        analyzer = new PerFieldEntityAnalyzer(FreeDBIndexField.class);
+        analyzer = DatabaseIndex.getAnalyzer(FreeDBIndexField.class);
     }
 
     public FreeDBSearch(IndexSearcher searcher) throws Exception {

@@ -2,7 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
@@ -18,7 +18,7 @@ public class ReleaseSearch extends SearchServer {
         mmd1XmlWriter = new ReleaseMmd1XmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(ReleaseIndexField.RELEASE.getName());
-        analyzer = new PerFieldEntityAnalyzer(ReleaseIndexField.class);
+        analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
     }
 
     public ReleaseSearch(IndexSearcher searcher) throws Exception {

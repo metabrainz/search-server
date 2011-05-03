@@ -24,7 +24,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -46,7 +45,7 @@ public class CDStubIndex extends DatabaseIndex {
 
     public Analyzer getAnalyzer()
     {
-        return new PerFieldEntityAnalyzer(CDStubIndexField.class);
+        return super.getAnalyzer(CDStubIndexField.class);
     }
 
 	@Override

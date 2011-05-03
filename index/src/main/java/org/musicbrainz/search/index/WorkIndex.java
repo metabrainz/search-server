@@ -24,7 +24,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -50,7 +49,7 @@ public class WorkIndex extends DatabaseIndex {
     }
 
     public Analyzer getAnalyzer() {
-        return new PerFieldEntityAnalyzer(WorkIndexField.class);
+        return DatabaseIndex.getAnalyzer(WorkIndexField.class);
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
@@ -18,7 +18,7 @@ public class RecordingSearch extends SearchServer {
         mmd1XmlWriter = new TrackMmd1XmlWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(RecordingIndexField.RECORDING.getName());
-        analyzer = new PerFieldEntityAnalyzer(RecordingIndexField.class);
+        analyzer = DatabaseIndex.getAnalyzer(RecordingIndexField.class);
     }
 
     public RecordingSearch(IndexSearcher searcher) throws Exception {

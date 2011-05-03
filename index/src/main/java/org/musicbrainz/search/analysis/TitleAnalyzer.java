@@ -63,7 +63,7 @@ public class TitleAnalyzer extends Analyzer {
         setCharConvertMap();
     }
 
-    public TokenStream tokenStream(String fieldName, Reader reader) {
+    public final TokenStream tokenStream(String fieldName, Reader reader) {
         CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap, reader);
         CharFilter no1CharFilter = new PatternReplaceCharFilter(no1Pattern, no1PatternReplacement, mappingCharFilter);
         StandardTokenizer tokenStream = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, no1CharFilter);
@@ -80,7 +80,7 @@ public class TitleAnalyzer extends Analyzer {
         TokenStream filteredTokenStream;
     }
 
-    public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
+    public final TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
         SavedStreams streams = (SavedStreams) getPreviousTokenStream();
         if (streams == null) {
             streams = new SavedStreams();

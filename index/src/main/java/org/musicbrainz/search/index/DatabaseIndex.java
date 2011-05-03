@@ -19,11 +19,14 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 
 /**
@@ -56,6 +60,18 @@ public abstract class DatabaseIndex implements Index {
 
     protected DatabaseIndex() {
 
+    }
+
+    public static Analyzer getAnalyzer(Class indexFieldClass) {
+        PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(new StandardUnaccentAnalyzer());
+        for(Object o : EnumSet.allOf(indexFieldClass)) {
+            IndexField indexField = (IndexField) o;
+            Analyzer analyzer = indexField.getAnalyzer();
+            if (analyzer != null) {
+                wrapper.addAnalyzer(indexField.getName(), analyzer);
+            }
+        }
+        return wrapper;
     }
 
 	@Override

@@ -1,14 +1,14 @@
 package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.AnnotationType;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
 
 import java.io.PrintWriter;
@@ -28,7 +28,7 @@ public class FindAnnotationTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
-        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(AnnotationIndexField.class);
+        Analyzer analyzer = DatabaseIndex.getAnalyzer(AnnotationIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
                
         //A complete Annotation entry

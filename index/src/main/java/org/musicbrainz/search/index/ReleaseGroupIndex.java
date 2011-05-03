@@ -34,7 +34,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -60,7 +59,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
     }
 
     public Analyzer getAnalyzer() {
-        return new PerFieldEntityAnalyzer(ReleaseGroupIndexField.class);
+        return DatabaseIndex.getAnalyzer(ReleaseGroupIndexField.class);
     }
 
 	@Override

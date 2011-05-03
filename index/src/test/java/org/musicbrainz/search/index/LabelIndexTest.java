@@ -1,11 +1,10 @@
 package org.musicbrainz.search.index;
 
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Statement;
 
@@ -18,7 +17,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
 
-        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(LabelIndexField.class);
+        Analyzer analyzer = DatabaseIndex.getAnalyzer(LabelIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         LabelIndex li = new LabelIndex(conn);
         CommonTables ct = new CommonTables(conn,  li.getName());

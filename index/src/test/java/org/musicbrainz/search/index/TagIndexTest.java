@@ -1,9 +1,8 @@
 package org.musicbrainz.search.index;
 
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.sql.Statement;
 
@@ -15,7 +14,7 @@ public class TagIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TagIndexField.class);
+        Analyzer analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         TagIndex ti = new TagIndex(conn);
         CommonTables ct = new CommonTables(conn, ti.getName());

@@ -4,8 +4,8 @@ import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.LuceneVersion;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 import org.musicbrainz.search.index.CDStubIndexField;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd2.CDStubWriter;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class CDStubSearch extends SearchServer {
         defaultFields = new ArrayList<String>();
         defaultFields.add(CDStubIndexField.ARTIST.getName());
         defaultFields.add(CDStubIndexField.TITLE.getName());
-        analyzer = new PerFieldEntityAnalyzer(CDStubIndexField.class);
+        analyzer = DatabaseIndex.getAnalyzer(CDStubIndexField.class);
     }
 
     public CDStubSearch(IndexSearcher searcher) throws Exception {

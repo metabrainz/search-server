@@ -1,15 +1,14 @@
 package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd2.WorkWriter;
 
@@ -34,7 +33,7 @@ public class FindWorkTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
         ObjectFactory of = new ObjectFactory();
 
-        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
+        Analyzer analyzer = DatabaseIndex.getAnalyzer(WorkIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         {
             MbDocument doc = new MbDocument();

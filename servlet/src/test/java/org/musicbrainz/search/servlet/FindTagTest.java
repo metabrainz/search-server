@@ -1,12 +1,12 @@
 package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.TagIndexField;
 import org.musicbrainz.search.servlet.mmd2.TagWriter;
 
@@ -27,7 +27,7 @@ public class FindTagTest extends TestCase {
     protected void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
 
-        PerFieldAnalyzerWrapper analyzer = new PerFieldEntityAnalyzer(TagIndexField.class);
+        Analyzer analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
         IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
         {
             MbDocument doc = new MbDocument();

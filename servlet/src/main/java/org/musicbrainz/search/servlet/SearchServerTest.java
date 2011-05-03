@@ -36,11 +36,15 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import org.omg.PortableServer.THREAD_POLICY_ID;
 
 import java.io.*;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -60,10 +64,11 @@ public class SearchServerTest {
     private static EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
     private String initMessage = null;
 
-    static Map<URL, Integer> map = new HashMap<URL, Integer>();
+    static Map<URL, Integer> map = new LinkedHashMap<URL, Integer>();
 
     public static void main(String[] args) throws Exception {
 
+        Thread.sleep(30000);
         Options options = new Options();
         CmdLineParser parser = new CmdLineParser(options);
 
@@ -137,6 +142,10 @@ public class SearchServerTest {
         Pattern p = Pattern.compile("/ws/1/(.*)/");
         Matcher m = p.matcher(url.getPath());
         m.find();
+        if(!m.matches())
+        {
+            return;
+        }
         String type = m.group(1);
         // V1 Compatability
         if (type.equals("track")) {
@@ -147,6 +156,10 @@ public class SearchServerTest {
         Pattern p2 = Pattern.compile("query=(.*)&offset.*");
         Matcher m2 = p2.matcher(url.getQuery());
         m2.find();
+        if(!m2.matches())
+        {
+            return;
+        }
         String query = m2.group(1);
 
         String responseVersion = WS_VERSION_1;
@@ -163,7 +176,9 @@ public class SearchServerTest {
         writer.write(out, results, "xml");
         out.close();
         long end = System.nanoTime();
-        System.out.println("url ok :" + url + ":" + ((end - start) / 1000000) + " ms");
+        //System.out.println(URLDecoder.decode(url.toString(),"UTF8"));
+        System.out.println("url ok :" +  URLDecoder.decode(url.toString(),"UTF8") + ":"+results.totalHits +":" + ((end - start) / 1000000) + " ms");
+        //System.out.println(((end - start) / 1000000));
     }
 }
 

@@ -2,7 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd2.WorkWriter;
 
@@ -17,7 +17,7 @@ public class WorkSearch extends SearchServer {
         defaultFields = new ArrayList<String>();
         defaultFields.add(WorkIndexField.WORK.getName());
         defaultFields.add(WorkIndexField.ALIAS.getName());
-        analyzer = new PerFieldEntityAnalyzer(WorkIndexField.class);
+        analyzer = DatabaseIndex.getAnalyzer(WorkIndexField.class);
     }
 
     public WorkSearch(IndexSearcher searcher) throws Exception {

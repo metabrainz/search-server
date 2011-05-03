@@ -23,7 +23,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.IOException;
 import java.sql.*;
@@ -49,7 +48,7 @@ public class TagIndex extends DatabaseIndex {
 	}
 	
     public Analyzer getAnalyzer() {
-        return new PerFieldEntityAnalyzer(WorkIndexField.class);
+        return DatabaseIndex.getAnalyzer(TagIndexField.class);
     }
 
     public int getMaxId() throws SQLException {

@@ -29,6 +29,7 @@
 
 package org.musicbrainz.search.analysis;
 
+import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.search.DefaultSimilarity;
 
 /**
@@ -43,17 +44,20 @@ public class MusicbrainzSimilarity extends DefaultSimilarity {
      *
      * @return score component
      */
-    @Override
-    public float lengthNorm(String fieldName, int numTerms) {
+    public float computeNorm(String field, FieldInvertState state) {
+
 
         //This will match both artist and label aliases and is applicable to both, didn't use the constant
         //ArtistIndexField.ALIAS because that would be confusing
-        if (fieldName.equals("alias")) {
-            return 0.578f; //Same result as normal calc if field had three terms the most common scenario
-        } else {
-            return super.lengthNorm(fieldName, numTerms);
+        if (field.equals("alias")) {
+            return state.getBoost() * 0.578f; //Same result as normal calc if field had three terms the most common scenario
+        }
+        else
+        {
+            return super.computeNorm(field,state);
         }
     }
+
 
     /**
      * This method calculates a value based on how many times the search term was found in the field. Because

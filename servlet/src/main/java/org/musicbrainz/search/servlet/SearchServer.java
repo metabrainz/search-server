@@ -28,18 +28,14 @@
 
 package org.musicbrainz.search.servlet;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Similarity;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MetaIndexField;
@@ -57,7 +53,7 @@ import java.util.logging.Logger;
 
 public abstract class SearchServer {
 
-    protected PerFieldAnalyzerWrapper analyzer;
+    protected Analyzer analyzer;
     protected ResultsWriter resultsWriter;
     protected Mmd1XmlWriter mmd1XmlWriter;
     protected List<String> defaultFields;

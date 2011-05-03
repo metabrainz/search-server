@@ -37,13 +37,11 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.util.NumericUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
-import java.security.PrivateKey;
 import java.util.*;
 
 public class FreeDBIndex implements Index {
@@ -101,7 +99,7 @@ public class FreeDBIndex implements Index {
     }
 
     public Analyzer getAnalyzer() {
-        return new PerFieldEntityAnalyzer(FreeDBIndexField.class);
+        return DatabaseIndex.getAnalyzer(FreeDBIndexField.class);
     }
 
     public String getName() {

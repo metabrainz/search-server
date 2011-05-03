@@ -18,7 +18,7 @@ public class CaseInsensitiveKeywordAnalyzer extends Analyzer {
 
     }
 
-    public TokenStream tokenStream(String fieldName,
+    public final TokenStream tokenStream(String fieldName,
                                    final Reader reader) {
         TokenStream result = new KeywordTokenizer(reader);
         result = new LowercaseFilter(result);
@@ -30,7 +30,7 @@ public class CaseInsensitiveKeywordAnalyzer extends Analyzer {
         TokenStream filteredTokenStream;
     }
 
-    public TokenStream reusableTokenStream(String fieldName,
+    public final TokenStream reusableTokenStream(String fieldName,
                                            final Reader reader) throws IOException {
 
         SavedStreams streams = (SavedStreams) getPreviousTokenStream();

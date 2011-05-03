@@ -2,7 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.musicbrainz.search.analysis.PerFieldEntityAnalyzer;
+import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.TagIndexField;
 import org.musicbrainz.search.servlet.mmd2.TagWriter;
 
@@ -16,7 +16,7 @@ public class TagSearch extends SearchServer {
         resultsWriter = new TagWriter();
         defaultFields = new ArrayList<String>();
         defaultFields.add(TagIndexField.TAG.getName());
-        analyzer = new PerFieldEntityAnalyzer(TagIndexField.class);
+        analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
     }
 
     public TagSearch(IndexSearcher searcher) throws Exception {

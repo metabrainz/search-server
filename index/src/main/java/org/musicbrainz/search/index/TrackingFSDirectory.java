@@ -102,14 +102,14 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
 
     }
 
-    protected class TrackingFSIndexOutput extends SimpleFSIndexOutput
+    protected class TrackingFSIndexOutput extends FSIndexOutput
     {
 
         String name;
 
         public TrackingFSIndexOutput( String name) throws IOException
         {
-            super(new File(getFile(),name));
+            super(TrackingFSDirectory.this, name);
             this.name=name;
         }
 
