@@ -10,7 +10,6 @@ import org.musicbrainz.search.servlet.mmd2.LabelWriter;
 
 import java.util.ArrayList;
 
-
 public class LabelSearch extends SearchServer {
 
     public LabelSearch() throws Exception {
