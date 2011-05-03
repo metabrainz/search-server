@@ -182,10 +182,9 @@ public abstract class SearchServer {
     public Results searchLucene(String query, int offset, int limit) throws IOException, ParseException {
         IndexSearcher searcher = getIndexSearcher();
         QueryParser parser = getParser();
-        TopScoreDocCollector collector = TopScoreDocCollector.create(offset + limit, true);
-        searcher.search(parser.parse(query), collector);
+        TopDocs topdocs = searcher.search(parser.parse(query), offset + limit);
         searchCount.incrementAndGet();
-        return processResults(searcher, collector, offset);
+        return processResults(searcher, topdocs, offset);
     }
 
     /**
@@ -209,14 +208,13 @@ public abstract class SearchServer {
      * Process results of search
      *
      * @param searcher
-     * @param collector
+     * @param topDocs
      * @param offset
      * @return
      * @throws IOException
      */
-    private Results processResults(IndexSearcher searcher, TopScoreDocCollector collector, int offset) throws IOException {
+    private Results processResults(IndexSearcher searcher, TopDocs topDocs, int offset) throws IOException {
         Results results = new Results();
-        TopDocs topDocs = collector.topDocs();
         results.offset = offset;
         results.totalHits = topDocs.totalHits;
         ScoreDoc docs[] = topDocs.scoreDocs;
