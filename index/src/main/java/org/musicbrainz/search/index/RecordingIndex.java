@@ -100,7 +100,7 @@ public class RecordingIndex extends DatabaseIndex {
 
         if(!isUpdater) {
             addPreparedStatement("PUIDS",
-                 "SELECT recording as recordingId, puid " +
+                 "SELECT DISTINCT recording as recordingId, puid " +
                  " FROM  tmp_release_puid " +
                  " WHERE recording between ? AND ?");
 
