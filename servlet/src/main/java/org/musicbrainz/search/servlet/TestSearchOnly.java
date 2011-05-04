@@ -36,25 +36,31 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-import org.omg.PortableServer.THREAD_POLICY_ID;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SearchServerTest {
+/**
+ * Read an input file containing each search NOT encoded , and then parses each one runs a lucene search on each one.
+ * The server is self contained not run within a servlet which make ist much easier to profile the lucene code
+ * if you need to.
+ *
+ * Also necessary to provide the location of the indexes, you can optionally specify where to read the indexes using
+ * memory mapped option.
+ *
+ * Currently only supports the ws/1 namespace
+ */
+public class TestSearchOnly {
 
     final static String WS_VERSION_1 = "1";
-    final static String WS_VERSION_2 = "2";
-    final static Logger log = Logger.getLogger(SearchServerTest.class.getName());
+    final static Logger log = Logger.getLogger(TestSearchOnly.class.getName());
 
     final static int DEFAULT_OFFSET = 0;
     final static int DEFAULT_MATCHES_LIMIT = 25;
@@ -63,7 +69,7 @@ public class SearchServerTest {
     final static String CHARSET = "UTF-8";
     private static EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
     private String initMessage = null;
-
+    static long totalQueryTime = 0;
     static Map<URL, Integer> map = new LinkedHashMap<URL, Integer>();
 
     public static void main(String[] args) throws Exception {
@@ -81,18 +87,16 @@ public class SearchServerTest {
             System.exit(1);
         }
 
-        if((options.getIndexesDir().equals(""))||(options.getTestFile().equals("")))
-        {
+        if ((options.getIndexesDir().equals("")) || (options.getTestFile().equals(""))) {
             System.err.println("Require both Index Dir and Test File");
             System.exit(1);
         }
 
 
         //Init
-        boolean useMMapDirectory    = options.isMMap();
-        File indexDir               = new File(options.getIndexesDir());
-        File urlFile                = new File(options.getTestFile());
-
+        boolean useMMapDirectory = options.isMMap();
+        File indexDir = new File(options.getIndexesDir());
+        File urlFile = new File(options.getTestFile());
 
 
         // Initialize all search indexes
@@ -132,6 +136,7 @@ public class SearchServerTest {
         for (URL url : map.keySet()) {
             processURL(url);
         }
+        System.out.println("Total Query TIme was:"+totalQueryTime + "Ms");
     }
 
 
@@ -142,8 +147,7 @@ public class SearchServerTest {
         Pattern p = Pattern.compile("/ws/1/(.*)/");
         Matcher m = p.matcher(url.getPath());
         m.find();
-        if(!m.matches())
-        {
+        if (!m.matches()) {
             return;
         }
         String type = m.group(1);
@@ -156,8 +160,7 @@ public class SearchServerTest {
         Pattern p2 = Pattern.compile("query=(.*)&offset.*");
         Matcher m2 = p2.matcher(url.getQuery());
         m2.find();
-        if(!m2.matches())
-        {
+        if (!m2.matches()) {
             return;
         }
         String query = m2.group(1);
@@ -176,54 +179,59 @@ public class SearchServerTest {
         writer.write(out, results, "xml");
         out.close();
         long end = System.nanoTime();
+        long queryInMs = ((end - start) / 1000000 );
+        totalQueryTime+=queryInMs;
         //System.out.println(URLDecoder.decode(url.toString(),"UTF8"));
-        System.out.println("url ok :" +  URLDecoder.decode(url.toString(),"UTF8") + ":"+results.totalHits +":" + ((end - start) / 1000000) + " ms");
+        System.out.println("url ok :" + URLDecoder.decode(url.toString(), "UTF8") + ":" + results.totalHits + ":" + queryInMs + " ms");
         //System.out.println(((end - start) / 1000000));
+
     }
+
+    static class NullOutputStream extends OutputStream {
+        public void write(int i) throws java.io.IOException {
+
+        }
+
+        public void write(byte[] bytes) throws java.io.IOException {
+
+        }
+
+        public void write(byte[] bytes, int i, int i1) throws java.io.IOException {
+
+        }
+    }
+
+    static class Options {
+
+        // Indexes directory
+        @Option(name = "--indexes-dir", aliases = {"-d"}, usage = "The directory storing the indexes")
+        private String indexesDir = "";
+
+        public String getIndexesDir() {
+            return indexesDir;
+        }
+
+        // File containing Test urls
+        @Option(name = "--testfile", aliases = {"-f"}, usage = "Test file containing one search url each line")
+        private String testFile = "";
+
+        public String getTestFile() {
+            return testFile;
+        }
+
+        // Test mode
+        @Option(name = "--mmap", aliases = {"-m"}, usage = "Memory Map Indexes")
+        private boolean mmap = false;
+
+        public boolean isMMap() {
+            return mmap;
+        }
+
+
+    }
+
 }
 
 
-class NullOutputStream extends OutputStream {
-    public void write(int i) throws java.io.IOException {
-
-    }
-
-    public void write(byte[] bytes) throws java.io.IOException {
-
-    }
-
-    public void write(byte[] bytes, int i, int i1) throws java.io.IOException {
-
-    }
-}
-
-class Options {
-
-    // Indexes directory
-    @Option(name = "--indexes-dir", aliases = {"-d"}, usage = "The directory storing the indexes")
-    private String indexesDir = "";
-
-    public String getIndexesDir() {
-        return indexesDir;
-    }
-
-    // File containing Test urls
-    @Option(name = "--testfile", aliases = {"-f"}, usage = "Test file containing one search url each line")
-    private String testFile = "";
-
-    public String getTestFile() {
-        return testFile;
-    }
-
-    // Test mode
-    @Option(name = "--mmap", aliases = {"-m"}, usage = "Memory Map Indexes")
-    private boolean mmap = false;
-
-    public boolean isMMap() {
-        return mmap;
-    }
-
-
-}
 
 

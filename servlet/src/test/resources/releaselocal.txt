@@ -1,0 +1,78 @@
+http://localhost:8080/ws/1/release/?query=LIM~ Présente~ Rap~ O~ Feminin~ Le~ Maxi~ AND artist:Samira~ feat~ Stef-K,~ Mik'ya,~ Shainez,~ Sheeva,~ Badia~ &~ LIM~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=LIM~ Présente~ Rap~ O~ Feminin~ Le~ Maxi~ AND artist:Sheeva~ feat~ Samira~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=LIM~ Présente~ Rap~ O~ Feminin~ Le~ Maxi~ AND artist:Badia~ feat~ Samira~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Ik~ Kudi~ Punjab~ Di-Amrinder~ Gil~ AND artist:Ik~ Kudi~ Punjab~ Di-Amrinder~ Gil~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=The~ Radha~ Krishna~ Temple~ AND artist:Krishna~ Devotees~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Jab~ We~ Met~  @~ Fmw11.com~ AND artist:Ustad~ Rashid~ Khan~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Footpath~ @~ Fmw11.com~ AND artist:Hema~ Sardesai,~ K.K.~ &~ Jayesh~ Gandhi~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Civil~ Club~ Kohat~ AND artist:Ahmad~ Kt~ 0333-9621244~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Fight~ For~ This~ Love~ AND artist:Cheryl~ Cole~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=UK~ Top~ 40~ Singles~ /~ 27.09.2009~ AND artist:Temper~ Trap~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=ninja~ hattori~ kun~ op~ AND artist:h.kenko~ &~ columbia~ yurikagokai~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Whatcha~ Say-Single~ AND artist:Jason~ Derulo~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Tonterias~ las~ justas~ AND artist:Panamericana~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Liderazgo~ Con~ Propósito~ Disc~ 5~ AND artist:Rick~ Warren~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Cuando~ Empieza~ Lo~ Mejor~ AND artist:Despistaos~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Our~ Goodbyes~ AND artist:Lady~ Antebellum~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=I~ See~ You~ @~ Fmw11.com~ AND artist:Zubeen~ &~ Vishal~ Shekhar~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=One~ Love~ AND artist:New~ Editiom~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Poquito~ a~ poco~ AND artist:El~ arrebato~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=½Ñ¹ÍÕ¡¤ÃÖè§µéÍ§¾Öè§à¸Í~ by_armkungcyber~ AND artist:Á¹µìá¤¹~ á¡¹¤Ù¹~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Delinquant~ AND artist:lim~ delinquant~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Abdellah~ Daoudi~ AND artist:Abdellah~ Daoudi~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Arooj~ Cd~ Karachi.021.5418643D~ AND artist:ASIM~ RAZA~ DINARI.0300_2557593~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=double~ violence~ urbaine~ AND artist:LIM~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=The~ Dome~ Vol~ 49~ AND artist:Oceana~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=mariage~ marocain~ AND artist:haj~ mourite~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=khyber~ hits-5~ AND artist:Unknown~ Artist~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Bearshare~ AND artist:Pink~ Floyd~ &~ Eric~ Clapton~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=www.MP3SriLanka.com~ AND artist:Roshan~ Fernando~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Maron~ five~ AND artist:Maron~ 5~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=www.latesttelugump3.com~ AND artist:Karthik,~ Mallikharjun~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=www.latesttelugump3.com~ AND artist:Gopika~ Poornima~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Si~ tienes~ fe~ AND artist:Oscar~ Medina~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=NRJ~ Hits~ 2011~ AND artist:Mike~ Posner~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Heavenless~ Riddim~ AND artist:Sizzla~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=TBA~ AND artist:Jason~ Derulo~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Awel~ Marah~ AND artist:Diana~ Hadad~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=á¼è¹·Õè~ 1~ AND artist: ¾§ÉìÊÔ·¸Ôì~ ¤ÓÀÕÃì~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=0321-6643233~ AND artist:khawaja~ hasseb~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=MUSAFIR~ AND artist:www.Mp3pk.com~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=<Unknown>~ AND artist:a02~ Tu~ Jaane~ Na~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=2009~ AND artist:ADIL~ EL~ MILOUDI~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=collection~ AND artist:wajahat~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Chaabi~ MP3~ AND artist:Tahour~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=www.latesttelugump3.com~ AND artist:Sagar,~ Megha~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=TAAL~ AND artist:www.Mp3pk.com~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Z~ LOVE~ R~ AND artist:ZAHOOR03078557842~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=GOPURANGAL_SAIVATHILLAI~ AND artist:oruwebsite.com~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Khamoshi~ AND artist:Khamoshi~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=Delinquant~ AND artist:LIM~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=COMPANY~ AND artist:www.Mp3pk.com~&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=release:(live 1975\-85 \[disc 2\] \(disc 2\)) tracks:(14) artist:(bruce springsteen)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=release:(the unforgiving) tracks:(12) artist:(within temptation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=release:(the classic collection) tracks:(12) artist:(kenny rogers)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=release:(in concert \(disc 1\)) tracks:(13) artist:(bruce springsteen)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=release:(greatest hits \(disc 1\)) tracks:(18) artist:(bruce springsteen)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=release:(magic \(disc 1\)) tracks:(12) artist:(bruce springsteen)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(David AND Guetta))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Various))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Michael AND Jackson))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(date:(2011-04-**))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Arctic AND Monkeys))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Massive AND Attack))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Stars))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(System AND of AND a AND Down))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(U2))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Darin))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(R))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Beyond))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Donna AND Summer))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Avril AND Lavigne))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Moby))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=release:(il sogno \(london symphony orchestra conducted by michael tilson thomas\)) tracks:(24) artist:(elvis costello)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Radiohead))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(aphex AND twin))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(The AND Beatles))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(B.O.B))&offset=0&max=100&fmt=xml
+http://localhost:8080/ws/1/release/?query=(artist:(Megadeth))&offset=0&max=100&fmt=xml

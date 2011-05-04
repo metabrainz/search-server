@@ -1,0 +1,613 @@
+http://localhost:8080/ws/1/recording/?query=release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(190) artist:(the orb) track:(a mile long lump of lard) tracks:(13) release:(cydonia)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(129) artist:(jason creasey) track:(psalm pilot) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(18) artist:(the roots) track:(becoming unwritten) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(87) artist:(claude francois) track:(le lundi au soleil) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(94) artist:(the starting line) track:(the world) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(106) artist:(666) track:(amokk) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(127) artist:(atmosphere) track:(little man) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(134) artist:(f.e. peters) track:(lecture 2e) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(102) artist:(the strokes) track:(trying your luck)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(284) qdur:(66) artist:(art mooney \& his orchestra) track:(heartbreaker)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(21) qdur:(209) artist:(ultra\-sonic) track:(annihilating rhythm) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(174) artist:(misty in roots) track:(cover up) tracks:(10) release:(global rhythm september 2002)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(136) artist:(depeche mode) track:(precious \(live in paris\)) release:(album)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(158) artist:(from first to last) track:(dead baby kickball) release:(dear diary, my teen angst has a body count)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(119) artist:(pomp \(dj isaac radio edit\)) track:(kazoo) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(123) artist:(titanic) track:(sultana) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(91) track:(az \- the come up)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(150) artist:(depeche mode) track:(precious \(the first remix\)) release:(playing the angel)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(138) artist:(music from the motion picture) track:(rob zombie \- dragula \(hot rod) release:(the matrix)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(133) artist:(ultravox) track:(hymn) release:(the voice)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(110) track:(03 \- daar`s `n #$@# in die drink water)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(79) artist:(the meters) track:(sassy lady) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(25) qdur:(131) artist:(ultravox) track:(hymn) release:(fetenhits\: the real 80's)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(119) artist:(the temptations) track:(firefly) release:(a song for you / masterpiece)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(291) qdur:(75) artist:(frances faye) track:(i wish i could shimmy like my sister kate)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(81) artist:(the starting line) track:(greg's last day) release:(with hopes of starting over)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(154) artist:(f.e. peters) track:(lecture 2c) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(245) artist:(the bad plus) track:(silence is the question) release:(these are the vistas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(110) artist:(the roots) track:(rising down \(feat. mos def and styles p\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(102) artist:(evanescence) track:(anything for you) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(129) artist:(elton john, heather headley \& sherie scott) track:(a step too far) tracks:(15) release:(elton john and tim rice's aida)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(16) qdur:(99) artist:(the roots) track:(bonus track) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(86) artist:(the starting line) track:(the drama summer) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(01) qdur:(2433) artist:(martin l. gore) track:(a night with martin l. gore \- cologne 2003) release:(a night with martin l. gore \- cologne 2003)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(218) artist:(hybrid) track:(out of the dark) release:(morning sci\-fi)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(132) artist:(johnny winter) track:(jumpin' jack flash) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(196) track:(mo money, mo murder \(homicide\) \(f. n) release:(doe or die)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(103) qdur:(138) artist:(martin l. gore) track:(i cast a lonesome shadow) release:(milan, alcatraz\(30.04.2003\)cd1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(95) artist:(evanescence) track:(going under \(live acoustic\)) release:(going under cd single)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(109) artist:(evanescence) track:(surrender) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(1540) artist:(depeche mode) track:(touring the angel \(live at werchter festival\)) tracks:(1) release:(touring the angel \(live at werchter festival\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(117) artist:(natalie imbruglia) track:(wishing i was there)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(197) artist:(cesar pedroso y los que son, son) track:(dicen que dicen) tracks:(9) release:(el buenagente)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(03) qdur:(96) artist:(traveling wilburys) track:(if you belonged to me) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(123) artist:(dire straits) track:(walk of life) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(298) qdur:(95) artist:(woody herman \& his orchestra) track:(early autumn)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(09) qdur:(163) artist:(traveling wilburys) track:(tweeter and the monkey man) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=gentleman/sizzla artist:lack of love (album version)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(163) artist:(f.e. peters) track:(13f) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(106) qdur:(114) artist:(martin l. gore) track:(coming back to you) release:(milan, alcatraz\(30.04.2003\)cd1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(80) track:(the meters\-funky miracle\-14\-live wire)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(108) artist:(erasure) track:(victim of love) release:(hot moves)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(115) artist:(evanescence) track:(taking over me) release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(131) artist:(erasure) track:(ship of fools) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(18) qdur:(125) artist:(bon jovi) track:(thank you for loving me)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(99) artist:(john paul young) track:(love is in the air) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(78) artist:(f.e. peters) track:(14h) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(155) artist:(f.e. peters) track:(lecture 2b) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(114) artist:(fragmentz) track:(soapy bubble) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(271) qdur:(57) artist:(gisele mackenzie \& helen o'connell) track:(water can't quench the fire of love)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(90) artist:(michel fugain) track:(attention mesdames et messieurs) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(245) qdur:(82) artist:(bing crosby \& peggy lee) track:(watermelon weather)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(80) artist:(christie) track:(yellow river) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(109) qdur:(187) artist:(martin l. gore) track:(in your room) release:(milan, alcatraz\(30.04.2003\)cd1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(117) artist:(toto) track:(hold the line) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(23) qdur:(50) artist:(the meters) track:(groovy lady) release:(the meters anthology)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(138) artist:(depeche mode) track:(precious \(wah wah synth remix\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(88) track:(the temptations \- build me up buttercup)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(149) artist:(dhafer youssef) track:(electric sufi) tracks:(10) release:(global rhythm september 2002)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(119) artist:(the roots) track:(lost desire \(feat. malik b. and talib kweli\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(54) artist:(dj taka vs. dj yoshitaka) track:(quell \-the seventh slave\- another) release:(beatmaniaiidx13 distorted \-new song\-)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(131) artist:(animal collective) track:(no more runnin) release:(merriweather post pavilion)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(137) artist:(evanescence) track:(my immortal \(2nd version\)) release:(fallen\-br retail)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(113) artist:(dust devil) track:(determinator) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(114) artist:(dead poetic) track:(the dreamclub murders) release:(new medicines)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(266) qdur:(76) artist:(guy lombardo \& his royal canadians) track:(kiss of fire)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(79) artist:(klubbheads) track:(kickin' hard) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(01) qdur:(122) artist:(ultravox) track:(dancing with tears in my eyes) release:(collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(116) artist:(erasure) track:(stop\!) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(241) qdur:(86) artist:(tony martin) track:(dance of destiny)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(95) track:(01 \- bloubul horing)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(92) artist:(evanescence) track:(it was all a lie) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(97) artist:(the trammps) track:(disco inferno) release:(www.mp3xs.com)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(139) artist:(erasure) track:(all this time still falling out of love) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(1410) artist:(depeche mode) track:(touring the angel \(live at werchter festival\)) tracks:(1) release:(touring the angel \(live at werchter festival\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(125) artist:(billy idol) track:(eyes without a face) release:(absolute rock ballad classics \- cd 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(126) artist:(little river band) track:(reminicing) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(19) artist:(daniel g. amen, m.d.) track:(outro) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(181) artist:(cyndi lauper) track:(girls just want to have fun \(extended version\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(278) qdur:(83) artist:(doris day \& johnnie ray) track:(ma says, pa says)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(143) artist:(dj taka) track:(colors \(original mix\)) release:(beatmania iidx 6th style original soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(67) artist:(the meters) track:(joog) release:(struttin)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(04) qdur:(119) artist:(greenday) track:(long view) release:(dookie)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(02) qdur:(104) artist:(traveling wilburys) track:(dirty world) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(122) artist:(the roots) track:(birthday girl) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(209) qdur:(152) artist:(martin l. gore) track:(shake the disease) release:(milan, alcatraz\(30.04.2003\)cd2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(07) qdur:(117) artist:(the script) track:(deadman walking) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(131) artist:(the starting line) track:(the best of me) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(114) artist:(dream theater) track:(the silent man) release:(awake)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(120) artist:(johannes kerkorrel) track:(stemme in die more)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(71) artist:(etta james) track:(tell mama) tracks:(15) release:(women in rock \- rolling stone collection \(disc 1\: 1953\-1971\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(220) artist:(iron maiden) track:(the reincarnation of benjamin breeg) tracks:(1) release:(the reincarnation of benjamin breeg \- single)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(123) artist:(evanescence) track:(my last breath) release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(297) qdur:(93) artist:(bing crosby) track:(keep it a secret)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(281) qdur:(83) artist:(mantovani \& his orchestra) track:(white christmas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(23) qdur:(113) artist:(elly stone/mort shuman/shawn elliot/alice whitfield) track:(if we only have love \(quand on n'a que l'amour\)) tracks:(23) release:(jacques brel is alive and well and living in paris)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(127) artist:(dionne warwick with el debarge, debarge \& the emotions) track:(reach out for me) tracks:(14) release:(dionne sings dionne)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(134) artist:(atmosphere) track:(say hey there) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(237) qdur:(80) artist:(louis prima \& his orchestra) track:(bigger the figure) release:(breaking it up)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(03) qdur:(138) artist:(good\-cool) track:(ã© \(long version\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(008) qdur:(79) artist:(perry como) track:(don't let the stars get in your eyes)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(301) track:(the orb \- blue room \(ambient mix\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(108) artist:(mungo jerry) track:(in the summertimes) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(0) qdur:(291) artist:(depeche mode) track:(cinderella \(16 b remix\)) release:(enjoy the silence__incl 16 b r)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(180) track:(13 \- give me love \- dj dado feat michelle weeks)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(08) qdur:(98) artist:(traveling wilburys) track:(margarita) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(113) artist:(erasure) track:(victim of love) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(00) qdur:(59) artist:(the meters) track:(the meters \- it ain't no use)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(105) artist:(traveling wilburys) track:(like a ship \(previously unissued\) \(bonus track\)) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(145) artist:(bill medley \& jennifer warnes) track:(the time of my life \(i've had\)) release:(dirty dancing soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(202) artist:(dream theater) track:(the mirror) release:(awake)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(288) qdur:(84) artist:(mantovani \& his orchestra) track:(greensleeves)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(92) artist:(dace) track:(vanina) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(246) qdur:(79) artist:(tiny hill \& his orchestra) track:(slow poke)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(270) qdur:(91) artist:(bing crosby \& carol richards) track:(silver bells)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(103) artist:(emiliana torrini) track:(to be free) tracks:(15) release:(songbirds \- the essential album \- vol 2 \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(103) artist:(darude) track:(sandstorm) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(179) artist:(cesar pedroso y los que son, son) track:(el buenagente) tracks:(9) release:(el buenagente)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(19) qdur:(93) artist:(the meters) track:(go for yourself) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(132) artist:(the script) track:(exit wounds) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(17) qdur:(86) artist:(the meters) track:(this is my last affair) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(102) artist:(dj misja \& dj tim) track:(access) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(65) track:(06 \- poer in you m@#r)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(241) artist:(batya gur) track:(0205 track 12) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(172) track:(04 \- feel the beat \- camisra)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(139) artist:(the o'jays) track:(now that i found love) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(102) artist:(the starting line) track:(almost there, going nowhere) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(142) track:(the meters \- just kissed my baby)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(261) artist:(depeche mode) track:(precious \(dominatrix pre mix\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(250) qdur:(81) artist:(carmen cavallaro \& his orchestra) track:(meet mr. callaghan)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(109) artist:(the temptations) track:(i can't get next to you) release:(songs that inspired the motown 25th)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(25) artist:(the roots) track:(@15) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(139) artist:(ultravox) track:(vienna) release:(the voice)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(70) track:(the meters \- hang 'em high)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(95) artist:(ultimate kaos) track:(my lover) release:(unbekannt)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(174) artist:(solid globe) track:(sahara) tracks:(13) release:(a state of trance 2004 \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(123) artist:(good\-cool) track:(miracle4 \(long tours mix\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(112) artist:(debarge) track:(rythm of the night)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(135) artist:(f.e. peters) track:(lecture 1e) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(307) qdur:(82) artist:(bob eberly) track:(when i dream)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(76) track:(01 \- die maan skyn so lekker op my #$@#)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(123) artist:(franz ferdinand) track:(take me out) release:(take me out)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(272) qdur:(80) artist:(the mills brothers) track:(lazy river)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(101) qdur:(152) artist:(martin l. gore) track:(in my time of dying) release:(milan, alcatraz\(30.04.2003\)cd1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(177) artist:(daniel g. amen, m.d.) track:(appendix c 11) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(16) qdur:(92) artist:(interactive) track:(forever young) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(197) artist:(bryan adams) track:(i do it for you \(everything i do\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(196) track:(ken ishii \& talvin singh \- water dipping down on the middle of the forehead)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(09) qdur:(108) artist:(the script) track:(walk away) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(104) artist:(traveling wilburys) track:(nobody's child \(bonus track\)) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=fred&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(002) qdur:(98) artist:(percy faith \& his orchestra) track:(song from 'moulin rouge' \(where is your heart\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(98) artist:(m) track:(pop musik) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(113) artist:(alan kaupp) track:(never be a stranger)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(229) artist:(earth wind \& fire) track:(megamix)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(108) artist:(dj sakin \& friends) track:(protect your mind \(braveheart\)) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(96) artist:(evanescence) track:(listen to the rain) release:(evanescence ep outtakes)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(96) artist:(the orb) track:(hempire) release:(ffwd)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(53) artist:(kbit) track:(frozen fire) release:(in the groove 3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(03) qdur:(89) artist:(traveling wilburys) track:(rattled) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(17) qdur:(228) artist:(batya gur) track:(0303 track 17) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(127) artist:(atmosphere) track:(watch out) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(101) artist:(deftones) track:(needles and pins) release:(deftones)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(243) qdur:(73) artist:(vaughn monroe \& his orchestra) track:(charmaine) release:(the golden voice of vaughn monroe)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(167) artist:(f.e. peters) track:(lecture 13\: worshipping god) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(79) artist:(ike et tina turner) track:(sugar sugar) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(151) artist:(f.e. peters) track:(lecture 1d) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(116) artist:(atmosphere) track:(musical chairs) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(00) qdur:(91) artist:(the meters) track:(fire on the bayou)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(162) artist:(unknown artist) track:(track 07) release:(unknown album)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(05) qdur:(120) artist:(the script) track:(if you ever come back) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(152) artist:(f.e. peters) track:(13b) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(84) track:(12 \- daar`s `n bosluis in my #$@#)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(215) artist:(daniel g. amen, m.d.) track:(appendix c 14) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(97) artist:(the meters) track:(i need more time) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(107) artist:(the starting line) track:(making love to the camera) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(02) qdur:(131) artist:(good\-cool) track:(first resolution \(long \& hard remix\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(155) artist:(f.e. peters) track:(13d) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(127) artist:(buggles) track:(video killed the radio star) release:(the age of plastic)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(93) artist:(evanescence) track:(exodus) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(82) artist:(the meters) track:(yeah you're right) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(74) artist:(the meters) track:(tippi\-toes) release:(best of)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(131) artist:(the roots) track:(rising up \(feat. wale and chrisette michele\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(89) artist:(sly \& the family stone) track:(family affair) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(104) artist:(traveling wilburys) track:(end of the line) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(106) artist:(the starting line) track:(nothing's gonna stop us now) release:(with hopes of starting over)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(301) qdur:(72) artist:(ella fitzgerald) track:(walkin' by the river)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(150) artist:(phaeder) track:(swift tara) tracks:(10) release:(global rhythm september 2002)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(91) artist:(dschinghis khan) track:(doswidanje) release:(7 leben)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(00) qdur:(148) artist:(the bad plus) track:(everywhere you turn)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(142) artist:(eva cassidy) track:(fields of gold) tracks:(15) release:(songbirds \- the essential album \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(100) artist:(ultimate seduction) track:(together forever \(you \& me\)) release:(unbekannt)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(105) artist:(the starting line) track:(leaving) release:(with hopes of starting over)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(135) artist:(erasure) track:(rapture) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(04) qdur:(130) artist:(the script) track:(science and faith) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(322) artist:(batya gur) track:(0202 track 09) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(133) artist:(rank 1) track:(airwave) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(20) artist:(evanescence) track:(where will you go\? \(reprise\)) release:(evanescence ep outtakes)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(123) artist:(double trouble) track:(say one thing) tracks:(11) release:(the story of tone cool vol. 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(135) artist:(the meters) track:(cardova) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(08) qdur:(130) artist:(the script) track:(this is love) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(96) artist:(evanescence) track:(everybody's fool \(live from cologne\)) release:(everybody's fool cd single)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(112) artist:(disturbed/disturbed) track:(get psycho) release:(disturbed)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(85) artist:(ernest \& julio) track:(lipstick kiss) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(107) artist:(evanescence) track:(going under) release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(110) artist:(the starting line) track:(this ride) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(148) artist:(f.e. peters) track:(14c) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(41) artist:(the roots) track:(unwritten) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-09 bumpin' \(keep on bumpin'\).mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(20) qdur:(102) artist:(hocus pocus) track:(here's johnny\!) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(132) artist:(the starting line) track:(a goodnight's sleep) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(265) qdur:(86) artist:(frankie laine) track:(when you're in love) release:(frankie laine pvcd128\-2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(100) track:(11 \- because we want to \- billie)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(77) artist:(joe dassin) track:(les champs elysées) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(134) track:(03 \- toad the wet sprocket \- good intensions)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(97) artist:(the roots) track:(75 bars \(black's reconstruction\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(187) artist:(daniel g. amen, m.d.) track:(appendix c 7) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-16 it's too late.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(238) qdur:(58) artist:(pee wee king \& his golden west cowboys) track:(busybody)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(100) artist:(mickey hart) track:(compound) tracks:(10) release:(global rhythm september 2002)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(204) qdur:(198) artist:(martin l. gore) track:(the love thieves) release:(milan, alcatraz\(30.04.2003\)cd2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(98) artist:(evanescence) track:(before the dawn) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(131) artist:(chris perkins) track:(easy to love) tracks:(15) release:(broken)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(116) artist:(the starting line) track:(decisions, decisions) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(72) artist:(the starting line) track:(hello houston) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(77) artist:(the meters) track:(chicken strut) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(169) artist:(everyone) track:(knockin' on heaven's door \(live\)) tracks:(14) release:(bob dylan the 30th anniversary concert celebration \(disc 2\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(74) artist:(the meters) track:(he bit me) release:(fundamentally funky)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(18) qdur:(194) artist:(batya gur) track:(0304 track 18) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(05) qdur:(98) artist:(traveling wilburys) track:(7 deadly sins) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(286) artist:(depeche mode) track:(enjoy the silence \(timo maas fullest remix\)) release:(special @ www.dmpire.com)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(109) artist:(bliss inc. ft. carlotta chadwick) track:(faith) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(112) artist:(the starting line) track:(cut\! print it) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(77) artist:(erasure) track:(intro rock\-a\-bye\-baby) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(90) artist:(dj taka) track:(frozen ray \(original mix\)) release:(beatmania iidx 6th style original soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(136) artist:(etta james) track:(the very thought of you) tracks:(14) release:(torch songs • disc \(disc 2\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(117) artist:(the bad plus) track:(boo\-wah) release:(these are the vistas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(209) artist:(the orb) track:(delta mk ii) release:(orblivion)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(106) artist:(roy orbison) track:(you got it) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(131) artist:(atmosphere) track:(in my continental) release:(sevens travels instrumentals l)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(113) artist:(erasure) track:(no doubt) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(66) track:(the temptations\- in the still of the night \(dirty dancing soundtrack\) \(1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(95) artist:(the matrix) track:(marilyn manson \-rock is dead\-) release:(the matrix soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(196) artist:(az) track:(mo money, mo murder homicide) release:(doe or die)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(98) artist:(boney m) track:(painter man) release:(gold)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(193) artist:(evanescence) track:(october) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(122) track:(05 \- smokie hit connection medley)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(109) artist:(the starting line) track:(up \& go) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(111) artist:(earth wind \& fire) track:(fantasy) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(114) artist:(the temptations) track:(lean on me) release:(am gold \- early\-'70s classics)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(248) qdur:(85) artist:(the billy williams quartet) track:(\(it's no\) sin) release:(bad distortion)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(182) artist:(daniel g. amen, m.d.) track:(appendix c 8) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(182) artist:(dream theater) track:(lifting shadows off a dream) release:(awake)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(47) track:(the temptations \- stay \(just a little bit longer\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(27) qdur:(265) artist:(batya gur) track:(0406 track 27) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(91) artist:(etta james) track:(at last) tracks:(15) release:(sirens of song\: classic torch songs)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(140) artist:(erasure) track:(hideaway) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(129) artist:(evanescence) track:(bleed) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(62) artist:(dj taka vs. dj yoshitaka) track:(quell \-the seventh slave\-) release:(beatmaniaiidx13 distorted \-new song\-)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(123) track:(03 \- unknown)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(145) artist:(f.e. peters) track:(14d) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(363) artist:(batya gur) track:(0206 track 13) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(82) track:(temptations\- the way you do the thing you do)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(251) qdur:(72) artist:(mickey katz \& his orchestra) track:(herring boats \(shrimp boats\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(75) track:(04 \- #\!@$ in die gang)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(165) artist:(ernest \& julio) track:(agent blatant) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(16) qdur:(128) artist:(erasure) track:(i broke it all in two) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(277) qdur:(88) artist:(sandy solo) track:(close your dreamy eyes \(and dream of me\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(310) qdur:(83) artist:(the weavers with gordon jenkins \& his orchestra) track:(the midnight special)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(89) artist:(boney m) track:(no women no cry)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(34) qdur:(61) artist:(eagle) track:(d) release:(beatmania iidx 17 sirius original soundtrack \[disc 1\])&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(79) artist:(scott brown vs dj rabs) track:(now is the time) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(236) artist:(bambaat) track:(way of thinking \- original mix) release:(flights \& reflections)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(181) artist:(the starting line) track:(photography) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-11 in the evening.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(83) artist:(eva cassidy) track:(kathy's song) tracks:(16) release:(songbirds \- the essential album \(disc 2\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(94) artist:(the starting line) track:(artistic license) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(295) artist:(the orb) track:(earth \(gaia\)) release:(the orb's adventures beyond th)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(66) track:(the temptations\- in the still of the night \(dirty dancing soundtrack\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(181) artist:(rage against the machine) track:(wake up) release:(the matrix)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(100) artist:(dirty androids) track:(new castle legions \-stage 1 mix\-) tracks:(34) release:(beatmania iidx 18 resort anthem original soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._2\-14 now is the time.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(107) artist:(evgeny kissin) track:(scriabin etude in c# minor, op. 42 no. 5) tracks:(19) release:(the #1 piano album \(disc 2\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(260) artist:(depeche mode) track:(precious \(wah wah extended longer remix\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(144) artist:(various artists) track:(tengo frio) tracks:(10) release:(global rhythm september 2002)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(112) artist:(eva cassidy) track:(songbird) tracks:(15) release:(songbirds \- the essential album \- vol 2 \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(156) artist:(paul mccartney \& wings) track:(band on the run) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(24) artist:(daniel g. amen, m.d.) track:(note on references \& further reading) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(139) artist:(chris perkins) track:(my purpose) tracks:(15) release:(broken)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(258) qdur:(81) artist:(teddy phillips \& his orchestra) track:(wishin')&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(82) artist:(the meters) track:(jambalaya) release:(fundamentally funky)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(104) artist:(the roots) track:(get busy \(feat. dice raw and peedi peedi\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(114) artist:(beanie sigel \(ft. r. kelly\)) track:(all the above)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(87) artist:(atmosphere) track:(bird sings why the caged i kno) release:(sevens travels instrumentals l)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(04) qdur:(115) artist:(traveling wilburys) track:(last night) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(109) artist:(the starting line) track:(autography) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(257) artist:(the temptations) track:(take a stroll thru your mind) release:(psychedelic shack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(2179) artist:(mixed by dj snowman) track:(the best of remember trance phase 03) release:(the best of remember trance phase 03 cd)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(41) artist:(jimmy weckl) track:(across the nightmare) release:(dance dance revolution 8th mix \-extreme\-)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(98) artist:(azzido da bass) track:(dooms night) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(225) artist:(bambaat) track:(through the airstreams \- original mix) release:(flights \& reflections)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(02) qdur:(107) artist:(traveling wilburys) track:(inside out) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(215) artist:(dj scot project) track:(o \(overdrive\)) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(06) qdur:(130) artist:(good\-cool) track:(secrets \(long version\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(84) artist:(groove coverage) track:(moonlight shadow) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(202) track:(the orb \- hallucinogen lsd)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(07) qdur:(138) artist:(good\-cool) track:(make it\!) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(52) artist:(dj technorch) track:(888) tracks:(28) release:(dancedancerevolution x2 original soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(197) artist:(f.e. peters) track:(lecture 2f) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(96) artist:(lunatic calm) track:(leave you far behind) release:(the matrix soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(300) qdur:(63) artist:(tony bennett) track:(stay where you are)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(144) artist:(atmosphere) track:(pour me another) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(167) artist:(the bad plus) track:(guilty) release:(these are the vistas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(122) artist:(the bad plus) track:(flim) release:(these are the vistas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(90) artist:(az) track:(uncut raw) release:(doe or die)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(319) artist:(batya gur) track:(0203 track 10) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(118) artist:(elly stone/mort shuman/shawn elliot/alice whitfield) track:(desperate ones \(les désespérés\)) tracks:(23) release:(jacques brel is alive and well and living in paris)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(155) artist:(unknown artist) track:(track 03) release:(unknown album)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-17 he ain't heavy, he's my brother.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(007) qdur:(93) artist:(eddie fisher) track:(i'm walking behind you)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(115) artist:(evanescence) track:(breath no more) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(138) artist:(atmosphere) track:(panic attack) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(02) qdur:(61) artist:(dj taka) track:(colors \(radio edit\)) release:(beatmania iidx 6th style original soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(133) artist:(ultravox) track:(\(the\) thin wall) release:(the voice)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(95) artist:(ethel merman, bruce yarnell, jerry orbach, rufus smith) track:(there's no business like show business \(from annie get your gun\)) tracks:(20) release:(only broadway cd you'll ever need)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(100) artist:(funky choad ft. nick skitz) track:(the ultimate) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(108) qdur:(86) artist:(martin l. gore) track:(lost in the stars) release:(milan, alcatraz\(30.04.2003\)cd1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(21) artist:(atmosphere) track:(on the battlefield) release:(seven's travels \(vinyl bonus t)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(302) qdur:(70) artist:(art mooney \& his orchestra) track:(lazy river)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(18) qdur:(64) artist:(evie sands) track:(i can't let go) tracks:(18) release:(best of the girl groups \(vol. 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(88) artist:(audio two) track:(top billin') release:(what more can i say\?)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(311s) qdur:(88) artist:(hugo winterhalter \& his orchestra) track:(fandango \(stereo remake\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(301) artist:(batya gur) track:(0301 track 15) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-04 walk of life.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(123) artist:(the starting line) track:(ready) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(98) artist:(the strokes) track:(take it or leave it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(32) qdur:(345) artist:(batya gur) track:(0504 track 32) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(90) artist:(the starting line) track:(given the chance) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(92) artist:(depeche mode) track:(precious \- brevity version)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(83) artist:(chris perkins) track:(try him out) tracks:(15) release:(broken)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(115) artist:(evanescence) track:(taking over me) release:(fallen\-br retail)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(137) artist:(umberto tozzi) track:(io muoio di te) release:(bagaglio a mano)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(03) qdur:(118) artist:(evanescence) track:(taking over me \(live from cologne\)) release:(everybody's fool cd single)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(279) qdur:(91) artist:(eddie fisher) track:(everything i have is yours)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(109) artist:(atmosphere) track:(smart went crazy) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(136) artist:(reggae album) track:(my girl) release:(the best)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(293) qdur:(74) artist:(ted straeter \& his orchestra) track:(most beautiful girl in the world)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(286) qdur:(78) artist:(lisa kirk) track:(boomerang) release:(i feel a song comin' on)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(123) artist:(good\-cool) track:(ßoesz¹ \(long version\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-12 up to the wildstyle.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(30) qdur:(356) artist:(batya gur) track:(0502 track 30) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(101) artist:(the starting line) track:(saddest girl story) release:(with hopes of starting over)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(139) artist:(rihanna) track:(willing to wait) release:(music of the sun)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(205) artist:(cesar pedroso y los que son, son) track:(gato por liebre) tracks:(9) release:(el buenagente)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(84) artist:(traveling wilburys) track:(maxine \(previously unissued\) \(bonus track\)) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(90) artist:(elly stone/mort shuman/shawn elliot/alice whitfield) track:(marathon \(les flamandes\)) tracks:(23) release:(jacques brel is alive and well and living in paris)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(100) artist:(cat stevens) track:(wild world) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(127) artist:(santana) track:(oye como va) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(128) artist:(evanescence) track:(imaginary) release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(84) artist:(the starting line) track:(stay where i can see you) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(97) artist:(boney m) track:(sunny) release:(the magic of boney m)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(06) qdur:(128) artist:(the script) track:(long gone and moved on) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(88) artist:(dead poetic) track:(taste the red hands) release:(new medicines)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(126) artist:(sheryl crow) track:(my favorite mistake)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(01) qdur:(133) artist:(good\-cool) track:(checking you out \(house remix\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(17) qdur:(127) artist:(the hollies) track:(he ain't heavy, he's my brother) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(01) qdur:(24) artist:(elvis costello) track:(prelude) release:(il sogno \(london symphony orchestra conducted by michael tilson thomas\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(145) artist:(manic street preachers) track:(if you tolerate this your children will be next) tracks:(19) release:(this is my truth tell me yours)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(145) artist:(bexta) track:(make it phunkee) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(256) qdur:(63) artist:(the four aces) track:(two little kisses)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(143) artist:(the bad plus) track:(heart of glass) release:(these are the vistas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(138) artist:(cesar pedroso y los que son, son) track:(los tres gordos) tracks:(9) release:(el buenagente)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(08) qdur:(127) artist:(good\-cool) track:(5\-10 \(long version\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(02) qdur:(126) artist:(the script) track:(for the first time) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(155) artist:(f.e. peters) track:(lecture 1f) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(147) artist:(f.e. peters) track:(14g) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(122) artist:(boney m) track:(brown girl in the ring)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(101) artist:(evanescence) track:(forever you) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(100) artist:(b2k) track:(girlfriend) release:(greatest hits)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(156) artist:(cesar pedroso y los que son, son) track:(disco azucar) tracks:(9) release:(el buenagente)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-05 band on the run.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(98) artist:(evanescence) track:(everybody's fool \(album versio) release:(everybody's fool cd single)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(127) artist:(atmosphere) track:(trying to find a balance) release:(sevens travels instrumentals l)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(116) track:(big eater) release:(these are the vistas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(29) artist:(lusine) track:(push \(ghostly international\) \- original mix) release:(db festival promo)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(310) artist:(batya gur) track:(0201 track 08) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(140) artist:(the starting line) track:(cheek to cheek) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(78) artist:(kernkraft 400) track:(zombie nation) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(0) qdur:(2272) artist:(various artists) track:(the amnesia collection  vol. 1) tracks:(15) release:(the amnesia collection  vol. 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(251) artist:(unknown artist) track:(track 08) release:(unknown album)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(126) artist:(good\-cool) track:(white birds \(long mirage mix\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-13 the ultimate.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(68) track:(the temptations \- aint no mountain high enough)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(280) qdur:(68) artist:(bill kenny) track:(\(that's just my way of\) forgetting you)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(72) artist:(atmosphere) track:(the keys to life vs 15 minutes) release:(sevens travels instrumentals l)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(004) qdur:(83) artist:(tony bennett) track:(rags to riches)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(124) artist:(the roots) track:(criminal \(feat. truck north and saigon\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(21) qdur:(61) artist:(dj remo\-con vs dj taka) track:(golden cross) release:(beatmania iidx 17 sirius original soundtrack \[disc 2\])&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(164) artist:(dream theater) track:(caught in a web) release:(awake)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(178) artist:(the bad plus) track:(smells like teen spirit) release:(vol. 109 \- disc 1 \- january\-february \- 2003)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(118) artist:(deftones) track:(anniversary of an uninteresting event) release:(deftones)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(163) artist:(yakooza \(dj wag remix\)) track:(cocaine) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(187) artist:(daniel g. amen, m.d.) track:(appendix c 6) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(120) artist:(atmosphere) track:(angelface) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(59) artist:(dm ashura) track:(aftershock\!\!) tracks:(28) release:(dancedancerevolution x2 original soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(132) artist:(evanescence) track:(my immortal) release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._2\-08 if you tolerate this your children will be next 1.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(102) artist:(the starting line) track:(saddest girl story) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(260) qdur:(78) artist:(margaret whiting) track:(i'll walk alone) release:(complete capitol hits of margaret whiting \(2000\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(141) artist:(earth wind and fire) track:(fantasy)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(163) artist:(the orb) track:(asylum) release:(toxygene \[u.s. single\])&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(164) artist:(daniel g. amen, m.d.) track:(appendix c 12) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(138) artist:(the starting line) track:(the b\-list) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(190) artist:(f.e. peters) track:(13e) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(04) qdur:(127) artist:(good\-cool) track:(turning the motor over \(long drive mix\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(109) artist:(jean\-patrick capdevielle) track:(quand t'es dans le désert) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(309) artist:(batya gur) track:(0207 track 14) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(77) artist:(ernie k\-doe) track:(mother\-in\-law) tracks:(20) release:(time life r\&b collection disk 1 \- 1958\-1963)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(89) artist:(plastic bertrand) track:(ca plane pour moi) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(06) qdur:(104) artist:(traveling wilburys) track:(congratulations) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(60) artist:(amicalement votre) track:(thème de la série) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(76) artist:(the strokes) track:(is this it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(125) artist:(miss peppermint) track:(welcome to tomorrow) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(89) artist:(the meters) track:(pungee) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(131) artist:(the starting line) track:(left coast envy) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(07) qdur:(108) artist:(traveling wilburys) track:(heading for the light) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(08) qdur:(108) artist:(traveling wilburys) track:(cool dry place) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(87) artist:(the strokes) track:(when it started) tracks:(19) release:(spider\-man ost)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(249) qdur:(85) artist:(camarata \& his orchestra) track:(veradero)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(105) artist:(evanescence) track:(away from me) release:(in the shadows)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(98) artist:(hardfloor) track:(acperience 1) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(109) artist:(the socaboys ft. van b king) track:(bumpin' \(keep on bumpin'\)) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(46) track:(03 \- hier kom die bokke)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(169) track:(the matrix soundtrack \- 07 \- prodigy \- mindfields\(1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(100) track:(15 \- ons klein terroris \- touch of class)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(80) track:(08 \- verneuk jou hier, verneuk you daar)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(121) artist:(the temptations) track:(stay \(remix \)) release:(phoenix rising)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(108) artist:(donovan) track:(mellow yellow) release:(boulevard des hits 70 cd 2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(125) artist:(talvin singh) track:(jamming in loindon) release:(master musicians of jajouka)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(91) artist:(the meters) track:(cissy strut)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(67) track:(01 \- gatskop)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(208) artist:(alicia keys) track:(like youll never see me again \(seiji club mix\)) tracks:(2) release:(like youll never see me again)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(110) artist:(the temptations \- the temptations christmas card) track:(give love on christmas day) release:(the temptations christmas card\-give love at christmas)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(111) artist:(inoj) track:(time after time)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(148) artist:(rick ross) track:(cross that line) release:(port of miami)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(17) qdur:(50) artist:(meters) track:(thinking) release:(very best of the meters)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(275) qdur:(86) artist:(gene autry) track:(frosty the snowman \(1952 reissue\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(133) artist:(etta james) track:(the man i love) tracks:(14) release:(torch songs • disc \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(114) artist:(the temptations) track:(you'velost that lovin feeling)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(92) artist:(erasure) track:(ave maria) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(145) artist:(az) track:(rather unique) release:(doe or die)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(183) artist:(chris perkins) track:(this is for you) tracks:(15) release:(broken)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(78) artist:(headtwist \& pump) track:(ize pie) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(09) qdur:(129) artist:(good\-cool) track:(cñúìc \(long version\)) release:(crazy operation)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(120) artist:(the starting line) track:(surprise, surprise) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(121) artist:(monica) track:(i will wait for you)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(115) artist:(ultravox) track:(passing strangers) release:(the voice)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(263) qdur:(86) artist:(the four freshmen) track:(it's a blue world)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(223) track:(moby\-matrix theme song)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(04) qdur:(127) artist:(funky meters) track:(they all ask for you) release:(mardi gras in new orleans volume ii)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(252) qdur:(96) artist:(sammy kaye \& his orchestra) track:(you)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(126) artist:(evanescence) track:(bring me to life \(2nd version\)) release:(fallen\-br retail)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(94) artist:(the temptations) track:(for once in my life) release:(in a mellow mood)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(109) artist:(erasure) track:(breathe) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(125) artist:(deftones) track:(lucky you) release:(deftones)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(96) artist:(az) track:(your world dont stop \(original version\)) release:(decade \(1994\-2004\) read nfo)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(155) artist:(f.e. peters) track:(14f) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(16) qdur:(117) artist:(carole king) track:(it's too late) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(109) artist:(donna summer) track:(this time i know it's for real)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(68) artist:(the trashmen) track:(surfin bird)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(95) artist:(avant \(ft. the pussycat dolls\)) track:(stickwitu \(urban remix\)) release:(director)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(94) artist:(ja rule) track:(put it on me)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(259) qdur:(76) artist:(bobby wayne) track:(\(if i had the\) heart of a clown)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(151) artist:(dead poetic) track:(glass in the trees) release:(new medicines)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(118) artist:(evanescence) track:(bring me to life) release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(98) track:(06 \- krap my bal)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(303) artist:(dead poetic) track:(a hoax to live for) release:(new medicines)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(2) artist:(dj dag) track:(jingle) release:(20 years of dj madness \(cd2\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(146) artist:(f.e. peters) track:(lecture 2d) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(115) artist:(dust devil) track:(d\-code) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(120) artist:(erasure) track:(a little respect) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(137) artist:(sakesho) track:(roule quadrille) tracks:(10) release:(global rhythm september 2002)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(294) qdur:(79) artist:(hank thompson \& his brazos valley boys) track:(the wild side of life)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(136) artist:(atmosphere) track:(guarantees) release:(when life gives you lemons, you paint that shit gold)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(96) artist:(fleetwood mac) track:(don't stop) tracks:(18) release:(legends ii \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(82) artist:(elly stone/mort shuman/shawn elliot/alice whitfield) track:(madeleine) tracks:(23) release:(jacques brel is alive and well and living in paris)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(207) qdur:(129) artist:(martin l. gore) track:(a question of lust) release:(milan, alcatraz\(30.04.2003\)cd2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(90) artist:(evanescence) track:(forgive me \(bonus track\)) release:(fallen\-br retail)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(264) qdur:(89) artist:(burl ives) track:(the wild side of life) release:(decca 28055)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(142) artist:(atmosphere) track:(get fly) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(91) track:(08 \- to the world \- o r g a n)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(99) artist:(the strokes) track:(last nite)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(165) track:(03 \- feel it \- the tamperer feat maya)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(162) artist:(f.e. peters) track:(lecture 14\: reaching for god) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-10 welcome to tomorrow.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(139) artist:(the roots) track:(i can't help it \(feat. malik b., porn, mercedes martinez and dice raw\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(153) artist:(eddie vedder/mike mccready) track:(masters of war) tracks:(15) release:(bob dylan the 30th anniversary concert celebration \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(129) artist:(dionne warwick) track:(heartbreaker) release:(absolute hits of the 80's cd2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(68) artist:(the meters) track:(stormy)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(268) qdur:(92) artist:(russ morgan \& his orchestra) track:(dance me loose)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(110) artist:(johnny cash) track:(the city of new orleans) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(150) artist:(depeche mode) track:(precious \(the first remix\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-06 the launch.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(120) track:(02 \- one on one \- robert miles)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(01) qdur:(136) artist:(the script) track:(you won't feel a thing) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(201) qdur:(157) artist:(martin l. gore) track:(walking in my shoes) release:(milan, alcatraz\(30.04.2003\)cd2)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(23) artist:(the orb) track:(firestar) release:(cydonia)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(18) qdur:(104) track:(18 \- save the last dance for me \- patricia lewis)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(128) artist:(boney m) track:(rivers of babylon) release:(back to the 70's)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(85) artist:(evanescence) track:(heart shaped box \(live acoustic\)) release:(going under cd single)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._2\-02 open your mind.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(108) artist:(audio 2) track:(top billin' \(2\)) release:(what more can i say\?)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(19) qdur:(99) artist:(alpha team) track:(speed) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(123) artist:(destiny's child) track:(survivor)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(14) qdur:(133) artist:(erasure) track:(breath of life) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(125) artist:(erasure) track:(drama\!) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(16) qdur:(116) artist:(evanescence) track:(bring me to life \(acoustic\)) release:(fallen\-br retail)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(37) artist:(the roots) track:(the pow wow) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(151) artist:(f.e. peters) track:(13c) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(126) artist:(camouflage) track:(the great commandment)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(115) artist:(a\-ha) track:(take on me)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(177) artist:(daniel g. amen, m.d.) track:(appendix c 9) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(168) artist:(bonnie tyler) track:(total eclipse of the heart)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(18) qdur:(140) artist:(ultravox) track:(dancing with tears in my eyes) release:(heart rock, rock für's herz \(d)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(92) artist:(gilbert montagne) track:(the fool) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(134) artist:(erasure) track:(the circus) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(154) artist:(europe) track:(the final countdown)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(104) artist:(the strokes) track:(the modern age)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(4) qdur:(119) artist:(chris perkins) track:(believe me) tracks:(15) release:(broken)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(287) qdur:(70) artist:(red foley) track:(don't let the stars get in your eyes)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(218) artist:(excerpt) track:(mozart\: fantasia in d minor, k 397 \(k 385g\)) tracks:(11) release:(mozart for meditation \- quiet music for quiet times)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(112) artist:(the roots) track:(the show \(feat. common and dice raw\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(84) artist:(etta james) track:(something's gotta hold on me) tracks:(20) release:(millenium blues party)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(166) artist:(dream theater) track:(6\:00) release:(awake)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(190) artist:(commander tom) track:(are am eye\? 2.3) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(223) artist:(bart van wissen) track:(a better way) release:(one reason   a better way vinyl)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(158) artist:(dj taka) track:(tomorrow perfume \~the theme of 6th style\~) release:(beatmania iidx 6th style original soundtrack)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(003) qdur:(86) artist:(the ames brothers) track:(you you you) release:(from cd \- orig rca victor 5325)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(18) qdur:(127) artist:(christopher cross) track:(sailing) release:(sounds of the eighties)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(247) qdur:(93) artist:(the overtures featuring marian caruso) track:(my favorite song)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(106) artist:(depeche mode) track:(i just can't get enough)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(106) artist:(the starting line) track:(leaving) tracks:(13) release:(say it like you mean it)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(133) artist:(atmosphere) track:(the arrival) release:(you can't imagine how much fun we're having)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(106) artist:(atmosphere) track:(always coming home to you) release:(sevens travels instrumentals l)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(17) qdur:(66) artist:(ultra\-sonic) track:(check your head) tracks:(17) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(113) artist:(dead poetic) track:(molotov) release:(new medicines)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(122) artist:(the starting line) track:(bedroom talk) tracks:(12) release:(based on a true story)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(181) artist:(f.e. peters) track:(lecture 1\: in the beginning...) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(98) artist:(evanescence) track:(everybody's fool) release:(fallen limited edition)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(94) artist:(the strokes) track:(alone together)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(125) artist:(beanie sigel) track:(the truth) release:(the truth)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(126) artist:(jason creasey) track:(reactor) release:(in the groove 2 pre\-beta)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(136) artist:(f.e. peters) track:(lecture 1g) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(137) artist:(double) track:(the captain of her heart) release:(living in oblivion\: the 80's g)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(13) qdur:(130) artist:(ultravox) track:(lament) release:(the voice)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(86) artist:(the meters) track:(britches) release:(struttin)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(105) artist:(mfsb) track:(t.s.o.p.) release:(boulevard des hits annees 70 \(cd1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(160) artist:(daniel g. amen, m.d.) track:(appendix c 10) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(91) artist:(atb) track:(9pm \(till i come\)) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(213) artist:(the temptations) track:(papa was a rollin' stone) release:(all directions)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(09) qdur:(126) artist:(animal collective) track:(lion in a coma) release:(merriweather post pavilion)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(34) qdur:(360) artist:(batya gur) track:(0506 track 34) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(235) artist:(meters) track:(get out my life you woman) release:(untitled \- new cd \(2\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(303) qdur:(75) artist:(danny winchell) track:(carolina in the morning \(45rpm\)) release:(45rpm mgm 11335)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(209) artist:(bonnie tyler) track:(total eclipse of the heart \(extended version\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(176) artist:(daniel g. amen, m.d.) track:(appendix c 13) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(0) track:(._1\-13 you got it.mp3)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(118) artist:(chris perkins) track:(bumps and bruises) tracks:(15) release:(broken)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(101) artist:(beanie sigel) track:(nothing like it) release:(reason, the)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(12) qdur:(145) artist:(daniel g. amen, m.d.) track:(appendix c 15) tracks:(14) release:(ab – 013 \- change your brain, change your body)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(15) qdur:(133) artist:(eurythmics) track:(would i lie to you) tracks:(17) release:(women in rock \- rolling stone collection \(disc 2\: 1972\-1986\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(163) artist:(f.e. peters) track:(lecture 1b) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(137) artist:(the roots) track:(i will not apologize \(feat. porn and dice raw\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(05) qdur:(102) artist:(traveling wilburys) track:(not alone any more) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(10) qdur:(123) artist:(the roots) track:(singing man \(feat. porn, truck north and dice raw\)) tracks:(16) release:(rising down)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(09) qdur:(100) artist:(traveling wilburys) track:(new blue moon) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(147) artist:(f.e. peters) track:(lecture 1h) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(316) artist:(batya gur) track:(0204 track 11) release:(denn die seele ist in deiner hand)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(5) qdur:(90) artist:(erasure) track:(knocking on your door) tracks:(25) release:(the erasure show \(live in cologne 28.03.05\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(254) qdur:(88) artist:(the ames brothers) track:(i'll still love you)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(127) artist:(the starting line) track:(three is a charm) release:(with hopes of starting over)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(308) qdur:(88) artist:(buddy morrow \& his orchestra) track:(one mint julep)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(01) qdur:(99) artist:(traveling wilburys) track:(handle with care) release:(the traveling wilburys collection)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(03) qdur:(136) artist:(the script) track:(nothing) release:(science \& faith)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(182) artist:(rage against the machine) track:(matrix theme)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(107) artist:(evanescence) track:(going under \(album version\)) release:(going under cd single)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(18) qdur:(86) artist:(the meters) track:(darling darling darling) tracks:(19) release:(funky miracle \- disc 1)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(8) qdur:(144) artist:(f.e. peters) track:(14b) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(3) qdur:(147) artist:(f.e. peters) track:(lecture 1c) tracks:(14) release:(judaism, christianity, and islam\: the monotheists \(disc 1\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(82) artist:(the meters) track:(oh, calcutta\!) release:(look\-ka py py)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(158) artist:(the meters) track:(people say)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(11) qdur:(180) artist:(f.e. peters) track:(14e) tracks:(14) release:(judaism, christianity and islam\: the monotheists \(disc 7\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(108) artist:(dj jean) track:(the launch) tracks:(21) release:(central station \- the hard years 1976\-2006)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=qdur:(248) artist:(bambaat) track:(trace from a pain \- original mix) release:(flights \& reflections)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(9) qdur:(569) artist:(the meters) track:(gettin' funkier all the time) release:(cabbage alley)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(0) qdur:(208) artist:(rocks) track:(dr duda \& dr m bee the gap)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(7) qdur:(120) artist:(depeche mode) track:(precious \(new beat remix by virus\))&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(1) qdur:(3576) artist:(dj oliver) track:(essential mix 08\-10\-2006) release:(twc)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(257) qdur:(87) artist:(frankie laine) track:(the mermaid)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(2) qdur:(117) artist:(the temptations) track:(glass house) release:(a song for you)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(17) qdur:(89) track:(17 \- it takes two \- sugar and spice)&offset=0&max=25&fmt=xml
+http://localhost:8080/ws/1/recording/?query=tnum:(6) qdur:(189) artist:(tama) track:(ibata) tracks:(10) release:(global rhythm september 2002)&offset=0&max=25&fmt=xml
