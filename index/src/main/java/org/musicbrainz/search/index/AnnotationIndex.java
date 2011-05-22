@@ -116,7 +116,7 @@ public class AnnotationIndex extends DatabaseIndex {
         doc.addField(AnnotationIndexField.ENTITY, rs.getString("gid"));
         doc.addField(AnnotationIndexField.NAME, rs.getString("name"));
         doc.addField(AnnotationIndexField.TYPE, type.getName());
-        doc.addField(AnnotationIndexField.TEXT, rs.getString("text"));
+        doc.addNonEmptyField(AnnotationIndexField.TEXT, rs.getString("text"));
         return doc.getLuceneDocument();
     }
         
