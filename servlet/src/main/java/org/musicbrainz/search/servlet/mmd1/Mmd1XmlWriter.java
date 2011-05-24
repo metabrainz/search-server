@@ -103,7 +103,7 @@ public abstract class Mmd1XmlWriter extends ResultsWriter {
         String xml = sw.toString();
 
         //Remove extension namespace definition
-        xml=xml.replace("xmlns:ext=\"http://musicbrainz.org/ns/ext#-1.0","");
+        xml=xml.replace("xmlns:ext=\"http://musicbrainz.org/ns/ext#-1.0\"","");
 
         //Add it to the top instead
         xml=xml.replace("<metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\">",
