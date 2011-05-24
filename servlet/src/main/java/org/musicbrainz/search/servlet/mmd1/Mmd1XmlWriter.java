@@ -38,6 +38,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public abstract class Mmd1XmlWriter extends ResultsWriter {
 
@@ -84,14 +85,31 @@ public abstract class Mmd1XmlWriter extends ResultsWriter {
      * @param results
      * @throws IOException
      */
+    @Override
     public void write(PrintWriter out, Results results, String outputFormat) throws IOException {
+
+        //SEARCH-66 Create StringWriter so that we can hack the namespace for backwards compatibility
+        StringWriter sw =  new StringWriter();
+
         try {
             Metadata metadata = write(results);
             Marshaller m = context.createMarshaller();
-            m.marshal(metadata, out);
+            m.marshal(metadata, sw);
         }
         catch (JAXBException je) {
             throw new IOException(je);
         }
+
+        String xml = sw.toString();
+
+        //Remove extension namespace definition
+        xml=xml.replace("xmlns:ext=\"http://musicbrainz.org/ns/ext#-1.0","");
+
+        //Add it to the top instead
+        xml=xml.replace("<metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\">",
+                         "<metadata xmlns=\"http://musicbrainz.org/ns/mmd-1.0#\" xmlns:ext=\"http://musicbrainz.org/ns/ext-1.0#\">");
+
+        //Now write out to the proper output stream
+        out.write(xml);
     }
 }
