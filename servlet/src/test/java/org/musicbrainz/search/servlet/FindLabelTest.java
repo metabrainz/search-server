@@ -65,6 +65,17 @@ public class FindLabelTest extends TestCase {
             writer.addDocument(doc.getLuceneDocument());
         }
 
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7504");
+            doc.addField(LabelIndexField.LABEL, "Dark Prism");
+            doc.addField(LabelIndexField.SORTNAME, "Dark Prism");
+            doc.addField(LabelIndexField.CODE, "");
+            doc.addField(LabelIndexField.TYPE, LabelType.HOLDING.getName());
+
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
         writer.close();
         ss = new LabelSearch(new IndexSearcher(ramDir, true));
     }
@@ -199,6 +210,27 @@ public class FindLabelTest extends TestCase {
         MbDocument doc = result.doc;assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
+
+    public void testIssue66() throws Exception {
+        Results res = ss.searchLucene("dark", 0, 10);
+        assertEquals(1, res.totalHits);
+        ResultsWriter writer = new LabelMmd1XmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+        String output =sw.toString();
+        assertTrue(output.contains("<name>Dark Prism</name>"));
+
+        writer = new LabelWriter();
+        sw = new StringWriter();
+        pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+        assertTrue(output.contains("<name>Dark Prism</name>"));
+
+    }
+
 
     /**
      * Tests get same results as

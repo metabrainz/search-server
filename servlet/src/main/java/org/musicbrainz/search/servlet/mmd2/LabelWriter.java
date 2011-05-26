@@ -63,7 +63,7 @@ public class LabelWriter extends ResultsWriter {
             }
 
             String code = doc.get(LabelIndexField.CODE);
-            if (code != null) {
+            if (code != null && !code.isEmpty()) {
                 label.setLabelCode(new BigInteger(code));
 
             }
