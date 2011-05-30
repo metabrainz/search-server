@@ -130,7 +130,9 @@ public class ReleaseIndex extends DatabaseIndex {
               "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
               "  LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
               " WHERE m.release BETWEEN ? AND ? " +
-              " GROUP BY m.release, m.id, mf.name, tr.track_count");
+              " GROUP BY m.release, m.id, mf.name, tr.track_count" +
+              " ORDER BY m.release, m.id "
+        );
 
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT r.id as releaseId, " +
