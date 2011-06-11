@@ -53,6 +53,7 @@ public class FindReleaseGroupTest extends TestCase {
         doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
         doc.addField(ReleaseGroupIndexField.ARTIST, "The Wedding Present");
         doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "The Wedding Present");
+
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
         Artist artist = of.createArtist();
@@ -78,6 +79,7 @@ public class FindReleaseGroupTest extends TestCase {
         doc.addField(ReleaseGroupIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
         doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
         doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
+        doc.addField(ReleaseGroupIndexField.COMMENT, "demo");
 
         doc.addField(ReleaseGroupIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
         ac = of.createArtistCredit();
@@ -248,6 +250,16 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     }
 
+    public void testFindReleaseGroupByComment() throws Exception {
+        Results res = ss.searchLucene("comment:demo", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("demo", doc.get(ReleaseGroupIndexField.COMMENT));
+    }
+
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/release-group/?type=xml&query=%22Nobody%27s%20Twisting%20Your%20Arm%22
@@ -357,6 +369,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("id=\"0011c128-b1f2-300e-88cc-c33c30dce704\""));
         assertTrue(output.contains("type=\"album\""));
         assertTrue(output.contains("<title>Epics</title>"));
+        assertTrue(output.contains("<comment>demo</comment>"));
         assertTrue(output.contains("<name-credit joinphrase=\"and\">"));
         assertTrue(output.contains("<name>Erich Kunzel</name>"));
         assertTrue(output.contains("<sort-name>Kunzel, Eric</sort-name>"));

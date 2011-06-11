@@ -31,6 +31,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -57,6 +58,11 @@ public class ReleaseGroupWriter extends ResultsWriter {
             String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
             if (name != null) {
                 releaseGroup.setTitle(name);
+            }
+
+            String comment = doc.get(ReleaseGroupIndexField.COMMENT);
+            if (comment != null) {
+                releaseGroup.setComment(comment);
             }
 
             String type = doc.get(ReleaseGroupIndexField.TYPE);

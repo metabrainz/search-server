@@ -42,6 +42,7 @@ public class FindWorkTest extends TestCase {
             doc.addField(WorkIndexField.ISWC, "T-101779304-1");
             doc.addField(WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
             doc.addField(WorkIndexField.ARTIST, "Пётр Ильич Чайковский");
+            doc.addField(WorkIndexField.COMMENT, "demo");
 
             doc.addField(WorkIndexField.TYPE, "Opera");
             doc.addField(WorkIndexField.ALIAS, "Symp5");
@@ -83,6 +84,15 @@ public class FindWorkTest extends TestCase {
         assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
         assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
     }
+
+    public void testFindWorkByComment() throws Exception {
+            Results res = ss.searchLucene("comment:demo", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+            assertEquals("demo", doc.get(WorkIndexField.COMMENT));
+        }
 
     public void testFindWorkByArtist() throws Exception {
             Results res = ss.searchLucene("artist:\"Пётр Ильич Чайковский\"", 0, 10);
@@ -171,6 +181,7 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("id=\"4ff89cf0-86af-11de-90ed-001fc6f176ff\""));
         assertTrue(output.contains("<title>Symphony No. 5</title>"));
         assertTrue(output.contains("<name>Пётр Ильич Чайковский</name>"));
+        assertTrue(output.contains("<disambiguation>demo</disambiguation>"));
         assertTrue(output.contains("<sort-name>Пётр Ильич Чайковский</sort-name>"));
         assertTrue(output.contains("<relation type=\"composer\""));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));

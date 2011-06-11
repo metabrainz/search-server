@@ -54,6 +54,8 @@ public class FindReleaseTest extends TestCase {
         doc.addField(ReleaseIndexField.ARTIST, "Farming Incident");
         doc.addField(ReleaseIndexField.ARTIST_NAME, "Farming Incident");
         doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Farming Incident");
+        doc.addField(ReleaseIndexField.COMMENT, "demo");
+
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
         Artist artist = of.createArtist();
@@ -316,6 +318,19 @@ public class FindReleaseTest extends TestCase {
      *
      * @throws Exception
      */
+    public void testFindReleaseByComment() throws Exception {
+        Results res = ss.search("comment:demo", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("demo", doc.get(ReleaseIndexField.COMMENT));
+     }
+
+    /**
+     *
+     * @throws Exception
+     */
     public void testFindReleaseByScriptUppercase() throws Exception {
         Results res = ss.search("script:LATN", 0, 10);
         assertEquals(1, res.totalHits);
@@ -569,6 +584,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
+        assertTrue(output.contains("<disambiguation>demo</disambiguation>"));
         assertTrue(output.contains("artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<disc-list count=\"1\""));
         assertTrue(output.contains("<track-list count=\"10\""));

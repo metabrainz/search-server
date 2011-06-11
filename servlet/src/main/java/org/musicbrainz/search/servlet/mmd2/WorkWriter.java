@@ -31,6 +31,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -57,7 +58,11 @@ public class WorkWriter extends ResultsWriter {
             String name = doc.get(WorkIndexField.WORK);
             if (name != null) {
                 work.setTitle(name);
+            }
 
+            String comment = doc.get(WorkIndexField.COMMENT);
+            if (comment != null) {
+                work.setDisambiguation(comment);
             }
 
             String type = doc.get(WorkIndexField.TYPE);

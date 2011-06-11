@@ -32,6 +32,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
@@ -82,6 +83,11 @@ public class RecordingWriter extends ResultsWriter {
 
             if (name != null) {
                 recording.setTitle(name);
+            }
+
+            String comment = doc.get(RecordingIndexField.COMMENT);
+            if (comment != null) {
+                recording.setDisambiguation(comment);
             }
 
             String duration = doc.get(RecordingIndexField.DURATION);

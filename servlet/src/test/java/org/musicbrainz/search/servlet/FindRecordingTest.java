@@ -53,6 +53,8 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.ARTIST, "Farming Incident");
         doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
         doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
+        doc.addField(RecordingIndexField.COMMENT, "demo");
+
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
         Artist artist = of.createArtist();
@@ -138,6 +140,14 @@ public class FindRecordingTest extends TestCase {
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+    public void testFindRecordingByDemo() throws Exception {
+        Results res = ss.searchLucene("comment:\"demo\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("demo", doc.get(RecordingIndexField.COMMENT));
     }
 
     public void testFindRecordingByArtistId() throws Exception {
@@ -364,6 +374,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
         assertTrue(output.contains("<title>Gravitational Lenz</title>"));
+        assertTrue(output.contains("<disambiguation>demo</disambiguation>"));
         assertTrue(output.contains("<length>234000</length>"));
         assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
