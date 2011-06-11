@@ -491,7 +491,7 @@ public class FindReleaseTest extends TestCase {
     }
 
     public void testFindReleaseByLabelId() throws Exception {
-        Results res = ss.searchLucene("labelid:c1dfaf9c-d498-4f6c-b040-f7714315fcea", 0, 10);
+        Results res = ss.searchLucene("laid:c1dfaf9c-d498-4f6c-b040-f7714315fcea", 0, 10);
         assertEquals(1, res.totalHits);
     }
     
