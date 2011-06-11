@@ -113,7 +113,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 " ORDER BY r.id, a.pos");
 
         addPreparedStatement("RELEASEGROUPS",
-                "SELECT rg.id, rg.gid, n0.name as name, release_group_type.name as type " +
+                "SELECT rg.id, rg.gid, n0.name as name, release_group_type.name as type, rg.comment " +
                 " FROM release_group AS rg " +
                 "  LEFT JOIN release_name n0 ON rg.name = n0.id " +
                 "  LEFT JOIN release_group_type ON rg.type = release_group_type.id " +
@@ -195,6 +195,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
         doc.addNonEmptyField(ReleaseGroupIndexField.TYPE, rs.getString("type"));
+        doc.addNonEmptyField(ReleaseGroupIndexField.COMMENT, rs.getString("comment"));
 
         //Add each release name within this release group
         if (releases.containsKey(id)) {

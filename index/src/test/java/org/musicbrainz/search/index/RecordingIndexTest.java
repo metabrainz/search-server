@@ -63,8 +63,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO track (id, recording, tracklist, position, name, artist_credit, length) "
                 + " VALUES (1, 1, 1, 4, 2, 1, 33100)");
-        stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length)"
-                + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
+        stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment)"
+                + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000, 'demo')");
 
         stmt.addBatch("INSERT INTO track_name (id, name) VALUES (1, 'Do It Clean')");
         stmt.addBatch("INSERT INTO track_name (id, name) VALUES (2, 'Do It Cleans')");
@@ -470,6 +470,27 @@ public class RecordingIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(RecordingIndexField.PUID.getName()).length);
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", doc.getField(RecordingIndexField.PUID.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * Test gives puid
+     *
+     * @throws Exception exception
+     */
+    public void testComment() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(RecordingIndexField.COMMENT.getName()).length);
+            assertEquals("demo", doc.getField(RecordingIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }

@@ -69,8 +69,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
-        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2)");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type, comment)" +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, 'demo')");
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240)");
@@ -229,8 +229,23 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals("Album", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
+    }
 
 
+    public void testIndexReleaseGroupWithComment() throws Exception {
+
+        addReleaseGroupOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.COMMENT.getName()).length);
+            assertEquals("demo", doc.getField(ReleaseGroupIndexField.COMMENT.getName()).stringValue());
+        }
+        ir.close();
     }
 
     public void testIndexReleaseGroupSortname() throws Exception {

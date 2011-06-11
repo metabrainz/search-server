@@ -14,10 +14,10 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
 public enum ReleaseIndexField implements IndexField {
 	
     ID				    ("_id",		    	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),	
-    ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST_ID		    ("arid",			Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,	    Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,	    Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	    Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RELEASE			    ("release",		    Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
@@ -38,7 +38,9 @@ public enum ReleaseIndexField implements IndexField {
     TYPE		        ("type",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     STATUS		        ("status",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     FORMAT  		    ("format",		    Field.Store.YES,	Field.Index.ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
-    PUID    		    ("puid",		    Field.Store.NO,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    PUID    		    ("puid",		    Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    COMMENT		        ("comment",		    Field.Store.YES,	Field.Index.ANALYZED),
+
     ;
 
     private String name;

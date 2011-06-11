@@ -163,7 +163,7 @@ public class RecordingIndex extends DatabaseIndex {
                 " WHERE r1.id in " ;
 
         addPreparedStatement("RECORDINGS",
-                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname " +
+                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname, re.comment " +
                         " FROM recording re " +
                         "  INNER JOIN track_name tn ON re.name=tn.id " +
                         "  AND re.id BETWEEN ? AND ?");
@@ -486,6 +486,7 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+        doc.addNonEmptyField(RecordingIndexField.COMMENT, rs.getString("comment"));
 
         if (puids.containsKey(id)) {
             // Add each puid for recording

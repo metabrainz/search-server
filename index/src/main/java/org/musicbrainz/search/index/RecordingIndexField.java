@@ -38,7 +38,7 @@ public enum RecordingIndexField implements IndexField {
     PUID    		    ("puid",		    Field.Store.YES,	Field.Index.NO),
     RELEASE_DATE	    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     RELEASE_AC_VA       ("release_ac_va",   Field.Store.YES,    Field.Index.NO),
-
+    COMMENT		        ("comment",		Field.Store.YES,	Field.Index.ANALYZED),
     ;
 
     private String name;

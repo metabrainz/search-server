@@ -100,7 +100,7 @@ public class WorkIndex extends DatabaseIndex {
                         " WHERE work BETWEEN ? AND ?");
 
         addPreparedStatement("WORKS",
-                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, iswc " +
+                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, iswc, comment " +
                         " FROM work AS w " +
                         "  LEFT JOIN work_name wn ON w.name = wn.id " +
                         "  LEFT JOIN work_type wt ON w.type = wt.id " +
@@ -191,6 +191,7 @@ public class WorkIndex extends DatabaseIndex {
         doc.addField(WorkIndexField.WORK, rs.getString("name"));
         doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
+        doc.addNonEmptyField(WorkIndexField.COMMENT, rs.getString("comment"));
 
         if (artists.containsKey(id)) {
             RelationList rl = artists.get(id);

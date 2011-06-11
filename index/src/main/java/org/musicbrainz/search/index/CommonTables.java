@@ -143,7 +143,8 @@ public class CommonTables  {
                 "  date_year, date_month, date_day, rgt.name as type, rm.amazon_asin, " +
                 "  language.iso_code_3t as language, script.iso_code as script, rs.name as status, " +
                 "  sum(tr.track_count) as tracks," +
-                "  r.artist_credit" +
+                "  r.artist_credit," +
+                "  r.comment" +
                 " FROM release r " +
                 "  LEFT JOIN release_meta rm ON r.id = rm.id " +
                 "  LEFT JOIN release_group rg ON rg.id = r.release_group " +

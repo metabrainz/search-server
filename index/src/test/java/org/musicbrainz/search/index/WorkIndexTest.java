@@ -46,8 +46,8 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (1, 'Work')");
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (2, 'Play')");
-        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, iswc)" +
-                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 'T-101779304-1')");
+        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, iswc, comment)" +
+                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 'T-101779304-1', 'demo')");
         stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 2)");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Classical', 2);");
@@ -131,6 +131,21 @@ public class WorkIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
             assertEquals("Opera", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
+            ir.close();
+        }
+    }
+
+    public void testIndexWorkWithComment() throws Exception {
+
+        addWorkOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(WorkIndexField.COMMENT.getName()).length);
+            assertEquals("demo", doc.getField(WorkIndexField.COMMENT.getName()).stringValue());
             ir.close();
         }
     }

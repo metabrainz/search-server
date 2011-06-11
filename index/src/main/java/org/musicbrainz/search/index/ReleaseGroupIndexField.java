@@ -53,7 +53,8 @@ public enum ReleaseGroupIndexField implements IndexField {
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO)
+    TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
+    COMMENT		        ("comment",		    Field.Store.YES,	Field.Index.ANALYZED),
     ;
 
     private String name;

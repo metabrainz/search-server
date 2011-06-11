@@ -58,8 +58,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 3)");
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
-                "  language, script, date_year, date_month, date_day) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1)");
+                "  language, script, date_year, date_month, date_day,comment) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1,'demo')");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (1, 1, 1)");
@@ -558,6 +558,27 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.SCRIPT.getName()).length);
             assertEquals("Latn", doc.getField(ReleaseIndexField.SCRIPT.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+
+    public void testIndexReleaseComment() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseIndexField.COMMENT.getName()).length);
+            assertEquals("demo", doc.getField(ReleaseIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }

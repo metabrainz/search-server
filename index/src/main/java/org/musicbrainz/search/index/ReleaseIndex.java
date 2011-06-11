@@ -154,7 +154,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 " SELECT id, gid, name, " +
                 "  barcode, country, " +
                 "  date_year, date_month, date_day, type, amazon_asin, " +
-                "  language, script, status " +
+                "  language, script, status, comment " +
                 " FROM tmp_release rl " +
                 "WHERE  id BETWEEN ? AND ? ");
     }
@@ -308,6 +308,7 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
         doc.addNonEmptyField(ReleaseIndexField.LANGUAGE, rs.getString("language"));
         doc.addNonEmptyField(ReleaseIndexField.SCRIPT, rs.getString("script"));
+        doc.addNonEmptyField(ReleaseIndexField.COMMENT, rs.getString("comment"));
 
         if (labelInfo.containsKey(id)) {
             for (List<String> entry : labelInfo.get(id)) {
