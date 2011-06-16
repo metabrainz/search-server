@@ -157,7 +157,7 @@ public class CommonTables  {
                 "  LEFT JOIN medium m ON m.release=r.id" +
                 "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
                 " GROUP BY r.id,r.gid,rn.name,barcode,country.iso_code,date_year,date_month,date_day,rgt.name," +
-                "  rm.amazon_asin, language.iso_code_3t, script.iso_code,rs.name,r.artist_credit");
+                "  rm.amazon_asin, language.iso_code_3t, script.iso_code,rs.name,r.artist_credit, r.comment");
         clock.stop();
         System.out.println("tmp_release     :Finished:" + Utils.formatClock(clock));
         clock.reset();
