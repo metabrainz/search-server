@@ -506,36 +506,36 @@ public class RecordingIndex extends DatabaseIndex {
         if (tracks.containsKey(id)) {
             // For each track for this recording
             for (TrackWrapper track : tracks.get(id)) {
-                doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
-                doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
                 Release release = releases.get(track.getReleaseId());
-                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
-                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, release.getStatus());
-                doc.addFieldOrHyphen(RecordingIndexField.RELEASE_DATE, release.getDate());
-                doc.addFieldOrHyphen(RecordingIndexField.COUNTRY, release.getCountry());
-
-                doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
-                doc.addField(RecordingIndexField.RELEASE, release.getTitle());
-                doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
-
-                //Is Various Artist Release
-                if(release.getArtistCredit()!=null)
+                if(release!=null)
                 {
-                    doc.addField(RecordingIndexField.RELEASE_AC_VA, "1");
-                }
-                else
-                {
-                    doc.addField(RecordingIndexField.RELEASE_AC_VA, "-");
-                }
-                // Added to TRACK_OUTPUT for outputting xml,
-                doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
-                // and if different to recording for searching
-                if(!track.getTrackName().equals(recordingName)) {
-                    doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
-                }
+                    doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
+                    doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
+                    doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
+                    doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, release.getStatus());
+                    doc.addFieldOrHyphen(RecordingIndexField.RELEASE_DATE, release.getDate());
+                    doc.addFieldOrHyphen(RecordingIndexField.COUNTRY, release.getCountry());
+                    doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
+                    doc.addField(RecordingIndexField.RELEASE, release.getTitle());
+                    doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
 
-                doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
-
+                    //Is Various Artist Release
+                    if(release.getArtistCredit()!=null)
+                    {
+                        doc.addField(RecordingIndexField.RELEASE_AC_VA, "1");
+                    }
+                    else
+                    {
+                        doc.addField(RecordingIndexField.RELEASE_AC_VA, "-");
+                    }
+                    // Added to TRACK_OUTPUT for outputting xml,
+                    doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
+                    // and if different to recording for searching
+                    if(!track.getTrackName().equals(recordingName)) {
+                        doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
+                    }
+                    doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
+                }
             }
         }
 
