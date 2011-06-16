@@ -82,7 +82,7 @@ public class WorkIndex extends DatabaseIndex {
 
         addPreparedStatement("ARTISTS",
                 " SELECT w.id as wid, w.gid, a.gid as aid, an.name as artist_name, sn.name as artist_sortname," +
-                        " lt.short_link_phrase as link" +
+                        " lt.name as link" +
                         " FROM l_artist_work aw" +
                         " INNER JOIN artist a ON a.id    = aw.entity0" +
                         " INNER JOIN work   w ON w.id     = aw.entity1" +

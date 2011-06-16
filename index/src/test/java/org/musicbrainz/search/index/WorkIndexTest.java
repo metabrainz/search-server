@@ -54,7 +54,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO work_tag (work, tag, count) VALUES (1, 1, 10)");
         stmt.addBatch("INSERT INTO l_artist_work(id, link, entity0, entity1) VALUES (1, 1, 16153, 1)");
         stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
-        stmt.addBatch("INSERT INTO link_type(id,short_link_phrase) VALUES (1, 'composer')");
+        stmt.addBatch("INSERT INTO link_type(id,name) VALUES (1, 'composer')");
 
         stmt.executeBatch();
         stmt.close();
@@ -81,7 +81,7 @@ public class WorkIndexTest extends AbstractIndexTest {
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1, 'T-101779304-1')");
         stmt.addBatch("INSERT INTO l_artist_work(id, link, entity0, entity1) VALUES (1, 1, 16153, 1);");
         stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
-        stmt.addBatch("INSERT INTO link_type(id,short_link_phrase) VALUES (1, 'composer')");
+        stmt.addBatch("INSERT INTO link_type(id,name) VALUES (1, 'composer')");
 
         stmt.executeBatch();
         stmt.close();
