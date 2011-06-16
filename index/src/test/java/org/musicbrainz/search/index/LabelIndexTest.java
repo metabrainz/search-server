@@ -41,8 +41,8 @@ public class LabelIndexTest extends AbstractIndexTest {
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, begin_date_year) " +
-					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, 1979)");
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, begin_date_year,ipi_code) " +
+					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, 1979,'1001')");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (1, 2)");
 
         stmt.executeBatch();
@@ -149,6 +149,22 @@ public class LabelIndexTest extends AbstractIndexTest {
 
     }
 
+    public void testIndexLabelWithIPI() throws Exception {
+
+        addLabelOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(LabelIndexField.IPI.getName()).length);
+            assertEquals("1001", doc.getField(LabelIndexField.IPI.getName()).stringValue());
+        }
+        ir.close();
+
+    }
 
     public void testIndexLabelWithNoComment() throws Exception {
 

@@ -35,8 +35,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, country)" +
-            " VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, 1999, 4, 2, 1, 1)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, country,ipi_code)" +
+            " VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, 1999, 4, 2, 1, 1,'10001')");
         stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (1, 'AF', 'Afghanistan')");
 
         stmt.executeBatch();
@@ -169,6 +169,23 @@ public class ArtistIndexTest extends AbstractIndexTest {
             }
             ir.close();
         }
+
+    public void testIndexArtistWithIPI() throws Exception {
+
+                addArtistOne();
+                RAMDirectory ramDir = new RAMDirectory();
+                createIndex(ramDir);
+
+                IndexReader ir = IndexReader.open(ramDir, true);
+                assertEquals(2, ir.numDocs());
+                {
+                    Document doc = ir.document(1);
+                    assertEquals(1, doc.getFields(ArtistIndexField.IPI.getName()).length);
+                    assertEquals("10001", doc.getField(ArtistIndexField.IPI.getName()).stringValue());
+                }
+                ir.close();
+            }
+
 
     public void testIndexArtistWithNoCountry() throws Exception {
 

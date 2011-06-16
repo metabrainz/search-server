@@ -265,6 +265,7 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  type integer," +
                 "  country integer," +
                 "  comment character varying(255)," +
+                "  ipi_code VARCHAR(11)," +
                 "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");

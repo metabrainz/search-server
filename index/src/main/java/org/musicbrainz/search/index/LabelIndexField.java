@@ -53,7 +53,9 @@ public enum LabelIndexField implements IndexField {
     COMMENT		("comment",		Field.Store.YES, 	Field.Index.ANALYZED),
     TYPE		("type",		Field.Store.YES, 	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO)
+    TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
+    IPI         ("ipi",         Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+
     ;
 
     private String name;

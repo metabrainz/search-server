@@ -101,7 +101,7 @@ public class ArtistIndex extends DatabaseIndex {
                 "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
                 "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
                 "  end_date_year, end_date_month, end_date_day, " +
-                "  comment, lower(iso_code) as country, lower(gender.name) as gender " +
+                "  comment, lower(iso_code) as country, lower(gender.name) as gender, ipi_code " +
                 " FROM artist " +
                 "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
                 "  LEFT JOIN artist_name n1 ON artist.sort_name = n1.id " +
@@ -186,6 +186,7 @@ public class ArtistIndex extends DatabaseIndex {
         doc.addNonEmptyField(ArtistIndexField.COUNTRY, rs.getString("country"));
         doc.addNonEmptyField(ArtistIndexField.GENDER, rs.getString("gender"));
 
+        doc.addNonEmptyField(ArtistIndexField.IPI, rs.getString("ipi_code"));
 
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {

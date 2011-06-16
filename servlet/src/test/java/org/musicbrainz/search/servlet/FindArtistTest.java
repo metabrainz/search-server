@@ -51,6 +51,7 @@ public class FindArtistTest extends TestCase {
             doc.addField(ArtistIndexField.TAGCOUNT, "5");
             doc.addField(ArtistIndexField.TAG, "güth");
             doc.addField(ArtistIndexField.TAGCOUNT, "11");
+            doc.addField(ArtistIndexField.IPI,"1001");
 
             writer.addDocument(doc.getLuceneDocument());
         }
@@ -110,6 +111,14 @@ public class FindArtistTest extends TestCase {
     public void testFindArtistByType() throws Exception {
         Results res = ss.searchLucene("type:\"group\"", 0, 10);
         assertEquals(2, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+    }
+
+    public void testFindArtistByIpi() throws Exception {
+        Results res = ss.searchLucene("ipi:1001", 0, 10);
+        assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));

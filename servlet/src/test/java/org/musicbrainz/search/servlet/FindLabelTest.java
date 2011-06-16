@@ -49,6 +49,7 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.COUNTRY, "GB");
             doc.addField(LabelIndexField.TAG, "dance");
             doc.addField(LabelIndexField.TAGCOUNT, "22");
+            doc.addField(LabelIndexField.IPI,"1001");
 
             writer.addDocument(doc.getLuceneDocument());
         }
@@ -137,6 +138,17 @@ public class FindLabelTest extends TestCase {
     public void testFindLabelByType() throws Exception {
         Results res = ss.searchLucene("type:\"production\"", 0, 10);
         assertEquals(2, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+
+        //(This will always come first because searcher sots by score and then docno, and this doc added first)
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+    }
+
+     public void testFindLabelByIpi() throws Exception {
+        Results res = ss.searchLucene("ipi:1001", 0, 10);
+        assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
 
