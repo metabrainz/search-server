@@ -139,7 +139,7 @@ public class CommonTables  {
         getDbConnection().createStatement().execute(
             "CREATE TEMPORARY TABLE tmp_release AS " +
                 "SELECT r.id, r.gid, rn.name as name, " +
-                "  barcode, lower(country.iso_code) as country, " +
+                "  barcode, country.iso_code as country, " +
                 "  date_year, date_month, date_day, rgt.name as type, rm.amazon_asin, " +
                 "  language.iso_code_3t as language, script.iso_code as script, rs.name as status, " +
                 "  sum(tr.track_count) as tracks," +
