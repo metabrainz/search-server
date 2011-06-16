@@ -158,7 +158,7 @@ public class RecordingIndex extends DatabaseIndex {
         releases =
                 "SELECT " +
                 "  id as releaseKey, gid as releaseid, name as releasename, type, "+
-                "  status, date_year, date_month, date_day, tracks,artist_credit " +
+                "  status, date_year, date_month, date_day, tracks,artist_credit, country " +
                 " FROM tmp_release r1 " +
                 " WHERE r1.id in " ;
 
@@ -429,6 +429,7 @@ public class RecordingIndex extends DatabaseIndex {
             rg.setType(rs.getString("type"));
             release.setReleaseGroup(rg);
             release.setStatus(rs.getString("status"));
+            release.setCountry(rs.getString("country"));
             release.setDate(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
             ml.setTrackCount(BigInteger.valueOf(rs.getInt("tracks")));
             release.setReleaseGroup(rg);
@@ -511,6 +512,7 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, release.getStatus());
                 doc.addFieldOrHyphen(RecordingIndexField.RELEASE_DATE, release.getDate());
+                doc.addFieldOrHyphen(RecordingIndexField.COUNTRY, release.getCountry());
 
                 doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
                 doc.addField(RecordingIndexField.RELEASE, release.getTitle());

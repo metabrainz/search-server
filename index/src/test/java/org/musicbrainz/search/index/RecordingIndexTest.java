@@ -74,7 +74,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO puid (id, puid) VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e38')");
         stmt.addBatch("INSERT INTO recording_puid (id, puid, recording) VALUES (1, 1, 1)");
-                
+
+        stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (1, 'UK','United Kingdom')");
+
         stmt.executeBatch();
         stmt.close();
     }
@@ -230,6 +232,28 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
             assertEquals("Non-Album Tracks", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+     /**
+     * Basic test of all fields
+     *
+     * @throws Exception exception
+     */
+    public void testReleaseCountry() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
+            assertEquals(1, doc.getFields(RecordingIndexField.COUNTRY.getName()).length);
+            assertEquals("UK", doc.getField(RecordingIndexField.COUNTRY.getName()).stringValue());
         }
         ir.close();
     }

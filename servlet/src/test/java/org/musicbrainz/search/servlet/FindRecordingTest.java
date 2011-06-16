@@ -54,6 +54,7 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
         doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
         doc.addField(RecordingIndexField.COMMENT, "demo");
+        doc.addField(RecordingIndexField.COUNTRY, "UK");
 
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
@@ -179,6 +180,15 @@ public class FindRecordingTest extends TestCase {
 
     public void testFindRecordingByReleaseType() throws Exception {
         Results res = ss.searchLucene("type:\"album\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+
+    public void testFindRecordingByReleaseContry() throws Exception {
+        Results res = ss.searchLucene("country:UK", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -385,6 +395,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("count=\"10\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("<country>UK</country>"));
         assertTrue(output.contains("<isrc id=\"123456789\"/>"));
         assertTrue(output.contains("<isrc id=\"abcdefghi\"/>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
