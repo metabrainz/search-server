@@ -149,34 +149,34 @@ public class ReleaseWriter extends ResultsWriter {
             release.setArtistCredit(ac);
 
             String numTracksOnRelease = doc.get(ReleaseIndexField.NUM_TRACKS);
+            if(numTracksOnRelease!=null)
+            {
+                MediumList mediumList = of.createMediumList();
+                mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracksOnRelease)));
 
-            MediumList mediumList = of.createMediumList();
-            mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracksOnRelease)));
+                String[] formats          = doc.getValues(ReleaseIndexField.FORMAT);
+                String[] numTracks        = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
+                String[] numDiscIds       = doc.getValues(ReleaseIndexField.NUM_DISCIDS_MEDIUM);
+                for (int i = 0; i < formats.length; i++) {
 
+                    Medium medium = of.createMedium();
 
-            String[] formats          = doc.getValues(ReleaseIndexField.FORMAT);
-            String[] numTracks        = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
-            String[] numDiscIds       = doc.getValues(ReleaseIndexField.NUM_DISCIDS_MEDIUM);
-            for (int i = 0; i < formats.length; i++) {
+                    if(!formats[i].toLowerCase(Locale.US).equals("-")) {
+                        medium.setFormat(formats[i]);
+                    }
+                    org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
+                    trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
+                    medium.setTrackList(trackList);
 
-                Medium medium = of.createMedium();
+                    DiscList discList = of.createDiscList();
+                    discList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numDiscIds[i])));
+                    medium.setDiscList(discList);
 
-                if(!formats[i].toLowerCase(Locale.US).equals("-")) {
-                    medium.setFormat(formats[i]);
+                    mediumList.getMedium().add(medium);
                 }
-                org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
-                trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
-                medium.setTrackList(trackList);
-
-                DiscList discList = of.createDiscList();
-                discList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numDiscIds[i])));
-                medium.setDiscList(discList);
-
-                mediumList.getMedium().add(medium);
+                mediumList.setCount(BigInteger.valueOf(formats.length));
+                release.setMediumList(mediumList);
             }
-            mediumList.setCount(BigInteger.valueOf(formats.length));
-
-            release.setMediumList(mediumList);
             releaseList.getRelease().add(release);
         }
         releaseList.setCount(BigInteger.valueOf(results.totalHits));
