@@ -25,7 +25,7 @@ public enum AnnotationType {
     RELEASE(2, "release"),
     LABEL(3, "label"),
     RECORDING(4, "recording"),
-    RELEASE_GROUP(5,"releasegroup"),
+    RELEASE_GROUP(5,"release-group"),
     WORK(6,"work");
 
     private Integer dbId;
