@@ -55,6 +55,8 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
         doc.addField(RecordingIndexField.COMMENT, "demo");
         doc.addField(RecordingIndexField.COUNTRY, "UK");
+        doc.addField(RecordingIndexField.FORMAT, "Vinyl");
+
 
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
@@ -187,8 +189,16 @@ public class FindRecordingTest extends TestCase {
     }
 
 
-    public void testFindRecordingByReleaseContry() throws Exception {
+    public void testFindRecordingByReleaseCountry() throws Exception {
         Results res = ss.searchLucene("country:UK", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+    public void testFindRecordingByReleaseFormat() throws Exception {
+        Results res = ss.searchLucene("format:Vinyl", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -396,6 +406,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("<country>UK</country>"));
+        assertTrue(output.contains("<format>Vinyl</format>"));
         assertTrue(output.contains("<isrc id=\"123456789\"/>"));
         assertTrue(output.contains("<isrc id=\"abcdefghi\"/>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
@@ -432,6 +443,8 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("\"position\":1"));
         assertTrue(output.contains("\"status\":\"Official\""));
         assertTrue(output.contains("\"track-count\":10"));
+        assertTrue(output.contains("format\":\"Vinyl\""));
+        assertTrue(output.contains("country\":\"UK\""));
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
         assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
         assertTrue(output.contains("\"artist-credit\":{\"name-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}"));

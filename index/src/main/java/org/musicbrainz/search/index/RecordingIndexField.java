@@ -40,6 +40,7 @@ public enum RecordingIndexField implements IndexField {
     RELEASE_AC_VA       ("release_ac_va",   Field.Store.YES,    Field.Index.NO),
     COMMENT		        ("comment",		Field.Store.YES,	Field.Index.ANALYZED),
     COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    FORMAT			    ("format",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ;
 
     private String name;

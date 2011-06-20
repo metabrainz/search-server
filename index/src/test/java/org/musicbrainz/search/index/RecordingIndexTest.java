@@ -519,6 +519,28 @@ public class RecordingIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    /**
+         * Test gives format
+         *
+         * @throws Exception exception
+         */
+    public void testFormat() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(RecordingIndexField.FORMAT.getName()).length);
+            assertEquals("Vinyl", doc.getField(RecordingIndexField.FORMAT.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+
 /**
      * Test no puid
      *

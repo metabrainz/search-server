@@ -132,6 +132,7 @@ public class RecordingWriter extends ResultsWriter {
             String[] mediumPos          = doc.getValues(RecordingIndexField.POSITION);
             String[] numTracksRelease   = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
             String[] releaseVA          = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
+            String[] mediumFormat       = doc.getValues(RecordingIndexField.FORMAT);
 
             if(releaseNames.length>0)
             {
@@ -172,7 +173,10 @@ public class RecordingWriter extends ResultsWriter {
                     Medium medium = of.createMedium();
                     medium.setPosition(new BigInteger(mediumPos[i]));
                     medium.setTrackList(releaseTrackList);
-                    
+                    if(!mediumFormat[i].equals("-"))
+                    {
+                        medium.setFormat(mediumFormat[i]);
+                    }
                     MediumList mediumList = of.createMediumList();
                     mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracksRelease[i])));
                     mediumList.getMedium().add(medium);

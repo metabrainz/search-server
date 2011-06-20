@@ -19,6 +19,7 @@
 
 package org.musicbrainz.search.index;
 
+import com.sun.javadoc.Doc;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -105,7 +106,7 @@ public class RecordingIndex extends DatabaseIndex {
 
             addPreparedStatement("TRACKS",
                 "SELECT track_name, recording, track_position, track_count, " +
-                "  release_id, medium_position " +
+                "  release_id, medium_position, format " +
                 " FROM tmp_track " +
                 " WHERE recording between ? AND ?");
         }
@@ -118,11 +119,13 @@ public class RecordingIndex extends DatabaseIndex {
 
              addPreparedStatement("TRACKS",
                 "SELECT tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
-                "  m.release as release_id, m.position as medium_position " +
+                "  m.release as release_id, m.position as medium_position,mf.name as format " +
                 " FROM track t " +
                 "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
                 "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                "  INNER JOIN medium m ON m.tracklist=tl.id ");
+                "  INNER JOIN medium m ON m.tracklist=tl.id " +
+                "  LEFT JOIN  medium_format mf ON m.format=mf.id "
+             );
         }
 
 
@@ -344,6 +347,7 @@ public class RecordingIndex extends DatabaseIndex {
             tw.setTrackPosition(rs.getInt("track_position"));
             tw.setTrackName(rs.getString("track_name"));
             tw.setMediumPosition(rs.getInt("medium_position"));
+            tw.setMediumFormat(rs.getString("format"));
             list.add(tw);
         }
         rs.close();
@@ -535,6 +539,7 @@ public class RecordingIndex extends DatabaseIndex {
                         doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
                     }
                     doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
+                    doc.addFieldOrHyphen(RecordingIndexField.FORMAT,track.getMediumFormat());
                 }
             }
         }

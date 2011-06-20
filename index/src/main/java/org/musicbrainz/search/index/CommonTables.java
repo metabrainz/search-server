@@ -180,11 +180,12 @@ public class CommonTables  {
         getDbConnection().createStatement().execute(
             "CREATE TEMPORARY TABLE tmp_track AS " +
                 "SELECT t.recording, tn.name as track_name, t.position as track_position, tl.track_count, " +
-                "  m.release as release_id, m.position as medium_position " +
+                "  m.release as release_id, m.position as medium_position, mf.name as format " +
                 " FROM track t " +
                 "  INNER JOIN track_name tn ON t.name=tn.id" +
                 "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                "  INNER JOIN medium m ON m.tracklist=tl.id ");
+                "  INNER JOIN medium m ON m.tracklist=tl.id " +
+                "  LEFT JOIN  medium_format mf ON m.format=mf.id ");
 
         clock.stop();
         System.out.println("tmp_track       :Finished:" + Utils.formatClock(clock));
