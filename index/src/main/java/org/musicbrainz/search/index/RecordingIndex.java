@@ -19,7 +19,6 @@
 
 package org.musicbrainz.search.index;
 
-import com.sun.javadoc.Doc;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;

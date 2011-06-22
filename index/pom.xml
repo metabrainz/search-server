@@ -12,6 +12,10 @@
       <url>http://people.apache.org/maven-snapshot-repository/</url>
     </repository>
     <repository>
+      <id>juniversalchardet-repository</id>
+      <url>http://projects.iplantc.org/archiva/repository/internal/</url>
+    </repository>
+    <repository>
       <id>java.net</id>
       <url>http://download.java.net/maven/2</url>
     </repository>
@@ -41,8 +45,8 @@
       <version>2.0.0</version>
     </dependency>  
     <dependency>
-      <groupId>org.mozilla</groupId>
-      <artifactId>universalchardet</artifactId>
+      <groupId>org.mozilla.universalchardet</groupId>
+      <artifactId>juniversalcharset</artifactId>
       <version>1.0.3</version>
     </dependency>  
     <dependency>
