@@ -35,10 +35,24 @@ public class CDStubIndexTest extends AbstractIndexTest{
          Statement stmt = conn.createStatement();
 
          stmt.addBatch("INSERT INTO cdtoc_raw (id, release, discid, track_count, leadout_offset) VALUES (1, 1, 'discid', 11, 1)");
-         stmt.addBatch("INSERT INTO release_raw (id, title, artist, added, last_modified) " +
-                "VALUES (1, 'title', 'artist', now(), now())");
+         stmt.addBatch("INSERT INTO release_raw (id, title, artist, added, last_modified, barcode, comment) " +
+                "VALUES (1, 'title', 'artist', now(), now(), '123456789','a comment')");
          stmt.addBatch("INSERT INTO track_raw (id, release, title, sequence)" +
                 "VALUES (1, 1, 'tracktitle', 3)");
+
+         stmt.executeBatch();
+         stmt.close();
+     }
+
+    private void addCDStubTwo() throws Exception {
+
+         Statement stmt = conn.createStatement();
+
+         stmt.addBatch("INSERT INTO cdtoc_raw (id, release, discid, track_count, leadout_offset) VALUES (2, 2, 'w237dKURKperVfmckD5b_xo8BO8-', 7, 2)");
+         stmt.addBatch("INSERT INTO release_raw (id, title, artist, added, last_modified) " +
+                "VALUES (2, 'title', null, now(), now())");
+         stmt.addBatch("INSERT INTO track_raw (id, release, title, sequence)" +
+                "VALUES (2, 2, 'tracktitle', 3)");
 
          stmt.executeBatch();
          stmt.close();
@@ -58,13 +72,117 @@ public class CDStubIndexTest extends AbstractIndexTest{
             assertEquals("artist",doc.getField(CDStubIndexField.ARTIST.getName()).stringValue());
             assertEquals(1, doc.getFields(CDStubIndexField.TITLE.getName()).length);
             assertEquals("title",doc.getField(CDStubIndexField.TITLE.getName()).stringValue());
-            assertEquals(0, doc.getFields(CDStubIndexField.BARCODE.getName()).length);
-            assertEquals(0, doc.getFields(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals(1, doc.getFields(CDStubIndexField.BARCODE.getName()).length);
+            assertEquals("123456789",doc.getField(CDStubIndexField.BARCODE.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals("a comment",doc.getField(CDStubIndexField.COMMENT.getName()).stringValue());
             assertEquals(1, doc.getFields(CDStubIndexField.NUM_TRACKS.getName()).length);
             assertEquals(1, doc.getFields(CDStubIndexField.DISCID.getName()).length);
             assertEquals("1",doc.getField(CDStubIndexField.NUM_TRACKS.getName()).stringValue());
             assertEquals("discid",doc.getField(CDStubIndexField.DISCID.getName()).stringValue());
 
+        }
+        ir.close();
+
+    }
+
+    public void testArtist() throws Exception {
+
+        addCDStubOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(CDStubIndexField.ARTIST.getName()).length);
+            assertEquals("artist",doc.getField(CDStubIndexField.ARTIST.getName()).stringValue());
+        }
+        ir.close();
+
+    }
+
+
+    public void testNoArtist() throws Exception {
+
+        addCDStubTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(0, doc.getFields(CDStubIndexField.ARTIST.getName()).length);
+        }
+        ir.close();
+
+    }
+
+    public void testBarcode() throws Exception {
+
+        addCDStubOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(CDStubIndexField.BARCODE.getName()).length);
+            assertEquals("123456789",doc.getField(CDStubIndexField.BARCODE.getName()).stringValue());
+        }
+        ir.close();
+
+    }
+
+
+    public void testNoBarcode() throws Exception {
+
+        addCDStubTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(0, doc.getFields(CDStubIndexField.BARCODE.getName()).length);
+        }
+        ir.close();
+
+    }
+
+    public void testComment() throws Exception {
+
+        addCDStubOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals("a comment",doc.getField(CDStubIndexField.COMMENT.getName()).stringValue());
+        }
+        ir.close();
+
+    }
+
+
+    public void testNoComment() throws Exception {
+
+        addCDStubTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(0, doc.getFields(CDStubIndexField.COMMENT.getName()).length);
         }
         ir.close();
 

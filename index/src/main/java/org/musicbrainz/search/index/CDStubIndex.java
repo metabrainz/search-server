@@ -94,14 +94,14 @@ public class CDStubIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs) throws SQLException {
         MbDocument doc = new MbDocument();
         doc.addField(CDStubIndexField.ID, rs.getString("id"));
-        doc.addField(CDStubIndexField.TITLE, rs.getString("title"));
-        doc.addField(CDStubIndexField.ARTIST, rs.getString("artist"));
-        doc.addField(CDStubIndexField.DISCID, rs.getString("discid"));
-        doc.addField(CDStubIndexField.ADDED, NumericUtils.longToPrefixCoded(rs.getTimestamp("added").getTime()));
-        
-        //TODO Should really index as number
-        doc.addField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
-
+        doc.addNonEmptyField(CDStubIndexField.TITLE, rs.getString("title"));
+        doc.addNonEmptyField(CDStubIndexField.ARTIST, rs.getString("artist"));
+        doc.addNonEmptyField(CDStubIndexField.DISCID, rs.getString("discid"));
+        if(rs.getTimestamp("added")!=null)
+        {
+            doc.addField(CDStubIndexField.ADDED, NumericUtils.longToPrefixCoded(rs.getTimestamp("added").getTime()));
+        }
+        doc.addNonEmptyField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
         doc.addNonEmptyField(CDStubIndexField.BARCODE, rs.getString("barcode"));
         doc.addNonEmptyField(CDStubIndexField.COMMENT, rs.getString("comment"));
         return doc.getLuceneDocument();

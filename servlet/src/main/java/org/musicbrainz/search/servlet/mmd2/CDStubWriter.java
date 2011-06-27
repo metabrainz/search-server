@@ -54,16 +54,58 @@ public class CDStubWriter extends ResultsWriter {
             MbDocument doc = result.doc;
             Cdstub cdstub = of.createCdstub();
 
-            cdstub.setArtist(doc.get(CDStubIndexField.ARTIST));
-            cdstub.setTitle(doc.get(CDStubIndexField.TITLE));
-            cdstub.setBarcode(doc.get(CDStubIndexField.BARCODE));
-            cdstub.setComment(doc.get(CDStubIndexField.COMMENT));
-            cdstub.setId(doc.get(CDStubIndexField.DISCID));
+            String artist = doc.get(CDStubIndexField.ARTIST);
+            if (artist!= null)
+            {
+                cdstub.setArtist(artist);
+            }
+            else
+            {
+                cdstub.setArtist("");
+            }
+
+            String title = doc.get(CDStubIndexField.TITLE);
+            if (title!= null)
+            {
+                cdstub.setTitle(title);
+            }
+            else
+            {
+                cdstub.setTitle("");
+            }
+
+            String discid = doc.get(CDStubIndexField.DISCID);
+            if (discid!= null)
+            {
+                cdstub.setId(discid);
+            }
+            else
+            {
+                cdstub.setId("");
+            }
+
+            String comment = doc.get(CDStubIndexField.COMMENT);
+            if (comment!= null)
+            {
+                cdstub.setComment(comment);
+            }
+
+            String barcode = doc.get(CDStubIndexField.BARCODE);
+            if (barcode!= null)
+            {
+                cdstub.setBarcode(barcode);
+            }
+
+            String numTracks = doc.get(CDStubIndexField.NUM_TRACKS);
+            if(numTracks!=null)
+            {
+                org.musicbrainz.mmd2.FreedbDisc.TrackList trackList = of.createFreedbDiscTrackList();
+                trackList.setCount(new BigInteger(numTracks));
+                cdstub.setTrackList(trackList);
+            }
+
             cdstub.setScore(String.valueOf((int)(result.score * 100)));
 
-            org.musicbrainz.mmd2.FreedbDisc.TrackList trackList = of.createFreedbDiscTrackList();
-            trackList.setCount(new BigInteger(doc.get(CDStubIndexField.NUM_TRACKS)));
-            cdstub.setTrackList(trackList);
             cdstubList.getCdstub().add(cdstub);
 
         }

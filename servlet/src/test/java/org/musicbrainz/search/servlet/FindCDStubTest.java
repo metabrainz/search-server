@@ -1,5 +1,6 @@
 package org.musicbrainz.search.servlet;
 
+import com.jthink.brainz.mmd.Artist;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -40,7 +41,14 @@ public class FindCDStubTest extends TestCase {
             doc.addField(CDStubIndexField.COMMENT, "CD Baby id:vozzolo");
             doc.addField(CDStubIndexField.DISCID, "qA87dKURKperVfmckD5b_xo8BO8-");
             doc.addField(CDStubIndexField.NUM_TRACKS, "2");
+            writer.addDocument(doc.getLuceneDocument());
+        }
 
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(CDStubIndexField.TITLE, "fred");
+            doc.addField(CDStubIndexField.DISCID, "w237dKURKperVfmckD5b_xo8BO8-");
+            doc.addField(CDStubIndexField.NUM_TRACKS, "5");
             writer.addDocument(doc.getLuceneDocument());
         }
 
@@ -107,6 +115,33 @@ public class FindCDStubTest extends TestCase {
         assertTrue(output.contains("<track-list count=\"2\"/>"));
 
     }
+
+    /**
+         * @throws Exception
+         */
+    public void testOutputXmlNoArtist() throws Exception {
+
+        Results res = ss.searchLucene("title:fred", 0, 1);
+        ResultsWriter writer = new CDStubWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("score=\"100\""));
+        assertTrue(output.contains("id=\"w237dKURKperVfmckD5b_xo8BO8-\""));
+        assertTrue(output.contains("<title>fred</title>"));
+        //Pass empty artist element if empty coz expect search webpage always expects this field
+        assertTrue(output.contains("<artist></artist>"));
+        assertTrue(output.contains("<track-list count=\"5\"/>"));
+
+    }
+
 
     public void testOutputJson() throws Exception {
 
