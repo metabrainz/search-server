@@ -75,6 +75,11 @@ public class ReleaseWriter extends ResultsWriter {
                 release.getReleaseGroup().setType(type);
             }
 
+            String rgid = doc.get(ReleaseIndexField.RELEASEGROUP_ID);
+            if (rgid != null) {
+                release.getReleaseGroup().setId(rgid);
+            }
+
             String status = doc.get(ReleaseIndexField.STATUS);
             if (status != null) {
                 release.setStatus(status);

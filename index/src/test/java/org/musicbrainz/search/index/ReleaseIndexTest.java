@@ -239,6 +239,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(ReleaseIndexField.RELEASE_ID.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseIndexField.TYPE.getName()).length);
             assertEquals("Single", doc.getField(ReleaseIndexField.TYPE.getName()).stringValue());
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseIndexField.RELEASEGROUP_ID.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseIndexField.STATUS.getName()).length);
             assertEquals("Official", doc.getField(ReleaseIndexField.STATUS.getName()).stringValue());
             assertEquals(0, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
@@ -736,4 +737,21 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", tr.term().text());
     }
 
+    /**
+     * @throws Exception exception
+     */
+    public void testIndexReleaseGroupId() throws Exception {
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASEGROUP_ID.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseIndexField.RELEASEGROUP_ID.getName()).stringValue());
+        }
+        ir.close();
+    }
 }

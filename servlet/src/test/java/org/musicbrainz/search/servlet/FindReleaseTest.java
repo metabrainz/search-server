@@ -47,6 +47,8 @@ public class FindReleaseTest extends TestCase {
 
         MbDocument doc = new MbDocument();
         doc.addField(ReleaseIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
+        doc.addField(ReleaseIndexField.RELEASEGROUP_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e333");
+
         doc.addField(ReleaseIndexField.RELEASE, "Our Glorious 5 Year Plan");
         doc.addField(ReleaseIndexField.SCRIPT, "Latn");
         doc.addField(ReleaseIndexField.LANGUAGE, "eng");
@@ -442,6 +444,18 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+
+
+    public void testFindReleaseByRgid() throws Exception {
+        Results res = ss.searchLucene("rgid:1d9e8ed6-3893-4d3b-aa7d-6cd79609e333", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
     public void testFindReleaseByNumericType() throws Exception {
            Results res = ss.searchLucene("type:1", 0, 10);
            assertEquals(1, res.totalHits);
@@ -581,6 +595,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<language>eng</language>"));
         assertTrue(output.contains("<script>Latn</script>"));
         assertTrue(output.contains("<release-group type=\"Album\""));
+        assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e333\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));

@@ -153,7 +153,7 @@ public class ReleaseIndex extends DatabaseIndex {
          addPreparedStatement("RELEASES",
                 " SELECT id, gid, name, " +
                 "  barcode, country, " +
-                "  date_year, date_month, date_day, type, amazon_asin, " +
+                "  date_year, date_month, date_day, type, rgid, amazon_asin, " +
                 "  language, script, status, comment " +
                 " FROM tmp_release rl " +
                 "WHERE  id BETWEEN ? AND ? ");
@@ -300,6 +300,7 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addField(ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
         doc.addField(ReleaseIndexField.RELEASE, rs.getString("name"));
         doc.addNonEmptyField(ReleaseIndexField.TYPE, rs.getString("type"));
+        doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rgid"));
         doc.addNonEmptyField(ReleaseIndexField.STATUS, rs.getString("status"));
         doc.addNonEmptyField(ReleaseIndexField.COUNTRY, rs.getString("country"));
         doc.addNonEmptyField(ReleaseIndexField.DATE,
