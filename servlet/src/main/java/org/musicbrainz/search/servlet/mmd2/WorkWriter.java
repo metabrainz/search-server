@@ -88,7 +88,7 @@ public class WorkWriter extends ResultsWriter {
                 AliasList aliasList = of.createAliasList();
                 for(int i = 0;i<aliases.length;i++) {
                     Alias alias = of.createAlias();
-                    alias.getContent().add(aliases[i]);
+                    alias.setContent(aliases[i]);
                     aliasList.getAlias().add(alias);
                 }
                 work.setAliasList(aliasList);
