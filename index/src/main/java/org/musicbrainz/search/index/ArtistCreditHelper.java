@@ -104,7 +104,7 @@ public class ArtistCreditHelper {
             if(engAlias!=null && engAlias.length()>0)
             {
                 Alias alias  =of.createAlias();
-                alias.getContent().add(engAlias);
+                alias.setContent(engAlias);
                 AliasList al =of.createAliasList();
                 al.getAlias().add(alias);
                 artist.setAliasList(al);
@@ -164,7 +164,7 @@ public class ArtistCreditHelper {
                 //by artists who name is in non-latin script
                 if(nc.getArtist().getAliasList()!=null)
                 {
-                    doc.addField(artistName,(String)nc.getArtist().getAliasList().getAlias().get(0).getContent().get(0));
+                    doc.addField(artistName,(String)nc.getArtist().getAliasList().getAlias().get(0).getContent());
                 }
             }
 
