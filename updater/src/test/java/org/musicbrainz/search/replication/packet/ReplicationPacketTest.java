@@ -62,13 +62,13 @@ public class ReplicationPacketTest extends TestCase {
 		ReplicationPacket bigPacket;
 		try {
 			long t0 = System.currentTimeMillis();
-			bigPacket = ReplicationPacket.loadFromRepository(33209, "http://ftp.musicbrainz.org/pub/musicbrainz/data/replication/");
+			bigPacket = ReplicationPacket.loadFromRepository(52110, "http://ftp.musicbrainz.org/pub/musicbrainz/data/replication/");
 	        long t1 = System.currentTimeMillis();
 	        
 	        double elapsedTimeSeconds = (t1 - t0)/1000.0;
 	        System.out.println("It tooks " + elapsedTimeSeconds + " s to load " + bigPacket.getChanges().size() + " changes");
 		} catch (IOException e) {
-			System.err.println("Unable to load big packet, test won't be run: " + e.getMessage());
+			System.out.println("Unable to load big packet, test won't be run: " + e.getMessage());
 		}
 	}
 
