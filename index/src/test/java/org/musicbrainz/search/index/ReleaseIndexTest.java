@@ -459,7 +459,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
+            assertEquals("unknown", doc.getField(ReleaseIndexField.COUNTRY.getName()).stringValue());
+
         }
         ir.close();
     }
@@ -710,7 +712,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.DATE.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);

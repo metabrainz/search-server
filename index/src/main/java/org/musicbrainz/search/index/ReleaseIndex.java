@@ -41,6 +41,8 @@ import java.util.*;
 
 public class ReleaseIndex extends DatabaseIndex {
 
+    public static String UNKNOWN = "unknown";
+
     private StopWatch labelClock = new StopWatch();
     private StopWatch mediumClock = new StopWatch();
     private StopWatch puidClock = new StopWatch();
@@ -302,7 +304,13 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addNonEmptyField(ReleaseIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rgid"));
         doc.addNonEmptyField(ReleaseIndexField.STATUS, rs.getString("status"));
-        doc.addNonEmptyField(ReleaseIndexField.COUNTRY, rs.getString("country"));
+
+        String country = rs.getString("country");
+        if (country != null) {
+            doc.addField(ReleaseIndexField.COUNTRY, country);
+        } else {
+            doc.addField(ReleaseIndexField.COUNTRY, UNKNOWN);
+        }
         doc.addNonEmptyField(ReleaseIndexField.DATE,
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
         doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
@@ -364,7 +372,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 ReleaseIndexField.ARTIST_ID,
                 ReleaseIndexField.ARTIST_NAME,
                 ReleaseIndexField.ARTIST_CREDIT);
-        
+
         return doc.getLuceneDocument();
     }
 
