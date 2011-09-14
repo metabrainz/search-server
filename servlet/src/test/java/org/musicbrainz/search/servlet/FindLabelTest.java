@@ -42,7 +42,7 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.LABEL, "Jockey Slut");
             doc.addField(LabelIndexField.SORTNAME, "Slut, Jockey");
             doc.addField(LabelIndexField.ALIAS, "Jockeys");
-            doc.addField(LabelIndexField.CODE, "1234");
+            doc.addNumericField(LabelIndexField.CODE, 1234);
             doc.addField(LabelIndexField.BEGIN, "1993");
             doc.addField(LabelIndexField.END, "2004");
             doc.addField(LabelIndexField.TYPE, "Production");
@@ -60,7 +60,7 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.LABEL, "4AD");
             doc.addField(LabelIndexField.SORTNAME, "4AD");
             doc.addField(LabelIndexField.BEGIN, "1979");
-            doc.addField(LabelIndexField.CODE, "5807");
+            doc.addNumericField(LabelIndexField.CODE, 5807);
             doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
 
             writer.addDocument(doc.getLuceneDocument());
@@ -198,7 +198,25 @@ public class FindLabelTest extends TestCase {
 
 
     public void testFindLabelByCode() throws Exception {
-        Results res = ss.searchLucene("code:\"5807\"", 0, 10);
+        Results res = ss.searchLucene("code:5807", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("4AD", doc.get(LabelIndexField.LABEL));
+    }
+
+    public void testFindLabelByCode2() throws Exception {
+        Results res = ss.searchLucene("code:005807", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("4AD", doc.get(LabelIndexField.LABEL));
+    }
+
+     public void testFindLabelByCodeRange() throws Exception {
+        Results res = ss.searchLucene("code:[5806 TO 5807]", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;

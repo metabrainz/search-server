@@ -5,6 +5,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 
 import java.sql.Statement;
 
@@ -225,7 +226,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals("5807", doc.getField(LabelIndexField.CODE.getName()).stringValue());
+            assertEquals(5807, NumericUtils.prefixCodedToInt(doc.getField(LabelIndexField.CODE.getName()).stringValue()));
         }
         ir.close();
     }
@@ -241,7 +242,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals("99998", doc.getField(LabelIndexField.CODE.getName()).stringValue());
+            assertEquals(99998, NumericUtils.prefixCodedToInt(doc.getField(LabelIndexField.CODE.getName()).stringValue()));
         }
         ir.close();
     }

@@ -39,12 +39,10 @@ public class LabelIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "label";
 
-    private Pattern stripLabelCodeOfLeadingZeroes;
     private static final String DELETED_LABEL_MBID = "f43e252d-9ebf-4e8e-bba8-36d080756cc1";
 
     public LabelIndex(Connection dbConnection) {
         super(dbConnection);
-        stripLabelCodeOfLeadingZeroes = Pattern.compile("^0+");
     }
 
     public LabelIndex() {
@@ -188,10 +186,9 @@ public class LabelIndex extends DatabaseIndex {
         doc.addNonEmptyField(LabelIndexField.END,
                 Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day")));
 
-        String labelcode = rs.getString("label_code");
-        if (labelcode != null && !labelcode.isEmpty()) {
-            Matcher m = stripLabelCodeOfLeadingZeroes.matcher(labelcode);
-            doc.addField(LabelIndexField.CODE, m.replaceFirst(""));
+        int labelcode = rs.getInt("label_code");
+        if (labelcode > 0) {
+            doc.addNumericField(LabelIndexField.CODE, labelcode);
         }
 
         doc.addNonEmptyField(ArtistIndexField.IPI, rs.getString("ipi_code"));

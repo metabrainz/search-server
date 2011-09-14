@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.LabelIndexField;
@@ -64,7 +65,7 @@ public class LabelWriter extends ResultsWriter {
 
             String code = doc.get(LabelIndexField.CODE);
             if (code != null && !code.isEmpty()) {
-                label.setLabelCode(new BigInteger(code));
+                label.setLabelCode(BigInteger.valueOf(NumericUtils.prefixCodedToInt(code)));
 
             }
 
