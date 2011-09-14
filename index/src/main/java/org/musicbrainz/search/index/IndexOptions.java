@@ -50,34 +50,6 @@ public class IndexOptions {
         return c;
     }
     
-    // Raw database connection parameters
-
-    @Option(name="--raw-db-host", aliases = { "-o" }, usage="The raw database server to connect to. (default: localhost)")
-    private String rawDatabaseHost = "";
-    public String getRawDatabaseHost() { return rawDatabaseHost.isEmpty() ? getMainDatabaseHost() : rawDatabaseHost; }
-
-    @Option(name="--raw-db-name", aliases = { "-a" }, usage="The name of the raw database server to connect to. (default: musicbrainz_db_raw)")
-    private String rawDatabaseName = "musicbrainz_db_raw";     
-    public String getRawDatabaseName() { return rawDatabaseName; }
-
-    @Option(name="--raw-db-user", aliases = { "-s" }, usage="The username for the raw database to connect with. (default: musicbrainz_user)")
-    private String rawDatabaseUser = "musicbrainz_user";
-    public String getRawDatabaseUser() { return rawDatabaseUser; }
-
-    @Option(name="--raw-db-password", aliases = { "-w" }, usage="The password of the db user of the raw database. (default: -blank-)")
-    private String rawDatabasePassword = "";
-    public String getRawDatabasePassword() { return rawDatabasePassword; }
-
-    public Connection getRawDatabaseConnection() throws SQLException {
-        String url = "jdbc:postgresql://" + getRawDatabaseHost() + "/" + getRawDatabaseName();
-        Properties props = new Properties();
-        props.setProperty("user", getRawDatabaseUser());
-        props.setProperty("password", getRawDatabasePassword());
-        Connection c = DriverManager.getConnection(url, props);
-        PrepareDatabase.prepareDbConnection(c);
-        return c;
-    }
-    
     // Indexes directory
     @Option(name="--indexes-dir", usage="The directory . (default: ./data/)")
     private String indexesDir = "." + System.getProperty("file.separator") + "data" + System.getProperty("file.separator");

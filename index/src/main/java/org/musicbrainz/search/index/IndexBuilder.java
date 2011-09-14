@@ -86,7 +86,6 @@ public class IndexBuilder
         }
 
         Connection mainDbConn = null;
-        Connection rawDbConn = null; 
 
         System.out.println("Index Builder Started:"+ Utils.formatCurrentTimeForOutput());
 
@@ -105,9 +104,6 @@ public class IndexBuilder
 
             // Connect to main database
             mainDbConn = options.getMainDatabaseConnection();
-
-            // Connect to raw database
-			rawDbConn = options.getRawDatabaseConnection();
         }
     
 
@@ -122,7 +118,7 @@ public class IndexBuilder
                 new LabelIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
                 new TagIndex(mainDbConn),
-                new CDStubIndex(rawDbConn), //Note different db
+                new CDStubIndex(mainDbConn), //Note different db
         };
 
         List<String> indexesToBeBuilt = new ArrayList<String>();
