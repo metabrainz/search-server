@@ -369,7 +369,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("id=\"0011c128-b1f2-300e-88cc-c33c30dce704\""));
         assertTrue(output.contains("type=\"album\""));
         assertTrue(output.contains("<title>Epics</title>"));
-        assertTrue(output.contains("<comment>demo</comment>"));
+        assertTrue(output.contains("<disambiguation>demo</disambiguation>"));
         assertTrue(output.contains("<name-credit joinphrase=\"and\">"));
         assertTrue(output.contains("<name>Erich Kunzel</name>"));
         assertTrue(output.contains("<sort-name>Kunzel, Eric</sort-name>"));
