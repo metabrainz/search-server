@@ -37,6 +37,8 @@ import java.util.regex.Pattern;
 
 public class LabelIndex extends DatabaseIndex {
 
+    public static String UNKNOWN = "unknown";
+
     public static final String INDEX_NAME = "label";
 
     private static final String DELETED_LABEL_MBID = "f43e252d-9ebf-4e8e-bba8-36d080756cc1";
@@ -179,7 +181,12 @@ public class LabelIndex extends DatabaseIndex {
         }
 
         doc.addNonEmptyField(LabelIndexField.COMMENT, rs.getString("comment"));
-        doc.addNonEmptyField(LabelIndexField.COUNTRY, rs.getString("country"));
+        String country = rs.getString("country");
+        if (country != null) {
+            doc.addField(LabelIndexField.COUNTRY, country);
+        } else {
+            doc.addField(LabelIndexField.COUNTRY, UNKNOWN);
+        }
 
         doc.addNonEmptyField(LabelIndexField.BEGIN,
                 Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));

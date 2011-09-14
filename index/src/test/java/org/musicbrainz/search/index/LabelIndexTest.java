@@ -127,7 +127,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
+            assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
+            assertEquals("unknown", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
         }
         ir.close();
 

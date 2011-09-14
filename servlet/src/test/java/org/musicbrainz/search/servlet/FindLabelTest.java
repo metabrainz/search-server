@@ -62,6 +62,7 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.BEGIN, "1979");
             doc.addNumericField(LabelIndexField.CODE, 5807);
             doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
+            doc.addField(LabelIndexField.COUNTRY, "unknown");
 
             writer.addDocument(doc.getLuceneDocument());
         }
@@ -186,6 +187,14 @@ public class FindLabelTest extends TestCase {
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
+
+    public void testFindLabelByUnknownCountry() throws Exception {
+            Results res = ss.searchLucene("country:\"unknown\"", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
+        }
 
     public void testFindLabelByCountryUpercase() throws Exception {
         Results res = ss.searchLucene("country:\"GB\"", 0, 10);
