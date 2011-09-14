@@ -211,6 +211,10 @@ public class FreeDBIndex implements Index {
                 }
                 if (line.startsWith("DISCID=")) {
                     discid = line.substring(7);
+                    if(discid.contains(","))
+                    {
+                        discid=discid.substring(0,discid.indexOf(",") - 1);
+                    }
                 }
                 if (line.startsWith("DYEAR=")) {
                     year = line.substring(6);
