@@ -63,6 +63,7 @@ public class FindArtistTest extends TestCase {
             doc.addField(ArtistIndexField.ARTIST, "Echo & The Bunnymen");
             doc.addField(ArtistIndexField.SORTNAME, "Echo & The Bunnymen");
             doc.addField(ArtistIndexField.BEGIN, "1978");
+            doc.addField(ArtistIndexField.COUNTRY, "unknown");
             doc.addField(ArtistIndexField.TYPE, ArtistType.GROUP.getName());
             doc.addField(ArtistIndexField.ALIAS, "Echo And The Bunnymen");
             doc.addField(ArtistIndexField.ALIAS, "Echo & The Bunnyman");
@@ -167,6 +168,14 @@ public class FindArtistTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
+    }
+
+    public void testFindArtistWithNoCountry() throws Exception {
+        Results res = ss.searchLucene("country:unknown", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
     public void testFindArtistByCountryUppercase() throws Exception {

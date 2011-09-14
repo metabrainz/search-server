@@ -183,7 +183,12 @@ public class ArtistIndex extends DatabaseIndex {
                 Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day")));
 
         doc.addNonEmptyField(ArtistIndexField.COMMENT, rs.getString("comment"));
-        doc.addNonEmptyField(ArtistIndexField.COUNTRY, rs.getString("country"));
+        String country = rs.getString("country");
+        if (country != null) {
+            doc.addField(ArtistIndexField.COUNTRY, country);
+        } else {
+            doc.addField(ArtistIndexField.COUNTRY, ArtistType.UNKNOWN.getName());
+        }
         doc.addNonEmptyField(ArtistIndexField.GENDER, rs.getString("gender"));
 
         doc.addNonEmptyField(ArtistIndexField.IPI, rs.getString("ipi_code"));

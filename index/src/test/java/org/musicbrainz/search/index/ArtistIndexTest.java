@@ -170,6 +170,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
             ir.close();
         }
 
+
+
     public void testIndexArtistWithIPI() throws Exception {
 
                 addArtistOne();
@@ -197,8 +199,9 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals(2, ir.numDocs());
             {
                 Document doc = ir.document(1);
-                assertEquals(0, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
-             }
+                assertEquals(1, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
+                assertEquals("unknown", doc.getField(ArtistIndexField.COUNTRY.getName()).stringValue());
+            }
             ir.close();
         }
     public void testIndexArtistWithGender() throws Exception {
