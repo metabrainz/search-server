@@ -165,7 +165,8 @@ public class LabelIndex extends DatabaseIndex {
 
         MbDocument doc = new MbDocument();
         int labelId = rs.getInt("id");
-        doc.addField(LabelIndexField.LABEL_ID, rs.getString("gid"));
+        String labelGuid = rs.getString("gid");
+        doc.addField(LabelIndexField.LABEL_ID, labelGuid);
         doc.addField(LabelIndexField.LABEL, rs.getString("name"));
         doc.addField(LabelIndexField.SORTNAME, rs.getString("sort_name"));
 
@@ -206,6 +207,7 @@ public class LabelIndex extends DatabaseIndex {
             }
         }
 
+        LabelBoostDoc.boost(labelGuid, doc);
         return doc.getLuceneDocument();
     }
 
