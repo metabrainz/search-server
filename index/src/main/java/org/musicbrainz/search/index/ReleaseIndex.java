@@ -354,6 +354,12 @@ public class ReleaseIndex extends DatabaseIndex {
             doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, discCount);
 
         }
+        else
+        {
+            //No mediums on release
+            doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS, 0);
+
+        }
 
 
         if (puids.containsKey(id)) {
