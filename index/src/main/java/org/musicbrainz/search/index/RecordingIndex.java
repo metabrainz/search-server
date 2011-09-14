@@ -542,6 +542,11 @@ public class RecordingIndex extends DatabaseIndex {
                 }
             }
         }
+        else
+        {
+            doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, "standalone");
+                            
+        }
 
         ArtistCredit ac = artistCredits.get(id);
         ArtistCreditHelper.buildIndexFieldsFromArtistCredit

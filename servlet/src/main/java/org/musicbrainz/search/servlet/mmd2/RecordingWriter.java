@@ -121,21 +121,22 @@ public class RecordingWriter extends ResultsWriter {
             recording.setArtistCredit(ac);
                      
             String[] releaseNames       = doc.getValues(RecordingIndexField.RELEASE);
-            String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
-            String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
-            String[] releaseStatus      = doc.getValues(RecordingIndexField.RELEASE_STATUS);
-            String[] releaseCountry     = doc.getValues(RecordingIndexField.COUNTRY);
-            String[] releaseDate        = doc.getValues(RecordingIndexField.RELEASE_DATE);
-            String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
-            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
-            String[] trackName          = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
-            String[] mediumPos          = doc.getValues(RecordingIndexField.POSITION);
-            String[] numTracksRelease   = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
-            String[] releaseVA          = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
-            String[] mediumFormat       = doc.getValues(RecordingIndexField.FORMAT);
 
             if(releaseNames.length>0)
             {
+                String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
+                String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
+                String[] releaseStatus      = doc.getValues(RecordingIndexField.RELEASE_STATUS);
+                String[] releaseCountry     = doc.getValues(RecordingIndexField.COUNTRY);
+                String[] releaseDate        = doc.getValues(RecordingIndexField.RELEASE_DATE);
+                String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
+                String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
+                String[] trackName          = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
+                String[] mediumPos          = doc.getValues(RecordingIndexField.POSITION);
+                String[] numTracksRelease   = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
+                String[] releaseVA          = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
+                String[] mediumFormat       = doc.getValues(RecordingIndexField.FORMAT);
+
                 ReleaseList releaseList = of.createReleaseList();
                 for(int i=0;i<releaseNames.length;i++) {
 

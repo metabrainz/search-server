@@ -177,6 +177,34 @@ public class RecordingIndexTest extends AbstractIndexTest {
             stmt.close();
         }
 
+    /**
+     * Add standalone recording
+     *
+     * @throws Exception
+     */
+    private void addTrackFour() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
+
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name)" +
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2)");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
+                " VALUES (1, 0, 16153, 1)");
+
+        stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length)"
+                + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
+        stmt.addBatch("INSERT INTO track_name (id, name) VALUES (1, 'Do It Clean')");
+
+        stmt.addBatch("INSERT INTO puid (id, puid) VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e38')");
+        stmt.addBatch("INSERT INTO recording_puid (id, puid, recording) VALUES (1, 1, 1)");
+
+        stmt.executeBatch();
+        stmt.close();
+    }
 
     /**
      * Basic test of all fields
@@ -213,6 +241,32 @@ public class RecordingIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
+
+    /**
+         * Basic test of all fields
+         *
+         * @throws Exception exception
+         */
+        public void testIndexStandaloneRecording() throws Exception {
+
+            addTrackFour();
+            RAMDirectory ramDir = new RAMDirectory();
+            createIndex(ramDir);
+
+            IndexReader ir = IndexReader.open(ramDir, true);
+            assertEquals(2, ir.numDocs());
+            {
+                Document doc = ir.document(1);
+                //assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
+                assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
+                assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
+                assertEquals(0, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
+                assertEquals(0, doc.getFields(RecordingIndexField.RELEASE.getName()).length);
+                assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
+                assertEquals("standalone", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            }
+            ir.close();
+        }
 
      /**
      * Basic test of all fields
