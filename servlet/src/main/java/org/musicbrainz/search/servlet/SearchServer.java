@@ -177,10 +177,22 @@ public abstract class SearchServer {
      */
     public Results searchLucene(String query, int offset, int limit) throws IOException, ParseException {
         IndexSearcher searcher = getIndexSearcher();
-        QueryParser parser = getParser();
-        TopDocs topdocs = searcher.search(parser.parse(query), offset + limit);
+        TopDocs topdocs = searcher.search(parseQuery(query), offset + limit);
         searchCount.incrementAndGet();
         return processResults(searcher, topdocs, offset);
+    }
+
+    /**
+     * Parse the query
+     *
+     * @param query
+     * @return
+     * @throws ParseException
+     */
+    protected Query parseQuery(String query) throws ParseException
+    {
+        QueryParser parser = getParser();
+        return parser.parse(query);
     }
 
     /**
