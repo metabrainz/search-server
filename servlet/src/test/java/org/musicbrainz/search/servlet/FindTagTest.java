@@ -3,8 +3,10 @@ package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.TagIndexField;
@@ -28,7 +30,8 @@ public class FindTagTest extends TestCase {
         RAMDirectory ramDir = new RAMDirectory();
 
         Analyzer analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig  writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(ramDir, writerConfig);
         {
             MbDocument doc = new MbDocument();
             doc.addField(TagIndexField.TAG, "rock");

@@ -14,8 +14,7 @@ public class TagIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,TagIndexField.class);
         TagIndex ti = new TagIndex(conn);
         CommonTables ct = new CommonTables(conn, ti.getName());
         ct.createTemporaryTables(false);

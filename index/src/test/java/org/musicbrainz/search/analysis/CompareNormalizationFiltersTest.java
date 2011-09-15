@@ -3,7 +3,8 @@ package org.musicbrainz.search.analysis;
 import com.ibm.icu.text.Normalizer;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.*;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -26,11 +27,11 @@ public class CompareNormalizationFiltersTest extends TestCase {
             }
         }
         //System.out.println(sb.toString());
-        Tokenizer tokenizer0 = new WhitespaceTokenizer(new StringReader(sb.toString()));
-        Tokenizer tokenizer1 = new WhitespaceTokenizer(new StringReader(sb.toString()));
-        Tokenizer tokenizer2 = new WhitespaceTokenizer(new StringReader(sb.toString()));
-        Tokenizer tokenizer3 = new WhitespaceTokenizer(new StringReader(sb.toString()));
-        Tokenizer tokenizer4 = new WhitespaceTokenizer(new StringReader(sb.toString()));
+        Tokenizer tokenizer0 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
+        Tokenizer tokenizer1 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
+        Tokenizer tokenizer2 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
+        Tokenizer tokenizer3 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
+        Tokenizer tokenizer4 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
 
         TokenStream result1 = new AccentFilter(tokenizer1);
         TokenStream result2 = new ASCIIFoldingFilter(tokenizer2);
@@ -51,11 +52,11 @@ public class CompareNormalizationFiltersTest extends TestCase {
         System.out.println("Chars that are changed by one filter different to other filter");
         System.out.println("input:existingfilter:newfilter");
 
-        TermAttribute term  = (TermAttribute)tokenizer0.addAttribute(TermAttribute.class);
-        TermAttribute term1 = (TermAttribute)result1.addAttribute(TermAttribute.class);
-        TermAttribute term2 = (TermAttribute)result2.addAttribute(TermAttribute.class);
-        TermAttribute term3 = (TermAttribute)result3.addAttribute(TermAttribute.class);
-        TermAttribute term4 = (TermAttribute)result4.addAttribute(TermAttribute.class);
+        CharTermAttribute term  = (CharTermAttribute)tokenizer0.addAttribute(CharTermAttribute.class);
+        CharTermAttribute term1 = (CharTermAttribute)result1.addAttribute(CharTermAttribute.class);
+        CharTermAttribute term2 = (CharTermAttribute)result2.addAttribute(CharTermAttribute.class);
+        CharTermAttribute term3 = (CharTermAttribute)result3.addAttribute(CharTermAttribute.class);
+        CharTermAttribute term4 = (CharTermAttribute)result4.addAttribute(CharTermAttribute.class);
 
         while(tokenizer0.incrementToken())
         {
@@ -65,26 +66,26 @@ public class CompareNormalizationFiltersTest extends TestCase {
             result4.incrementToken();
 
 
-            if(!term1.term().equals(term.term()))
+            if(!new String(term1.buffer(),0,term1.length()).equals(new String(term.buffer(), 0, term.length())))
             {
                 changedByAccent ++;
             }
-            if(!term2.term().equals(term.term()))
+            if(!new String(term2.buffer(),0,term2.length()).equals(new String(term.buffer(), 0, term.length())))
                         {
                 changedByASCII ++;
             }
-            if(!term3.term().equals(term.term()))
+            if(!new String(term3.buffer(),0,term3.length()).equals(new String(term.buffer(), 0, term.length())))
                         {
                 changedByNFKC ++;
             }
-            if(!term4.term().equals(term.term()))
+            if(!new String(term4.buffer(),0,term4.length()).equals(new String(term.buffer(), 0, term.length())))
                         {
                 changedByASCIIAndNFKC ++;
             }
             if(
-                    (!term.term().equals(term2.term()))
+                    (!new String(term.buffer(),0,term.length()).equals(new String(term2.buffer(), 0, term2.length())))
                     &&
-                    (term.term().equals(term4.term()))
+                    (new String(term.buffer(),0,term.length()).equals(new String(term4.buffer(), 0, term4.length())))
                     )
 
 

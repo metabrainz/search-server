@@ -17,8 +17,7 @@ public class WorkIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(WorkIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,WorkIndexField.class);
         WorkIndex wi = new WorkIndex(conn);
         CommonTables ct = new CommonTables(conn,  wi.getName());
         ct.createTemporaryTables(false);

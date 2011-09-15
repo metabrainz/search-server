@@ -4,7 +4,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.sql.Statement;
 
@@ -16,9 +18,10 @@ public class ArtistIndexTest extends AbstractIndexTest {
         super.setup();
     }
 
+
+
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,ArtistIndexField.class);
         ArtistIndex ai = new ArtistIndex(conn);
         CommonTables ct = new CommonTables(conn, ai.getName());
         ct.createTemporaryTables(false);

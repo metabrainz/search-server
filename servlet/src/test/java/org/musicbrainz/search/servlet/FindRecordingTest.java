@@ -3,6 +3,7 @@ package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
@@ -10,6 +11,7 @@ import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
@@ -41,7 +43,8 @@ public class FindRecordingTest extends TestCase {
 
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(RecordingIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
         MbDocument doc = new MbDocument();
         doc.addField(RecordingIndexField.RECORDING_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");

@@ -30,7 +30,7 @@ package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.IOException;
 
@@ -42,11 +42,11 @@ public class AccentFilter extends TokenFilter {
     private char[] output = new char[256];
     private int outputPos;
 
-    private TermAttribute termAttr;
+    private CharTermAttribute termAttr;
 
     public AccentFilter(TokenStream input) {
         super(input);
-        termAttr = (TermAttribute) addAttribute(TermAttribute.class);
+        termAttr = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     }
 
     @Override
@@ -54,10 +54,10 @@ public class AccentFilter extends TokenFilter {
         if (!input.incrementToken())
             return false;
 
-        final char[] buffer = termAttr.termBuffer();
-        final int length    = termAttr.termLength();
+        final char[] buffer = termAttr.buffer();
+        final int length    = termAttr.length();
         if (removeAccents(buffer, length))  {
-            termAttr.setTermBuffer(output, 0, outputPos);
+            termAttr.copyBuffer(output,0,outputPos);
         }
         return true;
     }

@@ -30,11 +30,16 @@
 package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -214,18 +219,26 @@ public class IndexBuilder
         {
             fsDir = FSDirectory.open(new File(path));
         }
-        indexWriter = new ThreadedIndexWriter(fsDir,
-                index.getAnalyzer(),
-                true,
-                Runtime.getRuntime().availableProcessors(),
-                options.getDatabaseChunkSize(),
-                IndexWriter.MaxFieldLength.LIMITED);
+
+        IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        if(index.getSimilarity()!=null)
+        {
+            config.setSimilarity(index.getSimilarity());
+        }
+        indexWriter = new ThreadedIndexWriter(
+                                                fsDir,
+                                                config,
+                                                Runtime.getRuntime().availableProcessors(),
+                                                options.getDatabaseChunkSize()
+                                                );
 
         indexWriter.setMaxBufferedDocs(options.getMaxBufferedDocs());
         indexWriter.setMergeFactor(options.getMergeFactor());
         return indexWriter;
-
     }
+
+
 
     /**
      * Build an index from database
@@ -294,10 +307,13 @@ public class IndexBuilder
         clock.start();
         System.out.println(index.getName()+":Started at "+ Utils.formatCurrentTimeForOutput());
 
+        IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), index.getAnalyzer() , true, IndexWriter.MaxFieldLength.LIMITED);
+        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), config);
         indexWriter.setMaxBufferedDocs(options.getMaxBufferedDocs());
         indexWriter.setMergeFactor(options.getMergeFactor());
 

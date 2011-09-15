@@ -17,8 +17,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
 
      private void createIndex(RAMDirectory ramDir) throws Exception {
 
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(CDStubIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,CDStubIndexField.class);
         CDStubIndex ci = new CDStubIndex(conn);
         CommonTables ct = new CommonTables(conn, ci.getName());
         ct.createTemporaryTables(false);

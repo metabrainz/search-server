@@ -21,8 +21,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,ReleaseIndexField.class);
         ReleaseIndex ri = new ReleaseIndex(conn);
         CommonTables ct = new CommonTables(conn, ri.getName());
         ct.createTemporaryTables(false);

@@ -22,6 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.Similarity;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
@@ -75,9 +76,14 @@ public class ArtistIndex extends DatabaseIndex {
     }
 
     @Override
+    public Similarity getSimilarity()
+    {
+        return new MusicbrainzSimilarity();
+    }
+
+    @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-        indexWriter.setSimilarity(new MusicbrainzSimilarity());
 
         addPreparedStatement("TAGS",
                 "SELECT artist_tag.artist, tag.name as tag, artist_tag.count as count " +

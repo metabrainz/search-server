@@ -5,6 +5,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -24,8 +25,8 @@ public class Issue1446Test extends TestCase {
 
     public void testUppercaseKanatakaMatchesLowercaseKanataka() throws Exception {
 
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "ァ", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
@@ -42,7 +43,8 @@ public class Issue1446Test extends TestCase {
 
     public void testLowercaseKanatakaMatchesUppercaseKanataka() throws Exception {
 
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
 
         Document doc = new Document();
         doc.add(new Field("name", "ヨ", Field.Store.YES, Field.Index.ANALYZED));
@@ -59,7 +61,8 @@ public class Issue1446Test extends TestCase {
 
     public void testUppercaseHiruganaMatchesLowercaseHirugana() throws Exception {
 
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
 
         Document doc = new Document();
         doc.add(new Field("name", "ぇ", Field.Store.YES, Field.Index.ANALYZED));
@@ -77,7 +80,8 @@ public class Issue1446Test extends TestCase {
 
     public void testLowercaseHiruganaMatchesUppercaseHirugana() throws Exception {
 
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
 
         Document doc = new Document();
         doc.add(new Field("name", "つ", Field.Store.YES, Field.Index.ANALYZED));

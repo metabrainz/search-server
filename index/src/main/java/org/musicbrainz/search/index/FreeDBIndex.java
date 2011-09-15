@@ -34,6 +34,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.Similarity;
 import org.apache.lucene.util.NumericUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 import org.musicbrainz.search.MbDocument;
@@ -326,4 +327,8 @@ public class FreeDBIndex implements Index {
         return null;
     }
 
+    public Similarity getSimilarity()
+    {
+        return null;
+    }
 }

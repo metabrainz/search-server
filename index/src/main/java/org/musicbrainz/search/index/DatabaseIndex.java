@@ -23,6 +23,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
@@ -167,6 +168,11 @@ public abstract class DatabaseIndex implements Index {
     public abstract void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException;
 
     public abstract IndexField getIdentifierField();
+
+    public Similarity getSimilarity()
+    {
+        return null;
+    }
     
 }
 

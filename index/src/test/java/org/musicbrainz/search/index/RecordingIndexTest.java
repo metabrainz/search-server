@@ -19,8 +19,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(RecordingIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,RecordingIndexField.class);
         RecordingIndex ri = new RecordingIndex(conn);
         CommonTables ct = new CommonTables(conn, ri.getName());
         ct.createTemporaryTables(false);

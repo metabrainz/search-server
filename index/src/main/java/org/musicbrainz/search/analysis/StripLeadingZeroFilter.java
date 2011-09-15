@@ -2,7 +2,7 @@ package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 
 public class StripLeadingZeroFilter extends TokenFilter {
@@ -11,10 +11,10 @@ public class StripLeadingZeroFilter extends TokenFilter {
      */
     public StripLeadingZeroFilter(TokenStream in) {
         super(in);
-        termAtt = (TermAttribute) addAttribute(TermAttribute.class);
+        termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     }
 
-    private TermAttribute termAtt;
+    private CharTermAttribute termAtt;
 
     /**
      *
@@ -25,15 +25,15 @@ public class StripLeadingZeroFilter extends TokenFilter {
             return false;
         }
 
-        char[] buffer = termAtt.termBuffer();
-        final int bufferLength = termAtt.termLength();
+        char[] buffer = termAtt.buffer();
+        final int bufferLength = termAtt.length();
 
         if (buffer[0] == '0') {
             for (int i = 1; i < bufferLength; i++) {
                 char c = buffer[i];
                 buffer[i - 1] = c;
             }
-            termAtt.setTermLength(bufferLength - 1);
+            termAtt.setLength(bufferLength - 1);
             return true;
         } else {
             return true;

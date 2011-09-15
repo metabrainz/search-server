@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -30,7 +31,8 @@ public class StopWordsTest extends TestCase
 
         Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION);
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "that", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
@@ -47,7 +49,8 @@ public class StopWordsTest extends TestCase
 
         Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION, new HashSet());
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "that", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
@@ -63,7 +66,8 @@ public class StopWordsTest extends TestCase
 
         Analyzer analyzer = new StandardUnaccentAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "that", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);

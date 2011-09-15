@@ -20,7 +20,7 @@ package org.musicbrainz.search.analysis;
 import com.ibm.icu.text.*;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.ArrayUtil;
 
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class ICUTransformFilter extends TokenFilter {
   private final ReplaceableTermAttribute replaceableAttribute = new ReplaceableTermAttribute();
 
   // new api term attribute, will be updated with transformed text.
-  private TermAttribute termAtt;
+  private CharTermAttribute termAtt;
 
   /**
    * Create a new ICUTransformFilter that transforms text on the given stream.
@@ -94,7 +94,7 @@ public class ICUTransformFilter extends TokenFilter {
   public ICUTransformFilter(TokenStream input, Transliterator transform) {
     super(input);
     this.transform = transform;
-    termAtt = (TermAttribute) addAttribute(TermAttribute.class);
+    termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
 
     /*
      * A good UnicodeFilter is vital for performance. Unfortunately, sometimes
@@ -137,7 +137,7 @@ public class ICUTransformFilter extends TokenFilter {
      */
 
     if (input.incrementToken()) {
-      final int length = termAtt.termLength();
+      final int length = termAtt.length();
       replaceableAttribute.setText(termAtt);
 
       position.start = 0;
@@ -146,7 +146,7 @@ public class ICUTransformFilter extends TokenFilter {
       position.contextLimit = length;
 
       transform.filteredTransliterate(replaceableAttribute, position, false);
-      termAtt.setTermLength(replaceableAttribute.length());
+      termAtt.setLength(replaceableAttribute.length());
       return true;
     } else {
       return false;
@@ -154,7 +154,7 @@ public class ICUTransformFilter extends TokenFilter {
   }
   
   /**
-   * Wrap a {@link TermAttribute} with the Replaceable API.
+   * Wrap a {@link CharTermAttribute} with the Replaceable API.
    * 
    * This allows for ICU transforms to run without unnecessary object creation.
    * 
@@ -168,15 +168,15 @@ public class ICUTransformFilter extends TokenFilter {
 
     private int length;
 
-    private TermAttribute token;
+    private CharTermAttribute token;
 
     ReplaceableTermAttribute() {
     }
 
-    void setText(final TermAttribute reusableToken) {
+    void setText(final CharTermAttribute reusableToken) {
       this.token = reusableToken;
-      this.buffer = reusableToken.termBuffer();
-      this.length = reusableToken.termLength();
+      this.buffer = reusableToken.buffer();
+      this.length = reusableToken.length();
     }
 
     public int char32At(int pos) {
@@ -215,7 +215,7 @@ public class ICUTransformFilter extends TokenFilter {
       final int newLength = length - replacementLength + charsLen;
       // resize if necessary
       if (newLength > length)
-        buffer = token.resizeTermBuffer(getNextSize(newLength));
+        buffer = token.resizeBuffer(getNextSize(newLength));
       // if the substring being replaced is longer or shorter than the
       // replacement, need to shift things around
       if (replacementLength != charsLen && limit < length)

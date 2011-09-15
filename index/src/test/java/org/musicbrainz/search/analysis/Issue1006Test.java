@@ -6,11 +6,12 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -31,12 +32,12 @@ public class Issue1006Test extends TestCase {
 
         {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
-            TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
+            CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
             while (tokenizer.incrementToken()) {
                 assertEquals("<ALPHANUM>", type.type());
-                assertEquals("ゲーム", term.term());
+                assertEquals("ゲーム", new String(term.buffer(),0,term.length()));
                 assertEquals(0, offset.startOffset());
                 assertEquals(3, offset.endOffset());
 
@@ -46,7 +47,7 @@ public class Issue1006Test extends TestCase {
 
         {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
-            TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
+            CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
 
@@ -54,7 +55,7 @@ public class Issue1006Test extends TestCase {
 
 
                 assertEquals("<ALPHANUM>", type.type());
-                assertEquals("ゲエム", term.term());
+                assertEquals("ゲエム", new String(term.buffer(),0,term.length()));
                 assertEquals(0, offset.startOffset());
                 assertEquals(3, offset.endOffset());
 
@@ -63,14 +64,14 @@ public class Issue1006Test extends TestCase {
 
         {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
-            TermAttribute term = (TermAttribute) tokenizer.addAttribute(TermAttribute.class);
+            CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
 
             while (tokenizer.incrementToken()) {
 
                 assertEquals("<ALPHANUM>", type.type());
-                assertEquals("げえむ", term.term());
+                assertEquals("げえむ", new String(term.buffer(),0,term.length()));
                 assertEquals(0, offset.startOffset());
                 assertEquals(3, offset.endOffset());
             }
@@ -89,14 +90,14 @@ public class Issue1006Test extends TestCase {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
-            TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
+            CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) result.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) result.addAttribute(OffsetAttribute.class);
 
             while (result.incrementToken()) {
 
                 assertEquals("<ALPHANUM>", type.type());
-                assertEquals("げえむ", term.term());
+                assertEquals("げえむ", new String(term.buffer(),0,term.length()));
                 assertEquals(0, offset.startOffset());
                 assertEquals(3, offset.endOffset());
             }
@@ -107,14 +108,14 @@ public class Issue1006Test extends TestCase {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
-            TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
+            CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) result.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) result.addAttribute(OffsetAttribute.class);
 
             while (result.incrementToken()) {
 
                 assertEquals("<ALPHANUM>", type.type());
-                assertEquals("げえむ", term.term());
+                assertEquals("げえむ", new String(term.buffer(),0,term.length()));
                 assertEquals(0, offset.startOffset());
                 assertEquals(3, offset.endOffset());
             }
@@ -125,14 +126,14 @@ public class Issue1006Test extends TestCase {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
-            TermAttribute term = (TermAttribute) result.addAttribute(TermAttribute.class);
+            CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) result.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) result.addAttribute(OffsetAttribute.class);
 
             while (result.incrementToken()) {
 
                 assertEquals("<ALPHANUM>", type.type());
-                assertEquals("げえむ", term.term());
+                assertEquals("げえむ", new String(term.buffer(),0,term.length()));
                 assertEquals(0, offset.startOffset());
                 assertEquals(3, offset.endOffset());
             }
@@ -148,7 +149,8 @@ public class Issue1006Test extends TestCase {
 
         Analyzer analyzer = new StandardUnaccentAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         {
             Document doc = new Document();
             doc.add(new Field("name", "ゲーム", Field.Store.YES, Field.Index.ANALYZED));

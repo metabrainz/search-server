@@ -32,15 +32,13 @@ package org.musicbrainz.search.analysis;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -66,7 +64,8 @@ public class IssueSearch33Test extends TestCase {
 
         Analyzer analyzer = new StandardUnaccentAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!!!", Field.Store.YES, Field.Index.ANALYZED));
 
@@ -88,18 +87,19 @@ public class IssueSearch33Test extends TestCase {
         {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ApostropheApostropheApostrophe"));
             assertTrue(tokenizer.incrementToken());
-            TermAttribute term = tokenizer.addAttribute(TermAttribute.class);
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
             assertEquals("<ALPHANUM>", type.type());
-            assertEquals("ApostropheApostropheApostrophe", term.term());
+            assertEquals("ApostropheApostropheApostrophe", new String(term.buffer(),0,term.length()));
             assertEquals(0, offset.startOffset());
             assertEquals(30, offset.endOffset());
         }
 
         Analyzer analyzer = new ArtistNameAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!!!", Field.Store.YES, Field.Index.ANALYZED));
 
@@ -125,7 +125,8 @@ public class IssueSearch33Test extends TestCase {
 
         Analyzer analyzer = new StandardUnaccentAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!\"@*!%", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
@@ -145,11 +146,11 @@ public class IssueSearch33Test extends TestCase {
         {
             Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ApostropheDoubleQuoteAtAsteriskExclamationPercentage"));
             assertTrue(tokenizer.incrementToken());
-            TermAttribute term = tokenizer.addAttribute(TermAttribute.class);
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
             assertEquals("<ALPHANUM>", type.type());
-            assertEquals("ApostropheDoubleQuoteAtAsteriskExclamationPercentage", term.term());
+            assertEquals("ApostropheDoubleQuoteAtAsteriskExclamationPercentage", new String(term.buffer(),0,term.length()));
             assertEquals(0, offset.startOffset());
             assertEquals(52, offset.endOffset());
             assertFalse(tokenizer.incrementToken());
@@ -158,7 +159,8 @@ public class IssueSearch33Test extends TestCase {
         //Analyse field
         Analyzer analyzer = new LabelNameAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!\"@*!%", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);

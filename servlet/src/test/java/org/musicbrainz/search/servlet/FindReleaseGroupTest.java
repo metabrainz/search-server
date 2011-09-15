@@ -3,12 +3,14 @@ package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
@@ -37,7 +39,8 @@ public class FindReleaseGroupTest extends TestCase {
     protected void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseGroupIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(ramDir, writerConfig);
         ObjectFactory of = new ObjectFactory();
         //Release Group with single artist
         MbDocument doc = new MbDocument();

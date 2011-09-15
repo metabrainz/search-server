@@ -18,8 +18,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
 
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(LabelIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,LabelIndexField.class);
         LabelIndex li = new LabelIndex(conn);
         CommonTables ct = new CommonTables(conn,  li.getName());
         ct.createTemporaryTables(false);

@@ -3,8 +3,10 @@ package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.FreeDBIndexField;
@@ -29,7 +31,8 @@ public class FindFreeDBTest extends TestCase {
     protected void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(FreeDBIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
         //A complete FreeDB entry
         {

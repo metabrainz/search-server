@@ -3,8 +3,10 @@ package org.musicbrainz.search.servlet;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
@@ -33,8 +35,9 @@ public class FindLabelTest extends TestCase {
     protected void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(LabelIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-        writer.setSimilarity(new MusicbrainzSimilarity());
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        writerConfig.setSimilarity(new MusicbrainzSimilarity());
+        IndexWriter writer = new IndexWriter(ramDir, writerConfig);
                 
         {
             MbDocument doc = new MbDocument();

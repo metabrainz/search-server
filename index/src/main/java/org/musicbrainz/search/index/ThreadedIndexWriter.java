@@ -22,6 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 
@@ -54,17 +55,16 @@ public class ThreadedIndexWriter extends IndexWriter {
         }
     }
 
-    public ThreadedIndexWriter(Directory dir, Analyzer a,
-                               boolean create,
+    public ThreadedIndexWriter(Directory dir,
+                               IndexWriterConfig config,
                                int numThreads,
-                               int maxQueueSize,
-                               IndexWriter.MaxFieldLength mfl)
+                               int maxQueueSize)
 
             throws  IOException
 
     {
-        super(dir, a, create, mfl);
-        defaultAnalyzer = a;
+        super(dir, config);
+        defaultAnalyzer = config.getAnalyzer();
         threadPool = new ThreadPoolExecutor(
                 numThreads, numThreads, 0,
                 TimeUnit.SECONDS,

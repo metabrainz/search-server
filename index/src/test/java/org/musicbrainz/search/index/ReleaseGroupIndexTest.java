@@ -38,8 +38,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseGroupIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,ReleaseGroupIndexField.class);
         ReleaseGroupIndex rgi = new ReleaseGroupIndex(conn);
         CommonTables ct = new CommonTables(conn, rgi.getName());
         ct.createTemporaryTables(false);

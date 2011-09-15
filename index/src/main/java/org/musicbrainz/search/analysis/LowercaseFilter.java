@@ -2,7 +2,7 @@ package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.IOException;
 
@@ -16,16 +16,17 @@ public class LowercaseFilter extends TokenFilter {
 
     public LowercaseFilter(TokenStream in) {
         super(in);
-        termAtt = (TermAttribute) addAttribute(TermAttribute.class);
+        termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     }
 
-    private TermAttribute termAtt;
+
+    private CharTermAttribute termAtt;
 
     public final boolean incrementToken() throws IOException {
         if (input.incrementToken()) {
 
-            final char[] buffer = termAtt.termBuffer();
-            final int length = termAtt.termLength();
+            final char[] buffer = termAtt.buffer();
+            final int length = termAtt.length();
             for (int i = 0; i < length; i++)
                 switch (buffer[i]) {
                     case 'あ':

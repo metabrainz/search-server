@@ -21,7 +21,7 @@ import com.ibm.icu.text.Normalizer;
 import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.ArrayUtil;
 
 import java.io.IOException;
@@ -161,7 +161,7 @@ public final class ICUNormalizationFilter extends TokenFilter {
   private char buffer[] = new char[4096];
 
   // new api term attribute, will be updated with normalized text if necessary.
-  private TermAttribute termAtt;
+  private CharTermAttribute termAtt;
 
   /**
    * Create an ICUNormalizationFilter that normalizes text to the specified
@@ -173,7 +173,7 @@ public final class ICUNormalizationFilter extends TokenFilter {
   public ICUNormalizationFilter(TokenStream input, Normalizer.Mode mode) {
     super(input);
     this.mode = mode;
-    termAtt =  addAttribute(TermAttribute.class);
+    termAtt =  addAttribute(CharTermAttribute.class);
   }
 
   public boolean incrementToken() throws IOException {
@@ -185,8 +185,8 @@ public final class ICUNormalizationFilter extends TokenFilter {
      */
 
     if (input.incrementToken()) {
-      final char src[] = termAtt.termBuffer();
-      final int length = termAtt.termLength();
+      final char src[] = termAtt.buffer();
+      final int length = termAtt.length();
 
       /*
        * This quick-check returns three possible values: YES, NO, or MAYBE. When
@@ -232,7 +232,7 @@ public final class ICUNormalizationFilter extends TokenFilter {
 
           final int newLength = Normalizer.normalize(src, 0, length, buffer, 0,
               buffer.length, mode, 0);
-          termAtt.setTermBuffer(buffer, 0, newLength);
+          termAtt.resizeBuffer(newLength);
           return true;
         } catch (IndexOutOfBoundsException e) {
           // technically, ICU encodes the necessary size as a String in the

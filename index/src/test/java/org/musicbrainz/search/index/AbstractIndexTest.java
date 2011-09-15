@@ -1,9 +1,10 @@
 package org.musicbrainz.search.index;
 
 import junit.framework.TestCase;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.*;
+import org.apache.lucene.store.RAMDirectory;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
 import java.sql.BatchUpdateException;
@@ -19,6 +20,13 @@ public abstract class AbstractIndexTest extends TestCase {
      */
     protected Connection conn;
 
+    protected IndexWriter createIndexWriter(RAMDirectory ramDir, Class indexFieldClass) throws Exception
+    {
+        Analyzer analyzer = DatabaseIndex.getAnalyzer(indexFieldClass);
+        IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        return new IndexWriter(ramDir, config);
+    }
 
     /**
      * Create private db in memory and setup connection

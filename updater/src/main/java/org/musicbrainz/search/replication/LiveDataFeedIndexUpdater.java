@@ -37,6 +37,8 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.*;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.replication.packet.ReplicationChange;
 import org.musicbrainz.search.replication.packet.ReplicationPacket;
 
@@ -134,14 +136,14 @@ public class LiveDataFeedIndexUpdater {
      */
     private void updateDatabaseIndex(DatabaseIndex index, LiveDataFeedIndexOptions options) throws IOException, SQLException
     {
-    	
+
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,index.getAnalyzer());
+
     	String path = options.getIndexesDir() + index.getFilename();
         IndexWriter indexWriter = new ThreadedIndexWriter(FSDirectory.open(new File(path)),
-                index.getAnalyzer(),
-                false,
+                writerConfig,
                 Runtime.getRuntime().availableProcessors(),
-                10,
-                IndexWriter.MaxFieldLength.LIMITED);
+                10);
         indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
         indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
     	

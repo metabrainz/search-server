@@ -4,7 +4,10 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
+import org.musicbrainz.search.LuceneVersion;
 
 import java.sql.Statement;
 
@@ -17,8 +20,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
-        Analyzer analyzer = DatabaseIndex.getAnalyzer(AnnotationIndexField.class);
-        IndexWriter writer = new IndexWriter(ramDir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+        IndexWriter writer = createIndexWriter(ramDir,AnnotationIndexField.class);
         AnnotationIndex ai = new AnnotationIndex(conn);
         CommonTables ct = new CommonTables(conn, ai.getName());
         ct.createTemporaryTables(false);

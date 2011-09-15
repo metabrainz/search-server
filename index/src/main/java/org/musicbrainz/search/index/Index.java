@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.Similarity;
 
 public interface Index {
 
@@ -53,6 +54,10 @@ public interface Index {
      * @throws IOException 
      */
     public void addMetaInformation(IndexWriter indexWriter) throws IOException;
-    
 
+    /**
+     * Some index es use a custom similarity
+     * @return
+     */
+    public Similarity getSimilarity();
 }

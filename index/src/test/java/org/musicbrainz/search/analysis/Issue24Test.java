@@ -29,11 +29,13 @@
 
 package org.musicbrainz.search.analysis;
 
+import com.sun.deploy.config.Config;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -58,7 +60,8 @@ public class Issue24Test extends TestCase {
             Analyzer analyzer = new StandardUnaccentAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("artist", "fred", Field.Store.YES, Field.Index.ANALYZED));
             doc.add(new Field("alias", "rod", Field.Store.YES, Field.Index.ANALYZED));
@@ -108,8 +111,9 @@ public class Issue24Test extends TestCase {
             Analyzer analyzer = new StandardUnaccentAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-            writer.setSimilarity(new MusicbrainzSimilarity());
+            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            writerConfig.setSimilarity(new MusicbrainzSimilarity());
+            IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("artist", "fred", Field.Store.YES, Field.Index.ANALYZED));
             doc.add(new Field("alias", "rod", Field.Store.YES, Field.Index.ANALYZED));
@@ -168,7 +172,8 @@ public class Issue24Test extends TestCase {
             Analyzer analyzer = new StandardUnaccentAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("artist", "Vanguard", Field.Store.YES, Field.Index.ANALYZED));
             doc.add(new Field("alias", "Queen and Vanguard", Field.Store.YES, Field.Index.ANALYZED));
@@ -205,8 +210,9 @@ public class Issue24Test extends TestCase {
             Analyzer analyzer = new StandardUnaccentAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriter writer = new IndexWriter(dir, analyzer, true, IndexWriter.MaxFieldLength.LIMITED);
-            writer.setSimilarity(new MusicbrainzSimilarity());
+            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            writerConfig.setSimilarity(new MusicbrainzSimilarity());
+            IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("alias", "Queen and Vanguard", Field.Store.YES, Field.Index.ANALYZED));
             doc.add(new Field("alias", "Queen featuring Vanguard", Field.Store.YES, Field.Index.ANALYZED));
