@@ -143,6 +143,7 @@ public class WorkIndex extends DatabaseIndex {
             artist.setSortName(rs.getString("artist_sortname"));
             relation.setArtist(artist);
             relation.setType(rs.getString("link"));
+            relation.setDirection(DefDirection.BACKWARD);
             list.getRelation().add(relation);
         }
         rs.close();

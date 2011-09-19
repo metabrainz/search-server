@@ -61,6 +61,7 @@ public class FindWorkTest extends TestCase {
             artist.setSortName("Пётр Ильич Чайковский");
             relation.setArtist(artist);
             relation.setType("composer");
+            relation.setDirection(DefDirection.BACKWARD);
             rl.getRelation().add(relation);
             doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
 
@@ -188,6 +189,7 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("<sort-name>Пётр Ильич Чайковский</sort-name>"));
         assertTrue(output.contains("<relation type=\"composer\""));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
+        assertTrue(output.contains("<direction>backward</direction>"));
         assertTrue(output.contains("type=\"Opera\""));
         assertTrue(output.contains("<alias-list><alias>Symp5</alias></alias-list>"));
         assertTrue(output.contains("<tag-list><tag count=\"10\"><name>classical</name></tag></tag-list>"));
