@@ -128,6 +128,8 @@ public abstract class AbstractIndexTest extends TestCase {
                 stmt.addBatch("DROP TABLE l_artist_work");
                 stmt.addBatch("DROP TABLE link");
                 stmt.addBatch("DROP TABLE link_type");
+                stmt.addBatch("DROP TABLE link_attribute");
+                stmt.addBatch("DROP TABLE link_attribute_type");
                 
                 stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE dbmirror_pending");
@@ -652,6 +654,24 @@ public abstract class AbstractIndexTest extends TestCase {
                 "  last_updated timestamp" +
                 ")");
 
+        stmt.addBatch("CREATE TABLE link_attribute" +
+                "(" +
+                "  link integer NOT NULL," +
+                "  attribute_type integer NOT NULL," +
+                "  created timestamp" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE link_attribute_type" +
+                "( " +
+                "  id serial NOT NULL," +
+                "  parent integer," +
+                "  root integer NOT NULL," +
+                "  child_order integer NOT NULL DEFAULT 0," +
+                "  gid uuid NOT NULL," +
+                "  name character varying(255) NOT NULL," +
+                "  description text," +
+                "  last_updated timestamp" +
+                ")");
     }
 
     protected void setupReplicationTables(Statement stmt) throws Exception {

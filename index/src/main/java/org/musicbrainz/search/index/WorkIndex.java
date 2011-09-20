@@ -81,8 +81,8 @@ public class WorkIndex extends DatabaseIndex {
                         " WHERE work between ? AND ?");
 
         addPreparedStatement("ARTISTS",
-                " SELECT w.id as wid, w.gid, a.gid as aid, an.name as artist_name, sn.name as artist_sortname," +
-                        " lt.name as link" +
+                " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, an.name as artist_name, sn.name as artist_sortname," +
+                        " lt.name as link, lat.name as attribute" +
                         " FROM l_artist_work aw" +
                         " INNER JOIN artist a ON a.id    = aw.entity0" +
                         " INNER JOIN work   w ON w.id     = aw.entity1" +
@@ -90,8 +90,10 @@ public class WorkIndex extends DatabaseIndex {
                         " INNER JOIN artist_name sn ON sn.id = a.sort_name" +
                         " INNER JOIN link l ON aw.link = l.id " +
                         " INNER JOIN link_type lt on l.link_type=lt.id" +
-                        " WHERE w.id BETWEEN ? AND ?  ");
-
+                        " LEFT JOIN  link_attribute la on la.link=l.id" +
+                        " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
+                        " WHERE w.id BETWEEN ? AND ?  "  +
+                        " ORDER BY aw.id");
 
         addPreparedStatement("ALIASES",
                 "SELECT work_alias.work as work, n.name as alias " +
@@ -108,9 +110,16 @@ public class WorkIndex extends DatabaseIndex {
                         " ORDER BY w.id");
     }
 
-
-    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-
+    /**
+     * Load Tags
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<Tag>> loadTags(int min, int max) throws SQLException, IOException {
         // Get Tags
         PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
@@ -118,43 +127,93 @@ public class WorkIndex extends DatabaseIndex {
         ResultSet rs = st.executeQuery();
         Map<Integer, List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs, "work");
         rs.close();
+        return tags;
+    }
 
-        //Artist Relations
+    /**
+     * Load Artist Relations
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, RelationList> loadArtistRelations(int min, int max) throws SQLException, IOException {
         Map<Integer, RelationList> artists = new HashMap<Integer, RelationList>();
-        st = getPreparedStatement("ARTISTS");
+        PreparedStatement st  = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
-        rs = st.executeQuery();
+        ResultSet rs = st.executeQuery();
+        int lastLinkId=-1;
+        Relation lastRelation = null;
         while (rs.next()) {
-            int workId = rs.getInt("wid");
+            int linkId = rs.getInt("awid");
 
-            RelationList list;
-            if (!artists.containsKey(workId)) {
-                list = new ObjectFactory().createRelationList();
-                artists.put(workId, list);
-            } else {
-                list = artists.get(workId);
+            if(linkId==lastLinkId) {
+                String attribute = rs.getString("attribute");
+                AttributeList attributeList=lastRelation.getAttributeList();
+                if(attributeList==null) {
+                    attributeList = new ObjectFactory().createAttributeList();
+                    lastRelation.setAttributeList(attributeList);
+                }
+                attributeList.getAttribute().add(attribute);
+            }
+            else {
+                int workId = rs.getInt("wid");
+
+                RelationList list;
+                if (!artists.containsKey(workId)) {
+                    list = new ObjectFactory().createRelationList();
+                    artists.put(workId, list);
+                } else {
+                    list = artists.get(workId);
+                }
+
+                Relation relation = new ObjectFactory().createRelation();
+                Artist artist = new ObjectFactory().createArtist();
+                artist.setId(rs.getString("aid"));
+                artist.setName(rs.getString("artist_name"));
+                artist.setSortName(rs.getString("artist_sortname"));
+                relation.setArtist(artist);
+                relation.setType(rs.getString("link"));
+                relation.setDirection(DefDirection.BACKWARD);
+                list.getRelation().add(relation);
+
+                String attribute = rs.getString("attribute");
+                if(attribute!=null) {
+                    AttributeList attributeList=relation.getAttributeList();
+                    if(attributeList==null) {
+                        attributeList = new ObjectFactory().createAttributeList();
+                        relation.setAttributeList(attributeList);
+                    }
+                    attributeList.getAttribute().add(attribute);
+                }
+
+                lastRelation=relation;
+                lastLinkId=linkId;
             }
 
-            Relation relation = new ObjectFactory().createRelation();
-            Artist artist = new ObjectFactory().createArtist();
-            artist.setId(rs.getString("aid"));
-            artist.setName(rs.getString("artist_name"));
-            artist.setSortName(rs.getString("artist_sortname"));
-            relation.setArtist(artist);
-            relation.setType(rs.getString("link"));
-            relation.setDirection(DefDirection.BACKWARD);
-            list.getRelation().add(relation);
         }
         rs.close();
+        return artists;
+    }
 
-
-        // Get works aliases
+    /**
+     * Load work aliases
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<String>> loadAliases(int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
-        st = getPreparedStatement("ALIASES");
+        PreparedStatement st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
-        rs = st.executeQuery();
+        ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int workId = rs.getInt("work");
 
@@ -168,14 +227,31 @@ public class WorkIndex extends DatabaseIndex {
             list.add(rs.getString("alias"));
         }
         rs.close();
+        return aliases;
+    }
+
+    /**
+     * Index data with workids between min and max
+     *
+     * @param indexWriter
+     * @param min
+     * @param max
+     * @throws SQLException
+     * @throws IOException
+     */
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+
+        Map<Integer, List<Tag>>    tags = loadTags(min, max);
+        Map<Integer, RelationList> artistRelations = loadArtistRelations(min, max);
+        Map<Integer, List<String>> aliases = loadAliases(min, max);
 
         //Works
-        st = getPreparedStatement("WORKS");
+        PreparedStatement st = getPreparedStatement("WORKS");
         st.setInt(1, min);
         st.setInt(2, max);
-        rs = st.executeQuery();
+        ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, artists, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, artistRelations, aliases));
         }
         rs.close();
 

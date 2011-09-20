@@ -1,5 +1,6 @@
 package org.musicbrainz.search.servlet;
 
+import com.sun.org.apache.xml.internal.serializer.OutputPropertyUtils;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -55,6 +56,7 @@ public class FindWorkTest extends TestCase {
 
             RelationList rl = of.createRelationList();
             Relation relation = of.createRelation();
+            AttributeList al  = of.createAttributeList();
             Artist artist = of.createArtist();
             artist.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
             artist.setName("Пётр Ильич Чайковский");
@@ -62,6 +64,8 @@ public class FindWorkTest extends TestCase {
             relation.setArtist(artist);
             relation.setType("composer");
             relation.setDirection(DefDirection.BACKWARD);
+            al.getAttribute().add("additional");
+            relation.setAttributeList(al);
             rl.getRelation().add(relation);
             doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
 
@@ -190,6 +194,7 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("<relation type=\"composer\""));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
         assertTrue(output.contains("<direction>backward</direction>"));
+        assertTrue(output.contains("<attribute-list><attribute>additional</attribute></attribute-list>"));
         assertTrue(output.contains("type=\"Opera\""));
         assertTrue(output.contains("<alias-list><alias>Symp5</alias></alias-list>"));
         assertTrue(output.contains("<tag-list><tag count=\"10\"><name>classical</name></tag></tag-list>"));

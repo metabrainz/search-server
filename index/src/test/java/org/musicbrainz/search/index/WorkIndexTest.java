@@ -81,6 +81,11 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO l_artist_work(id, link, entity0, entity1) VALUES (1, 1, 16153, 1);");
         stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
         stmt.addBatch("INSERT INTO link_type(id,name) VALUES (1, 'composer')");
+        stmt.addBatch("INSERT INTO link_attribute(link, attribute_type, created) VALUES (1, 1, null)");
+       stmt.addBatch("INSERT INTO link_attribute_type( id, parent, root, child_order, gid, name, description, last_updated) " +
+                "VALUES (1, 1, 1, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'additional', null,null);");
+
+        ;
 
         stmt.executeBatch();
         stmt.close();
@@ -168,6 +173,27 @@ public class WorkIndexTest extends AbstractIndexTest {
             ir.close();
         }
     }
+
+    public void testIndexWorkWithArtistRelationAttribute() throws Exception {
+
+        addWorkTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            RelationList rc = (RelationList) MMDSerializer
+                    .unserialize(doc.get(WorkIndexField.ARTIST_RELATION.getName()), RelationList.class);
+            assertNotNull(rc);
+            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245",rc.getRelation().get(0).getArtist().getId());
+            assertEquals("Echo & The Bunnymen",rc.getRelation().get(0).getArtist().getName());
+            assertEquals("composer",rc.getRelation().get(0).getType());
+            assertEquals("additional",rc.getRelation().get(0).getAttributeList().getAttribute().get(0));
+            ir.close();
+        }
+    }
+
 
      public void testIndexWorkWithAlias() throws Exception {
 
