@@ -55,6 +55,7 @@ public class FindWorkTest extends TestCase {
 
 
             RelationList rl = of.createRelationList();
+            rl.setTargetType("artist");
             Relation relation = of.createRelation();
             AttributeList al  = of.createAttributeList();
             Artist artist = of.createArtist();
@@ -193,6 +194,7 @@ public class FindWorkTest extends TestCase {
         assertTrue(output.contains("<sort-name>Пётр Ильич Чайковский</sort-name>"));
         assertTrue(output.contains("<relation type=\"composer\""));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
+        assertTrue(output.contains("<relation-list target-type=\"artist\">"));
         assertTrue(output.contains("<direction>backward</direction>"));
         assertTrue(output.contains("<attribute-list><attribute>additional</attribute></attribute-list>"));
         assertTrue(output.contains("type=\"Opera\""));

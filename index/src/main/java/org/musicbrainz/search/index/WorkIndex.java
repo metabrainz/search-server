@@ -36,6 +36,7 @@ import java.util.Map;
 public class WorkIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "work";
+    private static final String ARTIST_RELATION_TYPE = "artist";
 
     public WorkIndex(Connection dbConnection) {
         super(dbConnection);
@@ -165,6 +166,7 @@ public class WorkIndex extends DatabaseIndex {
                 RelationList list;
                 if (!artists.containsKey(workId)) {
                     list = new ObjectFactory().createRelationList();
+                    list.setTargetType(ARTIST_RELATION_TYPE);
                     artists.put(workId, list);
                 } else {
                     list = artists.get(workId);
