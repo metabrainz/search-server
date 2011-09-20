@@ -88,9 +88,11 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'aliastest')");
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, locale, edits_pending, last_updated) VALUES (1, 16153, 2, 'en',1,null)");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
                 " VALUES (1, 0, 16153, 1)");
@@ -202,10 +204,35 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()).stringValue());
             assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASE.getName()).length);
             assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseGroupIndexField.RELEASE.getName()).stringValue());
-            checkTerm(ir,ReleaseGroupIndexField.ARTIST_NAME,"and");
             checkTerm(ir,ReleaseGroupIndexField.ARTIST_ID,"ccd4879c-5e88-4385-b131-bf65296bf245");
 
 
+        }
+        ir.close();
+
+    }
+
+
+    /**
+     * Basic test of all fields
+     *
+     * @throws Exception
+     */
+    public void testIndexReleaseGroupAlias() throws Exception {
+
+        addReleaseGroupTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
+            checkTerm(ir,ReleaseGroupIndexField.ARTIST_NAME,"aliastest");
+            checkTermX(ir,ReleaseGroupIndexField.ARTIST_NAME,"and", 1);
+            checkTermX(ir,ReleaseGroupIndexField.ARTIST_NAME,"bunnymen", 2);
+            checkTermX(ir,ReleaseGroupIndexField.ARTIST_NAME,"echo", 3);
         }
         ir.close();
 

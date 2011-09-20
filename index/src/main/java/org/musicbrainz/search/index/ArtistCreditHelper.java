@@ -164,6 +164,7 @@ public class ArtistCreditHelper {
                 //by artists who name is in non-latin script
                 if(nc.getArtist().getAliasList()!=null)
                 {
+                    System.out.println("aias"+nc.getArtist().getAliasList().getAlias().get(0).getContent());
                     doc.addField(artistName,(String)nc.getArtist().getAliasList().getAlias().get(0).getContent());
                 }
             }

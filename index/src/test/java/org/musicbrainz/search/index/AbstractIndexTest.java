@@ -44,8 +44,9 @@ public abstract class AbstractIndexTest extends TestCase {
     }
 
     /** Check first term of given field, terms are listed lexigrahically
+     *  Use when field is indexed. but not stored
      *
-      * @param ir
+     * @param ir
      * @param field
      * @param value
      * @throws java.io.IOException
@@ -58,7 +59,26 @@ public abstract class AbstractIndexTest extends TestCase {
         assertEquals(value, tr.term().text());
 
     }
-   
+
+    /** Check first term of given field, terms are listed lexigrahically
+     *  Use when field is indexed. but not stored
+     *
+     * @param ir
+     * @param field
+     * @param value
+     * @throws IOException
+     */
+    protected void checkTermX(IndexReader ir, IndexField field, String value,int index) throws IOException {
+        TermEnum tr = ir.terms(new Term(field.getName(), ""));
+        //Check it managed to find one (we have to do this because if it doesn't find any would return the next field)
+        assertEquals(field.getName(), tr.term().field());
+        assertEquals(1, tr.docFreq());
+        for(int i=0;i<index;i++) {
+            tr.next();
+        }
+        assertEquals(value, tr.term().text());
+    }
+
     public void setup() throws Exception {
         try {
             createConnection();
