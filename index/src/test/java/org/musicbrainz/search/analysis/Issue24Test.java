@@ -29,7 +29,6 @@
 
 package org.musicbrainz.search.analysis;
 
-import com.sun.deploy.config.Config;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
