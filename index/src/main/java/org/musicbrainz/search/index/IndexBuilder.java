@@ -35,8 +35,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogMergePolicy;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.*;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.musicbrainz.search.LuceneVersion;
@@ -217,7 +216,7 @@ public class IndexBuilder
         }
         else
         {
-            fsDir = FSDirectory.open(new File(path));
+            fsDir = FSDirectory.open(new File(path), NoLockFactory.getNoLockFactory() );
         }
 
         IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
@@ -258,16 +257,18 @@ public class IndexBuilder
             index.init(indexWriter, false);
             index.addMetaInformation(indexWriter);
             int maxId = index.getMaxId();
-            if (options.isTest() && options.getTestIndexSize() < maxId)
-                maxId = options.getTestIndexSize();
-            int j = 0;
-            while (j <= maxId) {
-                int k = Math.min(j + options.getDatabaseChunkSize() - 1, maxId);
-                System.out.print(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
-                index.indexData(indexWriter, j, k);
-                j += options.getDatabaseChunkSize();
-            }
+            if(maxId > 0) {
 
+                if (options.isTest() && options.getTestIndexSize() < maxId)
+                    maxId = options.getTestIndexSize();
+                int j = 0;
+                while (j <= maxId) {
+                    int k = Math.min(j + options.getDatabaseChunkSize() - 1, maxId);
+                    System.out.print(index.getName()+":Indexing " + j + "..." + k + " / " + maxId + " (" + (100*k/maxId) + "%)\r");
+                    index.indexData(indexWriter, j, k);
+                    j += options.getDatabaseChunkSize();
+                }
+            }
             index.destroy();
             clock.stop();
             System.out.println("\n"+index.getName()+":Finished:" + Utils.formatClock(clock));
