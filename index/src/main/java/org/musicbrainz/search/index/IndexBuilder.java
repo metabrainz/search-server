@@ -381,11 +381,27 @@ public class IndexBuilder
             catch(IOException ioe)
             {
                 ioe.printStackTrace();
+                try
+                {
+                    indexWriter.close();
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
                 return false;
             }
             catch(SQLException sqle)
             {
                 sqle.printStackTrace();
+                try
+                {
+                    indexWriter.close();
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
                 return false;
             }
         }
