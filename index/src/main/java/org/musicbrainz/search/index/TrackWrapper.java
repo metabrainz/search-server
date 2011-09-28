@@ -4,6 +4,7 @@ package org.musicbrainz.search.index;
  * Track Details for use by Recording Index
  */
 class TrackWrapper {
+    private int     trackId;
     private int     trackPosition;
     private int     trackCount;
     private int     releaseId;
@@ -58,5 +59,13 @@ class TrackWrapper {
 
     public void setMediumFormat(String mediumFormat) {
         this.mediumFormat = mediumFormat;
+    }
+
+    public int getTrackId() {
+        return trackId;
+    }
+
+    public void setTrackId(int trackId) {
+        this.trackId = trackId;
     }
 }

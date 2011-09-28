@@ -95,10 +95,6 @@ public class ReleaseIndex extends DatabaseIndex {
         return rs.getInt(1);
     }
 
-
-
-
-
     @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
@@ -107,7 +103,6 @@ public class ReleaseIndex extends DatabaseIndex {
                 "SELECT release, puid " +
                 "FROM   tmp_release_puid " +
                 "WHERE  release BETWEEN ? AND ? ");
-
         }
         else {
             addPreparedStatement("PUIDS",
@@ -138,6 +133,7 @@ public class ReleaseIndex extends DatabaseIndex {
 
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT r.id as releaseId, " +
+                "  a.artist_credit, " +
                 "  a.pos, " +
                 "  a.joinphrase, " +
                 "  a.artistId,  " +
@@ -150,7 +146,6 @@ public class ReleaseIndex extends DatabaseIndex {
                 "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
-
 
          addPreparedStatement("RELEASES",
                 " SELECT id, gid, name, " +
@@ -265,10 +260,11 @@ public class ReleaseIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
-        Map<Integer, ArtistCredit> artistCredits
+        Map<Integer, ArtistCreditWrapper> artistCredits
                 = ArtistCreditHelper.completeArtistCreditFromDbResults
                      (rs,
                       "releaseId",
+                      "artist_Credit",
                       "artistId",
                       "artistName",
                       "artistSortName",
@@ -295,7 +291,7 @@ public class ReleaseIndex extends DatabaseIndex {
                                           Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<String>> puids,
-                                          Map<Integer, ArtistCredit> artistCredits) throws SQLException {
+                                          Map<Integer, ArtistCreditWrapper> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
         doc.addField(ReleaseIndexField.ID, id);
@@ -369,10 +365,10 @@ public class ReleaseIndex extends DatabaseIndex {
         }
 
 
-        ArtistCredit ac = artistCredits.get(id);
+        ArtistCreditWrapper ac = artistCredits.get(id);
         ArtistCreditHelper.buildIndexFieldsFromArtistCredit
                (doc,
-                ac,
+                ac.getArtistCredit(),
                 ReleaseIndexField.ARTIST,
                 ReleaseIndexField.ARTIST_NAMECREDIT,
                 ReleaseIndexField.ARTIST_ID,

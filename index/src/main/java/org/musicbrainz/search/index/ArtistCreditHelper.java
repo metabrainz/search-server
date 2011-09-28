@@ -68,30 +68,38 @@ public class ArtistCreditHelper {
      * Complete Artist Credits for Database results
      *
      *
+     *
      * @param rs
      * @param entityKey
-     * @param aliasName
-     * @return
+     * @param artistCreditId
+     *@param aliasName  @return
      * @throws SQLException
      */
-    public static Map<Integer, ArtistCredit> completeArtistCreditFromDbResults(ResultSet rs,
+    public static Map<Integer, ArtistCreditWrapper> completeArtistCreditFromDbResults(ResultSet rs,
                                                                                String entityKey,
+                                                                               String artistCreditId,
                                                                                String artistId,
                                                                                String artistName,
                                                                                String artistSortName,
                                                                                String comment,
                                                                                String joinPhrase,
-                                                                               String artistCreditName, String aliasName) throws SQLException {
-        Map<Integer, ArtistCredit> artistCredits = new HashMap<Integer, ArtistCredit>();
+                                                                               String artistCreditName,
+                                                                               String aliasName) throws SQLException {
+        Map<Integer, ArtistCreditWrapper> artistCredits = new HashMap<Integer, ArtistCreditWrapper>();
         ObjectFactory of = new ObjectFactory();
+        ArtistCreditWrapper acw;
         ArtistCredit ac;
         while (rs.next()) {
             int entityId = rs.getInt(entityKey);
             if (!artistCredits.containsKey(entityId)) {
+                acw = new ArtistCreditWrapper();
+                acw.setArtistCreditId(rs.getInt(artistCreditId));
                 ac = of.createArtistCredit();
-                artistCredits.put(entityId, ac);
+                acw.setArtistCredit(ac);
+                artistCredits.put(entityId, acw);
             } else {
-                ac = artistCredits.get(entityId);
+                acw = artistCredits.get(entityId);
+                ac  = acw.getArtistCredit();
             }
             NameCredit nc = of.createNameCredit();
             Artist artist = of.createArtist();
@@ -148,7 +156,7 @@ public class ArtistCreditHelper {
             doc.addField(artist, ArtistCreditHelper.buildFullArtistCreditName(ac));
             for(NameCredit nc:ac.getNameCredit()) {
 
-                //Each individual name credit (uses artist if name credit is unchanged form artist name)
+                //Each individual name credit (uses artist if name credit is unchanged from artist name)
                 if(nc.getName()!=null) {
                     doc.addField(artistNameCredit, nc.getName());
                 }

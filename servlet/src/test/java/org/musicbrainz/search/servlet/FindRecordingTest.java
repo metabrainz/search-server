@@ -1,5 +1,6 @@
 package org.musicbrainz.search.servlet;
 
+import com.sun.org.apache.xml.internal.serializer.OutputPropertyUtils;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -70,6 +71,17 @@ public class FindRecordingTest extends TestCase {
         nc.setArtist(artist);
         ac.getNameCredit().add(nc);
         doc.addField(RecordingIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
+
+        //Track Artist different to Recording Artist
+        ac = of.createArtistCredit();
+        nc = of.createNameCredit();
+        artist = of.createArtist();
+        artist.setId("2302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+        artist.setName("Pig Incident");
+        artist.setSortName("Incident, Pig");
+        nc.setArtist(artist);
+        ac.getNameCredit().add(nc);
+        doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
         doc.addNumericField(RecordingIndexField.DURATION, 234000);
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
@@ -418,6 +430,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<track-count>10</track-count>"));
         assertTrue(output.contains("<artist-credit><name-credit><artist id=\"89ad4ac3-39f7-470e-963a-56509c546377\"><name>Various Artists</name></artist></name-credit></artist-credit>"));
         assertTrue(output.contains("indie</name>"));
+        assertTrue(output.contains("<track><title>Gravitational Lens</title><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
         
 

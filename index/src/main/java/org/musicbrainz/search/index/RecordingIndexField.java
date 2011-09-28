@@ -20,6 +20,7 @@ public enum RecordingIndexField implements IndexField {
     ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
+    TRACK_ARTIST_CREDIT ("trackartistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID			("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     RELEASE				("release",		Field.Store.YES,	Field.Index.ANALYZED, new TitleWithPosGapAnalyzer()),
     NUM_TRACKS          ("tracks",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

@@ -117,7 +117,7 @@ public class RecordingWriter extends ResultsWriter {
                 recording.setPuidList(puidList);
             }
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT));
             recording.setArtistCredit(ac);
                      
             String[] releaseNames       = doc.getValues(RecordingIndexField.RELEASE);
@@ -136,6 +136,7 @@ public class RecordingWriter extends ResultsWriter {
                 String[] numTracksRelease   = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
                 String[] releaseVA          = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
                 String[] mediumFormat       = doc.getValues(RecordingIndexField.FORMAT);
+                String[] trackArtistCredits = doc.getValues(RecordingIndexField.TRACK_ARTIST_CREDIT);
 
                 ReleaseList releaseList = of.createReleaseList();
                 for(int i=0;i<releaseNames.length;i++) {
@@ -167,6 +168,12 @@ public class RecordingWriter extends ResultsWriter {
 
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
                     track.setTitle(trackName[i]);
+
+                    if (!trackArtistCredits[i].equals("-")) {
+                        ArtistCredit tac = ArtistCreditHelper.unserialize(trackArtistCredits[i]);
+                        track.setArtistCredit(tac);
+                    }
+
                     org.musicbrainz.mmd2.Medium.TrackList releaseTrackList = of.createMediumTrackList();
                     releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNos[i]) - 1));
                     releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));

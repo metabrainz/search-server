@@ -99,6 +99,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
         addPreparedStatement("ARTISTCREDITS",
                 "SELECT r.id as releaseGroupId, " +
+                "  a.artist_credit, " +
                 "  a.pos, " +
                 "  a.joinphrase, " +
                 "  a.artistId,  " +
@@ -160,10 +161,11 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
-        Map<Integer, ArtistCredit> artistCredits
+        Map<Integer, ArtistCreditWrapper> artistCredits
                 = ArtistCreditHelper.completeArtistCreditFromDbResults
                  (rs,
                   "releaseGroupId",
+                  "artist_Credit",
                   "artistId",
                   "artistName",
                   "artistSortName",
@@ -188,7 +190,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer,List<Tag>> tags,
                                           Map<Integer, List<ReleaseWrapper>> releases,
-                                          Map<Integer, ArtistCredit> artistCredits) throws SQLException {
+                                          Map<Integer, ArtistCreditWrapper> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("id");
         doc.addField(ReleaseGroupIndexField.ID, id);
@@ -205,10 +207,10 @@ public class ReleaseGroupIndex extends DatabaseIndex {
             }
         }
 
-        ArtistCredit ac = artistCredits.get(id);
+        ArtistCreditWrapper ac = artistCredits.get(id);
         ArtistCreditHelper.buildIndexFieldsFromArtistCredit
                (doc,
-                ac,
+                ac.getArtistCredit(),
                 ReleaseGroupIndexField.ARTIST,
                 ReleaseGroupIndexField.ARTIST_NAMECREDIT,
                 ReleaseGroupIndexField.ARTIST_ID,

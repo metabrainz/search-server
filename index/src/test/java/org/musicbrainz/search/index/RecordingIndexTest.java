@@ -81,7 +81,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * All Basic Fields Plus Release Events
+     * All Basic Fields Plus Release Events and different track artist to recording artist
      *
      * @throws Exception exception
      */
@@ -97,6 +97,15 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
                 " VALUES (1, 0, 16153, 1)");
 
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Pixies')");
+
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
+                " VALUES (2, 'ddd4879c-5e88-4385-b131-bf65296bf245', 2, 2, 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (2, 2, 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
+                " VALUES (2, 0, 2, 1)");
+
+
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
@@ -108,7 +117,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO tracklist (id, track_count) VALUES (1, 2)");
         stmt.addBatch("INSERT INTO track (id, recording, tracklist, position, name, artist_credit, length) "
-                + " VALUES (1, 1, 1, 4, 1, 1, 33100)");
+                + " VALUES (1, 1, 1, 4, 1, 2, 33100)");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length)"
                 + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
         stmt.addBatch("INSERT INTO track_name (id, name) VALUES (1, 'Do It Clean')");
@@ -442,6 +451,56 @@ public class RecordingIndexTest extends AbstractIndexTest {
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
             assertEquals("a comment",ac.getNameCredit().get(0).getArtist().getDisambiguation());
+        }
+        ir.close();
+    }
+
+    /**
+     *
+     * @throws Exception exception
+     */
+    public void testRecordingArtist() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Echo & The Bunnymen",ac.getNameCredit().get(0).getArtist().getName());
+            assertTrue(doc.get(RecordingIndexField.TRACK_ARTIST_CREDIT.getName()).equals("-"));
+        }
+        ir.close();
+    }
+
+    /**
+     *
+     * @throws Exception exception
+     */
+    public void testTrackArtist() throws Exception {
+
+        addTrackTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Echo & The Bunnymen",ac.getNameCredit().get(0).getArtist().getName());
+
+            assertFalse(doc.get(RecordingIndexField.TRACK_ARTIST_CREDIT.getName()).equals("-"));
+            ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.TRACK_ARTIST_CREDIT.getName()));
+            assertNotNull(ac);
+            assertEquals("Pixies",ac.getNameCredit().get(0).getArtist().getName());
         }
         ir.close();
     }
