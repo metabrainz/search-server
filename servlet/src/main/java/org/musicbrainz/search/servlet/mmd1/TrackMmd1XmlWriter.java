@@ -71,14 +71,15 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
                 track.setDuration(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
             }
 
-
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
-            if (ac.getNameCredit().size()>0) {
-                Artist artist = of.createArtist();
-                artist.setName(ac.getNameCredit().get(0).getArtist().getName());
-                artist.setId(ac.getNameCredit().get(0).getArtist().getId());
-                artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
-                track.setArtist(artist);
+            if(doc.get(RecordingIndexField.ARTIST_CREDIT)!=null) {
+                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT));
+                if (ac.getNameCredit().size()>0) {
+                    Artist artist = of.createArtist();
+                    artist.setName(ac.getNameCredit().get(0).getArtist().getName());
+                    artist.setId(ac.getNameCredit().get(0).getArtist().getId());
+                    artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
+                    track.setArtist(artist);
+                }
             }
 
 

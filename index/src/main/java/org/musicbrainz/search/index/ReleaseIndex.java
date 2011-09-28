@@ -366,15 +366,16 @@ public class ReleaseIndex extends DatabaseIndex {
 
 
         ArtistCreditWrapper ac = artistCredits.get(id);
-        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
-               (doc,
-                ac.getArtistCredit(),
-                ReleaseIndexField.ARTIST,
-                ReleaseIndexField.ARTIST_NAMECREDIT,
-                ReleaseIndexField.ARTIST_ID,
-                ReleaseIndexField.ARTIST_NAME,
-                ReleaseIndexField.ARTIST_CREDIT);
-
+        if(ac!=null) {
+            ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+                   (doc,
+                    ac.getArtistCredit(),
+                    ReleaseIndexField.ARTIST,
+                    ReleaseIndexField.ARTIST_NAMECREDIT,
+                    ReleaseIndexField.ARTIST_ID,
+                    ReleaseIndexField.ARTIST_NAME,
+                    ReleaseIndexField.ARTIST_CREDIT);
+        }
         return doc.getLuceneDocument();
     }
 

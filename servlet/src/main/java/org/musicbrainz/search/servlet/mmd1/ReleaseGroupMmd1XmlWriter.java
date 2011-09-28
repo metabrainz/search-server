@@ -34,6 +34,7 @@ import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -70,13 +71,15 @@ public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
 
             //Just add the first Artist (if there are more than one, this means that once releases get added with multiple
             //name credits using this old interface isnt going to give very good results
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
-            if (ac.getNameCredit().size()>0) {
-                Artist artist = of.createArtist();
-                artist.setName(ac.getNameCredit().get(0).getArtist().getName());
-                artist.setId(ac.getNameCredit().get(0).getArtist().getId());
-                artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
-                releaseGroup.setArtist(artist);
+            if(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT)!=null) {
+                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
+                if (ac.getNameCredit().size()>0) {
+                    Artist artist = of.createArtist();
+                    artist.setName(ac.getNameCredit().get(0).getArtist().getName());
+                    artist.setId(ac.getNameCredit().get(0).getArtist().getId());
+                    artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
+                    releaseGroup.setArtist(artist);
+                }
             }
             releaseGroupList.getReleaseGroup().add(releaseGroup);
         }

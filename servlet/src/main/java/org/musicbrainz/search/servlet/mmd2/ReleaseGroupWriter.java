@@ -33,6 +33,7 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -70,8 +71,10 @@ public class ReleaseGroupWriter extends ResultsWriter {
                 releaseGroup.setType(type);
             }
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
-            releaseGroup.setArtistCredit(ac);
+            if(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT)!=null) {
+                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
+                releaseGroup.setArtistCredit(ac);
+            }
 
             String[] releaseIds          = doc.getValues(ReleaseGroupIndexField.RELEASE_ID);
             String[] releaseNames        = doc.getValues(ReleaseGroupIndexField.RELEASE);

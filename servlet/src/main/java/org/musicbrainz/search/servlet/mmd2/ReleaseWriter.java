@@ -150,8 +150,10 @@ public class ReleaseWriter extends ResultsWriter {
                 release.setLabelInfoList(labelInfoList);
             }
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
-            release.setArtistCredit(ac);
+            if(doc.get(ReleaseIndexField.ARTIST_CREDIT)!=null) {
+                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
+                release.setArtistCredit(ac);
+            }
 
             String numTracksOnRelease = doc.get(ReleaseIndexField.NUM_TRACKS);
             if(numTracksOnRelease!=null)

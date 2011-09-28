@@ -208,7 +208,8 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         }
 
         ArtistCreditWrapper ac = artistCredits.get(id);
-        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+        if(ac!=null) {
+            ArtistCreditHelper.buildIndexFieldsFromArtistCredit
                (doc,
                 ac.getArtistCredit(),
                 ReleaseGroupIndexField.ARTIST,
@@ -216,6 +217,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 ReleaseGroupIndexField.ARTIST_ID,
                 ReleaseGroupIndexField.ARTIST_NAME,
                 ReleaseGroupIndexField.ARTIST_CREDIT);
+         }
 
          if (tags.containsKey(id)) {
             for (Tag tag : tags.get(id)) {
