@@ -565,14 +565,16 @@ public class RecordingIndex extends DatabaseIndex {
 
         //Recording Artist Credit
         ArtistCreditWrapper ac = artistCredits.get(id);
-        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
-           (doc,
-            ac.getArtistCredit(),
-            RecordingIndexField.ARTIST,
-            RecordingIndexField.ARTIST_NAMECREDIT,
-            RecordingIndexField.ARTIST_ID,
-            RecordingIndexField.ARTIST_NAME,
-            RecordingIndexField.ARTIST_CREDIT);
+        if(ac!=null) {
+            ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+               (doc,
+                ac.getArtistCredit(),
+                RecordingIndexField.ARTIST,
+                RecordingIndexField.ARTIST_NAMECREDIT,
+                RecordingIndexField.ARTIST_ID,
+                RecordingIndexField.ARTIST_NAME,
+                RecordingIndexField.ARTIST_CREDIT);
+        }
 
         if (tracks.containsKey(id)) {
             // For each track for this recording

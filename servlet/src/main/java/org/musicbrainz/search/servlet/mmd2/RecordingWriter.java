@@ -117,9 +117,11 @@ public class RecordingWriter extends ResultsWriter {
                 recording.setPuidList(puidList);
             }
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT));
-            recording.setArtistCredit(ac);
-                     
+            if(doc.get(RecordingIndexField.ARTIST_CREDIT)!=null) {
+                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT));
+                recording.setArtistCredit(ac);
+            }
+
             String[] releaseNames       = doc.getValues(RecordingIndexField.RELEASE);
 
             if(releaseNames.length>0)
