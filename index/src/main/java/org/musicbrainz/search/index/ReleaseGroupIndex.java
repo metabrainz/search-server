@@ -218,6 +218,9 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 ReleaseGroupIndexField.ARTIST_NAME,
                 ReleaseGroupIndexField.ARTIST_CREDIT);
          }
+         else {
+            System.out.println("\nNo artist credit found for releasegroup:"+rs.getString("gid"));
+         }
 
          if (tags.containsKey(id)) {
             for (Tag tag : tags.get(id)) {

@@ -376,6 +376,10 @@ public class ReleaseIndex extends DatabaseIndex {
                     ReleaseIndexField.ARTIST_NAME,
                     ReleaseIndexField.ARTIST_CREDIT);
         }
+        else {
+            System.out.println("\nNo artist credit found for release:"+rs.getString("gid"));
+        }
+
         return doc.getLuceneDocument();
     }
 

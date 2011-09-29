@@ -575,7 +575,9 @@ public class RecordingIndex extends DatabaseIndex {
                 RecordingIndexField.ARTIST_NAME,
                 RecordingIndexField.ARTIST_CREDIT);
         }
-
+        else {
+            System.out.println("\nNo artist credit found for recording:"+rs.getString("trackid"));
+        }
         if (tracks.containsKey(id)) {
             // For each track for this recording
             for (TrackWrapper track : tracks.get(id)) {
