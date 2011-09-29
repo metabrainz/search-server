@@ -613,7 +613,12 @@ public class RecordingIndex extends DatabaseIndex {
                     //Get Artist Credit for Track
                     ArtistCreditWrapper taw = trackArtistCredits.get(track.getTrackId());
                     //If different to the Artist Credit for the recording
-                    if(taw!=null && taw.getArtistCreditId()!=ac.getArtistCreditId()) {
+                    if(taw!=null &&
+                        (
+                        (ac==null) ||
+                        (taw.getArtistCreditId()!=ac.getArtistCreditId())
+                        )
+                    ) {
                         ArtistCreditHelper.buildIndexFieldsFromArtistCredit
                            (doc,
                             taw.getArtistCredit(),
