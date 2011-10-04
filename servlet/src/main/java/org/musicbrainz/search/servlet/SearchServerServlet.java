@@ -47,6 +47,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.util.EnumMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SearchServerServlet extends HttpServlet {
@@ -292,7 +293,11 @@ public class SearchServerServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
             return;
         }
-
+        catch(Exception e) {
+            log.log(Level.SEVERE, e.getMessage(), e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
+        }
     }
 
 }
