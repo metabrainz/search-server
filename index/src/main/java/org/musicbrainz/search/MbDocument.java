@@ -30,6 +30,7 @@ package org.musicbrainz.search;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.IndexField;
 
@@ -135,7 +136,7 @@ public class MbDocument {
         return doc.getValues(indexField.getName());
     }
 
-    public Field[] getFields(IndexField indexField) {
-        return doc.getFields(indexField.getName());
+    public Fieldable[] getFields(IndexField indexField) {
+        return doc.getFieldables(indexField.getName());
     }
 }

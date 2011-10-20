@@ -20,10 +20,7 @@ package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
-import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
+import org.apache.lucene.analysis.tokenattributes.*;
 import org.apache.lucene.util.AttributeSource;
 import org.apache.lucene.util.Version;
 
@@ -68,12 +65,6 @@ public final class MusicbrainzTokenizer extends Tokenizer {
   public static final int NUM                               = 6;
   public static final int CJ                                = 7;
 
-  /**
-   * @deprecated this solves a bug where HOSTs that end with '.' are identified
-   *             as ACRONYMs.
-   */
-  public static final int ACRONYM_DEP       = 8;
-
   /** String token types that correspond to token type int constants */
   public static final String [] TOKEN_TYPES = new String [] {
     "<ALPHANUM>",
@@ -84,10 +75,7 @@ public final class MusicbrainzTokenizer extends Tokenizer {
     "<HOST>",
     "<NUM>",
     "<CJ>",
-    "<ACRONYM_DEP>"
   };
-
-  private boolean replaceInvalidAcronym;
 
   private int maxTokenLength = StandardAnalyzer.DEFAULT_MAX_TOKEN_LENGTH;
 
@@ -135,13 +123,8 @@ public final class MusicbrainzTokenizer extends Tokenizer {
   }
 
   private void init(Reader input, Version matchVersion) {
-    if (matchVersion.onOrAfter(Version.LUCENE_24)) {
-      replaceInvalidAcronym = true;
-    } else {
-      replaceInvalidAcronym = false;
-    }
     this.input = input;
-    termAtt = addAttribute(TermAttribute.class);
+    termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     offsetAtt = addAttribute(OffsetAttribute.class);
     posIncrAtt = addAttribute(PositionIncrementAttribute.class);
     typeAtt = addAttribute(TypeAttribute.class);
@@ -149,7 +132,7 @@ public final class MusicbrainzTokenizer extends Tokenizer {
 
   // this tokenizer generates three attributes:
   // offset, positionIncrement and type
-  private TermAttribute termAtt;
+  private CharTermAttribute termAtt;
   private OffsetAttribute offsetAtt;
   private PositionIncrementAttribute posIncrAtt;
   private TypeAttribute typeAtt;
@@ -175,20 +158,8 @@ public final class MusicbrainzTokenizer extends Tokenizer {
         posIncrAtt.setPositionIncrement(posIncr);
         scanner.getText(termAtt);
         final int start = scanner.yychar();
-        offsetAtt.setOffset(correctOffset(start), correctOffset(start+termAtt.termLength()));
-        // This 'if' should be removed in the next release. For now, it converts
-        // invalid acronyms to HOST. When removed, only the 'else' part should
-        // remain.
-        if (tokenType == MusicbrainzTokenizerImpl.ACRONYM_DEP) {
-          if (replaceInvalidAcronym) {
-            typeAtt.setType(MusicbrainzTokenizerImpl.TOKEN_TYPES[MusicbrainzTokenizerImpl.HOST]);
-            termAtt.setTermLength(termAtt.termLength() - 1); // remove extra '.'
-          } else {
-            typeAtt.setType(MusicbrainzTokenizerImpl.TOKEN_TYPES[MusicbrainzTokenizerImpl.ACRONYM]);
-          }
-        } else {
-          typeAtt.setType(MusicbrainzTokenizerImpl.TOKEN_TYPES[tokenType]);
-        }
+        offsetAtt.setOffset(correctOffset(start), correctOffset(start+termAtt.length()));
+        typeAtt.setType(MusicbrainzTokenizerImpl.TOKEN_TYPES[tokenType]);
         return true;
       } else
         // When we skip a too-long term, we still increment the
@@ -196,6 +167,7 @@ public final class MusicbrainzTokenizer extends Tokenizer {
         posIncr++;
     }
   }
+
 
   @Override
   public final void end() {

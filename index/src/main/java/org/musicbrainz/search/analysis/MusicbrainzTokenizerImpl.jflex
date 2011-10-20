@@ -18,7 +18,7 @@ package org.musicbrainz.search.analysis;
  */
 
 import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 %%
 
@@ -39,12 +39,6 @@ public static final int ALPHANUMANDPUNCTUATION            = MusicbrainzTokenizer
 public static final int HOST                              = MusicbrainzTokenizer.HOST;
 public static final int NUM                               = MusicbrainzTokenizer.NUM;
 public static final int CJ                                = MusicbrainzTokenizer.CJ;
-/**
- * @deprecated this solves a bug where HOSTs that end with '.' are identified
- *             as ACRONYMs. It is deprecated and will be removed in the next
- *             release.
- */
-public static final int ACRONYM_DEP       = MusicbrainzTokenizer.ACRONYM_DEP;
 
 public static final String [] TOKEN_TYPES = MusicbrainzTokenizer.TOKEN_TYPES;
 
@@ -57,14 +51,14 @@ public final int yychar()
  * Fills Lucene token with the current token text.
  */
 final void getText(Token t) {
-  t.setTermBuffer(zzBuffer, zzStartRead, zzMarkedPos-zzStartRead);
+  t.copyBuffer(zzBuffer, zzStartRead, zzMarkedPos-zzStartRead);
 }
 
 /**
  * Fills TermAttribute with the current token text.
  */
-final void getText(TermAttribute t) {
-  t.setTermBuffer(zzBuffer, zzStartRead, zzMarkedPos-zzStartRead);
+final void getText(CharTermAttribute t) {
+  t.copyBuffer(zzBuffer, zzStartRead, zzMarkedPos-zzStartRead);
 }
 
 %}
@@ -96,8 +90,6 @@ APOSTROPHE =  {ALPHA} ("'" {ALPHA})+
 // acronyms (with or without trailing dot): U.S.A., I.B.M, etc.
 // use a post-filter to remove dots
 ACRONYM    =  {LETTER} ("." {LETTER})+ (".")?
-
-ACRONYM_DEP	= {ALPHANUM} "." ({ALPHANUM} ".")+
 
 // hostname
 HOST       =  {ALPHANUM} ((".") {ALPHANUM})+
@@ -134,7 +126,6 @@ WHITESPACE = \r\n | [ \r\n\t\f]
 
 
 {ACRONYM}                                                      { return ACRONYM; }
-{ACRONYM_DEP}                                                  { return ACRONYM_DEP; }
 {HOST}                                                         { return HOST; }
 {APOSTROPHE}                                                   { return APOSTROPHE; }
 {NUM}                                                          { return NUM; }

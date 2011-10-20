@@ -37,7 +37,7 @@ public class Issue1446Test extends TestCase {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ァ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("ァ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
     }
 	
 
@@ -56,7 +56,7 @@ public class Issue1446Test extends TestCase {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ヨ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("ヨ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
     }
 
     public void testUppercaseHiruganaMatchesLowercaseHirugana() throws Exception {
@@ -74,7 +74,7 @@ public class Issue1446Test extends TestCase {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ぇ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("ぇ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
     }
 
 
@@ -93,7 +93,7 @@ public class Issue1446Test extends TestCase {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("つ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("つ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
     }
 
 }

@@ -65,8 +65,8 @@ public class AccentFilterTest extends TestCase {
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
-        assertEquals("test", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
-        assertEquals("tést", searcher.doc(scoredocs[1].doc).getField("name").stringValue());
+        assertEquals("test", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
+        assertEquals("tést", searcher.doc(scoredocs[1].doc).getFieldable("name").stringValue());
     }
 
     public void testSearchAccented() throws Exception {
@@ -75,8 +75,8 @@ public class AccentFilterTest extends TestCase {
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
-        assertEquals("test", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
-        assertEquals("tést", searcher.doc(scoredocs[1].doc).getField("name").stringValue());
+        assertEquals("test", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
+        assertEquals("tést", searcher.doc(scoredocs[1].doc).getFieldable("name").stringValue());
     }
 
     public void testSearchAccented2() throws Exception {
@@ -85,7 +85,7 @@ public class AccentFilterTest extends TestCase {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ábcáef", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("ábcáef", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
     }
                 /*
     public void testSearchAccented3() throws Exception {

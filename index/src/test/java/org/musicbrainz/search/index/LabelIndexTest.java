@@ -106,10 +106,10 @@ public class LabelIndexTest extends AbstractIndexTest {
            assertEquals(2, ir.numDocs());
            {
                Document doc = ir.document(1);
-               assertEquals(1, doc.getFields(LabelIndexField.LABEL_ID.getName()).length);
-               assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(LabelIndexField.LABEL_ID.getName()).stringValue());               
-               assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-               assertEquals("af", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
+               assertEquals(1, doc.getFieldables(LabelIndexField.LABEL_ID.getName()).length);
+               assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getFieldable(LabelIndexField.LABEL_ID.getName()).stringValue());               
+               assertEquals(1, doc.getFieldables(LabelIndexField.COUNTRY.getName()).length);
+               assertEquals("af", doc.getFieldable(LabelIndexField.COUNTRY.getName()).stringValue());
            }
            ir.close();
 
@@ -126,8 +126,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-            assertEquals("unknown", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.COUNTRY.getName()).length);
+            assertEquals("unknown", doc.getFieldable(LabelIndexField.COUNTRY.getName()).stringValue());
         }
         ir.close();
 
@@ -143,8 +143,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-            assertEquals("af", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.COUNTRY.getName()).length);
+            assertEquals("af", doc.getFieldable(LabelIndexField.COUNTRY.getName()).stringValue());
         }
         ir.close();
 
@@ -160,8 +160,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.IPI.getName()).length);
-            assertEquals("1001", doc.getField(LabelIndexField.IPI.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.IPI.getName()).length);
+            assertEquals("1001", doc.getFieldable(LabelIndexField.IPI.getName()).stringValue());
         }
         ir.close();
 
@@ -177,7 +177,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFields(LabelIndexField.COMMENT.getName()).length);
+            assertEquals(0, doc.getFieldables(LabelIndexField.COMMENT.getName()).length);
         }
         ir.close();
     }
@@ -192,8 +192,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.COMMENT.getName()).length);
-            assertEquals("DO NOT EDIT THIS LABEL", doc.getField(LabelIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.COMMENT.getName()).length);
+            assertEquals("DO NOT EDIT THIS LABEL", doc.getFieldable(LabelIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }
@@ -209,7 +209,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFields(LabelIndexField.CODE.getName()).length);
+            assertEquals(0, doc.getFieldables(LabelIndexField.CODE.getName()).length);
         }
         ir.close();
     }
@@ -225,8 +225,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals(5807, NumericUtils.prefixCodedToInt(doc.getField(LabelIndexField.CODE.getName()).stringValue()));
+            assertEquals(1, doc.getFieldables(LabelIndexField.CODE.getName()).length);
+            assertEquals(5807, NumericUtils.prefixCodedToInt(doc.getFieldable(LabelIndexField.CODE.getName()).stringValue()));
         }
         ir.close();
     }
@@ -241,8 +241,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals(99998, NumericUtils.prefixCodedToInt(doc.getField(LabelIndexField.CODE.getName()).stringValue()));
+            assertEquals(1, doc.getFieldables(LabelIndexField.CODE.getName()).length);
+            assertEquals(99998, NumericUtils.prefixCodedToInt(doc.getFieldable(LabelIndexField.CODE.getName()).stringValue()));
         }
         ir.close();
     }
@@ -262,7 +262,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.ALIAS.getName()).length); 
+            assertEquals(1, doc.getFieldables(LabelIndexField.ALIAS.getName()).length);
         }
         ir.close();
     }
@@ -282,8 +282,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.BEGIN.getName()).length);
-            assertEquals("1979", doc.getField(LabelIndexField.BEGIN.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.BEGIN.getName()).length);
+            assertEquals("1979", doc.getFieldable(LabelIndexField.BEGIN.getName()).stringValue());
         }
         ir.close();
     }
@@ -304,7 +304,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFields(LabelIndexField.BEGIN.getName()).length);
+            assertEquals(0, doc.getFieldables(LabelIndexField.BEGIN.getName()).length);
         }
         ir.close();
     }
@@ -324,8 +324,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.END.getName()).length);
-            assertEquals("2009-04", doc.getField(LabelIndexField.END.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.END.getName()).length);
+            assertEquals("2009-04", doc.getFieldable(LabelIndexField.END.getName()).stringValue());
         }
         ir.close();
     }
@@ -345,7 +345,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFields(LabelIndexField.END.getName()).length);
+            assertEquals(0, doc.getFieldables(LabelIndexField.END.getName()).length);
         }
         ir.close();
     }
@@ -361,8 +361,8 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
-            assertEquals("Original Production", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.TYPE.getName()).length);
+            assertEquals("Original Production", doc.getFieldable(LabelIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -382,11 +382,11 @@ public class LabelIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.LABEL.getName()).length);
-            assertEquals(1, doc.getFields(LabelIndexField.TAG.getName()).length);
-            assertEquals("Goth", doc.getField(LabelIndexField.TAG.getName()).stringValue());
-            assertEquals(1, doc.getFields(LabelIndexField.TAGCOUNT.getName()).length);
-            assertEquals("10", doc.getField(LabelIndexField.TAGCOUNT.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.LABEL.getName()).length);
+            assertEquals(1, doc.getFieldables(LabelIndexField.TAG.getName()).length);
+            assertEquals("Goth", doc.getFieldable(LabelIndexField.TAG.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(LabelIndexField.TAGCOUNT.getName()).length);
+            assertEquals("10", doc.getFieldable(LabelIndexField.TAGCOUNT.getName()).stringValue());
         }
         ir.close();
     }
@@ -407,8 +407,8 @@ public class LabelIndexTest extends AbstractIndexTest {
 //        assertEquals(2, ir.numDocs());
 //        {
 //            Document doc = ir.document(1);
-//            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
-//            assertEquals("unknown", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
+//            assertEquals(1, doc.getFieldables(LabelIndexField.TYPE.getName()).length);
+//            assertEquals("unknown", doc.getFieldable(LabelIndexField.TYPE.getName()).stringValue());
 //        }
 //        ir.close();
 //    }
