@@ -75,6 +75,17 @@ public class FindArtistTest extends TestCase {
             doc.addField(ArtistIndexField.ALIAS, "Echo & The Bunymen");
             writer.addDocument(doc.getLuceneDocument());
         }
+
+        //Artist, type person unknown gender
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(ArtistIndexField.ARTIST_ID, "dde4879c-5e88-4385-b131-bf65296bf245");
+            doc.addField(ArtistIndexField.ARTIST, "PJ Harvey");
+            doc.addField(ArtistIndexField.TYPE, ArtistType.PERSON.getName());
+            doc.addField(ArtistIndexField.GENDER, "unknown");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
         writer.close();
         ss = new ArtistSearch(new IndexSearcher(ramDir, true));
     }
@@ -151,9 +162,9 @@ public class FindArtistTest extends TestCase {
         assertEquals(0, res.totalHits);
     }
 
-    public void testFindArtistByTypeNoMatch() throws Exception {
+    public void testFindArtistByTypePerson() throws Exception {
         Results res = ss.searchLucene("type:\"person\"", 0, 10);
-        assertEquals(0, res.totalHits);
+        assertEquals(1, res.totalHits);
     }
 
     public void testFindArtistByAlias() throws Exception {
@@ -181,6 +192,15 @@ public class FindArtistTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
     }
+
+    public void testFindArtistWithNoGender() throws Exception {
+        Results res = ss.searchLucene("gender:unknown", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("dde4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
+    }
+
 
     public void testFindArtistByCountryUppercase() throws Exception {
         Results res = ss.searchLucene("country:\"AF\"", 0, 10);
@@ -340,6 +360,25 @@ public class FindArtistTest extends TestCase {
         assertTrue(output.contains("<alias>Echo &amp; The Bunymen</alias>"));
     }
 
+    /**
+     * @throws Exception
+     */
+    public void testOutputXml3() throws Exception {
+
+        Results res = ss.searchLucene("artist:\"PJ Harvey\"", 0, 1);
+        ResultsWriter v1Writer = new ArtistWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        v1Writer.write(pr, res);
+        pr.close();
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertTrue(output.contains("type=\"person\""));
+        assertTrue(output.contains("<name>PJ Harvey</name>"));
+        assertFalse(output.contains("<gender>")); //Not shown because unknown
+   }
 
     /**
      * Tests that & is converted to valid xml

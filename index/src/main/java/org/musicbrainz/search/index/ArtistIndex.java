@@ -195,7 +195,15 @@ public class ArtistIndex extends DatabaseIndex {
         } else {
             doc.addField(ArtistIndexField.COUNTRY, ArtistType.UNKNOWN.getName());
         }
-        doc.addNonEmptyField(ArtistIndexField.GENDER, rs.getString("gender"));
+
+        String gender = rs.getString("gender");
+        if (gender != null) {
+            doc.addField(ArtistIndexField.GENDER, gender);
+        } else {
+            if( (type!=null) && (type.equalsIgnoreCase(ArtistType.PERSON.getName())) ) {
+                doc.addField(ArtistIndexField.GENDER, ArtistType.UNKNOWN.getName());
+            }
+        }
 
         doc.addNonEmptyField(ArtistIndexField.IPI, rs.getString("ipi_code"));
 

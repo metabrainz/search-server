@@ -79,7 +79,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Siobhan Lynch')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Lynch, Siobhan')");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name)" +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name,)" +
             " VALUES (76834, 1, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe', 2)");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2)");
@@ -88,6 +88,20 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.close();
     }
 
+    private void addArtistFour() throws Exception {
+
+        Statement stmt = conn.createStatement();
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Siobhan Lynch')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Lynch, Siobhan')");
+
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, type)" +
+            " VALUES (76834, 1, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe', 2, 1)");
+
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2)");
+        stmt.addBatch("INSERT INTO artist_tag (artist, tag, count) VALUES (76834, 1, 10)");
+        stmt.executeBatch();
+        stmt.close();
+    }
 
     /**
      * Checks fields are indexed correctly for artist with no alias
@@ -223,7 +237,23 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-    public void testIndexArtistWithNoGender() throws Exception {
+    public void testIndexArtistPersonWithUnknownGender() throws Exception {
+
+        addArtistFour();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ArtistIndexField.GENDER.getName()).length);
+            assertEquals("unknown", doc.getFieldable(ArtistIndexField.GENDER.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    public void testIndexGroupWithNoGender() throws Exception {
 
         addArtistTwo();
         RAMDirectory ramDir = new RAMDirectory();
@@ -237,6 +267,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
+
 
 
     /**

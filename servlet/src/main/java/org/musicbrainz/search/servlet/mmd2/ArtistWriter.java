@@ -63,7 +63,7 @@ public class ArtistWriter extends ResultsWriter {
             }
 
             String gender = doc.get(ArtistIndexField.GENDER);
-            if (gender != null) {
+            if ((gender != null) && (!gender.equalsIgnoreCase("unknown"))){
                 artist.setGender(gender);
             }
 
