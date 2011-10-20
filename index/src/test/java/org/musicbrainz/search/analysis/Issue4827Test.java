@@ -50,7 +50,7 @@ public class Issue4827Test extends TestCase {
 
     public void testHebrewApostropheHandling() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -77,7 +77,7 @@ public class Issue4827Test extends TestCase {
 
     public void testHebrewApostropheHandling2() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);

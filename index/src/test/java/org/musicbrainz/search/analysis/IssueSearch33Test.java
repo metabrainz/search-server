@@ -34,7 +34,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -64,11 +63,11 @@ public class IssueSearch33Test extends TestCase {
 
         //But token is generated with Musicbrainz modification gramar
         {
-            Tokenizer tokenizer = new org.musicbrainz.search.analysis.StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
             assertTrue(tokenizer.incrementToken());
         }
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -90,7 +89,7 @@ public class IssueSearch33Test extends TestCase {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@*!%"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@*!%"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -104,7 +103,7 @@ public class IssueSearch33Test extends TestCase {
 
         //Another example to show is kept intact
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("♠!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("♠!"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -118,7 +117,7 @@ public class IssueSearch33Test extends TestCase {
 
 
         //Analyse field
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -150,7 +149,7 @@ public class IssueSearch33Test extends TestCase {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("fred!!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("fred!!"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -163,7 +162,7 @@ public class IssueSearch33Test extends TestCase {
         }
 
         //Analyse field
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -198,7 +197,7 @@ public class IssueSearch33Test extends TestCase {
 
     public void testGidBehaviour() throws Exception {
 
-        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -210,7 +209,7 @@ public class IssueSearch33Test extends TestCase {
         assertFalse(tokenizer.incrementToken());
 
         //Analyse field
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -242,7 +241,7 @@ public class IssueSearch33Test extends TestCase {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("กข!!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("กข!!"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -255,7 +254,7 @@ public class IssueSearch33Test extends TestCase {
         }
 
         //Analyse field
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -287,7 +286,7 @@ public class IssueSearch33Test extends TestCase {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* !%"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* !%"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -304,7 +303,7 @@ public class IssueSearch33Test extends TestCase {
         }
 
         //Analyse field
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -338,7 +337,7 @@ public class IssueSearch33Test extends TestCase {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* fred"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* fred"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -355,7 +354,7 @@ public class IssueSearch33Test extends TestCase {
         }
 
         //Analyse field
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);

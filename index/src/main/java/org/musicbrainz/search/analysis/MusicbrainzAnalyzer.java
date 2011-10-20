@@ -36,10 +36,10 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Filters StandardTokenizer with StandardFilter, ICUTransformFilter, AccentFilter, LowerCaseFilter
+ * Filters MusicbrainzTokenizer with MusicbrainzTokenizerFilter, ICUTransformFilter, AccentFilter, LowerCaseFilter
  * and no stop words.
  */
-public class StandardUnaccentAnalyzer extends Analyzer {
+public class MusicbrainzAnalyzer extends Analyzer {
 
     protected NormalizeCharMap charConvertMap;
 
@@ -51,23 +51,23 @@ public class StandardUnaccentAnalyzer extends Analyzer {
 
     }
 
-    public StandardUnaccentAnalyzer() {
+    public MusicbrainzAnalyzer() {
         setCharConvertMap();
     }
 
     public final TokenStream tokenStream(String fieldName, Reader reader) {
         CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap,reader);
-        StandardTokenizer tokenStream = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, mappingCharFilter);
+        MusicbrainzTokenizer tokenStream = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, mappingCharFilter);
         TokenStream result = new ICUTransformFilter(tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         result = new ICUTransformFilter(result, Transliterator.getInstance("Traditional-Simplified"));
-        result = new StandardFilter(result);
+        result = new MusicbrainzTokenizerFilter(result);
         result = new AccentFilter(result);
         result = new LowercaseFilter(result);
         return result;
     }
 
     private static final class SavedStreams {
-        StandardTokenizer tokenStream;
+        MusicbrainzTokenizer tokenStream;
         TokenStream filteredTokenStream;
     }
 
@@ -76,10 +76,10 @@ public class StandardUnaccentAnalyzer extends Analyzer {
         if (streams == null) {
             streams = new SavedStreams();
             setPreviousTokenStream(streams);
-            streams.tokenStream = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new MappingCharFilter(charConvertMap, reader));
+            streams.tokenStream = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new MappingCharFilter(charConvertMap, reader));
             streams.filteredTokenStream = new ICUTransformFilter(streams.tokenStream, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
             streams.filteredTokenStream = new ICUTransformFilter(streams.filteredTokenStream, Transliterator.getInstance("Traditional-Simplified"));
-            streams.filteredTokenStream = new StandardFilter(streams.filteredTokenStream);
+            streams.filteredTokenStream = new MusicbrainzTokenizerFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowercaseFilter(streams.filteredTokenStream);
         }

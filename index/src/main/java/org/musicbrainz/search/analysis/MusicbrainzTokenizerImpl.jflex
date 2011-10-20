@@ -22,7 +22,7 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 %%
 
-%class StandardTokenizerImpl
+%class MusicbrainzTokenizerImpl
 %unicode
 %integer
 %function getNextToken
@@ -31,22 +31,22 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 %{
 
-public static final int ALPHANUM                          = StandardTokenizer.ALPHANUM;
-public static final int APOSTROPHE                        = StandardTokenizer.APOSTROPHE;
-public static final int ACRONYM                           = StandardTokenizer.ACRONYM;
-public static final int CONTROLANDPUNCTUATION             = StandardTokenizer.CONTROLANDPUNCTUATION;
-public static final int ALPHANUMANDPUNCTUATION            = StandardTokenizer.ALPHANUMANDPUNCTUATION;
-public static final int HOST                              = StandardTokenizer.HOST;
-public static final int NUM                               = StandardTokenizer.NUM;
-public static final int CJ                                = StandardTokenizer.CJ;
+public static final int ALPHANUM                          = MusicbrainzTokenizer.ALPHANUM;
+public static final int APOSTROPHE                        = MusicbrainzTokenizer.APOSTROPHE;
+public static final int ACRONYM                           = MusicbrainzTokenizer.ACRONYM;
+public static final int CONTROLANDPUNCTUATION             = MusicbrainzTokenizer.CONTROLANDPUNCTUATION;
+public static final int ALPHANUMANDPUNCTUATION            = MusicbrainzTokenizer.ALPHANUMANDPUNCTUATION;
+public static final int HOST                              = MusicbrainzTokenizer.HOST;
+public static final int NUM                               = MusicbrainzTokenizer.NUM;
+public static final int CJ                                = MusicbrainzTokenizer.CJ;
 /**
  * @deprecated this solves a bug where HOSTs that end with '.' are identified
  *             as ACRONYMs. It is deprecated and will be removed in the next
  *             release.
  */
-public static final int ACRONYM_DEP       = StandardTokenizer.ACRONYM_DEP;
+public static final int ACRONYM_DEP       = MusicbrainzTokenizer.ACRONYM_DEP;
 
-public static final String [] TOKEN_TYPES = StandardTokenizer.TOKEN_TYPES;
+public static final String [] TOKEN_TYPES = MusicbrainzTokenizer.TOKEN_TYPES;
 
 public final int yychar()
 {

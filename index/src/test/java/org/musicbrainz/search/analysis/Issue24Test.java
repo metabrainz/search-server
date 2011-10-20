@@ -56,7 +56,7 @@ public class Issue24Test extends TestCase {
      public void testAliasMatchWhenOneOffMany() throws Exception {
 
         {
-            Analyzer analyzer = new StandardUnaccentAnalyzer();
+            Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
             IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -107,7 +107,7 @@ public class Issue24Test extends TestCase {
 
         //With fix, both documents give similar score
         {
-            Analyzer analyzer = new StandardUnaccentAnalyzer();
+            Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
             IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -168,7 +168,7 @@ public class Issue24Test extends TestCase {
 
         //Without alias similarity fix , match on alias fields give much higher score
         {
-            Analyzer analyzer = new StandardUnaccentAnalyzer();
+            Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
             IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -206,7 +206,7 @@ public class Issue24Test extends TestCase {
 
         //With fix, both documents give similar score
         {
-            Analyzer analyzer = new StandardUnaccentAnalyzer();
+            Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
             IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);

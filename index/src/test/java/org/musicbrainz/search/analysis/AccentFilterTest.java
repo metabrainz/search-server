@@ -16,7 +16,7 @@ import org.musicbrainz.search.LuceneVersion;
 
 public class AccentFilterTest extends TestCase {
 
-    private Analyzer analyzer = new StandardUnaccentAnalyzer();
+    private Analyzer analyzer = new MusicbrainzAnalyzer();
     private RAMDirectory dir = new RAMDirectory();
 
     public AccentFilterTest(String testName) {

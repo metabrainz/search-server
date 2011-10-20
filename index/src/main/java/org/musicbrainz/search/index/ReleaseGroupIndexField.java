@@ -32,7 +32,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
-import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
 import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
 
@@ -43,16 +43,16 @@ public enum ReleaseGroupIndexField implements IndexField {
 
 	ID		    		("_id",				Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	ARTIST_ID		    ("arid",			Field.Store.NO,		Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,		Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-	ARTIST_NAME         ("artistname",		Field.Store.NO,		Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,		Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+	ARTIST_NAME         ("artistname",		Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
 	TYPE			    ("type",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
 	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED, new TitleWithPosGapAnalyzer()),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
-    TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
     COMMENT		        ("comment",		    Field.Store.YES,	Field.Index.ANALYZED),
     ;

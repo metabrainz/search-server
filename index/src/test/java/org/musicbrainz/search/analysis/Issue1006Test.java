@@ -31,7 +31,7 @@ public class Issue1006Test extends TestCase {
     public void testKatakanaHiraganaTokenizer() throws Exception {
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -46,7 +46,7 @@ public class Issue1006Test extends TestCase {
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -63,7 +63,7 @@ public class Issue1006Test extends TestCase {
         }
 
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -87,7 +87,7 @@ public class Issue1006Test extends TestCase {
 
         {
 
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -105,7 +105,7 @@ public class Issue1006Test extends TestCase {
 
         {
 
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -123,7 +123,7 @@ public class Issue1006Test extends TestCase {
 
         {
 
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -147,7 +147,7 @@ public class Issue1006Test extends TestCase {
      */
     public void testKatakanaHiraganaEquivalence() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);

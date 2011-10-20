@@ -27,7 +27,7 @@ import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -64,7 +64,7 @@ public abstract class DatabaseIndex implements Index {
     }
 
     public static Analyzer getAnalyzer(Class indexFieldClass) {
-        PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(new StandardUnaccentAnalyzer());
+        PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(new MusicbrainzAnalyzer());
         for(Object o : EnumSet.allOf(indexFieldClass)) {
             IndexField indexField = (IndexField) o;
             Analyzer analyzer = indexField.getAnalyzer();

@@ -55,9 +55,9 @@ import java.io.Reader;
  * </ul>
  */
 
-public final class StandardTokenizer extends Tokenizer {
+public final class MusicbrainzTokenizer extends Tokenizer {
   /** A private instance of the JFlex-constructed scanner */
-  private final StandardTokenizerImpl scanner;
+  private final MusicbrainzTokenizerImpl scanner;
 
   public static final int ALPHANUM                          = 0;
   public static final int APOSTROPHE                        = 1;
@@ -110,27 +110,27 @@ public final class StandardTokenizer extends Tokenizer {
    *
    * See http://issues.apache.org/jira/browse/LUCENE-1068
    */
-  public StandardTokenizer(Version matchVersion, Reader input) {
+  public MusicbrainzTokenizer(Version matchVersion, Reader input) {
     super();
-    this.scanner = new StandardTokenizerImpl(input);
+    this.scanner = new MusicbrainzTokenizerImpl(input);
     init(input, matchVersion);
   }
 
   /**
-   * Creates a new StandardTokenizer with a given {@link AttributeSource}.
+   * Creates a new MusicbrainzTokenizer with a given {@link AttributeSource}.
    */
-  public StandardTokenizer(Version matchVersion, AttributeSource source, Reader input) {
+  public MusicbrainzTokenizer(Version matchVersion, AttributeSource source, Reader input) {
     super(source);
-    this.scanner = new StandardTokenizerImpl(input);
+    this.scanner = new MusicbrainzTokenizerImpl(input);
     init(input, matchVersion);
   }
 
   /**
-   * Creates a new StandardTokenizer with a given {@link org.apache.lucene.util.AttributeSource.AttributeFactory}
+   * Creates a new MusicbrainzTokenizer with a given {@link org.apache.lucene.util.AttributeSource.AttributeFactory}
    */
-  public StandardTokenizer(Version matchVersion, AttributeFactory factory, Reader input) {
+  public MusicbrainzTokenizer(Version matchVersion, AttributeFactory factory, Reader input) {
     super(factory);
-    this.scanner = new StandardTokenizerImpl(input);
+    this.scanner = new MusicbrainzTokenizerImpl(input);
     init(input, matchVersion);
   }
 
@@ -167,7 +167,7 @@ public final class StandardTokenizer extends Tokenizer {
     while(true) {
       int tokenType = scanner.getNextToken();
 
-      if (tokenType == StandardTokenizerImpl.YYEOF) {
+      if (tokenType == MusicbrainzTokenizerImpl.YYEOF) {
         return false;
       }
 
@@ -179,15 +179,15 @@ public final class StandardTokenizer extends Tokenizer {
         // This 'if' should be removed in the next release. For now, it converts
         // invalid acronyms to HOST. When removed, only the 'else' part should
         // remain.
-        if (tokenType == StandardTokenizerImpl.ACRONYM_DEP) {
+        if (tokenType == MusicbrainzTokenizerImpl.ACRONYM_DEP) {
           if (replaceInvalidAcronym) {
-            typeAtt.setType(StandardTokenizerImpl.TOKEN_TYPES[StandardTokenizerImpl.HOST]);
+            typeAtt.setType(MusicbrainzTokenizerImpl.TOKEN_TYPES[MusicbrainzTokenizerImpl.HOST]);
             termAtt.setTermLength(termAtt.termLength() - 1); // remove extra '.'
           } else {
-            typeAtt.setType(StandardTokenizerImpl.TOKEN_TYPES[StandardTokenizerImpl.ACRONYM]);
+            typeAtt.setType(MusicbrainzTokenizerImpl.TOKEN_TYPES[MusicbrainzTokenizerImpl.ACRONYM]);
           }
         } else {
-          typeAtt.setType(StandardTokenizerImpl.TOKEN_TYPES[tokenType]);
+          typeAtt.setType(MusicbrainzTokenizerImpl.TOKEN_TYPES[tokenType]);
         }
         return true;
       } else

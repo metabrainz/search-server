@@ -10,28 +10,28 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 /**
  * Normalizes tokens extracted with {@link org.apache.lucene.analysis.standard.StandardTokenizer}.
  * <p/>
- * This is based on StandardFilter in that tokens identified as Acronyms have there dots removed but unlike StandardFilter
+ * This is based on MusicbrainzTokenizerFilter in that tokens identified as Acronyms have there dots removed but unlike MusicbrainzTokenizerFilter
  * apostrophes are always removed and there is no special rule for words ending in 's .
  * <p/>
- * Whereas StandardFilter usually leaves apostrophes unless word ends with 's whereby the 's is removed.
+ * Whereas MusicbrainzTokenizerFilter usually leaves apostrophes unless word ends with 's whereby the 's is removed.
  */
 
-public class StandardFilter extends TokenFilter {
+public class MusicbrainzTokenizerFilter extends TokenFilter {
     /**
      * Construct filtering <i>in</i>.
      */
-    public StandardFilter(TokenStream in) {
+    public MusicbrainzTokenizerFilter(TokenStream in) {
         super(in);
         termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
         typeAtt = (TypeAttribute) addAttribute(TypeAttribute.class);
     }
 
     private static final String APOSTROPHE_TYPE
-            = org.musicbrainz.search.analysis.StandardTokenizer.TOKEN_TYPES[org.musicbrainz.search.analysis.StandardTokenizer.APOSTROPHE];
+            = MusicbrainzTokenizer.TOKEN_TYPES[MusicbrainzTokenizer.APOSTROPHE];
     private static final String ACRONYM_TYPE
-            = org.musicbrainz.search.analysis.StandardTokenizer.TOKEN_TYPES[org.musicbrainz.search.analysis.StandardTokenizer.ACRONYM];
+            = MusicbrainzTokenizer.TOKEN_TYPES[MusicbrainzTokenizer.ACRONYM];
     private static final String ALPHANUMANDPUNCTUATION
-            = org.musicbrainz.search.analysis.StandardTokenizer.TOKEN_TYPES[org.musicbrainz.search.analysis.StandardTokenizer.ALPHANUMANDPUNCTUATION];
+            = MusicbrainzTokenizer.TOKEN_TYPES[MusicbrainzTokenizer.ALPHANUMANDPUNCTUATION];
 
     // this filters uses attribute type
     private TypeAttribute       typeAtt;

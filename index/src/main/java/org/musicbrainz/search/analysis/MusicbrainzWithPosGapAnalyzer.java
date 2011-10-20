@@ -33,11 +33,11 @@ package org.musicbrainz.search.analysis;
  * Sets position gap of one for field, should only be used when field is added
  * multiple times within one document
  */
-public class StandardUnaccentWithPosGapAnalyzer extends StandardUnaccentAnalyzer {
+public class MusicbrainzWithPosGapAnalyzer extends MusicbrainzAnalyzer {
 
 
 
-    public StandardUnaccentWithPosGapAnalyzer() {
+    public MusicbrainzWithPosGapAnalyzer() {
         super();
     }
 

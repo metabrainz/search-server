@@ -32,8 +32,8 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
-import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
-import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -41,9 +41,9 @@ import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 public enum ArtistIndexField implements IndexField {
 
 	ID			("_id",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentAnalyzer()),
+    ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzAnalyzer()),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     BEGIN		("begin",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
@@ -51,7 +51,7 @@ public enum ArtistIndexField implements IndexField {
     TYPE		("type",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     GENDER      ("gender",      Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     COUNTRY     ("country",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
     IPI         ("ipi",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ;

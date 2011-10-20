@@ -4,7 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
-import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
 
 /**
@@ -14,11 +14,11 @@ public enum RecordingIndexField implements IndexField {
 
     ID                  ("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),	
     RECORDING_ID        ("rid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    RECORDING           ("recording",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    RECORDING           ("recording",		Field.Store.NO,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     TRACK_ARTIST_CREDIT ("trackartistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID			("reid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
@@ -34,7 +34,7 @@ public enum RecordingIndexField implements IndexField {
     POSITION            ("position",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     ISRC    		    ("isrc",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     NUM_TRACKS_RELEASE  ("tracksrelease",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
     PUID    		    ("puid",		    Field.Store.YES,	Field.Index.NO),
     RELEASE_DATE	    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

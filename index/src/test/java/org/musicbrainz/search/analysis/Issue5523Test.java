@@ -50,7 +50,7 @@ public class Issue5523Test extends TestCase {
 
     public void testChineseHandling() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -73,7 +73,7 @@ public class Issue5523Test extends TestCase {
 
     public void testChineseHandling2() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -96,7 +96,7 @@ public class Issue5523Test extends TestCase {
 
     public void testChineseHandling3() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);

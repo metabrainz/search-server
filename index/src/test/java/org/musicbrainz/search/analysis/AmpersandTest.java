@@ -2,7 +2,6 @@ package org.musicbrainz.search.analysis;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
@@ -13,8 +12,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.LuceneVersion;
 
-import java.io.StringReader;
-
 
 public class AmpersandTest extends TestCase {
 
@@ -24,7 +21,7 @@ public class AmpersandTest extends TestCase {
      */
     public void testAmpersandSearching() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);

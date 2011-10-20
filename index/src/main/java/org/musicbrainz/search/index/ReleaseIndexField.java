@@ -4,7 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
-import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
 
@@ -15,9 +15,9 @@ public enum ReleaseIndexField implements IndexField {
 	
     ID				    ("_id",		    	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),	
     ARTIST_ID		    ("arid",			Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,	    Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAME         ("artistname",		Field.Store.NO,	    Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	    Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    ARTIST              ("artist",          Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RELEASE			    ("release",		    Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
@@ -27,7 +27,7 @@ public enum ReleaseIndexField implements IndexField {
     NUM_MEDIUMS         ("mediums",	        Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     BARCODE			    ("barcode",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
     CATALOG_NO		    ("catno",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
+    LABEL			    ("label",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     LABEL_ID            ("laid",            Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     DATE			    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),

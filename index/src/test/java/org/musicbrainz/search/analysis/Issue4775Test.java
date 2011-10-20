@@ -23,7 +23,7 @@ public class Issue4775Test extends TestCase {
 
     public void testApostropheHandling() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -70,7 +70,7 @@ public class Issue4775Test extends TestCase {
 
     public void testTokenizeApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -84,8 +84,8 @@ public class Issue4775Test extends TestCase {
 
     public void testFilterApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
-        StandardFilter filter = new StandardFilter(tokenizer);
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
+        MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
         assertTrue(filter.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -99,7 +99,7 @@ public class Issue4775Test extends TestCase {
 
     public void testTokenizeDoubleApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -113,8 +113,8 @@ public class Issue4775Test extends TestCase {
 
     public void testFilterDoubleApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
-        StandardFilter filter = new StandardFilter(tokenizer);
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
+        MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
         assertTrue(filter.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -128,7 +128,7 @@ public class Issue4775Test extends TestCase {
 
     public void testDashHandling() throws Exception {
 
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -159,7 +159,7 @@ public class Issue4775Test extends TestCase {
      * @throws Exception
      */
     public void testAcronymHandling() throws Exception {
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);

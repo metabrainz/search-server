@@ -16,7 +16,7 @@ import org.musicbrainz.search.LuceneVersion;
 
 public class Issue1446Test extends TestCase {
 
-    private Analyzer analyzer = new StandardUnaccentAnalyzer();
+    private Analyzer analyzer = new MusicbrainzAnalyzer();
     private RAMDirectory dir = new RAMDirectory();
 
     public Issue1446Test(String testName) {
