@@ -41,7 +41,6 @@ import java.util.*;
 
 public class ReleaseIndex extends DatabaseIndex {
 
-    public static String UNKNOWN = "unknown";
 
     private StopWatch labelClock = new StopWatch();
     private StopWatch mediumClock = new StopWatch();
@@ -305,7 +304,7 @@ public class ReleaseIndex extends DatabaseIndex {
         if (country != null) {
             doc.addField(ReleaseIndexField.COUNTRY, country);
         } else {
-            doc.addField(ReleaseIndexField.COUNTRY, UNKNOWN);
+            doc.addField(ReleaseIndexField.COUNTRY, Index.UNKNOWN);
         }
         doc.addNonEmptyField(ReleaseIndexField.DATE,
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));

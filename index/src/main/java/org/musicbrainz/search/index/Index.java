@@ -27,6 +27,9 @@ import org.apache.lucene.search.Similarity;
 
 public interface Index {
 
+    //Used to index something as Unknwon
+    public static String UNKNOWN = "unknown";
+
     /**
      * The common name of the index
      *

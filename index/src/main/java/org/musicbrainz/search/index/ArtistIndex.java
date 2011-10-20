@@ -179,7 +179,7 @@ public class ArtistIndex extends DatabaseIndex {
         if (type != null) {
             doc.addField(ArtistIndexField.TYPE, type);
         } else {
-            doc.addField(ArtistIndexField.TYPE, ArtistType.UNKNOWN.getName());
+            doc.addField(ArtistIndexField.TYPE, Index.UNKNOWN);
         }
 
         doc.addNonEmptyField(ArtistIndexField.BEGIN,
@@ -193,7 +193,7 @@ public class ArtistIndex extends DatabaseIndex {
         if (country != null) {
             doc.addField(ArtistIndexField.COUNTRY, country);
         } else {
-            doc.addField(ArtistIndexField.COUNTRY, ArtistType.UNKNOWN.getName());
+            doc.addField(ArtistIndexField.COUNTRY, Index.UNKNOWN);
         }
 
         String gender = rs.getString("gender");
@@ -201,7 +201,7 @@ public class ArtistIndex extends DatabaseIndex {
             doc.addField(ArtistIndexField.GENDER, gender);
         } else {
             if( (type!=null) && (type.equalsIgnoreCase(ArtistType.PERSON.getName())) ) {
-                doc.addField(ArtistIndexField.GENDER, ArtistType.UNKNOWN.getName());
+                doc.addField(ArtistIndexField.GENDER, Index.UNKNOWN);
             }
         }
 

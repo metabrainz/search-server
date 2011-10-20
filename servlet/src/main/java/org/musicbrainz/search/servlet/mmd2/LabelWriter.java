@@ -35,6 +35,7 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
+import org.musicbrainz.search.servlet.SearchServer;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -53,7 +54,7 @@ public class LabelWriter extends ResultsWriter {
             Label label = of.createLabel();
             label.setId(doc.get(LabelIndexField.LABEL_ID));
             String type = doc.get(LabelIndexField.TYPE);
-            if(type!=null) {
+            if ((type != null) && !(type.equalsIgnoreCase(SearchServer.UNKNOWN))){
                 label.setType(type);
             }
             label.setScore(String.valueOf((int)(result.score * 100)));
@@ -70,9 +71,8 @@ public class LabelWriter extends ResultsWriter {
             }
 
             String countryCode = doc.get(LabelIndexField.COUNTRY);
-            if (countryCode != null) {
+            if ((countryCode != null) && !(countryCode.equalsIgnoreCase(SearchServer.UNKNOWN))){
                 label.setCountry(countryCode.toUpperCase(Locale.US));
-
             }
 
             String sortname = doc.get(LabelIndexField.SORTNAME);

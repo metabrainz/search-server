@@ -53,6 +53,8 @@ import java.util.logging.Logger;
 
 public abstract class SearchServer {
 
+    public final static String UNKNOWN = "unknown";
+
     protected Analyzer analyzer;
     protected ResultsWriter resultsWriter;
     protected Mmd1XmlWriter mmd1XmlWriter;

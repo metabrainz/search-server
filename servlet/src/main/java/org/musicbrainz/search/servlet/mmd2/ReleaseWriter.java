@@ -37,6 +37,7 @@ import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
+import org.musicbrainz.search.servlet.SearchServer;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -71,7 +72,7 @@ public class ReleaseWriter extends ResultsWriter {
             String type = doc.get(ReleaseIndexField.TYPE);
             ReleaseGroup rg = of.createReleaseGroup();
             release.setReleaseGroup(rg);
-            if (type != null) {
+            if ((type != null) && !(type.equalsIgnoreCase(SearchServer.UNKNOWN))){
                 release.getReleaseGroup().setType(type);
             }
 
@@ -86,7 +87,8 @@ public class ReleaseWriter extends ResultsWriter {
             }
 
             String country = doc.get(ReleaseIndexField.COUNTRY);
-            if (country != null) {
+            if ((country != null) && !(country.equalsIgnoreCase(SearchServer.UNKNOWN))){
+
                 release.setCountry(country);
             }
 

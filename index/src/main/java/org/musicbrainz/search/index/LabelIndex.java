@@ -38,8 +38,6 @@ import java.util.regex.Pattern;
 
 public class LabelIndex extends DatabaseIndex {
 
-    public static String UNKNOWN = "unknown";
-
     public static final String INDEX_NAME = "label";
 
     private static final String DELETED_LABEL_MBID = "f43e252d-9ebf-4e8e-bba8-36d080756cc1";
@@ -189,7 +187,7 @@ public class LabelIndex extends DatabaseIndex {
         if (country != null) {
             doc.addField(LabelIndexField.COUNTRY, country);
         } else {
-            doc.addField(LabelIndexField.COUNTRY, UNKNOWN);
+            doc.addField(LabelIndexField.COUNTRY, Index.UNKNOWN);
         }
 
         doc.addNonEmptyField(LabelIndexField.BEGIN,

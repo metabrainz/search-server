@@ -331,6 +331,23 @@ public class FindLabelTest extends TestCase {
         assertTrue(output.contains("dance</name>"));
     }
 
+    public void testOutputAsXmlWithUnknownCountry() throws Exception {
+
+            Results res = ss.searchLucene("laid:a539bb1e-f2e1-4b45-9db8-8053841e7503", 0, 1);
+            ResultsWriter writer = new LabelWriter();
+            StringWriter sw = new StringWriter();
+            PrintWriter pr = new PrintWriter(sw);
+            writer.write(pr, res);
+            pr.close();
+            String output = sw.toString();
+            System.out.println("Xml is" + output);
+            assertTrue(output.contains("count=\"1\""));
+            assertTrue(output.contains("offset=\"0\""));
+            assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
+            assertTrue(output.contains("id=\"a539bb1e-f2e1-4b45-9db8-8053841e7503\""));
+            assertFalse(output.contains("<country>"));
+        }
+
     /**
      * @throws Exception exception
      */
