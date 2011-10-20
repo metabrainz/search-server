@@ -56,10 +56,16 @@ public class IssueSearch33Test extends TestCase {
 
     public void testGetNoMatchWithStandardAnalyzer() throws Exception {
 
-        //Show no token generated
+        //Show no token generated with Lucene Standard Tokenizer
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
+            Tokenizer tokenizer = new org.apache.lucene.analysis.standard.StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
             assertFalse(tokenizer.incrementToken());
+        }
+
+        //But token is generated with Musicbrainz modification gramar
+        {
+            Tokenizer tokenizer = new org.musicbrainz.search.analysis.StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
+            assertTrue(tokenizer.incrementToken());
         }
 
         Analyzer analyzer = new StandardUnaccentAnalyzer();
@@ -75,89 +81,44 @@ public class IssueSearch33Test extends TestCase {
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!!!"));
-            assertEquals(0, searcher.search(q,10).totalHits);
-        }
-
-    }
-
-    public void testGetMatchWithLabelNameAnalyzer() throws Exception {
-
-
-        //Show token generated
-        {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ApostropheApostropheApostrophe"));
-            assertTrue(tokenizer.incrementToken());
-            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
-            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
-            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
-            assertEquals("<ALPHANUM>", type.type());
-            assertEquals("ApostropheApostropheApostrophe", new String(term.buffer(),0,term.length()));
-            assertEquals(0, offset.startOffset());
-            assertEquals(30, offset.endOffset());
-        }
-
-        Analyzer analyzer = new ArtistNameAnalyzer();
-        RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
-        IndexWriter writer = new IndexWriter(dir, writerConfig);
-        Document doc = new Document();
-        doc.add(new Field("name", "!!!", Field.Store.YES, Field.Index.ANALYZED));
-
-        writer.addDocument(doc);
-        writer.close();
-
-        IndexSearcher searcher = new IndexSearcher(dir,true);
-        {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!!!"));
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
     }
 
-
-    public void testGetNoMatchWithStandardAnalyzer2() throws Exception {
-
-        //Show no token generated
-        {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@.*!%"));
-            assertFalse(tokenizer.incrementToken());
-        }
-
-        Analyzer analyzer = new StandardUnaccentAnalyzer();
-        RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
-        IndexWriter writer = new IndexWriter(dir, writerConfig);
-        Document doc = new Document();
-        doc.add(new Field("name", "!\"@*!%", Field.Store.YES, Field.Index.ANALYZED));
-        writer.addDocument(doc);
-        writer.close();
-
-        IndexSearcher searcher = new IndexSearcher(dir,true);
-        {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@*!%"));
-            assertEquals(0, searcher.search(q,10).totalHits);
-        }
-
-    }
-
-    public void testGetMatchWithLabelNameAnalyzer2() throws Exception {
+    public void testGetMatchofPunctuationOnlyField() throws Exception {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ApostropheDoubleQuoteAtAsteriskExclamationPercentage"));
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@*!%"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
-            assertEquals("<ALPHANUM>", type.type());
-            assertEquals("ApostropheDoubleQuoteAtAsteriskExclamationPercentage", new String(term.buffer(),0,term.length()));
+            assertEquals("<CONTROLANDPUNCTUATION>", type.type());
+            assertEquals("!\"@*!%", new String(term.buffer(),0,term.length()));
             assertEquals(0, offset.startOffset());
-            assertEquals(52, offset.endOffset());
+            assertEquals(6, offset.endOffset());
             assertFalse(tokenizer.incrementToken());
         }
 
+        //Another example to show is kept intact
+        {
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("♠!"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<CONTROLANDPUNCTUATION>", type.type());
+            assertEquals("♠!", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(2, offset.endOffset());
+            assertFalse(tokenizer.incrementToken());
+        }
+
+
         //Analyse field
-        Analyzer analyzer = new LabelNameAnalyzer();
+        Analyzer analyzer = new StandardUnaccentAnalyzer();
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
@@ -172,7 +133,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("name", tr.term().field());
         assertEquals(1, tr.docFreq());
         assertEquals("name", tr.term().field());
-        assertEquals("apostrophedoublequoteatasteriskexclamationpercentage", tr.term().text());
+        assertEquals("!\"@*!%", tr.term().text());
         assertFalse(tr.next());
 
 
@@ -184,4 +145,244 @@ public class IssueSearch33Test extends TestCase {
         }
 
     }
+
+    public void testNormalBehaviourWhenPunctuationAndLetterField() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("fred!!"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+            assertEquals("fred!!", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(6, offset.endOffset());
+            assertFalse(tokenizer.incrementToken());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "fred!!", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("fred", tr.term().text());
+        assertFalse(tr.next());
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("fred"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
+
+    public void testJavaThaiDefinition()
+    {
+        assertTrue(Character.isLetterOrDigit('ก'));
+        System.out.println(new Integer(new Character('♠')).toString());
+    }
+
+    public void testGidBehaviour() throws Exception {
+
+        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
+        assertTrue(tokenizer.incrementToken());
+        CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+        TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+        OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+        assertEquals("<NUM>", type.type());
+        assertEquals("bdb24cb5-404b-4f60-bba4-7b730325ae47", new String(term.buffer(),0,term.length()));
+        assertEquals(0, offset.startOffset());
+        assertEquals(36, offset.endOffset());
+        assertFalse(tokenizer.incrementToken());
+
+        //Analyse field
+        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "bdb24cb5-404b-4f60-bba4-7b730325ae47", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("bdb24cb5-404b-4f60-bba4-7b730325ae47", tr.term().text());
+        assertFalse(tr.next());
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer)
+                    .parse(QueryParser.escape("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
+
+    public void testNormalBehaviourWhenPunctuationAndThaiLetterField() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("กข!!"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+            assertEquals("กข!!", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(4, offset.endOffset());
+            assertFalse(tokenizer.incrementToken());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "กข!!", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("กข", tr.term().text());
+        assertFalse(tr.next());
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("กข"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
+
+
+    public void testGetMatchMultipleWordPunctuationOnly() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* !%"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<CONTROLANDPUNCTUATION>", type.type());
+            assertEquals("!\"@*", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(4, offset.endOffset());
+            assertTrue(tokenizer.incrementToken());
+            assertEquals("<CONTROLANDPUNCTUATION>", type.type());
+            assertEquals("!%", new String(term.buffer(),0,term.length()));
+            assertEquals(5, offset.startOffset());
+            assertEquals(7, offset.endOffset());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "!\"@* !%", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("!\"@*", tr.term().text());
+        assertTrue(tr.next());
+        assertEquals("name", tr.term().field());
+        assertEquals("!%", tr.term().text());
+
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
+
+    public void testGetMatchMultipleWordPunctuationOnlyForFirstWord() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* fred"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<CONTROLANDPUNCTUATION>", type.type());
+            assertEquals("!\"@*", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(4, offset.endOffset());
+            assertTrue(tokenizer.incrementToken());
+            assertEquals("<ALPHANUM>", type.type());
+            assertEquals("fred", new String(term.buffer(),0,term.length()));
+            assertEquals(5, offset.startOffset());
+            assertEquals(9, offset.endOffset());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new StandardUnaccentAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "!\"@* fred", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("!\"@*", tr.term().text());
+        assertTrue(tr.next());
+        assertEquals("name", tr.term().field());
+        assertEquals("fred", tr.term().text());
+
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
+
 }

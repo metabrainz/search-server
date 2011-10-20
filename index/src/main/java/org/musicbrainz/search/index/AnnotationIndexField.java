@@ -20,6 +20,7 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 
 /**
@@ -27,8 +28,8 @@ import org.apache.lucene.document.Field;
  */
 public enum AnnotationIndexField implements IndexField {
 
-	ID		("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
-	ENTITY	("entity",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
+	ID		("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	ENTITY	("entity",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	NAME	("name",	Field.Store.YES,	Field.Index.ANALYZED),
 	TYPE	("type",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
 	TEXT	("text",	Field.Store.YES,	Field.Index.ANALYZED);

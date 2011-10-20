@@ -31,14 +31,14 @@ import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
 %{
 
-public static final int ALPHANUM          = StandardTokenizer.ALPHANUM;
-public static final int APOSTROPHE        = StandardTokenizer.APOSTROPHE;
-public static final int ACRONYM           = StandardTokenizer.ACRONYM;
-public static final int COMPANY           = StandardTokenizer.COMPANY;
-public static final int EMAIL             = StandardTokenizer.EMAIL;
-public static final int HOST              = StandardTokenizer.HOST;
-public static final int NUM               = StandardTokenizer.NUM;
-public static final int CJ                = StandardTokenizer.CJ;
+public static final int ALPHANUM                          = StandardTokenizer.ALPHANUM;
+public static final int APOSTROPHE                        = StandardTokenizer.APOSTROPHE;
+public static final int ACRONYM                           = StandardTokenizer.ACRONYM;
+public static final int CONTROLANDPUNCTUATION             = StandardTokenizer.CONTROLANDPUNCTUATION;
+public static final int ALPHANUMANDPUNCTUATION            = StandardTokenizer.ALPHANUMANDPUNCTUATION;
+public static final int HOST                              = StandardTokenizer.HOST;
+public static final int NUM                               = StandardTokenizer.NUM;
+public static final int CJ                                = StandardTokenizer.CJ;
 /**
  * @deprecated this solves a bug where HOSTs that end with '.' are identified
  *             as ACRONYMs. It is deprecated and will be removed in the next
@@ -69,10 +69,25 @@ final void getText(TermAttribute t) {
 
 %}
 
+
+//Apparently LETTER doesnt contain Thai characters (this may no longer be true)
 THAI       = [\u0E00-\u0E59]
 
-// basic word: a sequence of digits & letters (includes Thai to enable ThaiAnalyzer to function)
+// Basic word: a sequence of digits & letters (includes Thai to enable ThaiAnalyzer to function)
 ALPHANUM   = ({LETTER}|{THAI}|[:digit:])+
+
+//All Normal Chars we do Match and want to keep plus stuff we never want to match
+LD = {ALPHANUM} | {CJ} | {WHITESPACE}
+
+// Everything except LD, Special chars we eventually filter out unless the token is only made up of these characters
+CONTROLANDPUNC     =  !(![^] | {LD})
+
+//MUST CONTAIN Alphanumeric and Punctuation Characters
+ALPHANUMANDPUNCTUATION   = ({ALPHANUM}|{CONTROLANDPUNC})*{CONTROLANDPUNC}{ALPHANUM}({ALPHANUM}|{CONTROLANDPUNC})* |
+                           ({ALPHANUM}|{CONTROLANDPUNC})*{ALPHANUM}{CONTROLANDPUNC}({ALPHANUM}|{CONTROLANDPUNC})*
+
+//Must contain only punctuation characters
+CONTROLANDPUNCTUATION    =  ({CONTROLANDPUNC})+
 
 // internal apostrophes: O'Reilly, you're, O'Reilly's
 // use a post-filter to remove possessives
@@ -83,12 +98,6 @@ APOSTROPHE =  {ALPHA} ("'" {ALPHA})+
 ACRONYM    =  {LETTER} ("." {LETTER})+ (".")?
 
 ACRONYM_DEP	= {ALPHANUM} "." ({ALPHANUM} ".")+
-
-// company names like AT&T and Excite@Home.
-COMPANY    =  {ALPHA} ("&"|"@") {ALPHA}
-
-// email addresses
-EMAIL      =  {ALPHANUM} (("."|"-"|"_") {ALPHANUM})* "@" {ALPHANUM} (("."|"-") {ALPHANUM})+
 
 // hostname
 HOST       =  {ALPHANUM} ((".") {ALPHANUM})+
@@ -116,19 +125,25 @@ LETTER     = !(![:letter:]|{CJ})
 // Chinese  (but NOT Korean or Japanese, which is included in [:letter:])
 CJ         = [\u3100-\u312f\u3300-\u337f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]
 
+
+
+
 WHITESPACE = \r\n | [ \r\n\t\f]
 
 %%
 
-{ALPHANUM}                                                     { return ALPHANUM; }
-{APOSTROPHE}                                                   { return APOSTROPHE; }
+
 {ACRONYM}                                                      { return ACRONYM; }
-{COMPANY}                                                      { return COMPANY; }
-{EMAIL}                                                        { return EMAIL; }
-{HOST}                                                         { return HOST; }
-{NUM}                                                          { return NUM; }
-{CJ}                                                           { return CJ; }
 {ACRONYM_DEP}                                                  { return ACRONYM_DEP; }
+{HOST}                                                         { return HOST; }
+{APOSTROPHE}                                                   { return APOSTROPHE; }
+{NUM}                                                          { return NUM; }
+{ALPHANUMANDPUNCTUATION}                                       { return ALPHANUMANDPUNCTUATION; }
+{ALPHANUM}                                                     { return ALPHANUM; }
+{CONTROLANDPUNCTUATION}                                        { return CONTROLANDPUNCTUATION; }
+{CJ}                                                           { return CJ; }
+
+
 
 /** Ignore the rest */
 . | {WHITESPACE}                                               { /* ignore */ }

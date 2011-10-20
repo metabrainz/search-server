@@ -59,14 +59,14 @@ public final class StandardTokenizer extends Tokenizer {
   /** A private instance of the JFlex-constructed scanner */
   private final StandardTokenizerImpl scanner;
 
-  public static final int ALPHANUM          = 0;
-  public static final int APOSTROPHE        = 1;
-  public static final int ACRONYM           = 2;
-  public static final int COMPANY           = 3;
-  public static final int EMAIL             = 4;
-  public static final int HOST              = 5;
-  public static final int NUM               = 6;
-  public static final int CJ                = 7;
+  public static final int ALPHANUM                          = 0;
+  public static final int APOSTROPHE                        = 1;
+  public static final int ACRONYM                           = 2;
+  public static final int CONTROLANDPUNCTUATION             = 3;
+  public static final int ALPHANUMANDPUNCTUATION            = 4;
+  public static final int HOST                              = 5;
+  public static final int NUM                               = 6;
+  public static final int CJ                                = 7;
 
   /**
    * @deprecated this solves a bug where HOSTs that end with '.' are identified
@@ -79,8 +79,8 @@ public final class StandardTokenizer extends Tokenizer {
     "<ALPHANUM>",
     "<APOSTROPHE>",
     "<ACRONYM>",
-    "<COMPANY>",
-    "<EMAIL>",
+    "<CONTROLANDPUNCTUATION>",
+    "<ALPHANUMANDPUNCTUATION>",
     "<HOST>",
     "<NUM>",
     "<CJ>",

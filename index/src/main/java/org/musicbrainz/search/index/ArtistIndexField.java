@@ -31,8 +31,8 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
-import org.musicbrainz.search.analysis.ArtistNameAnalyzer;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.StandardUnaccentAnalyzer;
 import org.musicbrainz.search.analysis.StandardUnaccentWithPosGapAnalyzer;
 
 /**
@@ -43,7 +43,7 @@ public enum ArtistIndexField implements IndexField {
 	ID			("_id",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentWithPosGapAnalyzer()),
     ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED, new ArtistNameAnalyzer()),
+    ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED, new StandardUnaccentAnalyzer()),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     BEGIN		("begin",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
@@ -55,7 +55,8 @@ public enum ArtistIndexField implements IndexField {
     TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
     IPI         ("ipi",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ;
-    
+
+
     private String name;
 	private Field.Store store;
     private Field.Index index;

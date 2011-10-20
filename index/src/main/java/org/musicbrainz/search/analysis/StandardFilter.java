@@ -26,8 +26,12 @@ public class StandardFilter extends TokenFilter {
         typeAtt = (TypeAttribute) addAttribute(TypeAttribute.class);
     }
 
-    private static final String APOSTROPHE_TYPE = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.APOSTROPHE];
-    private static final String ACRONYM_TYPE = StandardTokenizer.TOKEN_TYPES[StandardTokenizer.ACRONYM];
+    private static final String APOSTROPHE_TYPE
+            = org.musicbrainz.search.analysis.StandardTokenizer.TOKEN_TYPES[org.musicbrainz.search.analysis.StandardTokenizer.APOSTROPHE];
+    private static final String ACRONYM_TYPE
+            = org.musicbrainz.search.analysis.StandardTokenizer.TOKEN_TYPES[org.musicbrainz.search.analysis.StandardTokenizer.ACRONYM];
+    private static final String ALPHANUMANDPUNCTUATION
+            = org.musicbrainz.search.analysis.StandardTokenizer.TOKEN_TYPES[org.musicbrainz.search.analysis.StandardTokenizer.ALPHANUMANDPUNCTUATION];
 
     // this filters uses attribute type
     private TypeAttribute       typeAtt;
@@ -65,8 +69,20 @@ public class StandardFilter extends TokenFilter {
                 }
             }
             termAtt.setLength(upto);
+        } else if (type == ALPHANUMANDPUNCTUATION) {      // remove no alpha numerics
+            int upto = 0;
+            for (int i = 0; i < bufferLength; i++) {
+                char c = buffer[i];
+                if (!Character.isLetterOrDigit(c) )
+                {
+                    //Do Nothing, (drop the character)
+                }
+                else {
+                    buffer[upto++] = c;
+                }
+            }
+            termAtt.setLength(upto);
         }
-
         return true;
     }
 }

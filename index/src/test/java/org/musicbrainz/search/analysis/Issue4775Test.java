@@ -2,6 +2,10 @@ package org.musicbrainz.search.analysis;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
@@ -11,6 +15,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.LuceneVersion;
+
+import java.io.StringReader;
 
 
 public class Issue4775Test extends TestCase {
@@ -60,6 +66,64 @@ public class Issue4775Test extends TestCase {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("johns");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
+    }
+
+    public void testTokenizeApostrophe() throws Exception {
+
+        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
+        assertTrue(tokenizer.incrementToken());
+        CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+        TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+        OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+        assertEquals("<APOSTROPHE>", type.type());
+        assertEquals("There's", new String(term.buffer(),0,term.length()));
+        assertEquals(0, offset.startOffset());
+        assertEquals(7, offset.endOffset());
+        assertFalse(tokenizer.incrementToken());
+    }
+
+    public void testFilterApostrophe() throws Exception {
+
+        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
+        StandardFilter filter = new StandardFilter(tokenizer);
+        assertTrue(filter.incrementToken());
+        CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+        TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+        OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+        assertEquals("<APOSTROPHE>", type.type());
+        assertEquals("Theres", new String(term.buffer(),0,term.length()));
+        assertEquals(0, offset.startOffset());
+        assertEquals(7, offset.endOffset());
+        assertFalse(tokenizer.incrementToken());
+    }
+
+    public void testTokenizeDoubleApostrophe() throws Exception {
+
+        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
+        assertTrue(tokenizer.incrementToken());
+        CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+        TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+        OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+        assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+        assertEquals("it's'", new String(term.buffer(),0,term.length()));
+        assertEquals(0, offset.startOffset());
+        assertEquals(5, offset.endOffset());
+        assertFalse(tokenizer.incrementToken());
+    }
+
+    public void testFilterDoubleApostrophe() throws Exception {
+
+        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
+        StandardFilter filter = new StandardFilter(tokenizer);
+        assertTrue(filter.incrementToken());
+        CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+        TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+        OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+        assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+        assertEquals("its", new String(term.buffer(),0,term.length()));
+        assertEquals(0, offset.startOffset());
+        assertEquals(5, offset.endOffset());
+        assertFalse(tokenizer.incrementToken());
     }
 
     public void testDashHandling() throws Exception {

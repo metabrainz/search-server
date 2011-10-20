@@ -18,20 +18,6 @@ import java.io.StringReader;
 
 public class AmpersandTest extends TestCase {
 
-    /**
-     * Show tokenizer on its own removes ampersands
-     */
-    public void testAmpersandTokenizing() throws Exception {
-
-        int count = 0;
-
-        Tokenizer tokenizer = new StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("Platinum & Gold"));
-        while (tokenizer.incrementToken()) {
-            count++;
-        }
-        assertEquals(2, count);
-
-    }
 
     /**
      * Test filter is being used for indexing and searching , and can search either way
