@@ -205,7 +205,13 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE, release.getReleaseName());
                 doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
             }
+            doc.addNumericField(ReleaseGroupIndexField.NUM_RELEASES, releases.get(id).size());
         }
+        else {
+            //No releases in releasegroup
+            doc.addNumericField(ReleaseGroupIndexField.NUM_RELEASES, 0);
+        }
+
 
         ArtistCreditWrapper ac = artistCredits.get(id);
         if(ac!=null) {

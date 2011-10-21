@@ -26,6 +26,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 
 import java.sql.Statement;
@@ -274,6 +275,27 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    public void testIndexReleaseGroupNumReleases() throws Exception {
+
+        addReleaseGroupOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            TermEnum tr = ir.terms(new Term(ReleaseGroupIndexField.NUM_RELEASES.getName(), ""));
+            assertEquals(ReleaseGroupIndexField.NUM_RELEASES.getName(), tr.term().field());
+            assertEquals(1, tr.docFreq());
+            assertEquals(1, NumericUtils.prefixCodedToInt(tr.term().text()));
+            tr.next();
+        }
+        ir.close();
+
+
+    }
+
     public void testIndexReleaseGroupSortname() throws Exception {
 
         addReleaseGroupOne();
@@ -293,7 +315,6 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
 
     }
-
 
     /**
      * Checks record with type = null is set to unknown
