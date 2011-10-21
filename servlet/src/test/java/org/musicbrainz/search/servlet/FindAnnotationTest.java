@@ -34,7 +34,7 @@ public class FindAnnotationTest extends TestCase {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
-        //A complete Annotation entry
+        //A complete Release Annotation entry
         {
             MbDocument doc = new MbDocument();
             doc.addField(AnnotationIndexField.TYPE, AnnotationType.RELEASE.getName());
@@ -44,17 +44,82 @@ public class FindAnnotationTest extends TestCase {
             writer.addDocument(doc.getLuceneDocument());
         }
 
+        //A complete Artist Annotation entry
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(AnnotationIndexField.TYPE, AnnotationType.ARTIST.getName());
+            doc.addField(AnnotationIndexField.NAME, "Bjork");
+            doc.addField(AnnotationIndexField.ENTITY, "123456qa-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.TEXT, "Icelandic");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        //A complete Recording Annotation entry
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(AnnotationIndexField.TYPE, AnnotationType.RECORDING.getName());
+            doc.addField(AnnotationIndexField.NAME, "Give my love to Kevin");
+            doc.addField(AnnotationIndexField.ENTITY, "bdb24cdd-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.TEXT, "Single");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        //A complete Label Annotation entry
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(AnnotationIndexField.TYPE, AnnotationType.LABEL.getName());
+            doc.addField(AnnotationIndexField.NAME, "Reception Records");
+            doc.addField(AnnotationIndexField.ENTITY, "bdb32cb5-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.TEXT, "Setup by Wedding Present, released a few records by others");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        //A complete Release Group Annotation entry
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(AnnotationIndexField.TYPE, AnnotationType.RELEASE_GROUP.getName());
+            doc.addField(AnnotationIndexField.NAME, "3 Songs");
+            doc.addField(AnnotationIndexField.ENTITY, "aaa24cb5-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.TEXT, "Also known as Corduroy");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        //A complete Work Annotation entry
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(AnnotationIndexField.TYPE, AnnotationType.WORK.getName());
+            doc.addField(AnnotationIndexField.NAME, "Song 2");
+            doc.addField(AnnotationIndexField.ENTITY, "DDDD24cb5-404b-4f60-bba4-7b730325ae47");
+            doc.addField(AnnotationIndexField.TEXT, "There was no Song 1");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
         writer.close();
         ss = new AnnotationSearch(new IndexSearcher(ramDir, true));
     }
 
-    public void testSearchByTypeNoMatch() throws Exception {
-        Results res = ss.searchLucene("type:artist", 0, 10);
-        assertEquals(0, res.totalHits);
+    public void testSearchByTypeRelease() throws Exception {
+        Results res = ss.searchLucene("type:release", 0, 10);
+        assertEquals(1, res.totalHits);
     }
 
-    public void testSearchByType() throws Exception {
-        Results res = ss.searchLucene("type:release", 0, 10);
+    public void testSearchByTypeArtist() throws Exception {
+        Results res = ss.searchLucene("type:artist", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByTypeReleaseGroup() throws Exception {
+        Results res = ss.searchLucene("type:release-group", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByTypeRecording() throws Exception {
+        Results res = ss.searchLucene("type:recording", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByTypeWork() throws Exception {
+        Results res = ss.searchLucene("type:work", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
