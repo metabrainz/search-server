@@ -44,10 +44,9 @@ import java.math.BigInteger;
 
 public class CDStubWriter extends ResultsWriter {
 
-    public Metadata write(Results results) throws IOException {
-        ObjectFactory of = new ObjectFactory();
+    public void write(Metadata metadata, Results results) throws IOException {
 
-        Metadata metadata = of.createMetadata();
+        ObjectFactory of = new ObjectFactory();
         CdstubList cdstubList = of.createCdstubList();
 
         for (Result result : results.results) {
@@ -112,8 +111,5 @@ public class CDStubWriter extends ResultsWriter {
         cdstubList.setCount(BigInteger.valueOf(results.totalHits));
         cdstubList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setCdstubList(cdstubList);
-        return metadata;
     }
-
-
 }

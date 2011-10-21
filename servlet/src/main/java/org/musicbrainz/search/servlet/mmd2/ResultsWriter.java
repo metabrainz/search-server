@@ -34,6 +34,7 @@ import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONMarshaller;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.musicbrainz.mmd2.Metadata;
+import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.servlet.ErrorMessage;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.SearchServerServlet;
@@ -79,6 +80,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
         }
     }
 
+
     /**
      * Put results into an XML representation class whereby it can be manipulated further or
      * converted to an output stream
@@ -87,8 +89,20 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
      * @return
      * @throws java.io.IOException
      */
-    public abstract Metadata write(Results results) throws IOException;
+    public Metadata write(Results results) throws IOException {
+        ObjectFactory of = new ObjectFactory();
+        Metadata metadata = of.createMetadata();
+        write(metadata, results);
+        return metadata;
+    }
 
+    /**
+     *
+     * @param metadata
+     * @param results
+     * @throws IOException
+     */
+    public abstract void write(Metadata metadata, Results results) throws IOException;
 
     /**
      * Write the results to provider writer as Xml
@@ -139,5 +153,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
             return null;
         }
     }
+
+
 
 }

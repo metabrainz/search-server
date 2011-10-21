@@ -48,10 +48,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-public abstract class SearchServer {
+public abstract class SearchServer implements Callable<Results> {
+
+    protected String query;
+    protected int    offset;
+    protected int    limit;
 
     public final static String UNKNOWN = "unknown";
 
@@ -150,6 +155,18 @@ public abstract class SearchServer {
         else {
             return getXmlWriter();
         }
+    }
+
+    /**
+     * Use this for All Searches run on an Executor
+     *
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    public Results call() throws IOException, ParseException
+    {
+        return search(query, offset, limit);
     }
 
     /**

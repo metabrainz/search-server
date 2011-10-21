@@ -43,10 +43,9 @@ import java.util.Locale;
 
 public class LabelWriter extends ResultsWriter {
 
-    public Metadata write(Results results) throws IOException {
-        ObjectFactory of = new ObjectFactory();
+    public void write(Metadata metadata, Results results) throws IOException {
 
-        Metadata metadata = of.createMetadata();
+        ObjectFactory of = new ObjectFactory();
         LabelList labelList = of.createLabelList();
 
         for (Result result : results.results) {
@@ -135,6 +134,5 @@ public class LabelWriter extends ResultsWriter {
         labelList.setCount(BigInteger.valueOf(results.totalHits));
         labelList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setLabelList(labelList);
-        return metadata;
     }
 }

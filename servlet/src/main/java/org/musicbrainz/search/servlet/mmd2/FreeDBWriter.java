@@ -44,10 +44,9 @@ import java.math.BigInteger;
 
 public class FreeDBWriter extends ResultsWriter {
 
-    public Metadata write(Results results) throws IOException {
-        ObjectFactory of = new ObjectFactory();
+    public void write(Metadata metadata, Results results) throws IOException {
 
-        Metadata metadata = of.createMetadata();
+        ObjectFactory of = new ObjectFactory();
         FreedbDiscList freeDBList = of.createFreedbDiscList();
 
         for (Result result : results.results) {
@@ -70,8 +69,5 @@ public class FreeDBWriter extends ResultsWriter {
         freeDBList.setCount(BigInteger.valueOf(results.totalHits));
         freeDBList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setFreedbDiscList(freeDBList);
-        return metadata;
     }
-
-
 }

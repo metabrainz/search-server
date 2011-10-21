@@ -42,12 +42,8 @@ import java.math.BigInteger;
 
 public class TagWriter extends ResultsWriter {
 
-
-    public Metadata write(Results results) throws IOException {
-
+    public void write(Metadata metadata, Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
-
-        Metadata metadata = of.createMetadata();
         TagList  tagList = of.createTagList();
 
         for (Result result : results.results) {
@@ -60,7 +56,5 @@ public class TagWriter extends ResultsWriter {
         tagList.setCount(BigInteger.valueOf(results.totalHits));
         tagList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setTagList(tagList);
-        return metadata;
     }
-
 }

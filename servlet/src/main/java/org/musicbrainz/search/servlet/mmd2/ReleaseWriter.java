@@ -47,10 +47,8 @@ import java.util.Locale;
 public class ReleaseWriter extends ResultsWriter {
 
 
-    public Metadata write(Results results) throws IOException {
+    public void write(Metadata metadata, Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
-
-        Metadata metadata = of.createMetadata();
         ReleaseList releaseList = of.createReleaseList();
 
         for (Result result : results.results) {
@@ -191,7 +189,5 @@ public class ReleaseWriter extends ResultsWriter {
         releaseList.setCount(BigInteger.valueOf(results.totalHits));
         releaseList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setReleaseList(releaseList);
-        return metadata;
-
     }
 }

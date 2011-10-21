@@ -65,12 +65,9 @@ public class RecordingWriter extends ResultsWriter {
         return vaCredit;
     }
 
-    public Metadata write(Results results) throws IOException {
-
+    public void write(Metadata metadata, Results results) throws IOException {
 
         ObjectFactory of = new ObjectFactory();
-
-        Metadata metadata = of.createMetadata();
         RecordingList recordingList = of.createRecordingList();
 
         for (Result result : results.results) {
@@ -215,9 +212,5 @@ public class RecordingWriter extends ResultsWriter {
         recordingList.setCount(BigInteger.valueOf(results.totalHits));
         recordingList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setRecordingList(recordingList);
-        return metadata;
     }
-
-
-
 }

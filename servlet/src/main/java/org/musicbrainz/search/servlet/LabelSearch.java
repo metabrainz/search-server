@@ -32,6 +32,13 @@ public class LabelSearch extends SearchServer {
         }
     }
 
+    public LabelSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
+        this(searcher);
+        this.query=query;
+        this.offset=offset;
+        this.limit=limit;
+    }
+
        @Override
     protected QueryParser getParser() {
        return new LabelQueryParser(defaultFields.toArray(new String[0]), analyzer);

@@ -24,6 +24,13 @@ public class TagSearch extends SearchServer {
         indexSearcher = searcher;
     }
 
+    public TagSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
+        this(searcher);
+        this.query=query;
+        this.offset=offset;
+        this.limit=limit;
+    }
+
      @Override
     protected QueryParser getParser() {
        return new TagQueryParser(defaultFields.get(0), analyzer);

@@ -34,19 +34,22 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
+import org.musicbrainz.search.servlet.mmd2.AllWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,6 +68,9 @@ public class SearchServerServlet extends HttpServlet {
     final static String WS_VERSION_2 = "2";
 
     final static String CHARSET = "UTF-8";
+
+    final static String TYPE_ALL    = "all";
+    final static String TYPE_TRACK  = "track";
 
     private boolean isServletInitialized = false;
     private EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
@@ -207,15 +213,19 @@ public class SearchServerServlet extends HttpServlet {
         }
 
         // V1 Compatability
-        if(type.equals("track"))
+        if(type.equals(TYPE_TRACK))
         {
             type = ResourceType.RECORDING.getName();
         }
 
-        ResourceType resourceType = ResourceType.getValue(type);
-        if (resourceType == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
-            return;
+        //Must be type ALL or map to a valid resource type
+        ResourceType resourceType=null;
+        if(!type.equalsIgnoreCase(TYPE_ALL)) {
+            resourceType = ResourceType.getValue(type);
+            if (resourceType == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
+                return;
+            }
         }
 
         String query = request.getParameter(RequestParameter.QUERY.getName());
@@ -261,33 +271,16 @@ public class SearchServerServlet extends HttpServlet {
             }
         }
 
-
-        // Make the search
-        try {
-            SearchServer searchServer = searchers.get(resourceType);
-            if (searchServer == null) {
-            	response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(resourceType));
-                return;
+        try
+        {
+            if(resourceType!=null)
+            {
+                doSearch(response, resourceType, query, offset, limit, responseFormat, responseVersion);
             }
-            Results results = searchServer.search(query, offset, limit);
-            org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
-
-            if (writer == null) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));
-                return;
+            else
+            {
+                doAllSearch(response, query, offset, limit, responseFormat);
             }
-            response.setCharacterEncoding(CHARSET);
-            if(responseFormat.equals(RESPONSE_XML)) {
-                response.setContentType(writer.getMimeType());
-            }
-            else {
-                response.setContentType(((ResultsWriter)writer).getJsonMimeType());
-            }
-
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-            writer.write(out, results,responseFormat);
-            out.close();
-
         }
         catch (ParseException pe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
@@ -300,4 +293,113 @@ public class SearchServerServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Normal Search over one index
+     *
+     * @param response
+     * @param resourceType
+     * @param query
+     * @param offset
+     * @param limit
+     * @param responseFormat
+     * @param responseVersion
+     * @throws ParseException
+     * @throws IOException
+     */
+    private void doSearch(HttpServletResponse response,
+                          ResourceType resourceType,
+                          String query,
+                          Integer offset,
+                          Integer limit,
+                          String responseFormat,
+                          String responseVersion)
+            throws ParseException, IOException
+    {
+
+        SearchServer searchServer = searchers.get(resourceType);
+        if (searchServer == null) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(resourceType));
+            return;
+        }
+        Results results = searchServer.search(query, offset, limit);
+        org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
+
+        if (writer == null) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));
+            return;
+        }
+        response.setCharacterEncoding(CHARSET);
+        if(responseFormat.equals(RESPONSE_XML)) {
+            response.setContentType(writer.getMimeType());
+        }
+        else {
+            response.setContentType(((ResultsWriter)writer).getJsonMimeType());
+        }
+
+        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
+        writer.write(out, results,responseFormat);
+        out.close();
+    }
+
+    /**
+     * Search over multiple indexes and return merged result
+     *
+     * @param response
+     * @param query
+     * @param offset
+     * @param limit
+     * @param responseFormat
+     * @throws ParseException
+     * @throws IOException
+     */
+    private void doAllSearch(HttpServletResponse response,
+                             String query,
+                             Integer offset,
+                             Integer limit,
+                             String responseFormat)
+            throws Exception
+    {
+
+        SearchServer artistSearch       = searchers.get(ResourceType.ARTIST);
+        SearchServer releaseSearch      = searchers.get(ResourceType.RELEASE);
+        SearchServer releaseGroupSearch = searchers.get(ResourceType.RELEASE_GROUP);
+        SearchServer labelSearch        = searchers.get(ResourceType.LABEL);
+        SearchServer recordingSearch    = searchers.get(ResourceType.RECORDING);
+        SearchServer workSearch         = searchers.get(ResourceType.WORK);
+
+        //Run each search in parallel using a maximum threads as machine cpus, although we are creating new Search instances
+        //the important thing is we are not creating use Lucene Index Searches
+        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        Collection searches = new ArrayList();
+        searches.add(new ArtistSearch(artistSearch.getIndexSearcher(), query, offset, limit));
+        searches.add(new ReleaseSearch(releaseSearch.getIndexSearcher(), query, offset, limit));
+        searches.add(new ReleaseGroupSearch(releaseGroupSearch.getIndexSearcher(), query, offset, limit));
+        searches.add(new LabelSearch(labelSearch.getIndexSearcher(), query, offset, limit));
+        searches.add(new RecordingSearch(recordingSearch.getIndexSearcher(), query, offset, limit));
+        searches.add(new WorkSearch(workSearch.getIndexSearcher(), query, offset, limit));
+        java.util.List<java.util.concurrent.Future<Results>> results = es.invokeAll(searches);
+        Results allResults              = new Results();
+
+        //Results are returned in same order as they were submitted
+        Results artistResults           = results.get(0).get();
+        Results releaseResults          = results.get(1).get();
+        Results releaseGroupResults     = results.get(2).get();
+        Results labelResults            = results.get(3).get();
+        Results recordingResults        = results.get(4).get();
+        Results workResults             = results.get(5).get();
+
+        AllWriter writer = new AllWriter(artistResults, releaseResults, releaseGroupResults, labelResults, recordingResults, workResults);
+        response.setCharacterEncoding(CHARSET);
+
+        if(responseFormat.equals(RESPONSE_XML)) {
+            response.setContentType(writer.getMimeType());
+        }
+        else {
+            response.setContentType(writer.getJsonMimeType());
+        }
+
+        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
+        writer.write(out, allResults,responseFormat);
+        out.close();
+    }
 }

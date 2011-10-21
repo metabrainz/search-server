@@ -25,6 +25,13 @@ public class WorkSearch extends SearchServer {
         indexSearcher = searcher;
     }
 
+    public WorkSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
+        this(searcher);
+        this.query=query;
+        this.offset=offset;
+        this.limit=limit;
+    }
+
      @Override
     protected QueryParser getParser() {
        return new WorkQueryParser(defaultFields.toArray(new String[0]), analyzer);

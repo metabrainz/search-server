@@ -32,7 +32,6 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistIndexField;
-import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.SearchServer;
@@ -44,12 +43,8 @@ import java.util.Locale;
 
 public class ArtistWriter extends ResultsWriter {
 
-
-
-    public Metadata write(Results results) throws IOException {
+    public void write(Metadata metadata, Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
-
-        Metadata metadata = of.createMetadata();
         ArtistList artistList = of.createArtistList();
 
         for (Result result : results.results) {
@@ -57,7 +52,7 @@ public class ArtistWriter extends ResultsWriter {
             Artist artist = of.createArtist();
 
             artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
-            artist.setScore(String.valueOf((int)(result.score * 100)));
+            artist.setScore(String.valueOf((int) (result.score * 100)));
 
             String artype = doc.get(ArtistIndexField.TYPE);
             if ((artype != null) && (!artype.equalsIgnoreCase(SearchServer.UNKNOWN))) {
@@ -65,12 +60,12 @@ public class ArtistWriter extends ResultsWriter {
             }
 
             String gender = doc.get(ArtistIndexField.GENDER);
-            if ((gender != null) && (!gender.equalsIgnoreCase(SearchServer.UNKNOWN))){
+            if ((gender != null) && (!gender.equalsIgnoreCase(SearchServer.UNKNOWN))) {
                 artist.setGender(gender);
             }
 
             String country = doc.get(ArtistIndexField.COUNTRY);
-            if ((country != null) && !(country.equalsIgnoreCase(SearchServer.UNKNOWN))){
+            if ((country != null) && !(country.equalsIgnoreCase(SearchServer.UNKNOWN))) {
                 artist.setCountry(country.toUpperCase(Locale.US));
 
             }
@@ -109,10 +104,9 @@ public class ArtistWriter extends ResultsWriter {
             }
 
             String[] aliases = doc.getValues(ArtistIndexField.ALIAS);
-            if(aliases.length>0)
-            {
+            if (aliases.length > 0) {
                 AliasList aliasList = of.createAliasList();
-                for(int i = 0;i<aliases.length;i++) {
+                for (int i = 0; i < aliases.length; i++) {
                     Alias alias = of.createAlias();
                     alias.setContent(aliases[i]);
                     aliasList.getAlias().add(alias);
@@ -120,12 +114,11 @@ public class ArtistWriter extends ResultsWriter {
                 artist.setAliasList(aliasList);
             }
 
-            String[] tags       = doc.getValues(ArtistIndexField.TAG);
-            String[] tagCounts  = doc.getValues(ArtistIndexField.TAGCOUNT);
-            if(tags.length>0)
-            {
+            String[] tags = doc.getValues(ArtistIndexField.TAG);
+            String[] tagCounts = doc.getValues(ArtistIndexField.TAGCOUNT);
+            if (tags.length > 0) {
                 TagList tagList = of.createTagList();
-                for(int i = 0;i<tags.length;i++) {
+                for (int i = 0; i < tags.length; i++) {
                     Tag tag = of.createTag();
                     tag.setName(tags[i]);
                     tag.setCount(new BigInteger(tagCounts[i]));
@@ -140,8 +133,5 @@ public class ArtistWriter extends ResultsWriter {
         artistList.setCount(BigInteger.valueOf(results.totalHits));
         artistList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setArtistList(artistList);
-        return metadata;
     }
-
-
 }

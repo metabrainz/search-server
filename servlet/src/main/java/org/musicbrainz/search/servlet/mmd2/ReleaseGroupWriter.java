@@ -43,12 +43,9 @@ import java.util.Locale;
 
 public class ReleaseGroupWriter extends ResultsWriter {
 
-
-    public Metadata write(Results results) throws IOException {
+    public void write(Metadata metadata, Results results) throws IOException {
 
         ObjectFactory of = new ObjectFactory();
-
-        Metadata metadata = of.createMetadata();
         ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
 
         for (Result result : results.results) {
@@ -106,7 +103,5 @@ public class ReleaseGroupWriter extends ResultsWriter {
         releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));
         releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setReleaseGroupList(releaseGroupList);
-        return metadata;
     }
-
 }

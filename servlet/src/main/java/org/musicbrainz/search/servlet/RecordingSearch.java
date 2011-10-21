@@ -26,6 +26,13 @@ public class RecordingSearch extends SearchServer {
         indexSearcher = searcher;
     }
 
+    public RecordingSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
+        this(searcher);
+        this.query=query;
+        this.offset=offset;
+        this.limit=limit;
+    }
+
     @Override
     protected QueryParser getParser() {
        return new RecordingQueryParser(defaultFields.get(0), analyzer);

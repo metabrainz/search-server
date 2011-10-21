@@ -44,12 +44,10 @@ import java.math.BigInteger;
 
 public class AnnotationWriter extends ResultsWriter {
 
+    public void write(Metadata metadata, Results results) throws IOException {
 
-
-    public Metadata write(Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
 
-        Metadata metadata = of.createMetadata();
         AnnotationList annotationList = of.createAnnotationList();
 
         for (Result result : results.results) {
@@ -66,8 +64,5 @@ public class AnnotationWriter extends ResultsWriter {
         annotationList.setCount(BigInteger.valueOf(results.totalHits));
         annotationList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setAnnotationList(annotationList);
-        return metadata;
     }
-
-
 }
