@@ -233,7 +233,7 @@ public class IndexBuilder
                                                 );
 
         indexWriter.setMaxBufferedDocs(options.getMaxBufferedDocs());
-        indexWriter.setMergeFactor(options.getMergeFactor());
+        //indexWriter.setMergeFactor(options.getMergeFactor());
         return indexWriter;
     }
 
