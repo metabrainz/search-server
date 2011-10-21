@@ -80,7 +80,7 @@ public class SearchServerServlet extends HttpServlet {
 
     @Override
     public void init() {
-        init(false);
+        init(true);
     }
 
     public void init(boolean useMMapDirectory)   {
