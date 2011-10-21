@@ -31,7 +31,7 @@ public enum AnnotationIndexField implements IndexField {
 	ID		("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	ENTITY	("entity",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	NAME	("name",	Field.Store.YES,	Field.Index.ANALYZED),
-	TYPE	("type",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
+	TYPE	("type",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	TEXT	("text",	Field.Store.YES,	Field.Index.ANALYZED);
 
 	private String name;
