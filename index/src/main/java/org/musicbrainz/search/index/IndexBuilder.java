@@ -316,7 +316,7 @@ public class IndexBuilder
         System.out.println("Building index: " + path);
         indexWriter = new IndexWriter(FSDirectory.open(new File(path)), config);
         indexWriter.setMaxBufferedDocs(options.getMaxBufferedDocs());
-        indexWriter.setMergeFactor(options.getMergeFactor());
+        //indexWriter.setMergeFactor(options.getMergeFactor());
 
         index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
