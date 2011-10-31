@@ -114,6 +114,7 @@ public abstract class SearchServer {
 				this.indexSearcher = new IndexSearcher(newReader);
 				this.indexSearcher.setSimilarity(similarity);
 				this.setLastServerUpdatedDate();
+                                oldReader.close();
 			}
     	}
     }
