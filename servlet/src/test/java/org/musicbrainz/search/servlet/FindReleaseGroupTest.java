@@ -15,6 +15,7 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
@@ -56,6 +57,7 @@ public class FindReleaseGroupTest extends TestCase {
         doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
         doc.addField(ReleaseGroupIndexField.ARTIST, "The Wedding Present");
         doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "The Wedding Present");
+        doc.addNumericField(ReleaseGroupIndexField.NUM_RELEASES,1);
 
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
@@ -142,6 +144,11 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseByNumberofReleases() throws Exception {
+        Results res = ss.searchLucene("releases:1", 0, 10);
+        assertEquals(1, res.totalHits);
     }
 
     public void testFindReleaseGroupByReleaseId() throws Exception {
