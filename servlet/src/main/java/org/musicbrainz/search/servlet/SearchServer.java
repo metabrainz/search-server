@@ -113,14 +113,15 @@ public abstract class SearchServer implements Callable<Results> {
 
     public void reloadIndex() throws CorruptIndexException, IOException {
     	
-    	if (this.indexSearcher != null) {
+    	if (indexSearcher != null) {
     		IndexReader oldReader = indexSearcher.getIndexReader();
 			IndexReader newReader = oldReader.reopen();
 			if (oldReader != newReader) {
 				Similarity similarity = indexSearcher.getSimilarity();
-				this.indexSearcher = new IndexSearcher(newReader);
-				this.indexSearcher.setSimilarity(similarity);
+				indexSearcher = new IndexSearcher(newReader);
+				indexSearcher.setSimilarity(similarity);
 				this.setLastServerUpdatedDate();
+                oldReader.close();
 			}
     	}
     }
