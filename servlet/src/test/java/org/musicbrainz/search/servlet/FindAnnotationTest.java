@@ -110,6 +110,7 @@ public class FindAnnotationTest extends TestCase {
 
     public void testSearchByTypeReleaseGroup() throws Exception {
         Results res = ss.searchLucene("type:release-group", 0, 10);
+        assertEquals("3 Songs", res.results.get(0).getDoc().get(AnnotationIndexField.NAME));
         assertEquals(1, res.totalHits);
     }
 
