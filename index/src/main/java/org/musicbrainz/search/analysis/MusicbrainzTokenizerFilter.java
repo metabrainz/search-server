@@ -73,11 +73,17 @@ public class MusicbrainzTokenizerFilter extends TokenFilter {
             int upto = 0;
             for (int i = 0; i < bufferLength; i++) {
                 char c = buffer[i];
-                if (!Character.isLetterOrDigit(c) )
+                if(c =='\'')
                 {
-                    //Do Nothing, (drop the character)
+                    //Drop the apostrophe
+                }
+                else if (!Character.isLetterOrDigit(c) )
+                {
+                    //Replace control/punctuation chars with '-' to help word delimiter
+                    buffer[upto++] = '-';
                 }
                 else {
+                    //Normal Char
                     buffer[upto++] = c;
                 }
             }

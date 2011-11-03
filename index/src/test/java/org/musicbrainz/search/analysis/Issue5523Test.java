@@ -42,7 +42,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.musicbrainz.search.LuceneVersion;
 
 
-/** Test that analyser matches simplified chinese to tradiotional and vice versa because when indexed traditional
+/** Test that analyser matches simplified chinese to traditional and vice versa because when indexed traditional
  *  chinese is now convert to simple.
  */
 public class Issue5523Test extends TestCase {

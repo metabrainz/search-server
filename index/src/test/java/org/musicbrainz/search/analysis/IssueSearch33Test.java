@@ -384,4 +384,145 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    public void testAlphaNumPunc1() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("This_is"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+            assertEquals("This_is", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(7, offset.endOffset());
+            assertFalse(tokenizer.incrementToken());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new MusicbrainzAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "This_is", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("is", tr.term().text());
+        assertTrue(tr.next());
+        assertEquals("this", tr.term().text());
+        assertFalse(tr.next());
+
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
+
+
+    public void testAlphaNumPunc2() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("This___is"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+            assertEquals("This___is", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(9, offset.endOffset());
+            assertFalse(tokenizer.incrementToken());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new MusicbrainzAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "This_is", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("is", tr.term().text());
+        assertTrue(tr.next());
+        assertEquals("this", tr.term().text());
+        assertFalse(tr.next());
+
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
+
+    public void testAlphaNumPunc3() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("__This___is_"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+            assertEquals("__This___is_", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(12, offset.endOffset());
+            assertFalse(tokenizer.incrementToken());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new MusicbrainzAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "This_is", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("is", tr.term().text());
+        assertTrue(tr.next());
+        assertEquals("this", tr.term().text());
+        assertFalse(tr.next());
+
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+    }
 }

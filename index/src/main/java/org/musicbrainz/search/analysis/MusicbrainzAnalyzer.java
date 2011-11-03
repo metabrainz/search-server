@@ -63,6 +63,19 @@ public class MusicbrainzAnalyzer extends Analyzer {
         result = new MusicbrainzTokenizerFilter(result);
         result = new AccentFilter(result);
         result = new LowercaseFilter(result);
+        result = new MusicbrainzWordDelimiterFilter(result,
+                                          null,
+                                          1,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                         null);
+
         return result;
     }
 
@@ -82,6 +95,18 @@ public class MusicbrainzAnalyzer extends Analyzer {
             streams.filteredTokenStream = new MusicbrainzTokenizerFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowercaseFilter(streams.filteredTokenStream);
+            streams.filteredTokenStream = new MusicbrainzWordDelimiterFilter(streams.filteredTokenStream,
+                                          WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,
+                                          1,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                         null);
         }
         else {
             streams.tokenStream.reset(new MappingCharFilter(charConvertMap,reader));
