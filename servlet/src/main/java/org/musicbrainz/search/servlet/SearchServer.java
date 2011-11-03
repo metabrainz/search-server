@@ -29,7 +29,6 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -179,14 +178,31 @@ public abstract class SearchServer {
         IndexSearcher searcher = null;
         try {
             searcher = getIndexSearcher();
-            searcher.getIndexReader().incRef();
+            incRef(searcher);
             TopDocs topdocs = searcher.search(parseQuery(query), offset + limit);
             searchCount.incrementAndGet();
             return processResults(searcher, topdocs, offset);
         } finally {
-            searcher.getIndexReader().decRef();
+            decRef(searcher);
 
         }
+    }
+
+    /**
+     *
+     * @param searcher
+     */
+    private synchronized void incRef(IndexSearcher searcher) {
+        searcher.getIndexReader().incRef();
+    }
+
+    /**
+     *
+     * @param searcher
+     * @throws IOException
+     */
+    private synchronized void decRef(IndexSearcher searcher) throws IOException {
+        searcher.getIndexReader().decRef();
     }
 
     /**
