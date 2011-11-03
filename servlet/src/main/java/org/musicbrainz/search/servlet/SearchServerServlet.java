@@ -80,13 +80,11 @@ public class SearchServerServlet extends HttpServlet {
     public void init(boolean useMMapDirectory)   {
     	
         String indexDir = getServletConfig().getInitParameter("index_dir");
-        log.info("Index dir = " + indexDir);
         if(useMMapDirectory)  {
-            log.info("Index Type = MMapped Mode");
+            log.info("Start:Loading Indexes from " + indexDir + ",Type:mmap," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         } else {
-            log.info("Index Type = NFIO Mode");
+            log.info("Start:loading Indexes from " + indexDir + ",Type:nfio,"+ "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         }
-        log.info("Max Heap = "+ ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
 
         // Initialize all search servers
         for (ResourceType resourceType : ResourceType.values()) {
@@ -113,14 +111,15 @@ public class SearchServerServlet extends HttpServlet {
     		searchServer.setLastServerUpdatedDate();
     		
 		}
-        
+        log.info("End:loaded Indexes from " + indexDir + ",Type:nfio,"+ "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         isServletInitialized = true;
         
     }
 
     @Override
     public void destroy() {
-    	
+        log.info("Start:Destroy Indexes");
+
     	// Close all search servers
     	for (SearchServer searchServer : searchers.values()) {
     		if (searchServer == null) continue;
@@ -131,10 +130,12 @@ public class SearchServerServlet extends HttpServlet {
 			}
         }
     	searchers.clear();
+        log.info("End:Destroy Indexes");
     }
     
     protected void reloadIndexes() {
-    	
+
+        log.info("Start:Reloading Indexes");
     	for (SearchServer searchServer : searchers.values()) {
     		if (searchServer == null) continue;
 			try {
@@ -143,6 +144,8 @@ public class SearchServerServlet extends HttpServlet {
 				log.severe("Caught exception during reopening of index: " + e.getMessage());
 			}
         }
+        log.info("End:Reloading Indexes");
+
     }
 
 
@@ -164,6 +167,10 @@ public class SearchServerServlet extends HttpServlet {
         String init = request.getParameter(RequestParameter.INIT.getName());
         if (init != null) {
             init(init.equals("mmap"));
+            response.setCharacterEncoding(CHARSET);
+            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+            response.getOutputStream().println("Indexes Loaded");
+            response.getOutputStream().close();
             return;
         }
         
@@ -171,6 +178,10 @@ public class SearchServerServlet extends HttpServlet {
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
         if (reloadIndexes != null) {
         	reloadIndexes();
+            response.setCharacterEncoding(CHARSET);
+            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+            response.getOutputStream().println("Indexes Reloaded");
+            response.getOutputStream().close();
             return;
         }
 
