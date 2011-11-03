@@ -58,17 +58,18 @@ public abstract class SearchServer {
     protected Mmd1XmlWriter mmd1XmlWriter;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
-    protected Date          serverLastUpdatedDate;
-    protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz",Locale.US);
-    protected AtomicInteger    searchCount = new AtomicInteger();
+    protected Date serverLastUpdatedDate;
+    protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz", Locale.US);
+    protected AtomicInteger searchCount = new AtomicInteger();
 
     final Logger log = Logger.getLogger(SearchServer.class.getName());
 
-    protected SearchServer() {}
-    
+    protected SearchServer() {
+    }
+
     /**
      * Set the last updated date by getting the value from the index
-     *
+     * <p/>
      * Set the last updated date by getting the value from the index (where it is always stored as the last document), then
      * for efficiency convert to a format suitable for use in output html
      *
@@ -76,53 +77,51 @@ public abstract class SearchServer {
      */
     protected void setLastServerUpdatedDate() {
 
-    	if (indexSearcher == null) return;
-    	
+        if (indexSearcher == null) return;
+
         // Is not a disaster if missing so just log and carry on
-        try
-        {
-        	Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
-    		TermQuery query = new TermQuery(term);
-    		TopDocs hits = indexSearcher.search(query, 10);
+        try {
+            Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
+            TermQuery query = new TermQuery(term);
+            TopDocs hits = indexSearcher.search(query, 10);
 
-        	if (hits.scoreDocs.length == 0) {
-        		System.out.println("No matches in the index for the meta document.");
-        		return;
-        	} else if (hits.scoreDocs.length > 1) {
-        		System.out.println("More than one meta document was found in the index.");
-        		return;
-        	} 
+            if (hits.scoreDocs.length == 0) {
+                System.out.println("No matches in the index for the meta document.");
+                return;
+            } else if (hits.scoreDocs.length > 1) {
+                System.out.println("More than one meta document was found in the index.");
+                return;
+            }
 
-        	int docId = hits.scoreDocs[0].doc;
-        	MbDocument doc = new MbDocument(indexSearcher.doc(docId));
-        	serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(doc.get(MetaIndexField.LAST_UPDATED)));
+            int docId = hits.scoreDocs[0].doc;
+            MbDocument doc = new MbDocument(indexSearcher.doc(docId));
+            serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(doc.get(MetaIndexField.LAST_UPDATED)));
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
         }
 
     }
 
     public void reloadIndex() throws CorruptIndexException, IOException {
-    	
-    	if (this.indexSearcher != null) {
-    		IndexReader oldReader = indexSearcher.getIndexReader();
-			IndexReader newReader = oldReader.reopen();
-			if (oldReader != newReader) {
-				Similarity similarity = indexSearcher.getSimilarity();
-				this.indexSearcher = new IndexSearcher(newReader);
-				this.indexSearcher.setSimilarity(similarity);
-				this.setLastServerUpdatedDate();
-                                oldReader.close();
-			}
-    	}
+
+        if (this.indexSearcher != null) {
+            IndexReader oldReader = indexSearcher.getIndexReader();
+            IndexReader newReader = oldReader.reopen();
+            if (oldReader != newReader) {
+                Similarity similarity = indexSearcher.getSimilarity();
+                this.indexSearcher = new IndexSearcher(newReader);
+                this.indexSearcher.setSimilarity(similarity);
+                this.setLastServerUpdatedDate();
+                oldReader.close();
+            }
+        }
     }
 
     public void close() throws IOException {
-    	if (indexSearcher != null) {
-    		indexSearcher.getIndexReader().close();
-    	}
+        if (indexSearcher != null) {
+            indexSearcher.getIndexReader().close();
+        }
     }
 
     public org.musicbrainz.search.servlet.mmd2.ResultsWriter getXmlWriter() {
@@ -143,10 +142,9 @@ public abstract class SearchServer {
 
 
     public org.musicbrainz.search.servlet.ResultsWriter getWriter(String fmt, String version) {
-        if(SearchServerServlet.WS_VERSION_1.equals(version)) {
+        if (SearchServerServlet.WS_VERSION_1.equals(version)) {
             return getXmlV1Writer();
-        }
-        else {
+        } else {
             return getXmlWriter();
         }
     }
@@ -177,10 +175,18 @@ public abstract class SearchServer {
      * @throws ParseException if the query was invalid
      */
     public Results searchLucene(String query, int offset, int limit) throws IOException, ParseException {
-        IndexSearcher searcher = getIndexSearcher();
-        TopDocs topdocs = searcher.search(parseQuery(query), offset + limit);
-        searchCount.incrementAndGet();
-        return processResults(searcher, topdocs, offset);
+
+        IndexSearcher searcher = null;
+        try {
+            searcher = getIndexSearcher();
+            searcher.getIndexReader().incRef();
+            TopDocs topdocs = searcher.search(parseQuery(query), offset + limit);
+            searchCount.incrementAndGet();
+            return processResults(searcher, topdocs, offset);
+        } finally {
+            searcher.getIndexReader().decRef();
+
+        }
     }
 
     /**
@@ -190,18 +196,15 @@ public abstract class SearchServer {
      * @return
      * @throws ParseException
      */
-    protected Query parseQuery(String query) throws ParseException
-    {
+    protected Query parseQuery(String query) throws ParseException {
         QueryParser parser = getParser();
         return parser.parse(query);
     }
 
     /**
-     *
      * @return count of searches done on this index since servlet started
      */
-    public String getCount()
-    {
+    public String getCount() {
         return searchCount.toString();
     }
 
