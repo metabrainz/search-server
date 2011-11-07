@@ -69,7 +69,6 @@ public abstract class SearchServer implements Callable<Results> {
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz",Locale.US);
     protected AtomicInteger    searchCount = new AtomicInteger();
 
-    final Logger log = Logger.getLogger(SearchServer.class.getName());
 
     protected SearchServer() {}
     
@@ -196,10 +195,18 @@ public abstract class SearchServer implements Callable<Results> {
      * @throws ParseException if the query was invalid
      */
     public Results searchLucene(String query, int offset, int limit) throws IOException, ParseException {
-        IndexSearcher searcher = getIndexSearcher();
-        TopDocs topdocs = searcher.search(parseQuery(query), offset + limit);
-        searchCount.incrementAndGet();
-        return processResults(searcher, topdocs, offset);
+
+        IndexSearcher searcher=null;
+        try {
+            searcher = getIndexSearcher();
+            searcher.getIndexReader().incRef();
+            TopDocs topdocs = searcher.search(parseQuery(query), offset + limit);
+            searchCount.incrementAndGet();
+            return processResults(searcher, topdocs, offset);
+        }
+        finally {
+            searcher.getIndexReader().decRef();
+        }
     }
 
     /**
