@@ -69,7 +69,7 @@ public class SearchServerServlet extends HttpServlet {
 
     final static String CHARSET = "UTF-8";
 
-    final static String TYPE_ALL    = "all";
+    //final static String TYPE_ALL    = "all";
     final static String TYPE_TRACK  = "track";
 
     private boolean isServletInitialized = false;
@@ -83,6 +83,11 @@ public class SearchServerServlet extends HttpServlet {
         init(true);
     }
 
+    /**
+     * If you have indexes that are available this reads from the new indexes and closes the existing readers
+     *
+     * @param useMMapDirectory
+     */
     public void init(boolean useMMapDirectory)   {
     	
         String indexDir = getServletConfig().getInitParameter("index_dir");
@@ -109,13 +114,25 @@ public class SearchServerServlet extends HttpServlet {
 			} catch (IOException e) {
 				log.warning("Could not load " + resourceType.getIndexName() + " index: " + e.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();
+                log.log(Level.WARNING,"Could not load " + resourceType.getIndexName() + " index: " + e.getMessage() ,e);
 			}
-    		searchers.put(resourceType, searchServer);
-    		
-    		if (searchServer == null) continue; 		
-    		searchServer.setLastServerUpdatedDate();
-    		
+
+            //Close old search server, incRef/decRef counting will ensure not closed until no longer in use.
+            SearchServer oldSearchServer = searchers.get(resourceType);
+            if(oldSearchServer!=null) {
+                try {
+				    oldSearchServer.close();
+			    } catch (IOException e) {
+				    log.severe("Caught exception during closing of index searcher within Init: "
+                            + resourceType.getIndexName() +":" + e.getMessage());
+                }
+            }
+
+            //Add in new search server and set last updated date
+            searchers.put(resourceType, searchServer);
+    		if (searchServer != null) {
+    		    searchServer.setLastServerUpdatedDate();
+            }
 		}
         log.info("End:loaded Indexes from " + indexDir + ",Type:nfio,"+ "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         isServletInitialized = true;
@@ -140,7 +157,12 @@ public class SearchServerServlet extends HttpServlet {
         log.info("End:Destroy Indexes");
 
     }
-    
+
+    /**
+     * If Index has just been updated (Documents added or removed from existing index) you can use this
+     * method to read the latest documents from the index.
+     *
+     */
     protected void reloadIndexes() {
 
         log.info("Start:Reloading Indexes");
@@ -169,9 +191,7 @@ public class SearchServerServlet extends HttpServlet {
         // Ensure encoding set to UTF8
         request.setCharacterEncoding(CHARSET);
 
-        // Force initialization of search server, if already open this forces an *expensive* reopen of the indexes
-        // reload should be preferred unless you want to use switch between mmap and niofs
-        // If specify mmap mode then MMappedDirectory used, should only be used on 64bit JVM or on small indexes
+        // Force initialization of search server should be called when index have been replaced by new indexes
         String init = request.getParameter(RequestParameter.INIT.getName());
         if (init != null) {
             init(init.equals("mmap"));
@@ -182,7 +202,7 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
         
-        // Reopen the indexes in an efficient way
+        // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
         if (reloadIndexes != null) {
         	reloadIndexes();
@@ -231,14 +251,11 @@ public class SearchServerServlet extends HttpServlet {
             type = ResourceType.RECORDING.getName();
         }
 
-        //Must be type ALL or map to a valid resource type
-        ResourceType resourceType=null;
-        if(!type.equalsIgnoreCase(TYPE_ALL)) {
-            resourceType = ResourceType.getValue(type);
-            if (resourceType == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
-                return;
-            }
+        //Must map to a valid resource type
+        ResourceType resourceType=ResourceType.getValue(type);
+        if (resourceType == null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
+            return;
         }
 
         String query = request.getParameter(RequestParameter.QUERY.getName());
