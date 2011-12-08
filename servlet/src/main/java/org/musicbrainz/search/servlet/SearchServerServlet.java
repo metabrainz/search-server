@@ -286,14 +286,7 @@ public class SearchServerServlet extends HttpServlet {
 
         try
         {
-            if(resourceType!=null)
-            {
-                doSearch(response, resourceType, query, offset, limit, responseFormat, responseVersion);
-            }
-            else
-            {
-                doAllSearch(response, query, offset, limit, responseFormat);
-            }
+            doSearch(response, resourceType, query, offset, limit, responseFormat, responseVersion);
         }
         catch (ParseException pe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
@@ -365,6 +358,7 @@ public class SearchServerServlet extends HttpServlet {
      * @throws ParseException
      * @throws IOException
      */
+    /*
     private void doAllSearch(HttpServletResponse response,
                              String query,
                              Integer offset,
@@ -415,4 +409,5 @@ public class SearchServerServlet extends HttpServlet {
         writer.write(out, allResults,responseFormat);
         out.close();
     }
+    */
 }
