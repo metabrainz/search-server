@@ -199,14 +199,31 @@ public abstract class SearchServer implements Callable<Results> {
         IndexSearcher searcher=null;
         try {
             searcher = getIndexSearcher();
-            searcher.getIndexReader().incRef();
+            incRef(searcher);
             TopDocs topdocs = searcher.search(parseQuery(query), offset + limit);
             searchCount.incrementAndGet();
             return processResults(searcher, topdocs, offset);
         }
         finally {
-            searcher.getIndexReader().decRef();
+            decRef(searcher);
         }
+    }
+
+    /**
+     *
+     * @param searcher
+     */
+    private synchronized void incRef(IndexSearcher searcher) {
+        searcher.getIndexReader().incRef();
+    }
+
+    /**
+     *
+     * @param searcher
+     * @throws IOException
+     */
+    private synchronized void decRef(IndexSearcher searcher) throws IOException {
+        searcher.getIndexReader().decRef();
     }
 
     /**
