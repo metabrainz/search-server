@@ -44,19 +44,19 @@ public enum ReleaseGroupIndexField implements IndexField {
 	ID		    		("_id",				Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	ARTIST_ID		    ("arid",			Field.Store.NO,		Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST              ("artist",          Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-	ARTIST_NAME         ("artistname",		Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
+    ARTIST_NAME         ("artistname",		Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    COMMENT		        ("comment",		    Field.Store.YES,	Field.Index.ANALYZED),
+    NUM_RELEASES        ("releases",	    Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED, new TitleWithPosGapAnalyzer()),
+    RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
-	TYPE			    ("type",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-	RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED, new TitleWithPosGapAnalyzer()),
-    NUM_RELEASES        ("releases",	    Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
-    TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+	TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
-    COMMENT		        ("comment",		    Field.Store.YES,	Field.Index.ANALYZED),
-    ;
+    TYPE			    ("type",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+	;
 
     private String name;
 	private Field.Store store;

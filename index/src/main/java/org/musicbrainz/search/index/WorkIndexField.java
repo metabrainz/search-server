@@ -13,18 +13,17 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
 public enum WorkIndexField implements IndexField {
 	
     ID		        	("_id",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ALIAS		        ("alias",		Field.Store.YES, 	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_ID		    ("arid",			Field.Store.NO,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST              ("artist",          Field.Store.NO,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_RELATION     ("artistrelation",    Field.Store.YES,    Field.Index.NO),
-    WORK_ID		        ("wid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    WORK			    ("work",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
+    COMMENT		        ("comment",		Field.Store.YES,	Field.Index.ANALYZED),
     ISWC		        ("iswc",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TYPE		        ("type",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    ALIAS		        ("alias",		Field.Store.YES, 	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAG		            ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	Field.Store.YES,	Field.Index.NO),
-    COMMENT		        ("comment",		Field.Store.YES,	Field.Index.ANALYZED),
-
+    WORK			    ("work",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
+    WORK_ID		        ("wid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ;
 
     private String name;

@@ -39,20 +39,19 @@ import org.musicbrainz.search.analysis.*;
 public enum LabelIndexField implements IndexField {
 
 	ID			("_id",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),	
-    LABEL_ID	("laid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
-    LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED, new MusicbrainzAnalyzer()),
-    COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),
-    CODE		("code",		Field.Store.YES, 	Field.Index.ANALYZED, new KeywordAnalyzer()),
     ALIAS		("alias",		Field.Store.YES, 	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     BEGIN		("begin",		Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COMMENT		("comment",		Field.Store.YES, 	Field.Index.ANALYZED),
+    CODE		("code",		Field.Store.YES, 	Field.Index.ANALYZED, new KeywordAnalyzer()),
+    COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),
+    END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    IPI         ("ipi",         Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED, new MusicbrainzAnalyzer()),
+    LABEL_ID	("laid",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
+    SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     TYPE		("type",		Field.Store.YES, 	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
-    IPI         ("ipi",         Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-
     ;
 
     private String name;

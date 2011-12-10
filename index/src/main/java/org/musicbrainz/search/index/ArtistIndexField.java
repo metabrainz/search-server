@@ -44,16 +44,16 @@ public enum ArtistIndexField implements IndexField {
     ALIAS		("alias",		Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_ID	("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzAnalyzer()),
-    SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     BEGIN		("begin",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COMMENT		("comment",		Field.Store.YES,	Field.Index.ANALYZED),
-    TYPE		("type",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    GENDER      ("gender",      Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     COUNTRY     ("country",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    GENDER      ("gender",      Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    IPI         ("ipi",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
-    IPI         ("ipi",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    TYPE		("type",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ;
 
 
