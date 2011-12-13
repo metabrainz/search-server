@@ -556,7 +556,7 @@ public class IssueSearch33Test extends TestCase {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "30h!j", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "3Oh!j", Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
         writer.close();
 
@@ -567,7 +567,7 @@ public class IssueSearch33Test extends TestCase {
         Term term = tr.term();
         assertEquals("name", term.field());
         assertEquals(1, tr.docFreq());
-        assertEquals("30h", term.text());
+        assertEquals("3oh", term.text());
         tr.next();
         term = tr.term();
         assertEquals(1, tr.docFreq());
@@ -580,11 +580,11 @@ public class IssueSearch33Test extends TestCase {
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
 
-            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("30H"));
+            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("3OH"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
 
-            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("30H!j"));
+            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("3OH!j"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
 
