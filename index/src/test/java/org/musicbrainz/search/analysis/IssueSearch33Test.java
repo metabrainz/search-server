@@ -77,6 +77,15 @@ public class IssueSearch33Test extends TestCase {
         writer.addDocument(doc);
         writer.close();
 
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertNotNull(tr);
+        assertNotNull(tr.term());
+        assertEquals("name", tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("name", tr.term().field());
+        assertEquals("!!!", tr.term().text());
+
         IndexSearcher searcher = new IndexSearcher(dir,true);
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!!!"));
@@ -522,6 +531,63 @@ public class IssueSearch33Test extends TestCase {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
+        }
+    }
+
+    public void testIssue158() throws Exception {
+
+        //Show token is kept intact
+        {
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("3OH!3"));
+            assertTrue(tokenizer.incrementToken());
+            CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+            TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+            OffsetAttribute offset = tokenizer.addAttribute(OffsetAttribute.class);
+            assertEquals("<ALPHANUMANDPUNCTUATION>", type.type());
+            assertEquals("3OH!3", new String(term.buffer(),0,term.length()));
+            assertEquals(0, offset.startOffset());
+            assertEquals(5, offset.endOffset());
+            assertFalse(tokenizer.incrementToken());
+        }
+
+        //Analyse field
+        Analyzer analyzer = new MusicbrainzAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "30h!j", Field.Store.YES, Field.Index.ANALYZED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = IndexReader.open(dir);
+        TermEnum tr = ir.terms(new Term("name",""));
+        assertNotNull(tr);
+        Term term = tr.term();
+        assertEquals("name", term.field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("30h", term.text());
+        tr.next();
+        term = tr.term();
+        assertEquals(1, tr.docFreq());
+        assertEquals("j", term.text());
+
+
+        IndexSearcher searcher = new IndexSearcher(dir,true);
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("j"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+
+            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("30H"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+
+            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("30H!j"));
+            System.out.println(q.toString());
+            assertEquals(1, searcher.search(q,10).totalHits);
+
         }
 
     }

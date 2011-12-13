@@ -64,11 +64,11 @@ public class MusicbrainzAnalyzer extends Analyzer {
         result = new AccentFilter(result);
         result = new LowercaseFilter(result);
         result = new MusicbrainzWordDelimiterFilter(result,
-                                          null,
+                                          WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,
                                           1,
                                           0,
                                           0,
-                                          0,
+                                          6,
                                           0,
                                           0,
                                           0,
@@ -100,7 +100,7 @@ public class MusicbrainzAnalyzer extends Analyzer {
                                           1,
                                           0,
                                           0,
-                                          0,
+                                          6,
                                           0,
                                           0,
                                           0,
