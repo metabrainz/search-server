@@ -61,7 +61,7 @@ import java.io.IOException;
  *  @version $Id: MusicbrainzWordDelimiterFilter.java 1065312 2011-01-30 16:08:25Z rmuir $
  */
 
-class MusicbrainzWordDelimiterFilter extends TokenFilter {
+public class MusicbrainzWordDelimiterFilter extends TokenFilter {
   
   public static final int LOWER = 0x01;
   public static final int UPPER = 0x02;
