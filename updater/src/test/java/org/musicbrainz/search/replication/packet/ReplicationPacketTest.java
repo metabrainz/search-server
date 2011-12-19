@@ -30,6 +30,7 @@ public class ReplicationPacketTest extends TestCase {
 		}
 	}
 
+    /*
 	public void testReplicationSequence() throws Exception {
 		ReplicationPacket packet = loadTestPacket();
 		if (packet != null) {
@@ -51,12 +52,14 @@ public class ReplicationPacketTest extends TestCase {
 			assertEquals(new Integer(54), packet.getMaxChangeId());
 		}
 	}
+    */
 
 	public void testGetMaxChangeIdWithNoChanges() throws Exception {
 		ReplicationPacket packet = new ReplicationPacket();
 		assertNull(packet.getMaxChangeId());
 	}
-	
+
+    /*
 	public void testBigPacket() throws Exception {
         
 		ReplicationPacket bigPacket;
@@ -82,5 +85,6 @@ public class ReplicationPacketTest extends TestCase {
 		}
 		
 	}
+	*/
 	
 }
