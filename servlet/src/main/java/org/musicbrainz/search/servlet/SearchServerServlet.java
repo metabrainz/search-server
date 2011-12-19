@@ -28,6 +28,7 @@
 
 package org.musicbrainz.search.servlet;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -78,6 +79,8 @@ public class SearchServerServlet extends HttpServlet {
     private String initMessage = null;
     private static final String MUSICBRAINZ_SEARCH_WEBPAGE = "http://www.musicbrainz.org/search.html";
 
+
+
     @Override
     public void init() {
         init(true);
@@ -89,7 +92,12 @@ public class SearchServerServlet extends HttpServlet {
      * @param useMMapDirectory
      */
     public void init(boolean useMMapDirectory)   {
-    	
+
+        //Initialize rate limiter config
+        String rateLimiterHost = getServletConfig().getInitParameter("ratelimitserver_host");
+        String rateLimiterPort = getServletConfig().getInitParameter("ratelimitserver_port");
+        RateLimiterChecker.init(rateLimiterHost, rateLimiterPort);
+
         String indexDir = getServletConfig().getInitParameter("index_dir");
         if(useMMapDirectory)  {
             log.info("Start:Loading Indexes from " + indexDir + ",Type:mmap," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
@@ -179,6 +187,8 @@ public class SearchServerServlet extends HttpServlet {
     }
 
 
+
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -255,6 +265,15 @@ public class SearchServerServlet extends HttpServlet {
         ResourceType resourceType=ResourceType.getValue(type);
         if (resourceType == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
+            return;
+        }
+
+
+        RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
+        if(!rateLimiterResponse.isValid())
+        {
+            response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getMsg());
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, RateLimiterChecker.MSG_SERVER_BUSY);
             return;
         }
 
