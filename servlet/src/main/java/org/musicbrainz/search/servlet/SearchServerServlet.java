@@ -94,10 +94,10 @@ public class SearchServerServlet extends HttpServlet {
     public void init(boolean useMMapDirectory)   {
 
         //Initialize rate limiter config
-        String rateLimiterHost = getServletConfig().getInitParameter("ratelimitserver_host");
+        /*String rateLimiterHost = getServletConfig().getInitParameter("ratelimitserver_host");
         String rateLimiterPort = getServletConfig().getInitParameter("ratelimitserver_port");
         RateLimiterChecker.init(rateLimiterHost, rateLimiterPort);
-
+        */
         String indexDir = getServletConfig().getInitParameter("index_dir");
         if(useMMapDirectory)  {
             log.info("Start:Loading Indexes from " + indexDir + ",Type:mmap," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
@@ -269,13 +269,13 @@ public class SearchServerServlet extends HttpServlet {
         }
 
 
-        RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
+        /*RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
         if(!rateLimiterResponse.isValid())
         {
             response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getMsg());
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, RateLimiterChecker.MSG_SERVER_BUSY);
             return;
-        }
+        } */
 
         String query = request.getParameter(RequestParameter.QUERY.getName());
         if (query == null || query.isEmpty()) {
