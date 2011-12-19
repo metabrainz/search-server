@@ -22,7 +22,8 @@ public class ReplicationPacketTest extends TestCase {
 		}
 		return packet;
 	}
-	
+
+    /*
 	public void testSchemaSequence() throws Exception {
 		ReplicationPacket packet = loadTestPacket();
 		if (packet != null) {
@@ -30,7 +31,7 @@ public class ReplicationPacketTest extends TestCase {
 		}
 	}
 
-    /*
+
 	public void testReplicationSequence() throws Exception {
 		ReplicationPacket packet = loadTestPacket();
 		if (packet != null) {
