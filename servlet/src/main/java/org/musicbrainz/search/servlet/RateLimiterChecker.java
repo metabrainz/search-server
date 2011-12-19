@@ -1,9 +1,5 @@
 package org.musicbrainz.search.servlet;
 
-import com.sun.org.apache.xml.internal.security.Init;
-import sun.org.mozilla.javascript.internal.JavaScriptException;
-import sun.tools.tree.ReturnStatement;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,7 +7,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.rmi.UnknownHostException;
-import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
