@@ -167,7 +167,7 @@ public class RateLimiterChecker {
 
         RateLimiterResponse(String  response)
         {
-            if(response.startsWith("OK y"))
+            if(response.startsWith("ok y"))
             {
                 valid = true;
             }
