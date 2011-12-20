@@ -72,6 +72,18 @@ public class TitleAnalyzer extends Analyzer {
         result = new MusicbrainzTokenizerFilter(result);
         result = new AccentFilter(result);
         result = new LowercaseFilter(result);
+        result = new MusicbrainzWordDelimiterFilter(result,
+                                          WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,
+                                          1,
+                                          0,
+                                          0,
+                                          6,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                         null);
         return result;
     }
 
@@ -91,6 +103,18 @@ public class TitleAnalyzer extends Analyzer {
             streams.filteredTokenStream = new MusicbrainzTokenizerFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new AccentFilter(streams.filteredTokenStream);
             streams.filteredTokenStream = new LowercaseFilter(streams.filteredTokenStream);
+            streams.filteredTokenStream = new MusicbrainzWordDelimiterFilter(streams.filteredTokenStream,
+                                          WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,
+                                          1,
+                                          0,
+                                          0,
+                                          6,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                         null);
         } else {
             streams.tokenStream.reset(new PatternReplaceCharFilter(no1Pattern, no1PatternReplacement, new MappingCharFilter(charConvertMap, reader)));
         }
