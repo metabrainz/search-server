@@ -137,6 +137,7 @@ public class RateLimiterChecker {
         }
 
         String applyRateLimiter=request.getHeader(HEADER_APPLY_RATE_LIMIT);
+
         if((applyRateLimiter==null) || (applyRateLimiter.length()==0) || (!applyRateLimiter.equals("yes")))
         {
             return ALWAYS_TRUE;
@@ -147,6 +148,7 @@ public class RateLimiterChecker {
         {
             return ALWAYS_TRUE;
         }
+        log.log(Level.SEVERE, "RateLimiterCheck:"+applyRateLimiter+":Address:"+remoteIpAddress);
         return validateAgainstRateLimiter(remoteIpAddress);
     }
 
