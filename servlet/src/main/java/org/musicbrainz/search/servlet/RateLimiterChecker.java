@@ -27,7 +27,7 @@ public class RateLimiterChecker {
               "%nYou make %s requests per %s seconds, but you're currently making %s requests";
 
     private static String MSG_HEADER
-            = "%s %s %d";
+            = "%s %s %s";
     private static Pattern pe;
     private static InetAddress  rateLimiterHost;
     private static Integer      rateLimiterPort;
