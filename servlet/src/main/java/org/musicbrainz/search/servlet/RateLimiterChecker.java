@@ -178,9 +178,9 @@ public class RateLimiterChecker {
             }
             else
             {
-                msg=response.substring(4);
+                msg=response.substring(5);
                 String[] parts = msg.split(" ");
-                if(parts.length==3) {
+                if(parts.length>=3) {
                     rate=parts[0];
                     limit=parts[1];
                     period=parts[2];
