@@ -7,6 +7,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.rmi.UnknownHostException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -32,8 +33,13 @@ public class RateLimiterChecker {
     private static InetAddress  rateLimiterHost;
     private static Integer      rateLimiterPort;
     private static boolean      rateLimiterConfigured =false;
-    private static final String OVER_LIMIT_SEARCH_IP = "over_limit search ip=";
+    private static final String OVER_LIMIT_SEARCH_IP = " over_limit search ip=";
+    private static AtomicInteger count = new AtomicInteger(0);
+
+
+
     private static final RateLimiterResponse ALWAYS_TRUE = new RateLimiterResponse();
+    private static final int MAX_SIZE_OFRESPONSE_PACKET = 100;
 
     public static void init(String host, String port)
     {
@@ -95,25 +101,31 @@ public class RateLimiterChecker {
     {
         try {
 
+            int requestId = count.incrementAndGet();
+            String requestIdAsString = String.valueOf(requestId);
+
             //Send Request
-            String rateLimiter=OVER_LIMIT_SEARCH_IP+remoteIpAddress;
+            String rateLimiter=requestId+OVER_LIMIT_SEARCH_IP+remoteIpAddress;
             byte[] msg = rateLimiter.getBytes();
             DatagramSocket ds = new DatagramSocket();
             DatagramPacket dp = new DatagramPacket(msg,msg.length,rateLimiterHost,rateLimiterPort.intValue());
             ds.send(dp);
 
             //Get Response
-            byte[] receiveData = new byte[30];
+            byte[] receiveData = new byte[MAX_SIZE_OFRESPONSE_PACKET];
             DatagramPacket dpReceive = new DatagramPacket(receiveData, receiveData.length);
             ds.receive(dpReceive);
 
             //Parse Response
             String result = new String(dpReceive.getData());
-
-            //Response is in format ok %s %.1f %.1f %d
-            RateLimiterResponse rlr = new RateLimiterResponse(result);
-            return rlr;
-
+            if(result.startsWith(requestIdAsString)) {
+                RateLimiterResponse rlr = new RateLimiterResponse(result.substring(requestIdAsString.length() + 1));
+                return rlr;
+            }
+            //RequestId not matching so just let through
+            else {
+                return ALWAYS_TRUE;
+            }
         }
         catch(UnknownHostException uhe) {
             log.log(Level.SEVERE, "ValidateAgainstRateLimiter:"+uhe.getMessage(),uhe);
@@ -176,6 +188,7 @@ public class RateLimiterChecker {
 
         RateLimiterResponse(String  response)
         {
+            log.log(Level.SEVERE, "Response Was:"+response);
             if(response.startsWith("ok y"))
             {
                 valid = true;
@@ -209,7 +222,7 @@ public class RateLimiterChecker {
 
         public String getHeaderMsg()
         {
-            return msg;
+            return headerMsg;
         }
 
 
