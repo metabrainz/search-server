@@ -271,7 +271,6 @@ public class SearchServerServlet extends HttpServlet {
 
 
         RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
-        log.severe("rateLimiter:"+rateLimiterResponse.isValid());
         if(!rateLimiterResponse.isValid())
         {
             response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getMsg());

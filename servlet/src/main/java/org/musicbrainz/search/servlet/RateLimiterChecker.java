@@ -105,8 +105,6 @@ public class RateLimiterChecker {
             String result = new String(dpReceive.getData());
 
             //Response is in format ok %s %.1f %.1f %d
-            log.log(Level.SEVERE, "Response from RateLimiter is:"+result);
-
             RateLimiterResponse rlr = new RateLimiterResponse(result);
             return rlr;
 
@@ -148,7 +146,6 @@ public class RateLimiterChecker {
         {
             return ALWAYS_TRUE;
         }
-        log.log(Level.SEVERE, "RateLimiterCheck:"+applyRateLimiter+":Address:"+remoteIpAddress);
         return validateAgainstRateLimiter(remoteIpAddress);
     }
 
@@ -178,14 +175,13 @@ public class RateLimiterChecker {
             }
             else
             {
-                msg=response.substring(5);
-                String[] parts = msg.split(" ");
+                setMsg(response.substring(5));
+                String[] parts = getMsg().split(" ");
                 if(parts.length>=3) {
                     rate=parts[0];
                     limit=parts[1];
                     period=parts[2];
                 }
-                log.log(Level.SEVERE,"Msg is:"+msg+":"+rate+":"+limit+":"+period);
             }
         }
 
@@ -197,6 +193,22 @@ public class RateLimiterChecker {
         public String getMsg()
         {
             return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public String getRate() {
+            return rate;
+        }
+
+        public String getLimit() {
+            return limit;
+        }
+
+        public String getPeriod() {
+            return period;
         }
     }
 }
