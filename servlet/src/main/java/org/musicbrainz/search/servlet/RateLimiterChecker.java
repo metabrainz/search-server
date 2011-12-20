@@ -102,7 +102,7 @@ public class RateLimiterChecker {
             ds.receive(dpReceive);
 
             //Parse Response
-            String result = new String(dp.getData());
+            String result = new String(dpReceive.getData());
 
             //Response is in format ok %s %.1f %.1f %d
             log.log(Level.SEVERE, "Response from RateLimiter is:"+result);
