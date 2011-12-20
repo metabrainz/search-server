@@ -203,7 +203,7 @@ public class RateLimiterChecker {
                     period=parts[2];
 
                     try {
-                        if(new Float(rate).floatValue() < new Float(limit).floatValue()){
+                        if(new Float(rate).floatValue() > new Float(limit).floatValue()){
                             msg=String.format(MSG_SERVER_BUSY, limit, period, rate);
                             headerMsg=String.format(MSG_HEADER, rate, limit, period );
                         }
