@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -174,7 +175,7 @@ public class RateLimiterChecker {
     {
         private boolean valid       = false;
         private String  msg         = null;
-        private String  headerMsg   = "";
+        private String  headerMsg   = null;
         private String  rate        = "";
         private String  limit       = "";
         private String  period      = "";
@@ -200,8 +201,20 @@ public class RateLimiterChecker {
                     rate=parts[0];
                     limit=parts[1];
                     period=parts[2];
-                    msg=String.format(MSG_SERVER_BUSY, limit, period, rate);
-                    headerMsg=String.format(MSG_HEADER, rate, limit, period );
+
+                    try {
+                        if(new Float(rate).floatValue() < new Float(limit).floatValue()){
+                            msg=String.format(MSG_SERVER_BUSY, limit, period, rate);
+                            headerMsg=String.format(MSG_HEADER, rate, limit, period );
+                        }
+                        else {
+                            msg=String.format(MSG_SERVER_BUSY_SIMPLE);
+                        }
+                    }
+                    catch(NumberFormatException nfe) {
+                        msg=String.format(MSG_SERVER_BUSY_SIMPLE);
+                    }
+
                 }
                 else {
                     msg=String.format(MSG_SERVER_BUSY_SIMPLE);

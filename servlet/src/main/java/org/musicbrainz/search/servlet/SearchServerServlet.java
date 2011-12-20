@@ -273,7 +273,9 @@ public class SearchServerServlet extends HttpServlet {
         RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
         if(!rateLimiterResponse.isValid())
         {
-            response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
+            if(rateLimiterResponse.getHeaderMsg()!=null) {
+                response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
+            }
             response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, rateLimiterResponse.getMsg());
             return;
         } 
