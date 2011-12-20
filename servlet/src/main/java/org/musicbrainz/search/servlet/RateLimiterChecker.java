@@ -20,8 +20,14 @@ public class RateLimiterChecker {
     private static String HEADER_REQUEST_ADDRESS="X-MB-Remote-Addr";
     private static String HEADER_APPLY_RATE_LIMIT="X-Apply-Rate-Limit";
     public  static String HEADER_RATE_LIMITED="X-Rate-Limited";
-    public  static String MSG_SERVER_BUSY = "The MusicBrainz search server is currently busy. Please try again later";
+    private static String MSG_SERVER_BUSY_SIMPLE
+                = "The MusicBrainz search server is currently busy. Please try again later.";
+    private static String MSG_SERVER_BUSY
+            = "The MusicBrainz search server is currently busy. Please try again later." +
+              "%nYou make %s requests per %s seconds, but you're currently making %s requests";
 
+    private static String MSG_HEADER
+            = "%s %s %d";
     private static Pattern pe;
     private static InetAddress  rateLimiterHost;
     private static Integer      rateLimiterPort;
@@ -154,11 +160,12 @@ public class RateLimiterChecker {
      */
     static class RateLimiterResponse
     {
-        private boolean valid =false;
-        private String  msg   =null;
-        private String  rate    = "";
-        private String  limit   = "";
-        private String  period  = "";
+        private boolean valid       = false;
+        private String  msg         = null;
+        private String  headerMsg   = "";
+        private String  rate        = "";
+        private String  limit       = "";
+        private String  period      = "";
 
 
         //Dummy constructor for true;
@@ -175,13 +182,18 @@ public class RateLimiterChecker {
             }
             else
             {
-                setMsg(response.substring(5));
-                String[] parts = getMsg().split(" ");
+                String[] parts = response.substring(5).split(" ");
                 if(parts.length>=3) {
                     rate=parts[0];
                     limit=parts[1];
                     period=parts[2];
+                    msg=String.format(MSG_SERVER_BUSY, limit, period, rate);
+                    headerMsg=String.format(MSG_HEADER, rate, limit, period );
                 }
+                else {
+                    msg=String.format(MSG_SERVER_BUSY_SIMPLE);
+                }
+
             }
         }
 
@@ -195,9 +207,11 @@ public class RateLimiterChecker {
             return msg;
         }
 
-        public void setMsg(String msg) {
-            this.msg = msg;
+        public String getHeaderMsg()
+        {
+            return msg;
         }
+
 
         public String getRate() {
             return rate;
