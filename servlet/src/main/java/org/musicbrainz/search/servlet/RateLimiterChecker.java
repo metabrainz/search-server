@@ -159,6 +159,10 @@ public class RateLimiterChecker {
     {
         private boolean valid =false;
         private String  msg   =null;
+        private String  rate    = "";
+        private String  limit   = "";
+        private String  period  = "";
+
 
         //Dummy constructor for true;
         RateLimiterResponse()
@@ -175,6 +179,13 @@ public class RateLimiterChecker {
             else
             {
                 msg=response.substring(4);
+                String[] parts = msg.split(" ");
+                if(parts.length==3) {
+                    rate=parts[0];
+                    limit=parts[1];
+                    period=parts[2];
+                }
+                log.log(Level.SEVERE,"Msg is:"+msg+":"+rate+":"+limit+":"+period);
             }
         }
 
