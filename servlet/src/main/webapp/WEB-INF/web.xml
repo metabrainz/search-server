@@ -21,8 +21,12 @@
   <init-param>
      <param-name>index_dir</param-name>
      <param-value>/home/ijabz/indexdata</param-value>
+  </init-param>
+  <init-param>
      <param-name>ratelimitserver_host</param-name>
-     <param-value>hobbes.localdomain</param-value>
+     <param-value>localhost</param-value>
+  </init-param>
+  <init-param>
      <param-name>ratelimitserver_port</param-name>
      <param-value>2000</param-value>
   </init-param>

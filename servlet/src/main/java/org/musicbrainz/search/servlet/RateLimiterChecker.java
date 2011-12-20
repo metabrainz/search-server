@@ -10,6 +10,7 @@ import java.rmi.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class RateLimiterChecker {
 
@@ -19,23 +20,31 @@ public class RateLimiterChecker {
     private static String HEADER_REQUEST_ADDRESS="X-MB-Remote-Addr";
     private static String HEADER_APPLY_RATE_LIMIT="X-Apply-Rate-Limit";
     public  static String HEADER_RATE_LIMITED="X-Rate-Limited";
-    public static String MSG_SERVER_BUSY = "The MusicBrainz search server is currently busy. Please try again later";
+    public  static String MSG_SERVER_BUSY = "The MusicBrainz search server is currently busy. Please try again later";
 
-    private static Pattern pe
-            = Pattern.compile("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
-
+    private static Pattern pe;
     private static InetAddress  rateLimiterHost;
     private static Integer      rateLimiterPort;
+    private static boolean      rateLimiterConfigured =false;
     private static final String OVER_LIMIT_SEARCH_IP = "over_limit search ip=";
     private static final RateLimiterResponse ALWAYS_TRUE = new RateLimiterResponse();
 
     public static void init(String host, String port)
     {
         try {
+            pe = Pattern.compile("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$");
+        }
+        catch(PatternSyntaxException pe) {
+                    log.log(Level.SEVERE, "Unable to compile pattern:"+pe.getMessage(),pe);
+            return;
+        }
+
+        try {
             rateLimiterHost=InetAddress.getByName(host);
         }
         catch(java.net.UnknownHostException uhe) {
             log.log(Level.SEVERE, "Unable to init rate limiter:"+uhe.getMessage(),uhe);
+            return;
         }
 
         try {
@@ -43,7 +52,10 @@ public class RateLimiterChecker {
         }
         catch(NumberFormatException ne) {
             log.log(Level.SEVERE, "Unable to init rate limiter:"+ne.getMessage(),pe);
+            return;
         }
+
+        rateLimiterConfigured =true;
     }
 
     /**
@@ -64,16 +76,7 @@ public class RateLimiterChecker {
      */
     private static boolean isRateLimiterConfigured()
     {
-        if(rateLimiterHost==null)
-        {
-            return false;
-        }
-
-        if(rateLimiterPort==null || rateLimiterPort.intValue()>0)
-        {
-            return false;
-        }
-        return true;
+        return rateLimiterConfigured;
     }
 
     /**
