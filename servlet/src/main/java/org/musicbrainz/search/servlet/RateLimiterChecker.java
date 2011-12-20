@@ -112,17 +112,16 @@ public class RateLimiterChecker {
 
         }
         catch(UnknownHostException uhe) {
-
+            log.log(Level.SEVERE, "ValidateAgainstRateLimiter:"+uhe.getMessage(),uhe);
         }
         catch(SocketException se) {
+            log.log(Level.SEVERE, "ValidateAgainstRateLimiter:"+se.getMessage(),se);
 
         }
-        catch(IOException uhe) {
-
+        catch(IOException ioe) {
+            log.log(Level.SEVERE, "ValidateAgainstRateLimiter:"+ioe.getMessage(),ioe);
         }
-        finally {
-            return ALWAYS_TRUE;
-        }
+        return ALWAYS_TRUE;
     }
 
     /**
