@@ -24,7 +24,7 @@ public class RateLimiterChecker {
                 = "The MusicBrainz search server is currently busy. Please try again later.";
     private static String MSG_SERVER_BUSY
             = "The MusicBrainz search server is currently busy. Please try again later." +
-              "%nYou make %s requests per %s seconds, but you're currently making %s requests";
+              "%nYou are limited to making %s requests per %s seconds, but you're currently making %s requests in that period";
 
     private static String MSG_HEADER
             = "%s %s %s";
