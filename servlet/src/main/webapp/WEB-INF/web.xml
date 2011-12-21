@@ -23,6 +23,10 @@
      <param-value>/home/ijabz/indexdata</param-value>
   </init-param>
   <init-param>
+      <param-name>ratelimitserver_enabled</param-name>
+      <param-value>true</param-value>
+  </init-param>
+  <init-param>
      <param-name>ratelimitserver_host</param-name>
      <param-value>localhost</param-value>
   </init-param>

@@ -80,11 +80,13 @@ public class SearchServerServlet extends HttpServlet {
     private static final String MUSICBRAINZ_SEARCH_WEBPAGE = "http://www.musicbrainz.org/search.html";
 
 
+    private static boolean isRateLimiterEnabled = false;
 
     @Override
     public void init() {
         init(true);
     }
+
 
     /**
      * If you have indexes that are available this reads from the new indexes and closes the existing readers
@@ -93,11 +95,8 @@ public class SearchServerServlet extends HttpServlet {
      */
     public void init(boolean useMMapDirectory)   {
 
-        //Initialize rate limiter config
-        String rateLimiterHost = getServletConfig().getInitParameter("ratelimitserver_host");
-        String rateLimiterPort = getServletConfig().getInitParameter("ratelimitserver_port");
-        log.info("RateLimiterHost:"+rateLimiterHost+":Port:"+rateLimiterPort);
-        RateLimiterChecker.init(rateLimiterHost, rateLimiterPort);
+        String rateLimiterEnabled = getServletConfig().getInitParameter("ratelimitserver_enabled");
+        initRateLimiter(rateLimiterEnabled);
 
         String indexDir = getServletConfig().getInitParameter("index_dir");
         if(useMMapDirectory)  {
@@ -168,6 +167,20 @@ public class SearchServerServlet extends HttpServlet {
     }
 
     /**
+     * Init Rate Limiter
+     *
+     */
+    private void initRateLimiter(String rateLimiterEnabled) {
+        String rateLimiterHost = getServletConfig().getInitParameter("ratelimitserver_host");
+        String rateLimiterPort = getServletConfig().getInitParameter("ratelimitserver_port");
+        log.info("RateLimiter:"+rateLimiterEnabled+":RateLimiterHost:"+rateLimiterHost+":Port:"+rateLimiterPort);
+        isRateLimiterEnabled = Boolean.parseBoolean(rateLimiterEnabled);
+        if(isRateLimiterEnabled) {
+            RateLimiterChecker.init(rateLimiterHost, rateLimiterPort);
+        }
+    }
+
+    /**
      * If Index has just been updated (Documents added or removed from existing index) you can use this
      * method to read the latest documents from the index.
      *
@@ -212,7 +225,18 @@ public class SearchServerServlet extends HttpServlet {
             response.getOutputStream().close();
             return;
         }
-        
+
+        // Enabled/Disable Rate Limiter
+        String rate = request.getParameter(RequestParameter.RATE.getName());
+        if (rate != null) {
+            initRateLimiter(rate);
+            response.setCharacterEncoding(CHARSET);
+            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+            response.getOutputStream().println("Rate Limiter:"+rate);
+            response.getOutputStream().close();
+            return;
+        }
+
         // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
         if (reloadIndexes != null) {
@@ -269,16 +293,17 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
 
-
-        RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
-        if(!rateLimiterResponse.isValid())
-        {
-            if(rateLimiterResponse.getHeaderMsg()!=null) {
-                response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
+        if(isRateLimiterEnabled) {
+            RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
+            if(!rateLimiterResponse.isValid())
+            {
+                if(rateLimiterResponse.getHeaderMsg()!=null) {
+                    response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
+                }
+                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, rateLimiterResponse.getMsg());
+                return;
             }
-            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, rateLimiterResponse.getMsg());
-            return;
-        } 
+        }
 
         String query = request.getParameter(RequestParameter.QUERY.getName());
         if (query == null || query.isEmpty()) {

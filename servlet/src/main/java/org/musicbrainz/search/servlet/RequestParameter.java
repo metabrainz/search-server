@@ -41,6 +41,7 @@ public enum RequestParameter {
     // For admin only
     INIT ("init"),
     RELOAD_INDEXES ("reload"),
+    RATE("rate"),
     ;
     
     private String name;
