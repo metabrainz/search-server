@@ -226,6 +226,7 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
 
+        /*
         // Enabled/Disable Rate Limiter
         String rate = request.getParameter(RequestParameter.RATE.getName());
         if (rate != null) {
@@ -236,6 +237,7 @@ public class SearchServerServlet extends HttpServlet {
             response.getOutputStream().close();
             return;
         }
+        */
 
         // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
