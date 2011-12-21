@@ -231,6 +231,7 @@ public class SearchServerServlet extends HttpServlet {
         // Force initialization of search server should be called when index have been replaced by new indexes
         String init = request.getParameter(RequestParameter.INIT.getName());
         if (init != null) {
+            log.info("Checking init request");
             if(isRequestFromLocalHost(request)) {
                 init(init.equals("mmap"));
                 response.setCharacterEncoding(CHARSET);
@@ -250,6 +251,7 @@ public class SearchServerServlet extends HttpServlet {
         // Enabled/Disable Rate Limiter
         String rate = request.getParameter(RequestParameter.RATE.getName());
         if (rate != null) {
+            log.info("Checking rate request");
             if(isRequestFromLocalHost(request)) {
                 initRateLimiter(rate);
                 response.setCharacterEncoding(CHARSET);
@@ -267,6 +269,7 @@ public class SearchServerServlet extends HttpServlet {
         // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
         if (reloadIndexes != null) {
+            log.info("Checking reloadindex request");
             if(isRequestFromLocalHost(request)) {
                 reloadIndexes();
                 response.setCharacterEncoding(CHARSET);
@@ -285,6 +288,7 @@ public class SearchServerServlet extends HttpServlet {
         // parameter
         String count = request.getParameter(RequestParameter.COUNT.getName());
         if(count != null) {
+            log.info("Checking count request");
             if(isRequestFromLocalHost(request)) {
                 ResourceType resourceType = ResourceType.getValue(count);
                 if(resourceType == null) {
