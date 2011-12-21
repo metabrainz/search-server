@@ -294,27 +294,23 @@ public class SearchServerServlet extends HttpServlet {
         
         // If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
         // parameter
+        // TODO we dont use isRequestFromLocalHost on this command because it is non-destructive, and I think there are scripts
+        // calling this in a way that would currently fail
         String count = request.getParameter(RequestParameter.COUNT.getName());
         if(count != null) {
             log.info("Checking count request");
-            if(isRequestFromLocalHost(request)) {
-                ResourceType resourceType = ResourceType.getValue(count);
-                if(resourceType == null) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
-                    return;
-                }
+            ResourceType resourceType = ResourceType.getValue(count);
+            if(resourceType == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
+                return;
+            }
 
-                SearchServer searchServerCount = searchers.get(resourceType);
-                response.setCharacterEncoding(CHARSET);
-                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getOutputStream().println(searchServerCount.getCount());
-                response.getOutputStream().close();
-                return;
-            }
-            else {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
+            SearchServer searchServerCount = searchers.get(resourceType);
+            response.setCharacterEncoding(CHARSET);
+            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+            response.getOutputStream().println(searchServerCount.getCount());
+            response.getOutputStream().close();
+            return;
         }
 
         // If they have entered nothing, redirect to them the Musicbrainz Search Page
