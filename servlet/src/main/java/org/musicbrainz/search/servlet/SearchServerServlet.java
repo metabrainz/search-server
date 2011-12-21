@@ -201,6 +201,13 @@ public class SearchServerServlet extends HttpServlet {
     }
 
 
+    private boolean isRequestFromLocalHost(HttpServletRequest request)
+    {
+        if(request.getLocalName().equals("localhost")) {
+            return true;
+        }
+        return false;
+    }
 
 
     @Override
@@ -218,54 +225,78 @@ public class SearchServerServlet extends HttpServlet {
         // Force initialization of search server should be called when index have been replaced by new indexes
         String init = request.getParameter(RequestParameter.INIT.getName());
         if (init != null) {
-            init(init.equals("mmap"));
-            response.setCharacterEncoding(CHARSET);
-            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-            response.getOutputStream().println("Indexes Loaded");
-            response.getOutputStream().close();
-            return;
+            if(isRequestFromLocalHost(request)) {
+                init(init.equals("mmap"));
+                response.setCharacterEncoding(CHARSET);
+                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                response.getOutputStream().println("Indexes Loaded:");
+                response.getOutputStream().close();
+                return;
+            }
+            else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
         }
 
-        /*
+
         // Enabled/Disable Rate Limiter
         String rate = request.getParameter(RequestParameter.RATE.getName());
         if (rate != null) {
-            initRateLimiter(rate);
-            response.setCharacterEncoding(CHARSET);
-            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-            response.getOutputStream().println("Rate Limiter:"+rate);
-            response.getOutputStream().close();
-            return;
+            if(isRequestFromLocalHost(request)) {
+                initRateLimiter(rate);
+                response.setCharacterEncoding(CHARSET);
+                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                response.getOutputStream().println("Rate Limiter:"+rate);
+                response.getOutputStream().close();
+                return;
+            }
+            else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
         }
-        */
 
         // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
         if (reloadIndexes != null) {
-        	reloadIndexes();
-            response.setCharacterEncoding(CHARSET);
-            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-            response.getOutputStream().println("Indexes Reloaded");
-            response.getOutputStream().close();
-            return;
+            if(isRequestFromLocalHost(request)) {
+                reloadIndexes();
+                response.setCharacterEncoding(CHARSET);
+                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                response.getOutputStream().println("Indexes Reloaded");
+                response.getOutputStream().close();
+                return;
+            }
+            else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
         }
-
+        
         // If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
         // parameter
         String count = request.getParameter(RequestParameter.COUNT.getName());
         if(count != null) {
-            ResourceType resourceType = ResourceType.getValue(count);
-            if(resourceType == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
+            if(isRequestFromLocalHost(request)) {
+                ResourceType resourceType = ResourceType.getValue(count);
+                if(resourceType == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
+                    return;
+                }
+
+                SearchServer searchServerCount = searchers.get(resourceType);
+                response.setCharacterEncoding(CHARSET);
+                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                response.getOutputStream().println(searchServerCount.getCount());
+                response.getOutputStream().close();
                 return;
             }
-
-            SearchServer searchServerCount = searchers.get(resourceType);
-            response.setCharacterEncoding(CHARSET);
-            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-            response.getOutputStream().println(searchServerCount.getCount());
-            response.getOutputStream().close();
-            return;
+            else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
         }
 
         // If they have entered nothing, redirect to them the Musicbrainz Search Page
