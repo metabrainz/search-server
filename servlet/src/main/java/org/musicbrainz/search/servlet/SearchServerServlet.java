@@ -203,6 +203,7 @@ public class SearchServerServlet extends HttpServlet {
 
     private boolean isRequestFromLocalHost(HttpServletRequest request)
     {
+        log.info("isRequestFromLocalHost:"+request.getLocalName());
         if(request.getLocalName().equals("localhost")) {
             return true;
         }
