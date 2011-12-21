@@ -201,17 +201,25 @@ public class SearchServerServlet extends HttpServlet {
     }
 
 
+    /**
+     * Ensures that admin requests are coming direct from local machine
+     *
+     * @param request
+     * @return
+     */
     private boolean isRequestFromLocalHost(HttpServletRequest request)
     {
-        log.info("isRequestFromLocalHost:"+request.getRemoteHost()+"/"+request.getRemoteAddr());
+
         if(
                 (request.getRemoteAddr().equals("127.0.0.1"))
                         ||
                 (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1"))
           )
         {
+            log.info("isRequestFromLocalHost:VALID:"+request.getRemoteHost()+"/"+request.getRemoteAddr());
             return true;
         }
+        log.info("isRequestFromLocalHost:INVALID:"+request.getRemoteHost()+"/"+request.getRemoteAddr());
         return false;
     }
 
