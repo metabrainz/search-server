@@ -191,7 +191,7 @@ public class RateLimiterChecker {
         RateLimiterResponse(String  response)
         {
             //log.log(Level.SEVERE, "Response Was:"+response);
-            if(response.startsWith("ok y"))
+            if(response.startsWith("ok n"))
             {
                 valid = true;
             }
