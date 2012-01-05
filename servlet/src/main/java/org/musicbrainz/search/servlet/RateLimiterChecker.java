@@ -25,8 +25,8 @@ public class RateLimiterChecker {
     private static String MSG_SERVER_BUSY_SIMPLE
                 = "The MusicBrainz search server is currently busy. Please try again later.";
     private static String MSG_SERVER_BUSY
-            = "Your requests are exceeding the allowable rate limit." +
-              "%nYou are limited to making %s requests per %s seconds, but you're currently making %s requests in that period"+
+            = "Your requests are exceeding the allowable rate limit, " +
+              "you are limited to making %s requests per %s seconds, but you're currently making %s requests in that period. "+
               "Please see http://wiki.musicbrainz.org/XMLWebService for more information.";
     
     private static String MSG_HEADER
