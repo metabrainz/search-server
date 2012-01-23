@@ -84,11 +84,13 @@ public class RecordingQueryParser extends MultiFieldQueryParser {
      */
     @Override
     protected Query getFieldQuery(String field, String queryText,boolean quoted)  throws ParseException {
-        if( field.equals(V1TrackIndexField.TRACK.getName())) {
-            field=RecordingIndexField.RECORDING.getName();
-        }
-        else if( field.equals(V1TrackIndexField.TRACK_ID.getName())) {
-            field=RecordingIndexField.RECORDING_ID.getName();
+        if(field!=null) {
+            if( field.equals(V1TrackIndexField.TRACK.getName())) {
+                field=RecordingIndexField.RECORDING.getName();
+            }
+            else if( field.equals(V1TrackIndexField.TRACK_ID.getName())) {
+                field=RecordingIndexField.RECORDING_ID.getName();
+            }
         }
         return super.getFieldQuery(field,queryText, quoted);
     }
