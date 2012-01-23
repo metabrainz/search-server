@@ -9,11 +9,11 @@ public class ArtistDismaxSearch extends ArtistSearch {
 
     private static final String  mask =
             "artist:\"{0}\"^1.6 " +
-        "(+sortname:\"{0}\"^1.6 -$type:\"{0}\") " +
-        "(+alias:\"{0}\" -$type:\"{0}\" -sortname:\"{0}\") "  +
-        "(+($type:({0})^0.8) -$type:\"{0}\" -sortname:\"{0}\" -alias:\"{0}\") "  +
-        "(+(sortname:({0})^0.8) -$type:({0}) -sortname:\"{0}\" -alias:\"{0}\") " +
-        "(+(alias:({0})^0.4) -$type:({0}) -sortname:({0}) -alias:\"{0}\")";
+        "(+sortname:\"{0}\"^1.6 -artist:\"{0}\") " +
+        "(+alias:\"{0}\" -artist:\"{0}\" -sortname:\"{0}\") "  +
+        "(+($artist:({0})^0.8) -artist:\"{0}\" -sortname:\"{0}\" -alias:\"{0}\") "  +
+        "(+(sortname:({0})^0.8) -artist:({0}) -sortname:\"{0}\" -alias:\"{0}\") " +
+        "(+(alias:({0})^0.4) -artist:({0}) -sortname:({0}) -alias:\"{0}\")";
 
     /**
      * Standard Search
@@ -37,6 +37,7 @@ public class ArtistDismaxSearch extends ArtistSearch {
     public ArtistDismaxSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
         super(searcher, query, offset, limit);
     }
+
 
 
     protected Query parseQuery(String query) throws ParseException

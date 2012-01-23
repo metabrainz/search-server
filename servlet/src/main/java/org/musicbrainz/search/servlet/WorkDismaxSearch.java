@@ -9,11 +9,11 @@ public class WorkDismaxSearch extends ArtistSearch {
 
     private static final String  mask =
             "work:\"{0}\"^1.6 " +
-        "(+sortname:\"{0}\"^1.6 -$type:\"{0}\") " +
-        "(+alias:\"{0}\" -$type:\"{0}\" -sortname:\"{0}\") "  +
-        "(+($type:({0})^0.8) -$type:\"{0}\" -sortname:\"{0}\" -alias:\"{0}\") "  +
-        "(+(sortname:({0})^0.8) -$type:({0}) -sortname:\"{0}\" -alias:\"{0}\") " +
-        "(+(alias:({0})^0.4) -$type:({0}) -sortname:({0}) -alias:\"{0}\")";
+        "(+sortname:\"{0}\"^1.6 -work:\"{0}\") " +
+        "(+alias:\"{0}\" -work:\"{0}\" -sortname:\"{0}\") "  +
+        "(+(work:({0})^0.8) -work:\"{0}\" -sortname:\"{0}\" -alias:\"{0}\") "  +
+        "(+(sortname:({0})^0.8) -work:({0}) -sortname:\"{0}\" -alias:\"{0}\") " +
+        "(+(alias:({0})^0.4) -work:({0}) -sortname:({0}) -alias:\"{0}\")";
 
     /**
      * Standard Search
