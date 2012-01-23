@@ -8,10 +8,7 @@ import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.LabelIndexField;
-import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelType;
-import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
-import org.musicbrainz.search.servlet.mmd1.ReleaseStatus;
 
 public class LabelQueryParser extends MultiFieldQueryParser {
 

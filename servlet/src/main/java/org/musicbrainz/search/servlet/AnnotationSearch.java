@@ -12,11 +12,15 @@ import java.util.ArrayList;
 
 public class AnnotationSearch extends SearchServer {
 
+    protected void setupDefaultFields() {
+        defaultFields = new ArrayList<String>();
+        defaultFields.add(AnnotationIndexField.TEXT.getName());
+    }
+
     private AnnotationSearch() throws Exception {
         resultsWriter = new AnnotationWriter();
         mmd1XmlWriter = null;
-        defaultFields = new ArrayList<String>();
-        defaultFields.add(AnnotationIndexField.TEXT.getName());
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(AnnotationIndexField.class);
     }
 

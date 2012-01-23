@@ -11,11 +11,15 @@ import java.util.ArrayList;
 
 public class TagSearch extends SearchServer {
 
+    protected void setupDefaultFields() {
+        defaultFields       = new ArrayList<String>();
+        defaultFields.add(TagIndexField.TAG.getName());
+    }
+
     public TagSearch() throws Exception {
     
         resultsWriter = new TagWriter();
-        defaultFields = new ArrayList<String>();
-        defaultFields.add(TagIndexField.TAG.getName());
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
     }
 

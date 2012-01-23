@@ -12,11 +12,11 @@ public enum ResourceType {
     RELEASE 		("release", 		ReleaseIndex.class, 		ReleaseSearch.class, ReleaseDismaxSearch.class, true),
     RELEASE_GROUP 	("release-group",	ReleaseGroupIndex.class, 	ReleaseGroupSearch.class, ReleaseGroupDismaxSearch.class, true),
     RECORDING 		("recording", 		RecordingIndex.class, 		RecordingSearch.class, RecordingDismaxSearch.class, true),
-    CDSTUB 			("cdstub", 			CDStubIndex.class, 			CDStubSearch.class, CDStubSearch.class, false),
-    FREEDB 			("freedb", 			FreeDBIndex.class, 			FreeDBSearch.class, FreeDBSearch.class, false),
-    ANNOTATION 		("annotation", 		AnnotationIndex.class, 		AnnotationSearch.class, AnnotationSearch.class, false),
+    CDSTUB 			("cdstub", 			CDStubIndex.class, 			CDStubSearch.class, CDStubDismaxSearch.class, false),
+    FREEDB 			("freedb", 			FreeDBIndex.class, 			FreeDBSearch.class, FreeDBDismaxSearch.class, false),
+    ANNOTATION 		("annotation", 		AnnotationIndex.class, 		AnnotationSearch.class, AnnotationDismaxSearch.class, false),
     WORK 			("work", 			WorkIndex.class, 			WorkSearch.class, WorkDismaxSearch.class, true),
-    TAG 			("tag", 			TagIndex.class, 			TagSearch.class, TagSearch.class, false),
+    TAG 			("tag", 			TagIndex.class, 			TagSearch.class, TagDismaxSearch.class, false),
     ;
 
     private String name;

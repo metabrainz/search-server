@@ -2,7 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
@@ -17,10 +17,10 @@ import org.musicbrainz.search.servlet.mmd1.ReleaseStatus;
  * Subclasses QueryParser to handle numeric fields that we might want wish to do range queries for and handle type
  * searches specified using integers.
  */
-public class ReleaseQueryParser extends QueryParser {
+public class ReleaseQueryParser extends MultiFieldQueryParser {
 
-    public ReleaseQueryParser(String field, Analyzer a) {
-        super(LuceneVersion.LUCENE_VERSION, field, a);
+    public ReleaseQueryParser(java.lang.String[] strings, Analyzer a) {
+        super(LuceneVersion.LUCENE_VERSION, strings, a);
     }
 
     protected Query newTermQuery(Term term) {

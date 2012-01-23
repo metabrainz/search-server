@@ -13,12 +13,16 @@ import java.util.ArrayList;
 
 public class CDStubSearch extends SearchServer {
 
-    private CDStubSearch() throws Exception {
-        resultsWriter = new CDStubWriter();
-        mmd1XmlWriter = null;
+    protected void setupDefaultFields() {
         defaultFields = new ArrayList<String>();
         defaultFields.add(CDStubIndexField.ARTIST.getName());
         defaultFields.add(CDStubIndexField.TITLE.getName());
+    }
+
+    private CDStubSearch() throws Exception {
+        resultsWriter = new CDStubWriter();
+        mmd1XmlWriter = null;
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(CDStubIndexField.class);
     }
 

@@ -12,12 +12,16 @@ import java.util.ArrayList;
 
 public class ReleaseSearch extends SearchServer {
 
+    protected void setupDefaultFields() {
+        defaultFields       = new ArrayList<String>();
+        defaultFields.add(ReleaseIndexField.RELEASE.getName());
+    }
+
     public ReleaseSearch() throws Exception {
     
         resultsWriter = new ReleaseWriter();
         mmd1XmlWriter = new ReleaseMmd1XmlWriter();
-        defaultFields = new ArrayList<String>();
-        defaultFields.add(ReleaseIndexField.RELEASE.getName());
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
     }
 
@@ -35,6 +39,6 @@ public class ReleaseSearch extends SearchServer {
 
      @Override
     protected QueryParser getParser() {
-       return new ReleaseQueryParser(defaultFields.get(0), analyzer);
+       return new ReleaseQueryParser(defaultFields.toArray(new String[0]), analyzer);
     }
 }

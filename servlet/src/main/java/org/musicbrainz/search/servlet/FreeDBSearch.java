@@ -13,12 +13,16 @@ import java.util.ArrayList;
 
 public class FreeDBSearch extends SearchServer {
 
-    private FreeDBSearch() throws Exception {
-        resultsWriter = new FreeDBWriter();
-        mmd1XmlWriter = null;
+    protected void setupDefaultFields() {
         defaultFields = new ArrayList<String>();
         defaultFields.add(FreeDBIndexField.ARTIST.getName());
         defaultFields.add(FreeDBIndexField.TITLE.getName());
+    }
+
+    private FreeDBSearch() throws Exception {
+        resultsWriter = new FreeDBWriter();
+        mmd1XmlWriter = null;
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(FreeDBIndexField.class);
     }
 

@@ -10,14 +10,19 @@ import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 import java.util.ArrayList;
 
 
-public class ReleaseGroupSearch extends SearchServer{
+public class ReleaseGroupSearch extends SearchServer {
+
+    protected void setupDefaultFields() {
+        defaultFields = new ArrayList<String>();
+        defaultFields.add(ReleaseGroupIndexField.RELEASEGROUP.getName());
+    }
+
 
     public ReleaseGroupSearch() throws Exception {
-    
+
         resultsWriter = new ReleaseGroupWriter();
         mmd1XmlWriter = new ReleaseGroupMmd1XmlWriter();
-        defaultFields       = new ArrayList<String>();
-        defaultFields.add(ReleaseGroupIndexField.RELEASEGROUP.getName());
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(ReleaseGroupIndexField.class);
     }
 
@@ -28,14 +33,14 @@ public class ReleaseGroupSearch extends SearchServer{
 
     public ReleaseGroupSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
         this(searcher);
-        this.query=query;
-        this.offset=offset;
-        this.limit=limit;
+        this.query = query;
+        this.offset = offset;
+        this.limit = limit;
     }
 
     @Override
     protected QueryParser getParser() {
-       return new ReleaseGroupQueryParser(defaultFields.get(0), analyzer);
+        return new ReleaseGroupQueryParser(defaultFields.toArray(new String[0]), analyzer);
     }
 
 }

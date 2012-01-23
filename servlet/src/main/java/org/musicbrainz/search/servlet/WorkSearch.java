@@ -11,12 +11,15 @@ import java.util.ArrayList;
 
 public class WorkSearch extends SearchServer {
 
-    public WorkSearch() throws Exception {
-    
-        resultsWriter = new WorkWriter();
+    protected void setupDefaultFields() {
         defaultFields = new ArrayList<String>();
         defaultFields.add(WorkIndexField.WORK.getName());
         defaultFields.add(WorkIndexField.ALIAS.getName());
+    }
+
+    public WorkSearch() throws Exception {
+        resultsWriter = new WorkWriter();
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(WorkIndexField.class);
     }
 

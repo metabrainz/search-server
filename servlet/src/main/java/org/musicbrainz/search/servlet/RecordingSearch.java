@@ -12,12 +12,16 @@ import java.util.ArrayList;
 
 public class RecordingSearch extends SearchServer {
 
+    protected void setupDefaultFields() {
+        defaultFields = new ArrayList<String>();
+        defaultFields.add(RecordingIndexField.RECORDING.getName());
+    }
+
     public RecordingSearch() throws Exception {
     
         resultsWriter = new RecordingWriter();
         mmd1XmlWriter = new TrackMmd1XmlWriter();
-        defaultFields = new ArrayList<String>();
-        defaultFields.add(RecordingIndexField.RECORDING.getName());
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(RecordingIndexField.class);
     }
 
@@ -35,7 +39,7 @@ public class RecordingSearch extends SearchServer {
 
     @Override
     protected QueryParser getParser() {
-       return new RecordingQueryParser(defaultFields.get(0), analyzer);
+       return new RecordingQueryParser(defaultFields.toArray(new String[0]), analyzer);
     }
 
 

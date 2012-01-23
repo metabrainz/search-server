@@ -4,8 +4,19 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.musicbrainz.search.index.RecordingIndexField;
+
+import java.util.ArrayList;
 
 public class RecordingDismaxSearch extends RecordingSearch {
+
+    protected void setupDefaultFields() {
+        defaultFields       = new ArrayList<String>();
+        defaultFields.add(RecordingIndexField.RECORDING.getName());
+        defaultFields.add(RecordingIndexField.RELEASE.getName());
+        defaultFields.add(RecordingIndexField.ARTIST.getName());
+        defaultFields.add(RecordingIndexField.ARTIST_NAMECREDIT.getName());
+    }
 
     /**
      * Standard Search

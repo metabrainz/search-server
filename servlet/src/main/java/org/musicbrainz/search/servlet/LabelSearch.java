@@ -12,14 +12,18 @@ import java.util.ArrayList;
 
 public class LabelSearch extends SearchServer {
 
-    public LabelSearch() throws Exception {
-    
-        resultsWriter = new LabelWriter();
-        mmd1XmlWriter = new LabelMmd1XmlWriter();
+    protected void setupDefaultFields() {
         defaultFields = new ArrayList<String>();
         defaultFields.add(LabelIndexField.LABEL.getName());
         defaultFields.add(LabelIndexField.ALIAS.getName());
         defaultFields.add(LabelIndexField.SORTNAME.getName());
+    }
+
+    public LabelSearch() throws Exception {
+    
+        resultsWriter = new LabelWriter();
+        mmd1XmlWriter = new LabelMmd1XmlWriter();
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(LabelIndexField.class);
 
     }

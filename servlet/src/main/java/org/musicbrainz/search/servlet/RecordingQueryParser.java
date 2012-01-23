@@ -2,8 +2,8 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
@@ -13,15 +13,17 @@ import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.V1TrackIndexField;
 
+import javax.swing.text.html.HTMLDocument;
+
 
 /**
  * Subclasses QueryParser to handle numeric fields that we might want wish to do range queries for and handle type
  * searches specified using integers.
  */
-public class RecordingQueryParser extends QueryParser {
+public class RecordingQueryParser extends MultiFieldQueryParser {
 
-    public RecordingQueryParser(String field, Analyzer a) {
-        super(LuceneVersion.LUCENE_VERSION, field, a);
+    public RecordingQueryParser(java.lang.String[] strings, Analyzer a) {
+        super(LuceneVersion.LUCENE_VERSION, strings, a);
     }
 
     /**
@@ -91,6 +93,18 @@ public class RecordingQueryParser extends QueryParser {
         return super.getFieldQuery(field,queryText, quoted);
     }
 
+    @Override
+    protected Query getFieldQuery(String field, String queryText,int slop)  throws ParseException {
+        if(field!=null) {
+            if( field.equals(V1TrackIndexField.TRACK.getName())) {
+                field=RecordingIndexField.RECORDING.getName();
+            }
+            else if( field.equals(V1TrackIndexField.TRACK_ID.getName())) {
+                field=RecordingIndexField.RECORDING_ID.getName();
+            }
+        }
+        return super.getFieldQuery(field,queryText, slop);
+    }
 
     /**
      *

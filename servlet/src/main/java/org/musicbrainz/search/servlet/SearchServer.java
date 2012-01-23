@@ -29,7 +29,6 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -50,7 +49,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 public abstract class SearchServer implements Callable<Results> {
 
