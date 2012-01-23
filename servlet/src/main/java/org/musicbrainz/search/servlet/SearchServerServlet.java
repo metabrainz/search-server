@@ -62,20 +62,27 @@ public class SearchServerServlet extends HttpServlet {
     final static int DEFAULT_MATCHES_LIMIT = 25;
     final static int MAX_MATCHES_LIMIT = 100;
 
-    public final static String RESPONSE_XML    = "xml";
-    public final static String RESPONSE_JSON   = "json";
+    public final static String RESPONSE_XML = "xml";
+    public final static String RESPONSE_JSON = "json";
 
     final static String WS_VERSION_1 = "1";
     final static String WS_VERSION_2 = "2";
 
     final static String CHARSET = "UTF-8";
 
-    //final static String TYPE_ALL    = "all";
-    final static String TYPE_TRACK  = "track";
+    final static String TYPE_ALL = "all";
+    final static String TYPE_TRACK = "track";
 
     private boolean isServletInitialized = false;
+
+    //Enabled as long indexes for all resources are available
+    private boolean isSearchAllEnabled = true;
+
+    //When doing search over multiple indexes use this executorservice to run in parallel
+    private ExecutorService es = Executors.newCachedThreadPool();
+
     private EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
-    
+
     private String initMessage = null;
     private static final String MUSICBRAINZ_SEARCH_WEBPAGE = "http://www.musicbrainz.org/search.html";
 
@@ -87,64 +94,71 @@ public class SearchServerServlet extends HttpServlet {
         init(true);
     }
 
-
     /**
      * If you have indexes that are available this reads from the new indexes and closes the existing readers
      *
      * @param useMMapDirectory
      */
-    public void init(boolean useMMapDirectory)   {
+    public void init(boolean useMMapDirectory) {
 
         String rateLimiterEnabled = getServletConfig().getInitParameter("ratelimitserver_enabled");
         initRateLimiter(rateLimiterEnabled);
 
         String indexDir = getServletConfig().getInitParameter("index_dir");
-        if(useMMapDirectory)  {
+        if (useMMapDirectory) {
             log.info("Start:Loading Indexes from " + indexDir + ",Type:mmap," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         } else {
-            log.info("Start:loading Indexes from " + indexDir + ",Type:nfio,"+ "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
+            log.info("Start:loading Indexes from " + indexDir + ",Type:nfio," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         }
 
         // Initialize all search servers
         for (ResourceType resourceType : ResourceType.values()) {
-    		
-    		File indexFileDir = new File(indexDir + System.getProperty("file.separator") + resourceType.getIndexName() + "_index");
-        	
-    		SearchServer searchServer = null;
-			try {
-				
-				Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
-				IndexSearcher indexSearcher = new IndexSearcher(directory);
-				searchServer = resourceType.getSearchServerClass().getConstructor(IndexSearcher.class).newInstance(indexSearcher);
-				
-			} catch (CorruptIndexException e) {
-				log.warning("Could not load " + resourceType.getIndexName() + " index, index is corrupted: " + e.getMessage());
-			} catch (IOException e) {
-				log.warning("Could not load " + resourceType.getIndexName() + " index: " + e.getMessage());
-			} catch (Exception e) {
-                log.log(Level.WARNING,"Could not load " + resourceType.getIndexName() + " index: " + e.getMessage() ,e);
-			}
+
+            File indexFileDir = new File(indexDir + System.getProperty("file.separator") + resourceType.getIndexName() + "_index");
+
+            SearchServer searchServer = null;
+            try {
+                Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
+                IndexSearcher indexSearcher = new IndexSearcher(directory);
+                searchServer = resourceType.getSearchServerClass().getConstructor(IndexSearcher.class).newInstance(indexSearcher);
+
+            } catch (CorruptIndexException e) {
+                log.warning("Could not load " + resourceType.getIndexName() + " index, index is corrupted: " + e.getMessage());
+                if(resourceType.isUsedBySearchAll()) {
+                    isSearchAllEnabled=false;
+                }
+            } catch (IOException e) {
+                log.warning("Could not load " + resourceType.getIndexName() + " index: " + e.getMessage());
+                if(resourceType.isUsedBySearchAll()) {
+                    isSearchAllEnabled=false;
+                }
+            } catch (Exception e) {
+                log.log(Level.WARNING, "Could not load " + resourceType.getIndexName() + " index: " + e.getMessage(), e);
+                if(resourceType.isUsedBySearchAll()) {
+                    isSearchAllEnabled=false;
+                }
+            }
 
             //Close old search server, incRef/decRef counting will ensure not closed until no longer in use.
             SearchServer oldSearchServer = searchers.get(resourceType);
-            if(oldSearchServer!=null) {
+            if (oldSearchServer != null) {
                 try {
-				    oldSearchServer.close();
-			    } catch (IOException e) {
-				    log.severe("Caught exception during closing of index searcher within Init: "
-                            + resourceType.getIndexName() +":" + e.getMessage());
+                    oldSearchServer.close();
+                } catch (IOException e) {
+                    log.severe("Caught exception during closing of index searcher within Init: "
+                            + resourceType.getIndexName() + ":" + e.getMessage());
                 }
             }
 
             //Add in new search server and set last updated date
             searchers.put(resourceType, searchServer);
-    		if (searchServer != null) {
-    		    searchServer.setLastServerUpdatedDate();
+            if (searchServer != null) {
+                searchServer.setLastServerUpdatedDate();
             }
-		}
-        log.info("End:loaded Indexes from " + indexDir + ",Type:nfio,"+ "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
+        }
+        log.info("End:loaded Indexes from " + indexDir + ",Type:nfio," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         isServletInitialized = true;
-        
+
     }
 
     @Override
@@ -152,30 +166,29 @@ public class SearchServerServlet extends HttpServlet {
 
         log.info("Start:Destroy Indexes");
 
-    	// Close all search servers
-    	for (SearchServer searchServer : searchers.values()) {
-    		if (searchServer == null) continue;
+        // Close all search servers
+        for (SearchServer searchServer : searchers.values()) {
+            if (searchServer == null) continue;
             try {
-				searchServer.close();
-			} catch (IOException e) {
-				log.severe("Caught exception during closing of index searcher: " + e.getMessage());
-			}
+                searchServer.close();
+            } catch (IOException e) {
+                log.severe("Caught exception during closing of index searcher: " + e.getMessage());
+            }
         }
-    	searchers.clear();
+        searchers.clear();
         log.info("End:Destroy Indexes");
 
     }
 
     /**
      * Init Rate Limiter
-     *
      */
     private void initRateLimiter(String rateLimiterEnabled) {
         String rateLimiterHost = getServletConfig().getInitParameter("ratelimitserver_host");
         String rateLimiterPort = getServletConfig().getInitParameter("ratelimitserver_port");
-        log.info("RateLimiter:"+rateLimiterEnabled+":RateLimiterHost:"+rateLimiterHost+":Port:"+rateLimiterPort);
+        log.info("RateLimiter:" + rateLimiterEnabled + ":RateLimiterHost:" + rateLimiterHost + ":Port:" + rateLimiterPort);
         isRateLimiterEnabled = Boolean.parseBoolean(rateLimiterEnabled);
-        if(isRateLimiterEnabled) {
+        if (isRateLimiterEnabled) {
             RateLimiterChecker.init(rateLimiterHost, rateLimiterPort);
         }
     }
@@ -183,18 +196,17 @@ public class SearchServerServlet extends HttpServlet {
     /**
      * If Index has just been updated (Documents added or removed from existing index) you can use this
      * method to read the latest documents from the index.
-     *
      */
     protected void reloadIndexes() {
 
         log.info("Start:Reloading Indexes");
-    	for (SearchServer searchServer : searchers.values()) {
-    		if (searchServer == null) continue;
-			try {
-				searchServer.reloadIndex();				
-			} catch (IOException e) {
-				log.severe("Caught exception during reopening of index: " + e.getMessage());
-			}
+        for (SearchServer searchServer : searchers.values()) {
+            if (searchServer == null) continue;
+            try {
+                searchServer.reloadIndex();
+            } catch (IOException e) {
+                log.severe("Caught exception during reopening of index: " + e.getMessage());
+            }
         }
         log.info("End:Reloading Indexes");
 
@@ -207,19 +219,17 @@ public class SearchServerServlet extends HttpServlet {
      * @param request
      * @return
      */
-    private boolean isRequestFromLocalHost(HttpServletRequest request)
-    {
+    private boolean isRequestFromLocalHost(HttpServletRequest request) {
 
-        if(
+        if (
                 (request.getRemoteAddr().equals("127.0.0.1"))
                         ||
-                (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1"))
-          )
-        {
-            log.info("isRequestFromLocalHost:VALID:"+request.getRemoteHost()+"/"+request.getRemoteAddr());
+                        (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1"))
+                ) {
+            log.info("isRequestFromLocalHost:VALID:" + request.getRemoteHost() + "/" + request.getRemoteAddr());
             return true;
         }
-        log.info("isRequestFromLocalHost:INVALID:"+request.getRemoteHost()+"/"+request.getRemoteAddr());
+        log.info("isRequestFromLocalHost:INVALID:" + request.getRemoteHost() + "/" + request.getRemoteAddr());
         return false;
     }
 
@@ -240,15 +250,14 @@ public class SearchServerServlet extends HttpServlet {
         String init = request.getParameter(RequestParameter.INIT.getName());
         if (init != null) {
             log.info("Checking init request");
-            if(isRequestFromLocalHost(request)) {
+            if (isRequestFromLocalHost(request)) {
                 init(init.equals("mmap"));
                 response.setCharacterEncoding(CHARSET);
                 response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
                 response.getOutputStream().println("Indexes Loaded:");
                 response.getOutputStream().close();
                 return;
-            }
-            else {
+            } else {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
@@ -260,15 +269,14 @@ public class SearchServerServlet extends HttpServlet {
         String rate = request.getParameter(RequestParameter.RATE.getName());
         if (rate != null) {
             log.info("Checking rate request");
-            if(isRequestFromLocalHost(request)) {
+            if (isRequestFromLocalHost(request)) {
                 initRateLimiter(rate);
                 response.setCharacterEncoding(CHARSET);
                 response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getOutputStream().println("Rate Limiter:"+rate);
+                response.getOutputStream().println("Rate Limiter:" + rate);
                 response.getOutputStream().close();
                 return;
-            }
-            else {
+            } else {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
@@ -278,29 +286,26 @@ public class SearchServerServlet extends HttpServlet {
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
         if (reloadIndexes != null) {
             log.info("Checking reloadindex request");
-            if(isRequestFromLocalHost(request)) {
+            if (isRequestFromLocalHost(request)) {
                 reloadIndexes();
                 response.setCharacterEncoding(CHARSET);
                 response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
                 response.getOutputStream().println("Indexes Reloaded");
                 response.getOutputStream().close();
                 return;
-            }
-            else {
+            } else {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
         }
-        
+
         // If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
         // parameter
-        // TODO we dont use isRequestFromLocalHost on this command because it is non-destructive, and I think there are scripts
-        // calling this in a way that would currently fail
         String count = request.getParameter(RequestParameter.COUNT.getName());
-        if(count != null) {
+        if (count != null) {
             log.info("Checking count request");
             ResourceType resourceType = ResourceType.getValue(count);
-            if(resourceType == null) {
+            if (resourceType == null) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
                 return;
             }
@@ -314,37 +319,34 @@ public class SearchServerServlet extends HttpServlet {
         }
 
         // If they have entered nothing, redirect to them the Musicbrainz Search Page
-        if(request.getParameterMap().size() == 0)
-        {
+        if (request.getParameterMap().size() == 0) {
             response.sendRedirect(MUSICBRAINZ_SEARCH_WEBPAGE);
             return;
         }
 
-        // Resource Type always required
+        //Must be type ALL or map to a valid resource type
         String type = request.getParameter(RequestParameter.TYPE.getName());
-        if (type == null || type.isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_TYPE_PARAMETER.getMsg());
-            return;
-        }
-
         // V1 Compatability
-        if(type.equals(TYPE_TRACK))
-        {
+        if (type.equals(TYPE_TRACK)) {
             type = ResourceType.RECORDING.getName();
         }
 
-        //Must map to a valid resource type
-        ResourceType resourceType=ResourceType.getValue(type);
-        if (resourceType == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
-            return;
+        ResourceType resourceType = null;
+        if (!type.equalsIgnoreCase(TYPE_ALL)) {
+            resourceType = ResourceType.getValue(type);
+            if (resourceType == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
+                return;
+            }
+        }
+        else if(!isSearchAllEnabled) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(TYPE_ALL));
         }
 
-        if(isRateLimiterEnabled) {
+        if (isRateLimiterEnabled) {
             RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
-            if(!rateLimiterResponse.isValid())
-            {
-                if(rateLimiterResponse.getHeaderMsg()!=null) {
+            if (!rateLimiterResponse.isValid()) {
+                if (rateLimiterResponse.getHeaderMsg() != null) {
                     response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
                 }
                 response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, rateLimiterResponse.getMsg());
@@ -395,15 +397,16 @@ public class SearchServerServlet extends HttpServlet {
             }
         }
 
-        try
-        {
-            doSearch(response, resourceType, query, offset, limit, responseFormat, responseVersion);
-        }
-        catch (ParseException pe) {
+        try {
+            if (resourceType != null) {
+                doSearch(response, resourceType, query, offset, limit, responseFormat, responseVersion);
+            } else {
+                doAllSearch(response, query, offset, limit, responseFormat);
+            }
+        } catch (ParseException pe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
             return;
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
@@ -430,8 +433,7 @@ public class SearchServerServlet extends HttpServlet {
                           Integer limit,
                           String responseFormat,
                           String responseVersion)
-            throws ParseException, IOException
-    {
+            throws ParseException, IOException {
 
         SearchServer searchServer = searchers.get(resourceType);
         if (searchServer == null) {
@@ -446,20 +448,19 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
         response.setCharacterEncoding(CHARSET);
-        if(responseFormat.equals(RESPONSE_XML)) {
+        if (responseFormat.equals(RESPONSE_XML)) {
             response.setContentType(writer.getMimeType());
-        }
-        else {
-            response.setContentType(((ResultsWriter)writer).getJsonMimeType());
+        } else {
+            response.setContentType(((ResultsWriter) writer).getJsonMimeType());
         }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-        writer.write(out, results,responseFormat);
+        writer.write(out, results, responseFormat);
         out.close();
     }
 
     /**
-     * Search over multiple indexes and return merged result
+     * Search over multiple different indexes and return merged result
      *
      * @param response
      * @param query
@@ -469,56 +470,51 @@ public class SearchServerServlet extends HttpServlet {
      * @throws ParseException
      * @throws IOException
      */
-    /*
     private void doAllSearch(HttpServletResponse response,
                              String query,
                              Integer offset,
                              Integer limit,
                              String responseFormat)
-            throws Exception
-    {
+            throws Exception {
 
-        SearchServer artistSearch       = searchers.get(ResourceType.ARTIST);
-        SearchServer releaseSearch      = searchers.get(ResourceType.RELEASE);
+        SearchServer artistSearch = searchers.get(ResourceType.ARTIST);
+        SearchServer releaseSearch = searchers.get(ResourceType.RELEASE);
         SearchServer releaseGroupSearch = searchers.get(ResourceType.RELEASE_GROUP);
-        SearchServer labelSearch        = searchers.get(ResourceType.LABEL);
-        SearchServer recordingSearch    = searchers.get(ResourceType.RECORDING);
-        SearchServer workSearch         = searchers.get(ResourceType.WORK);
+        SearchServer labelSearch = searchers.get(ResourceType.LABEL);
+        SearchServer recordingSearch = searchers.get(ResourceType.RECORDING);
+        SearchServer workSearch = searchers.get(ResourceType.WORK);
 
-        //Run each search in parallel using a maximum threads as machine cpus, although we are creating new Search instances
-        //the important thing is we are not creating use Lucene Index Searches
-        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        Collection searches = new ArrayList();
+        Collection<SearchServer> searches = new ArrayList<SearchServer>();
         searches.add(new ArtistSearch(artistSearch.getIndexSearcher(), query, offset, limit));
         searches.add(new ReleaseSearch(releaseSearch.getIndexSearcher(), query, offset, limit));
         searches.add(new ReleaseGroupSearch(releaseGroupSearch.getIndexSearcher(), query, offset, limit));
         searches.add(new LabelSearch(labelSearch.getIndexSearcher(), query, offset, limit));
         searches.add(new RecordingSearch(recordingSearch.getIndexSearcher(), query, offset, limit));
         searches.add(new WorkSearch(workSearch.getIndexSearcher(), query, offset, limit));
-        java.util.List<java.util.concurrent.Future<Results>> results = es.invokeAll(searches);
-        Results allResults              = new Results();
 
+        //Run each search in parallel then merge results
+        java.util.List<java.util.concurrent.Future<Results>> results = es.invokeAll(searches);
+        Results allResults = new Results();
         //Results are returned in same order as they were submitted
-        Results artistResults           = results.get(0).get();
-        Results releaseResults          = results.get(1).get();
-        Results releaseGroupResults     = results.get(2).get();
-        Results labelResults            = results.get(3).get();
-        Results recordingResults        = results.get(4).get();
-        Results workResults             = results.get(5).get();
+        Results artistResults = results.get(0).get();
+        Results releaseResults = results.get(1).get();
+        Results releaseGroupResults = results.get(2).get();
+        Results labelResults = results.get(3).get();
+        Results recordingResults = results.get(4).get();
+        Results workResults = results.get(5).get();
+
 
         AllWriter writer = new AllWriter(artistResults, releaseResults, releaseGroupResults, labelResults, recordingResults, workResults);
         response.setCharacterEncoding(CHARSET);
 
-        if(responseFormat.equals(RESPONSE_XML)) {
+        if (responseFormat.equals(RESPONSE_XML)) {
             response.setContentType(writer.getMimeType());
-        }
-        else {
+        } else {
             response.setContentType(writer.getJsonMimeType());
         }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-        writer.write(out, allResults,responseFormat);
+        writer.write(out, allResults, responseFormat);
         out.close();
     }
-    */
 }
