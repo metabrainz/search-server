@@ -38,6 +38,7 @@ public enum RequestParameter {
     OFFSET ("offset"),
     COUNT ("count"),
     VERSION ("version"),
+    DISMAX("dismax"),
     // For admin only
     INIT ("init"),
     RELOAD_INDEXES ("reload"),

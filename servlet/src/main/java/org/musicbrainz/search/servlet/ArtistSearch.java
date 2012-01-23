@@ -8,21 +8,32 @@ import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ArtistWriter;
 
-import javax.naming.LimitExceededException;
 import java.util.ArrayList;
 
 
 public class ArtistSearch extends SearchServer {
-  private ArtistSearch() throws Exception {
-        resultsWriter = new ArtistWriter();
-        mmd1XmlWriter = new ArtistMmd1XmlWriter();
+
+    protected void setupDefaultFields() {
         defaultFields = new ArrayList<String>();
         defaultFields.add(ArtistIndexField.ARTIST.getName());
         defaultFields.add(ArtistIndexField.ALIAS.getName());
         defaultFields.add(ArtistIndexField.SORTNAME.getName());
+    }
+
+
+    private ArtistSearch() throws Exception {
+        resultsWriter = new ArtistWriter();
+        mmd1XmlWriter = new ArtistMmd1XmlWriter();
+        setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
     }
 
+    /**
+     * Standard Search
+     *
+     * @param searcher
+     * @throws Exception
+     */
     public ArtistSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
@@ -31,6 +42,15 @@ public class ArtistSearch extends SearchServer {
         }
     }
 
+    /**
+     * User By Search All
+     *
+     * @param searcher
+     * @param query
+     * @param offset
+     * @param limit
+     * @throws Exception
+     */
     public ArtistSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
         this(searcher);
         this.query=query;

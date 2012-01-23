@@ -28,7 +28,6 @@
 
 package org.musicbrainz.search.servlet;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -47,10 +46,8 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,7 +78,9 @@ public class SearchServerServlet extends HttpServlet {
     //When doing search over multiple indexes use this executorservice to run in parallel
     private ExecutorService es = Executors.newCachedThreadPool();
 
-    private EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
+    private EnumMap<ResourceType, SearchServer> searchers       = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
+    private EnumMap<ResourceType, SearchServer> dismaxSearchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
+
 
     private String initMessage = null;
     private static final String MUSICBRAINZ_SEARCH_WEBPAGE = "http://www.musicbrainz.org/search.html";
@@ -117,10 +116,13 @@ public class SearchServerServlet extends HttpServlet {
             File indexFileDir = new File(indexDir + System.getProperty("file.separator") + resourceType.getIndexName() + "_index");
 
             SearchServer searchServer = null;
+            SearchServer dismaxSearchServer = null;
+
             try {
                 Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
                 IndexSearcher indexSearcher = new IndexSearcher(directory);
                 searchServer = resourceType.getSearchServerClass().getConstructor(IndexSearcher.class).newInstance(indexSearcher);
+                dismaxSearchServer = resourceType.getDismaxSearchServerClass().getConstructor(IndexSearcher.class).newInstance(indexSearcher);
 
             } catch (CorruptIndexException e) {
                 log.warning("Could not load " + resourceType.getIndexName() + " index, index is corrupted: " + e.getMessage());
@@ -152,6 +154,8 @@ public class SearchServerServlet extends HttpServlet {
 
             //Add in new search server and set last updated date
             searchers.put(resourceType, searchServer);
+            dismaxSearchers.put(resourceType, dismaxSearchServer);
+
             if (searchServer != null) {
                 searchServer.setLastServerUpdatedDate();
             }
@@ -397,11 +401,17 @@ public class SearchServerServlet extends HttpServlet {
             }
         }
 
+        boolean isDismax = false;
+        String strIsDismax = request.getParameter(RequestParameter.DISMAX.getName());
+        if (strIsDismax!= null && strIsDismax.equals("true")) {
+            isDismax=true;
+        }
+
         try {
             if (resourceType != null) {
-                doSearch(response, resourceType, query, offset, limit, responseFormat, responseVersion);
+                doSearch(response, resourceType, query, isDismax, offset, limit, responseFormat, responseVersion);
             } else {
-                doAllSearch(response, query, offset, limit, responseFormat);
+                doAllSearch(response, query, isDismax, offset, limit, responseFormat);
             }
         } catch (ParseException pe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
@@ -416,26 +426,35 @@ public class SearchServerServlet extends HttpServlet {
     /**
      * Normal Search over one index
      *
+     *
      * @param response
      * @param resourceType
      * @param query
-     * @param offset
+     * @param isDismax
+     *@param offset
      * @param limit
      * @param responseFormat
-     * @param responseVersion
-     * @throws ParseException
+     * @param responseVersion     @throws ParseException
      * @throws IOException
      */
     private void doSearch(HttpServletResponse response,
                           ResourceType resourceType,
                           String query,
+                          boolean isDismax,
                           Integer offset,
                           Integer limit,
                           String responseFormat,
                           String responseVersion)
             throws ParseException, IOException {
 
-        SearchServer searchServer = searchers.get(resourceType);
+        SearchServer searchServer;
+        if(isDismax) {
+            searchServer=dismaxSearchers.get(resourceType);
+        }
+        else {
+            searchServer=searchers.get(resourceType);
+        }
+
         if (searchServer == null) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(resourceType));
             return;
@@ -462,17 +481,18 @@ public class SearchServerServlet extends HttpServlet {
     /**
      * Search over multiple different indexes and return merged result
      *
+     *
      * @param response
      * @param query
-     * @param offset
+     * @param isDismax
+     *@param offset
      * @param limit
-     * @param responseFormat
-     * @throws ParseException
+     * @param responseFormat    @throws ParseException
      * @throws IOException
      */
     private void doAllSearch(HttpServletResponse response,
                              String query,
-                             Integer offset,
+                             boolean isDismax, Integer offset,
                              Integer limit,
                              String responseFormat)
             throws Exception {
@@ -485,12 +505,22 @@ public class SearchServerServlet extends HttpServlet {
         SearchServer workSearch = searchers.get(ResourceType.WORK);
 
         Collection<SearchServer> searches = new ArrayList<SearchServer>();
-        searches.add(new ArtistSearch(artistSearch.getIndexSearcher(), query, offset, limit));
-        searches.add(new ReleaseSearch(releaseSearch.getIndexSearcher(), query, offset, limit));
-        searches.add(new ReleaseGroupSearch(releaseGroupSearch.getIndexSearcher(), query, offset, limit));
-        searches.add(new LabelSearch(labelSearch.getIndexSearcher(), query, offset, limit));
-        searches.add(new RecordingSearch(recordingSearch.getIndexSearcher(), query, offset, limit));
-        searches.add(new WorkSearch(workSearch.getIndexSearcher(), query, offset, limit));
+        if(isDismax) {
+            searches.add(new ArtistDismaxSearch(artistSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new ReleaseDismaxSearch(releaseSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new ReleaseGroupDismaxSearch(releaseGroupSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new LabelDismaxSearch(labelSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new RecordingDismaxSearch(recordingSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new WorkDismaxSearch(workSearch.getIndexSearcher(), query, offset, limit));
+        }
+        else {
+            searches.add(new ArtistSearch(artistSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new ReleaseSearch(releaseSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new ReleaseGroupSearch(releaseGroupSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new LabelSearch(labelSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new RecordingSearch(recordingSearch.getIndexSearcher(), query, offset, limit));
+            searches.add(new WorkSearch(workSearch.getIndexSearcher(), query, offset, limit));
+        }
 
         //Run each search in parallel then merge results
         java.util.List<java.util.concurrent.Future<Results>> results = es.invokeAll(searches);
