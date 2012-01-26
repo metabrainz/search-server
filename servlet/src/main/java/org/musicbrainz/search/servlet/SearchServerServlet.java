@@ -409,6 +409,7 @@ public class SearchServerServlet extends HttpServlet {
 
         try {
             if (resourceType != null) {
+                log.log(Level.SEVERE,"Query sent"+query);
                 doSearch(response, resourceType, query, isDismax, offset, limit, responseFormat, responseVersion);
             } else {
                 doAllSearch(response, query, isDismax, offset, limit, responseFormat);
