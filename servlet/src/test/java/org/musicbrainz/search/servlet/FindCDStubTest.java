@@ -23,6 +23,7 @@ import java.io.StringWriter;
 public class FindCDStubTest extends TestCase {
 
     private SearchServer ss;
+    private SearchServer sd;
 
     public FindCDStubTest(String testName) {
         super(testName);
@@ -57,13 +58,32 @@ public class FindCDStubTest extends TestCase {
 
         writer.close();
         ss = new CDStubSearch(new IndexSearcher(ramDir, true));
+        sd = new CDStubDismaxSearch(new IndexSearcher(ramDir, true));
     }
-
-
 
     public void testSearchByArtist() throws Exception {
         Results res = ss.searchLucene("artist:\"Doo Doo\"", 0, 10);
         assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByDismax1() throws Exception {
+            Results res = sd.searchLucene("First", 0, 10);
+            assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByDismax2() throws Exception {
+            Results res = sd.searchLucene("Doo Doo", 0, 10);
+            assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByDismax3() throws Exception {
+            Results res = sd.searchLucene("837101029193", 0, 10);
+            assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByDismax4() throws Exception {
+            Results res = sd.searchLucene("CD Baby", 0, 10);
+            assertEquals(1, res.totalHits);
     }
 
     public void testSearchByTitle() throws Exception {

@@ -30,6 +30,7 @@ import java.io.StringWriter;
 public class FindReleaseGroupTest extends TestCase {
 
     private SearchServer ss;
+    private SearchServer sd;
 
 
     public FindReleaseGroupTest(String testName) {
@@ -111,6 +112,7 @@ public class FindReleaseGroupTest extends TestCase {
         writer.addDocument(doc.getLuceneDocument());
         writer.close();
         ss = new ReleaseGroupSearch(new IndexSearcher(ramDir, true));
+        sd = new ReleaseGroupDismaxSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testFindReleaseGroupById() throws Exception {
@@ -126,6 +128,36 @@ public class FindReleaseGroupTest extends TestCase {
 
     public void testFindReleaseGroupByName() throws Exception {
         Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseGroupByDismax1() throws Exception {
+        Results res = sd.searchLucene("Twisting", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseGroupByDismax2() throws Exception {
+        Results res = sd.searchLucene("secret", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    public void testFindReleaseGroupByDismax3() throws Exception {
+        Results res = sd.searchLucene("wedding", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;

@@ -31,6 +31,7 @@ public class FindRecordingTest extends TestCase {
 
 
     private SearchServer ss;
+    private SearchServer sd;
 
 
     public FindRecordingTest(String testName) {
@@ -105,6 +106,7 @@ public class FindRecordingTest extends TestCase {
         writer.addDocument(doc.getLuceneDocument());
         writer.close();
         ss = new RecordingSearch(new IndexSearcher(ramDir,true));
+        sd = new RecordingDismaxSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testFindRecordingByV1TrackField() throws Exception {
@@ -134,6 +136,31 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
         assertEquals("Gravitational Lens", doc.get(RecordingIndexField.TRACK_OUTPUT));
         assertEquals("123456789", doc.get(RecordingIndexField.ISRC));
+    }
+
+    public void testFindRecordingDismax1() throws Exception {
+        Results res = sd.searchLucene("Gravitational", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+
+    public void testFindRecordingDismax2() throws Exception {
+        Results res = sd.searchLucene("Glorious", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+    public void testFindRecordingDismax3() throws Exception {
+        Results res = sd.searchLucene("Farming Incident", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
      public void testFindRecordingByV1TrackId() throws Exception {

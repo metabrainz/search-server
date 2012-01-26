@@ -33,6 +33,7 @@ import java.util.Map;
 public class FindReleaseTest extends TestCase {
 
     private SearchServer ss;
+    private SearchServer sd;
 
 
     public FindReleaseTest(String testName) {
@@ -160,6 +161,7 @@ public class FindReleaseTest extends TestCase {
         Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
         searchers.put(ResourceType.RELEASE, new IndexSearcher(ramDir,true));
         ss = new ReleaseSearch(new IndexSearcher(ramDir,true));
+        sd = new ReleaseDismaxSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testFindReleaseById() throws Exception {
@@ -194,6 +196,42 @@ public class FindReleaseTest extends TestCase {
 
     public void testFindReleaseByName() throws Exception {
         Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    public void testFindReleaseByDismax1() throws Exception {
+        Results res = sd.search("Wrath", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    public void testFindReleaseByDismax2() throws Exception {
+        Results res = sd.search("Farming", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    public void testFindReleaseByDismax3() throws Exception {
+        Results res = sd.search("Incident", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    public void testFindReleaseByDismax4() throws Exception {
+        Results res = sd.search("Our Glorious", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;

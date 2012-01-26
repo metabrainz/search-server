@@ -31,6 +31,13 @@ public class CDStubSearch extends SearchServer {
         indexSearcher = searcher;
     }
 
+    public CDStubSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
+            this(searcher);
+            this.query=query;
+            this.offset=offset;
+            this.limit=limit;
+        }
+
      @Override
     protected QueryParser getParser() {
      return new MultiFieldQueryParser(LuceneVersion.LUCENE_VERSION, defaultFields.toArray(new String[0]), analyzer);
