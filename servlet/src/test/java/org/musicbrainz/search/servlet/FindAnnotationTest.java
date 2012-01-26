@@ -22,6 +22,7 @@ import java.io.StringWriter;
 public class FindAnnotationTest extends TestCase {
 
     private SearchServer ss;
+    private SearchServer sd;
 
     public FindAnnotationTest(String testName) {
         super(testName);
@@ -96,6 +97,8 @@ public class FindAnnotationTest extends TestCase {
 
         writer.close();
         ss = new AnnotationSearch(new IndexSearcher(ramDir, true));
+        sd = new AnnotationDismaxSearch(new IndexSearcher(ramDir, true));
+
     }
 
     public void testSearchByTypeRelease() throws Exception {
@@ -105,6 +108,16 @@ public class FindAnnotationTest extends TestCase {
 
     public void testSearchByTypeArtist() throws Exception {
         Results res = ss.searchLucene("type:artist", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByDismax1() throws Exception {
+        Results res = sd.searchLucene("Pieds nus", 0, 10);
+        assertEquals(1, res.totalHits);
+    }
+
+    public void testSearchByDismax2() throws Exception {
+        Results res = sd.searchLucene("0828768226629", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
