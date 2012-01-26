@@ -25,6 +25,7 @@ import java.io.StringWriter;
 public class FindWorkTest extends TestCase {
 
     private SearchServer ss;
+    private SearchServer sd;
 
 
     public FindWorkTest(String testName) {
@@ -74,6 +75,7 @@ public class FindWorkTest extends TestCase {
         }
         writer.close();
         ss = new WorkSearch(new IndexSearcher(ramDir, true));
+        sd = new WorkDismaxSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testFindWorkById() throws Exception {
@@ -87,6 +89,24 @@ public class FindWorkTest extends TestCase {
 
     public void testFindWorkByName() throws Exception {
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+    public void testFindWorkByDismax1() throws Exception {
+        Results res = sd.searchLucene("Symphony No. 5", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+    public void testFindWorkByDismax2() throws Exception {
+        Results res = sd.searchLucene("Symphony", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;

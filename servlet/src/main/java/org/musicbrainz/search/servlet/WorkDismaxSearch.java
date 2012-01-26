@@ -4,16 +4,26 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.WorkIndexField;
 
-public class WorkDismaxSearch extends ArtistSearch {
+import java.util.HashMap;
+import java.util.Map;
 
-    private static final String  mask =
-            "work:\"{0}\"^1.6 " +
-        "(+sortname:\"{0}\"^1.6 -work:\"{0}\") " +
-        "(+alias:\"{0}\" -work:\"{0}\" -sortname:\"{0}\") "  +
-        "(+(work:({0})^0.8) -work:\"{0}\" -sortname:\"{0}\" -alias:\"{0}\") "  +
-        "(+(sortname:({0})^0.8) -work:({0}) -sortname:\"{0}\" -alias:\"{0}\") " +
-        "(+(alias:({0})^0.4) -work:({0}) -sortname:({0}) -alias:\"{0}\")";
+public class WorkDismaxSearch extends WorkSearch {
+
+    private DismaxSearcher dismaxSearcher;
+
+    protected void initDismaxSearcher()
+    {
+        Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
+        fieldBoosts.put(WorkIndexField.WORK.getName(), 1.6f);
+        fieldBoosts.put(WorkIndexField.ALIAS.getName(), 0.8f);
+        DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
+        dismaxAlias.setFields(fieldBoosts);
+        dismaxAlias.setTie(0.1f);
+        dismaxSearcher = new DismaxSearcher(dismaxAlias);
+    }
 
     /**
      * Standard Search
@@ -23,6 +33,7 @@ public class WorkDismaxSearch extends ArtistSearch {
      */
     public WorkDismaxSearch(IndexSearcher searcher) throws Exception {
         super(searcher);
+        initDismaxSearcher();
     }
 
     /**
@@ -36,14 +47,11 @@ public class WorkDismaxSearch extends ArtistSearch {
      */
     public WorkDismaxSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
         super(searcher, query, offset, limit);
+        initDismaxSearcher();
     }
 
     protected Query parseQuery(String query) throws ParseException
     {
-        //Treat all as text
-        query=QueryParser.escape(query);
-        String phraseBoostedQuery=mask.replace("{0}", query);
-        QueryParser parser = getParser();
-        return parser.parse(phraseBoostedQuery);
+        return dismaxSearcher.parseQuery(query, analyzer);
     }
 }

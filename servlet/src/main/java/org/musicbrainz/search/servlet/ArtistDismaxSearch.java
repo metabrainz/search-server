@@ -1,19 +1,27 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.*;
+import org.musicbrainz.search.index.ArtistIndexField;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ArtistDismaxSearch extends ArtistSearch {
 
-    private static final String  mask =
-            "artist:\"{0}\"^1.6 " +
-        "(+sortname:\"{0}\"^1.6 -artist:\"{0}\") " +
-        "(+alias:\"{0}\" -artist:\"{0}\" -sortname:\"{0}\") "  +
-        "(+($artist:({0})^0.8) -artist:\"{0}\" -sortname:\"{0}\" -alias:\"{0}\") "  +
-        "(+(sortname:({0})^0.8) -artist:({0}) -sortname:\"{0}\" -alias:\"{0}\") " +
-        "(+(alias:({0})^0.4) -artist:({0}) -sortname:({0}) -alias:\"{0}\")";
+    private DismaxSearcher dismaxSearcher;
+
+    protected void initDismaxSearcher()
+    {
+        Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
+        fieldBoosts.put(ArtistIndexField.SORTNAME.getName(), 0.8f);
+        fieldBoosts.put(ArtistIndexField.ARTIST.getName(), 1.6f);
+        fieldBoosts.put(ArtistIndexField.ALIAS.getName(), 0.4f);
+        DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
+        dismaxAlias.setFields(fieldBoosts);
+        dismaxAlias.setTie(0.1f);
+        dismaxSearcher = new DismaxSearcher(dismaxAlias);
+    }
 
     /**
      * Standard Search
@@ -23,6 +31,7 @@ public class ArtistDismaxSearch extends ArtistSearch {
      */
     public ArtistDismaxSearch(IndexSearcher searcher) throws Exception {
         super(searcher);
+        initDismaxSearcher();
     }
 
     /**
@@ -36,16 +45,11 @@ public class ArtistDismaxSearch extends ArtistSearch {
      */
     public ArtistDismaxSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
         super(searcher, query, offset, limit);
+        initDismaxSearcher();
     }
-
-
 
     protected Query parseQuery(String query) throws ParseException
     {
-        //Treat all as text
-        query=QueryParser.escape(query);
-        String phraseBoostedQuery=mask.replace("{0}", query);
-        QueryParser parser = getParser();
-        return parser.parse(phraseBoostedQuery);
+        return dismaxSearcher.parseQuery(query, analyzer);
     }
 }

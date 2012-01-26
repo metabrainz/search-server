@@ -25,6 +25,7 @@ import java.io.StringWriter;
 public class FindLabelTest extends TestCase {
 
     private SearchServer ss;
+    private SearchServer sd;
 
 
     public FindLabelTest(String testName) {
@@ -83,6 +84,7 @@ public class FindLabelTest extends TestCase {
 
         writer.close();
         ss = new LabelSearch(new IndexSearcher(ramDir, true));
+        sd = new LabelDismaxSearch(new IndexSearcher(ramDir, true));
     }
 
     public void testFindLabelById() throws Exception {
@@ -102,6 +104,24 @@ public class FindLabelTest extends TestCase {
 
     public void testFindLabelByName() throws Exception {
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+    }
+
+    public void testFindLabelByDismax1() throws Exception {
+        Results res = sd.searchLucene("Jockey Slut", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+    }
+
+    public void testFindLabelByDismax2() throws Exception {
+        Results res = sd.searchLucene("Jockey", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
