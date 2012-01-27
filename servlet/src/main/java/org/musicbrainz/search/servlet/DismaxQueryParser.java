@@ -3,6 +3,7 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.musicbrainz.search.LuceneVersion;
+import org.musicbrainz.search.index.ReleaseIndexField;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,11 +67,12 @@ public class DismaxQueryParser {
                     //if query can be created for this field and text
                     Query sub = getFieldQuery(f, queryText, quoted);
                     if (sub != null) {
-
-
-                        System.out.println("sub:"+sub.getClass());
-                        //if query was quoted but doesnt generate a phrase query we reject
-                        if(quoted==false || sub instanceof PhraseQuery)
+                        //if query was quoted but doesnt generate a phrase query we reject unless it is a keyword field
+                        if(
+                                (quoted==false) ||
+                                (sub instanceof PhraseQuery) ||
+                                (field.equals(ReleaseIndexField.CATALOG_NO.getName()))
+                          )
                         {
                             //If Field has a boost
                             if (a.getFields().get(f) != null) {
