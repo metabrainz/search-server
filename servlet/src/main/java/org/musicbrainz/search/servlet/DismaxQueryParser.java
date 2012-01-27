@@ -68,7 +68,7 @@ public class DismaxQueryParser {
                     Query sub = getFieldQuery(f, queryText, quoted);
                     if(quoted==true)
                     {
-                        System.out.println("field:"+field+":"+queryText+":"+sub.getClass());
+                        System.out.println("field:"+f+":"+queryText+":"+sub.getClass());
                     }
                     if (sub != null) {
                         //if query was quoted but doesnt generate a phrase query we reject unless it is a keyword field
