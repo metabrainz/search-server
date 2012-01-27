@@ -48,8 +48,10 @@ public class ArtistDismaxSearch extends ArtistSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String query) throws ParseException
+    protected Query parseQuery(String userQuery) throws ParseException
     {
-        return dismaxSearcher.parseQuery(query, analyzer);
+        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
+        Query q2 = new BoostExactMatchQuery(q1, userQuery, ArtistIndexField.ARTIST.getName());
+        return q2;
     }
 }
