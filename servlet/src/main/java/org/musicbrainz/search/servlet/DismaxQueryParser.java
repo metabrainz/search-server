@@ -75,7 +75,7 @@ public class DismaxQueryParser {
                         if(
                                 (quoted==false) ||
                                 (sub instanceof PhraseQuery) ||
-                                (field.equals(ReleaseIndexField.CATALOG_NO.getName()))
+                                (f.equals(ReleaseIndexField.CATALOG_NO.getName()))
                           )
                         {
                             //If Field has a boost
