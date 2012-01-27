@@ -41,7 +41,7 @@ public class BoostExactMatchQuery extends CustomScoreQuery {
             try {
                 org.apache.lucene.document.Document doc = this.reader.document(docNo);
                 if (userQuery.equals(doc.getValues(compareField)[0])) {
-                    return subQueryScore * (1.1f);
+                    return subQueryScore * (1.2f);
                 } else {
                     return subQueryScore;
                 }
