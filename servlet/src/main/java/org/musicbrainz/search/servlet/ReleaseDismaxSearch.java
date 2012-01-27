@@ -15,9 +15,12 @@ public class ReleaseDismaxSearch extends ReleaseSearch {
     protected void initDismaxSearcher() {
         Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
         fieldBoosts.put(ReleaseIndexField.RELEASE.getName(), 1.2f);
+        fieldBoosts.put(ReleaseIndexField.BARCODE.getName(), 1.2f);
+        fieldBoosts.put(ReleaseIndexField.CATALOG_NO.getName(), 1.2f);
         fieldBoosts.put(ReleaseIndexField.ARTIST.getName(),null);
         fieldBoosts.put(ReleaseIndexField.ARTIST_NAMECREDIT.getName(), null);
         fieldBoosts.put(ReleaseIndexField.LABEL.getName(), 0.8f);
+
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
