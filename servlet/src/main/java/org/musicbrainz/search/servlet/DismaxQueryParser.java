@@ -24,11 +24,11 @@ public class DismaxQueryParser {
             BooleanQuery bq = new BooleanQuery(true);
             bq.add(q0, BooleanClause.Occur.MUST);
             bq.add(phrase, BooleanClause.Occur.SHOULD);
-            //System.out.println(bq);
+            System.out.println(bq);
             return bq;
         }
         else {
-            //System.out.println(q0);
+            System.out.println(q0);
             return q0;
         }
 
