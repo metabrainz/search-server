@@ -20,7 +20,7 @@ public class DismaxQueryParser {
     public Query parse(String query) throws org.apache.lucene.queryParser.ParseException {
 
         Query q0     = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME+":("+query+")");
-        Query phrase = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME+":(\""+query+"\")");
+        Query phrase = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME+":\""+query+"\"");
         if (phrase instanceof DisjunctionMaxQuery) {
             BooleanQuery bq = new BooleanQuery(true);
             bq.add(q0, BooleanClause.Occur.MUST);
