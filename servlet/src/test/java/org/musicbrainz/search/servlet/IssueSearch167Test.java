@@ -296,4 +296,25 @@ public class IssueSearch167Test extends TestCase {
         assertEquals("66666666-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));
 
     }
+
+    public void testFindArtistDismaxSpecialChars() throws Exception {
+
+        IndexSearcher searcher = sd.getIndexSearcher();
+        Query q = sd.parseQuery("Republica/DC");
+        TopDocs topdocs = searcher.search(q, 10);
+        assertEquals(2, topdocs.scoreDocs.length);
+        for(ScoreDoc match:topdocs.scoreDocs)
+        {
+            Explanation explain = searcher.explain(q, match.doc);
+            System.out.println("DocNo:"+match.doc+":"+match.score+":"+sd.getIndexSearcher().doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        }
+    }
+
+    public void testFindArtistDismaxSpecialChars2() throws Exception {
+
+        IndexSearcher searcher = sd.getIndexSearcher();
+        Query q = sd.parseQuery("Republica-DC");
+        TopDocs topdocs = searcher.search(q, 10);
+        assertEquals(2, topdocs.scoreDocs.length);
+    }
 }
