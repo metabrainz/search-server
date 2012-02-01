@@ -117,7 +117,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
-    public void testFindArtistDismax1() throws Exception {
+    public void testFindArtistDismaxSingleTerm() throws Exception {
         Results res = sd.searchLucene("Farming", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -125,13 +125,21 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
-    public void testFindArtistDismax2() throws Exception {
+    public void testFindArtistDismaxPhrase() throws Exception {
         Results res = sd.searchLucene("Farming Incident", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
+
+    public void testFindArtistDismaxFuzzy() throws Exception {
+            Results res = sd.searchLucene("Farmin", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+        }
 
     public void testFindArtistBySortName() throws Exception {
         Results res = ss.searchLucene("sortname:\"Incident, Farming\"", 0, 10);

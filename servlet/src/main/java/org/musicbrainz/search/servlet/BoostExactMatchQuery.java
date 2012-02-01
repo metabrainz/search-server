@@ -4,7 +4,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.function.CustomScoreProvider;
 import org.apache.lucene.search.function.CustomScoreQuery;
-import org.musicbrainz.search.index.ArtistIndexField;
 
 import java.io.IOException;
 
@@ -39,6 +38,7 @@ public class BoostExactMatchQuery extends CustomScoreQuery {
         public float customScore(int docNo, float subQueryScore, float valSrcSource) {
 
             try {
+
                 org.apache.lucene.document.Document doc = this.reader.document(docNo);
                 if (userQuery.equals(doc.getValues(compareField)[0])) {
                     return subQueryScore * (1.1f);

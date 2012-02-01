@@ -49,7 +49,7 @@ public enum ArtistIndexField implements IndexField {
     COUNTRY     ("country",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     END			("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     GENDER      ("gender",      Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    IPI         ("ipi",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    IPI         ("ipi",         Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     SORTNAME	("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
     TAG		    ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT    ("tagcount",	Field.Store.YES,	Field.Index.NO),
