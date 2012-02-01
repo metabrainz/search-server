@@ -21,12 +21,12 @@ public class DismaxQueryParser {
         Query q0 = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":(" + query + ")");
         Query phrase = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":\"" + query + "\"");
         if (phrase instanceof DisjunctionMaxQuery) {
-            DisjunctionMaxQuery bq = new DisjunctionMaxQuery(0.0f);
-            bq.add(q0);
-            bq.add(phrase);
+            BooleanQuery bq = new BooleanQuery(true);
+            bq.add(q0, BooleanClause.Occur.MUST);
+            bq.add(phrase, BooleanClause.Occur.SHOULD);
             return bq;
-        } else {
-            //System.out.println(q0);
+        }
+        else {
             return q0;
         }
 
