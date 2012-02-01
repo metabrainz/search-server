@@ -94,8 +94,8 @@ public class DismaxQueryParser {
                                 (quoted == false) ||
                                         (querySub instanceof PhraseQuery)
                                 ) {
-                            //If Field has a boost
-                            if (a.getFields().get(f) != null) {
+                            //If Field has a boost , but we dont boost phrase as it gives too much
+                            if (quoted == false && a.getFields().get(f) != null) {
                                 querySub.setBoost(a.getFields().get(f));
                             }
                             q.add(querySub);
