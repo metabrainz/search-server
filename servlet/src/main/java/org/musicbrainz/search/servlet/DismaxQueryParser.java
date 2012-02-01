@@ -1,10 +1,12 @@
 package org.musicbrainz.search.servlet;
 
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DismaxQueryParser {
@@ -50,6 +52,19 @@ public class DismaxQueryParser {
 
         }
 
+        /**
+         * We do this to disable coord when creating top level query. if You enter a four word search and one document
+         * only matches two words rather than four it should already get alower score by virtue of only scoring
+         * for two words, it doesn't need its score to be halfed again because only matched two out of four terms
+         *
+         * @param clauses
+         * @return
+         * @throws ParseException
+         */
+        protected Query getBooleanQuery(List<BooleanClause> clauses) throws ParseException {
+            return getBooleanQuery(clauses, true);
+        }
+
 
         protected Map<String, DismaxAlias> aliases = new HashMap<String, DismaxAlias>(3);
 
@@ -61,7 +76,8 @@ public class DismaxQueryParser {
         protected org.apache.lucene.search.Query getFuzzyQuery(java.lang.String field, java.lang.String termStr, float minSimilarity)
                 throws org.apache.lucene.queryParser.ParseException {
             FuzzyQuery fq = (FuzzyQuery) super.getFuzzyQuery(field, termStr, minSimilarity);
-            //so that fuzzy queries term do not get an advantage over exact matches just because the query term is rarer
+            //so that obscure fuzzy queries term do not get an advantage over common fuzzy queries just because
+            //the query term is rarer
             fq.setRewriteMethod(new MultiTermQuery.TopTermsBoostOnlyBooleanQueryRewrite(100));
             return fq;
         }
@@ -70,6 +86,7 @@ public class DismaxQueryParser {
                 throws org.apache.lucene.queryParser.ParseException {
             //If field is an alias
             if (aliases.containsKey(field)) {
+
                 DismaxAlias a = aliases.get(field);
                 DisjunctionMaxQuery q = new DisjunctionMaxQuery(a.getTie());
                 boolean ok = false;
@@ -95,8 +112,8 @@ public class DismaxQueryParser {
                                         (querySub instanceof PhraseQuery)
                                 ) {
                             //Reduce phrase because will have matched both parts giving far too much score differential
-                            if(quoted == true) {
-                                querySub.setBoost(0.1f);
+                            if (quoted == true) {
+                                querySub.setBoost(0.05f);
                             }
                             //Boost as specified
                             else if (a.getFields().get(f) != null) {
@@ -109,7 +126,7 @@ public class DismaxQueryParser {
 
                     if (queryWildcard != null) {
                         if (a.getFields().get(f) != null) {
-                            queryWildcard.setBoost(a.getFields().get(f)*WILDCARD_BOOST_REDUCER);
+                            queryWildcard.setBoost(a.getFields().get(f) * WILDCARD_BOOST_REDUCER);
                         }
                         q.add(queryWildcard);
                     }
