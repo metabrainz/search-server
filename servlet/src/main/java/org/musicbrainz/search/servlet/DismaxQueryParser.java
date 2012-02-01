@@ -44,26 +44,17 @@ public class DismaxQueryParser {
         private static final int MIN_FIELD_LENGTH_TO_MAKE_FUZZY = 4;
         private static final float FUZZY_SIMILARITY = 0.5f;
 
-        //Reduce boost of wildcard matches compared to fuzzy /exact matches
+        //Reduce boost of wildcard/fuzzy matches compared to exact matches
         private static final float WILDCARD_BOOST_REDUCER = 0.8f;
+
+        //Reduce phrase query scores otherwise there is too much difference between a document that matches on
+        //phrase and one that doesn't quite.
+        private static final float PHRASE_BOOST_REDUCER   = 0.2f;
+
 
         public DisjunctionQueryParser(String defaultField, org.apache.lucene.analysis.Analyzer analyzer) {
             super(LuceneVersion.LUCENE_VERSION, defaultField, analyzer);
-
         }
-
-        /**
-         * We do this to disable coord when creating top level query. if You enter a four word search and one document
-         * only matches two words rather than four it should already get a lower score by virtue of only scoring
-         * for two words, it doesn't need its score to be halfed again because only matched two out of four terms
-         *
-         * @param clauses
-         * @return
-         * @throws ParseException
-         */
-        /*protected Query getBooleanQuery(List<BooleanClause> clauses) throws ParseException {
-            return getBooleanQuery(clauses, true);
-        } */
 
 
         protected Map<String, DismaxAlias> aliases = new HashMap<String, DismaxAlias>(3);
@@ -71,15 +62,6 @@ public class DismaxQueryParser {
         //Field to DismaxAlias
         public void addAlias(String field, DismaxAlias dismaxAlias) {
             aliases.put(field, dismaxAlias);
-        }
-
-        protected org.apache.lucene.search.Query getFuzzyQuery(java.lang.String field, java.lang.String termStr, float minSimilarity)
-                throws org.apache.lucene.queryParser.ParseException {
-            FuzzyQuery fq = (FuzzyQuery) super.getFuzzyQuery(field, termStr, minSimilarity);
-            //so that obscure fuzzy queries term do not get an advantage over common fuzzy queries just because
-            //the query term is rarer
-            //fq.setRewriteMethod(new MultiTermQuery.TopTermsBoostOnlyBooleanQueryRewrite(100));
-            return fq;
         }
 
         protected Query getFieldQuery(String field, String queryText, boolean quoted)
@@ -114,7 +96,7 @@ public class DismaxQueryParser {
                                 ) {
                             //Reduce phrase because will have matched both parts giving far too much score differential
                             if (quoted == true) {
-                                querySub.setBoost(0.2f);
+                                querySub.setBoost(PHRASE_BOOST_REDUCER);
                             }
                             //Boost as specified
                             else if (a.getFields().get(f) != null) {

@@ -6,6 +6,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.RecordingIndexField;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +19,8 @@ public class AnnotationDismaxSearch extends AnnotationSearch {
     {
 
         Map<String, Float> fieldBoosts = new HashMap<String, Float>(2);
-        fieldBoosts.put(AnnotationIndexField.NAME.getName(),null);
-        fieldBoosts.put(AnnotationIndexField.TEXT.getName(),null);
+        fieldBoosts.put(AnnotationIndexField.NAME.getName(),1f);
+        fieldBoosts.put(AnnotationIndexField.TEXT.getName(),1f);
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
@@ -36,8 +37,10 @@ public class AnnotationDismaxSearch extends AnnotationSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String query) throws ParseException
+    protected Query parseQuery(String userQuery) throws ParseException
     {
-        return dismaxSearcher.parseQuery(query, analyzer);
+        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
+        Query q2 = new BoostExactMatchQuery(q1, userQuery, AnnotationIndexField.NAME.getName());
+        return q2;
     }
 }

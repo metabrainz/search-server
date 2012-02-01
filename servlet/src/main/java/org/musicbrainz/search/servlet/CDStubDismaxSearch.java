@@ -4,6 +4,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.CDStubIndexField;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class CDStubDismaxSearch extends CDStubSearch {
     protected void initDismaxSearcher() {
         Map<String, Float> fieldBoosts = new HashMap<String, Float>(4);
         fieldBoosts.put(CDStubIndexField.TITLE.getName(),1.3f);
-        fieldBoosts.put(CDStubIndexField.ARTIST.getName(), null);
+        fieldBoosts.put(CDStubIndexField.ARTIST.getName(), 1f);
         fieldBoosts.put(CDStubIndexField.COMMENT.getName(), 0.8f);
         fieldBoosts.put(CDStubIndexField.BARCODE.getName(), 0.8f);
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
@@ -50,8 +51,10 @@ public class CDStubDismaxSearch extends CDStubSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String query) throws ParseException
+    protected Query parseQuery(String userQuery) throws ParseException
     {
-        return dismaxSearcher.parseQuery(query, analyzer);
+        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
+        Query q2 = new BoostExactMatchQuery(q1, userQuery, CDStubIndexField.TITLE.getName());
+        return q2;
     }
 }

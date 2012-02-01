@@ -11,7 +11,8 @@ import java.io.IOException;
  * This is applied as an additional query and boosts the score of docs if the original field
  * matches exactly the value of the query for the specified field. This is useful to ensure
  * accents are considered when finding the best match because accents are ignored during the
- * matching process.
+ * matching process, and also to prefer an exact phrase match rather than a match within a larger phrase
+ * (i.e Search for Duran Duran, should prefer Duran Duran to Duran Duran Duran)
  */
 public class BoostExactMatchQuery extends CustomScoreQuery {
 
@@ -30,6 +31,8 @@ public class BoostExactMatchQuery extends CustomScoreQuery {
 
     private class ExactMatcherBooster extends CustomScoreProvider {
 
+        private static final float EXACT_MATCH_BOOST = 1.1f;
+
         public ExactMatcherBooster(IndexReader r) throws IOException {
             super(r);
 
@@ -41,7 +44,7 @@ public class BoostExactMatchQuery extends CustomScoreQuery {
 
                 org.apache.lucene.document.Document doc = this.reader.document(docNo);
                 if (userQuery.equals(doc.getValues(compareField)[0])) {
-                    return subQueryScore * (1.1f);
+                    return subQueryScore * EXACT_MATCH_BOOST;
                 } else {
                     return subQueryScore;
                 }

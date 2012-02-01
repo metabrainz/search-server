@@ -5,6 +5,7 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 
 import java.util.HashMap;
@@ -17,8 +18,8 @@ public class WorkDismaxSearch extends WorkSearch {
     protected void initDismaxSearcher()
     {
         Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
-        fieldBoosts.put(WorkIndexField.WORK.getName(), 1.6f);
-        fieldBoosts.put(WorkIndexField.ALIAS.getName(), 0.8f);
+        fieldBoosts.put(WorkIndexField.WORK.getName(), 1.3f);
+        fieldBoosts.put(WorkIndexField.ALIAS.getName(), 0.9f);
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
@@ -50,8 +51,10 @@ public class WorkDismaxSearch extends WorkSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String query) throws ParseException
+    protected Query parseQuery(String userQuery) throws ParseException
     {
-        return dismaxSearcher.parseQuery(query, analyzer);
+        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
+        Query q2 = new BoostExactMatchQuery(q1, userQuery, WorkIndexField.WORK.getName());
+        return q2;
     }
 }

@@ -4,6 +4,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,10 +50,10 @@ public class ReleaseGroupDismaxSearch extends ReleaseGroupSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String query) throws ParseException
+    protected Query parseQuery(String userQuery) throws ParseException
     {
-        return dismaxSearcher.parseQuery(query, analyzer);
+        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
+        Query q2 = new BoostExactMatchQuery(q1, userQuery, ReleaseGroupIndexField.RELEASEGROUP.getName());
+        return q2;
     }
-
-
 }

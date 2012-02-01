@@ -3,6 +3,7 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 
 import java.util.HashMap;
@@ -17,8 +18,8 @@ public class ReleaseDismaxSearch extends ReleaseSearch {
         fieldBoosts.put(ReleaseIndexField.RELEASE.getName(), 1.2f);
         fieldBoosts.put(ReleaseIndexField.BARCODE.getName(), 1.2f);
         fieldBoosts.put(ReleaseIndexField.CATALOG_NO.getName(), 1.2f);
-        fieldBoosts.put(ReleaseIndexField.ARTIST.getName(),null);
-        fieldBoosts.put(ReleaseIndexField.ARTIST_NAMECREDIT.getName(), null);
+        fieldBoosts.put(ReleaseIndexField.ARTIST.getName(),1f);
+        fieldBoosts.put(ReleaseIndexField.ARTIST_NAMECREDIT.getName(), 1f);
         fieldBoosts.put(ReleaseIndexField.LABEL.getName(), 0.8f);
 
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
@@ -54,7 +55,10 @@ public class ReleaseDismaxSearch extends ReleaseSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String query) throws ParseException {
-        return dismaxSearcher.parseQuery(query, analyzer);
+    protected Query parseQuery(String userQuery) throws ParseException
+    {
+        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
+        Query q2 = new BoostExactMatchQuery(q1, userQuery, ReleaseIndexField.RELEASE.getName());
+        return q2;
     }
 }

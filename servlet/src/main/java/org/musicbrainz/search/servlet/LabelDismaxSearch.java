@@ -5,6 +5,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.RecordingIndexField;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,9 @@ public class LabelDismaxSearch extends LabelSearch {
     protected void initDismaxSearcher()
     {
         Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
-        fieldBoosts.put(LabelIndexField.SORTNAME.getName(), 0.8f);
-        fieldBoosts.put(LabelIndexField.LABEL.getName(), 1.6f);
-        fieldBoosts.put(LabelIndexField.ALIAS.getName(), 0.4f);
+        fieldBoosts.put(LabelIndexField.SORTNAME.getName(), 1.1f);
+        fieldBoosts.put(LabelIndexField.LABEL.getName(), 1.3f);
+        fieldBoosts.put(LabelIndexField.ALIAS.getName(), 0.9f);
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
@@ -50,8 +51,10 @@ public class LabelDismaxSearch extends LabelSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String query) throws ParseException
+    protected Query parseQuery(String userQuery) throws ParseException
     {
-        return dismaxSearcher.parseQuery(query, analyzer);
+        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
+        Query q2 = new BoostExactMatchQuery(q1, userQuery, LabelIndexField.LABEL.getName());
+        return q2;
     }
 }
