@@ -158,22 +158,21 @@ public class IssueSearch167Test extends TestCase {
 
 
     public void testFindArtistDismax1() throws Exception {
-        Results res = sd.searchLucene("Republica", 0, 10);
-        assertEquals(4, res.totalHits);
-        Result result = res.results.get(0);
-        MbDocument doc = result.doc;
-        System.out.println("Score 0:"+res.results.get(0).score);
-        System.out.println("Score 1:"+res.results.get(1).score);
-        System.out.println("Score 2:"+res.results.get(2).score);
-        System.out.println("Score 3:"+res.results.get(3).score);
 
+        IndexSearcher searcher = sd.getIndexSearcher();
+        Query q = sd.parseQuery("Republica");
+        TopDocs topdocs = searcher.search(q, 10);
+        assertEquals(4, topdocs.scoreDocs.length);
+        for(ScoreDoc match:topdocs.scoreDocs)
+        {
+            Explanation explain = searcher.explain(q, match.doc);
+            System.out.println("DocNo:"+match.doc+":"+match.score+":"+sd.getIndexSearcher().doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        }
 
-        assertEquals("11111111-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
-        assertEquals(1f,result.score);
-        result = res.results.get(1);
-        doc = result.doc;
-        assertEquals("22222222-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
-        assertTrue(1f > result.score);
+        org.apache.lucene.document.Document doc  = searcher.doc(topdocs.scoreDocs[0].doc);
+        assertEquals("11111111-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));
+        doc  = searcher.doc(topdocs.scoreDocs[1].doc);
+        assertEquals("22222222-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));
 
     }
 

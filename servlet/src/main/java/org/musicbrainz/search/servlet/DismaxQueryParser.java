@@ -54,16 +54,16 @@ public class DismaxQueryParser {
 
         /**
          * We do this to disable coord when creating top level query. if You enter a four word search and one document
-         * only matches two words rather than four it should already get alower score by virtue of only scoring
+         * only matches two words rather than four it should already get a lower score by virtue of only scoring
          * for two words, it doesn't need its score to be halfed again because only matched two out of four terms
          *
          * @param clauses
          * @return
          * @throws ParseException
          */
-        protected Query getBooleanQuery(List<BooleanClause> clauses) throws ParseException {
+        /*protected Query getBooleanQuery(List<BooleanClause> clauses) throws ParseException {
             return getBooleanQuery(clauses, true);
-        }
+        } */
 
 
         protected Map<String, DismaxAlias> aliases = new HashMap<String, DismaxAlias>(3);
