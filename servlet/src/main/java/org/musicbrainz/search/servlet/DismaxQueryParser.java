@@ -114,7 +114,7 @@ public class DismaxQueryParser {
                                 ) {
                             //Reduce phrase because will have matched both parts giving far too much score differential
                             if (quoted == true) {
-                                querySub.setBoost(0.05f);
+                                querySub.setBoost(0.2f);
                             }
                             //Boost as specified
                             else if (a.getFields().get(f) != null) {
