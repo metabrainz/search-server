@@ -14,9 +14,9 @@ public class ArtistDismaxSearch extends ArtistSearch {
     protected void initDismaxSearcher()
     {
         Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
-        fieldBoosts.put(ArtistIndexField.SORTNAME.getName(), 0.8f);
-        fieldBoosts.put(ArtistIndexField.ARTIST.getName(), 1.6f);
-        fieldBoosts.put(ArtistIndexField.ALIAS.getName(), 0.4f);
+        fieldBoosts.put(ArtistIndexField.SORTNAME.getName(), 1.1f);
+        fieldBoosts.put(ArtistIndexField.ARTIST.getName(), 1.3f);
+        fieldBoosts.put(ArtistIndexField.ALIAS.getName(), 0.9f);
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
