@@ -40,7 +40,7 @@ public class DismaxQueryParser {
 
         //Only make terms that are this length fuzzy
         private static final int MIN_FIELD_LENGTH_TO_MAKE_FUZZY = 4;
-        private static final float FUZZY_SIMILARITY = 0.7f;
+        private static final float FUZZY_SIMILARITY = 0.5f;
 
         //Reduce boost of wildcard matches compared to fuzzy /exact matches
         private static final float WILDCARD_BOOST_REDUCER = 0.8f;
@@ -94,8 +94,12 @@ public class DismaxQueryParser {
                                 (quoted == false) ||
                                         (querySub instanceof PhraseQuery)
                                 ) {
-                            //If Field has a boost , but we dont boost phrase as it gives too much
-                            if (quoted == false && a.getFields().get(f) != null) {
+                            //Reduce phrase because will have matched both parts giving far too much score differential
+                            if(quoted == true) {
+                                querySub.setBoost(0.1f);
+                            }
+                            //Boost as specified
+                            else if (a.getFields().get(f) != null) {
                                 querySub.setBoost(a.getFields().get(f));
                             }
                             q.add(querySub);
