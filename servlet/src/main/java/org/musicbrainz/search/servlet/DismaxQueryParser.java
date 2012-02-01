@@ -78,7 +78,7 @@ public class DismaxQueryParser {
             FuzzyQuery fq = (FuzzyQuery) super.getFuzzyQuery(field, termStr, minSimilarity);
             //so that obscure fuzzy queries term do not get an advantage over common fuzzy queries just because
             //the query term is rarer
-            fq.setRewriteMethod(new MultiTermQuery.TopTermsBoostOnlyBooleanQueryRewrite(100));
+            //fq.setRewriteMethod(new MultiTermQuery.TopTermsBoostOnlyBooleanQueryRewrite(100));
             return fq;
         }
 
@@ -96,11 +96,12 @@ public class DismaxQueryParser {
                     //if query can be created for this field and text
                     Query querySub;
                     Query queryWildcard = null;
+                    Query queryFuzzy    = null;
 
                     if (!quoted && queryText.length() >= MIN_FIELD_LENGTH_TO_MAKE_FUZZY) {
                         querySub = getFieldQuery(f, queryText, quoted);
                         queryWildcard = getWildcardQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text() + '*');
-                        querySub = getFuzzyQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text(), FUZZY_SIMILARITY);
+                        queryFuzzy = getFuzzyQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text(), FUZZY_SIMILARITY);
                     } else {
                         querySub = getFieldQuery(f, queryText, quoted);
                     }
@@ -122,6 +123,13 @@ public class DismaxQueryParser {
                             q.add(querySub);
                             ok = true;
                         }
+                    }
+
+                    if (queryFuzzy != null) {
+                        if (a.getFields().get(f) != null) {
+                            queryFuzzy.setBoost(a.getFields().get(f) * WILDCARD_BOOST_REDUCER);
+                        }
+                        q.add(queryFuzzy);
                     }
 
                     if (queryWildcard != null) {
