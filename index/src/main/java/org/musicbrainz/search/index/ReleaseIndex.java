@@ -33,6 +33,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.search.MbDocument;
+import sun.jvm.hotspot.debugger.posix.elf.ELFSectionHeader;
 
 import java.io.IOException;
 import java.sql.*;
@@ -41,6 +42,7 @@ import java.util.*;
 public class ReleaseIndex extends DatabaseIndex {
 
 
+    public  static final String BARCODE_NONE = "none";
     private StopWatch labelClock = new StopWatch();
     private StopWatch mediumClock = new StopWatch();
     private StopWatch puidClock = new StopWatch();
@@ -302,7 +304,17 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, rs.getString("country"));
         doc.addNonEmptyField(ReleaseIndexField.DATE,
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
-        doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
+
+        String barcode = rs.getString("barcode");
+        if(barcode==null) {
+            doc.addField(ReleaseIndexField.BARCODE,Index.NO_VALUE);
+        }
+        else if(barcode.equals("")) {
+            doc.addField(ReleaseIndexField.BARCODE, BARCODE_NONE);
+        }
+        else {
+            doc.addField(ReleaseIndexField.BARCODE,barcode);
+        }
         doc.addFieldOrNoValue(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
         doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, rs.getString("language"));
         doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, rs.getString("script"));

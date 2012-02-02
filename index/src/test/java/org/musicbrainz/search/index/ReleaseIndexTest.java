@@ -423,7 +423,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(0, doc.getFieldables(ReleaseIndexField.BARCODE.getName()).length);
+            assertEquals(1, doc.getFieldables(ReleaseIndexField.BARCODE.getName()).length);
         }
         ir.close();
     }
@@ -735,7 +735,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFieldables(ReleaseIndexField.COUNTRY.getName()).length);
-            assertEquals(0, doc.getFieldables(ReleaseIndexField.BARCODE.getName()).length);
+            assertEquals(1, doc.getFieldables(ReleaseIndexField.BARCODE.getName()).length);
             assertEquals(0, doc.getFieldables(ReleaseIndexField.DATE.getName()).length);
             assertEquals(0, doc.getFieldables(ReleaseIndexField.CATALOG_NO.getName()).length);
             assertEquals(0, doc.getFieldables(ReleaseIndexField.LABEL.getName()).length);

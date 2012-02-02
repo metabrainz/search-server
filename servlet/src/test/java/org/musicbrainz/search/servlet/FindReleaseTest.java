@@ -151,6 +151,7 @@ public class FindReleaseTest extends TestCase {
         doc.addField(ReleaseIndexField.COUNTRY, "US");
         doc.addField(ReleaseIndexField.DATE, "2003-09-23");
         doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,1);
+        doc.addField(ReleaseIndexField.BARCODE, ReleaseIndex.BARCODE_NONE);
 
         writer.addDocument(doc.getLuceneDocument());
 
@@ -391,6 +392,25 @@ public class FindReleaseTest extends TestCase {
          assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
          assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
       }
+
+    /*
+      * @throws Exception
+      */
+    public void testFindReleaseWithNoBarcode() throws Exception {
+        Results res = ss.search("barcode:none", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
+    }
+
+    /*
+      * @throws Exception
+      */
+    public void testFindReleaseWithNotKnownBarcode() throws Exception {
+        Results res = ss.search("barcode:\\-", 0, 10);
+        assertEquals(0, res.totalHits);
+    }
 
     /*
      * @throws Exception

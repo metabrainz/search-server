@@ -97,7 +97,7 @@ public class ReleaseWriter extends ResultsWriter {
             }
 
             String barcode = doc.get(ReleaseIndexField.BARCODE);
-            if (barcode != null) {
+            if (isNotNoValue(barcode)) {
                 release.setBarcode(barcode);
             }
 
