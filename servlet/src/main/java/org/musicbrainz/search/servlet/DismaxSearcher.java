@@ -7,9 +7,9 @@ import org.apache.lucene.search.Query;
 
 public class DismaxSearcher {
 
-    private DismaxQueryParser.DismaxAlias dismaxAlias;
+    private DismaxAlias dismaxAlias;
 
-    public DismaxSearcher(DismaxQueryParser.DismaxAlias dismaxAlias)
+    public DismaxSearcher(DismaxAlias dismaxAlias)
     {
         this.dismaxAlias = dismaxAlias;
     }

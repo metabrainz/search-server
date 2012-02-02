@@ -11,13 +11,12 @@ public class ArtistDismaxSearch extends ArtistSearch {
 
     private DismaxSearcher dismaxSearcher;
 
-    protected void initDismaxSearcher()
-    {
-        Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
-        fieldBoosts.put(ArtistIndexField.SORTNAME.getName(), 1.1f);
-        fieldBoosts.put(ArtistIndexField.ARTIST.getName(), 1.3f);
-        fieldBoosts.put(ArtistIndexField.ALIAS.getName(), 0.9f);
-        DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
+    protected void initDismaxSearcher() {
+        Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(3);
+        fieldBoosts.put(ArtistIndexField.SORTNAME.getName(), new DismaxAlias.AliasField(true, 1.1f));
+        fieldBoosts.put(ArtistIndexField.ARTIST.getName(), new DismaxAlias.AliasField(true, 1.3f));
+        fieldBoosts.put(ArtistIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
+        DismaxAlias dismaxAlias = new DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
         dismaxSearcher = new DismaxSearcher(dismaxAlias);
@@ -48,8 +47,7 @@ public class ArtistDismaxSearch extends ArtistSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String userQuery) throws ParseException
-    {
+    protected Query parseQuery(String userQuery) throws ParseException {
         Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
         Query q2 = new BoostExactMatchQuery(q1, userQuery, ArtistIndexField.ARTIST.getName());
         return q2;

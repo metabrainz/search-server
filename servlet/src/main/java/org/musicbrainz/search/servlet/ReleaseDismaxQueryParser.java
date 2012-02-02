@@ -54,8 +54,8 @@ public class ReleaseDismaxQueryParser extends DismaxQueryParser {
                         querySub.setBoost(PHRASE_BOOST_REDUCER);
                     }
                     //Boost as specified
-                    else if (a.getFields().get(f) != null) {
-                        querySub.setBoost(a.getFields().get(f));
+                    else  {
+                        querySub.setBoost(a.getFields().get(f).getBoost());
                     }
                     q.add(querySub);
                     return true;

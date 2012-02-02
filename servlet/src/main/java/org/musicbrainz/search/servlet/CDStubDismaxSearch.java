@@ -1,7 +1,6 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.AnnotationIndexField;
@@ -15,12 +14,12 @@ public class CDStubDismaxSearch extends CDStubSearch {
     private DismaxSearcher dismaxSearcher;
 
     protected void initDismaxSearcher() {
-        Map<String, Float> fieldBoosts = new HashMap<String, Float>(4);
-        fieldBoosts.put(CDStubIndexField.TITLE.getName(),1.3f);
-        fieldBoosts.put(CDStubIndexField.ARTIST.getName(), 1f);
-        fieldBoosts.put(CDStubIndexField.COMMENT.getName(), 0.8f);
-        fieldBoosts.put(CDStubIndexField.BARCODE.getName(), 0.8f);
-        DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
+        Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(2);
+        fieldBoosts.put(CDStubIndexField.TITLE.getName(), new DismaxAlias.AliasField(true, 1.3f));
+        fieldBoosts.put(CDStubIndexField.ARTIST.getName(), new DismaxAlias.AliasField(true, 1f));
+        fieldBoosts.put(CDStubIndexField.COMMENT.getName(), new DismaxAlias.AliasField(false, 0.8f));
+        fieldBoosts.put(CDStubIndexField.BARCODE.getName(), new DismaxAlias.AliasField(false, 0.8f));
+        DismaxAlias dismaxAlias = new DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
         dismaxSearcher = new DismaxSearcher(dismaxAlias);
@@ -51,8 +50,7 @@ public class CDStubDismaxSearch extends CDStubSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String userQuery) throws ParseException
-    {
+    protected Query parseQuery(String userQuery) throws ParseException {
         Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
         Query q2 = new BoostExactMatchQuery(q1, userQuery, CDStubIndexField.TITLE.getName());
         return q2;

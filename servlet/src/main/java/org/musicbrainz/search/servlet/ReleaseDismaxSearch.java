@@ -4,6 +4,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 
 import java.util.HashMap;
@@ -14,15 +15,15 @@ public class ReleaseDismaxSearch extends ReleaseSearch {
     private DismaxSearcher dismaxSearcher;
 
     protected void initDismaxSearcher() {
-        Map<String, Float> fieldBoosts = new HashMap<String, Float>(3);
-        fieldBoosts.put(ReleaseIndexField.RELEASE.getName(), 1.2f);
-        fieldBoosts.put(ReleaseIndexField.BARCODE.getName(), 1.2f);
-        fieldBoosts.put(ReleaseIndexField.CATALOG_NO.getName(), 1.2f);
-        fieldBoosts.put(ReleaseIndexField.ARTIST.getName(),1f);
-        fieldBoosts.put(ReleaseIndexField.ARTIST_NAMECREDIT.getName(), 1f);
-        fieldBoosts.put(ReleaseIndexField.LABEL.getName(), 0.8f);
+        Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(6);
+        fieldBoosts.put(ReleaseIndexField.RELEASE.getName(), new DismaxAlias.AliasField(true, 1.2f));
+        fieldBoosts.put(ReleaseIndexField.BARCODE.getName(), new DismaxAlias.AliasField(false, 1.2f));
+        fieldBoosts.put(ReleaseIndexField.CATALOG_NO.getName(), new DismaxAlias.AliasField(false, 1.2f));
+        fieldBoosts.put(ReleaseIndexField.ARTIST.getName(), new DismaxAlias.AliasField(true, 1f));
+        fieldBoosts.put(ReleaseIndexField.ARTIST_NAMECREDIT.getName(), new DismaxAlias.AliasField(true, 1f));
+        fieldBoosts.put(ReleaseIndexField.LABEL.getName(), new DismaxAlias.AliasField(true, 0.8f));
 
-        DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
+        DismaxAlias dismaxAlias = new DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
         dismaxSearcher = new ReleaseDismaxSearcher(dismaxAlias);
@@ -55,8 +56,7 @@ public class ReleaseDismaxSearch extends ReleaseSearch {
         initDismaxSearcher();
     }
 
-    protected Query parseQuery(String userQuery) throws ParseException
-    {
+    protected Query parseQuery(String userQuery) throws ParseException {
         Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
         Query q2 = new BoostExactMatchQuery(q1, userQuery, ReleaseIndexField.RELEASE.getName());
         return q2;

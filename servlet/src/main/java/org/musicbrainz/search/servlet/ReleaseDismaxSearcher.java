@@ -4,7 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 
 public class ReleaseDismaxSearcher extends DismaxSearcher {
 
-    public ReleaseDismaxSearcher(DismaxQueryParser.DismaxAlias dismaxAlias)
+    public ReleaseDismaxSearcher(DismaxAlias dismaxAlias)
     {
         super(dismaxAlias);
     }

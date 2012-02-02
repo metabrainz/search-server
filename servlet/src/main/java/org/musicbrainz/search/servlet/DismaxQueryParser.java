@@ -1,13 +1,10 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.musicbrainz.search.LuceneVersion;
-import org.musicbrainz.search.index.ReleaseIndexField;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DismaxQueryParser {
@@ -29,10 +26,11 @@ public class DismaxQueryParser {
      * @param query
      * @return
      * @throws org.apache.lucene.queryParser.ParseException
+     *
      */
     public Query parse(String query) throws org.apache.lucene.queryParser.ParseException {
 
-        Query term   = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":(" + query + ")");
+        Query term = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":(" + query + ")");
         Query phrase = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":\"" + query + "\"");
         return buildTopQuery(term, phrase);
     }
@@ -52,8 +50,7 @@ public class DismaxQueryParser {
             bq.add(term, BooleanClause.Occur.MUST);
             bq.add(phrase, BooleanClause.Occur.SHOULD);
             return bq;
-        }
-        else {
+        } else {
             return term;
         }
     }
@@ -74,7 +71,7 @@ public class DismaxQueryParser {
 
         //Reduce phrase query scores otherwise there is too much difference between a document that matches on
         //phrase and one that doesn't quite.
-        protected static final float PHRASE_BOOST_REDUCER   = 0.2f;
+        protected static final float PHRASE_BOOST_REDUCER = 0.2f;
 
 
         public DisjunctionQueryParser(String defaultField, org.apache.lucene.analysis.Analyzer analyzer) {
@@ -92,17 +89,13 @@ public class DismaxQueryParser {
         protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
             if (querySub != null) {
                 //if query was quoted but doesn't generate a phrase query we reject it
-                if (
-                        (quoted == false) ||
-                        (querySub instanceof PhraseQuery)
-                    ) {
+                if ((quoted == false) || (querySub instanceof PhraseQuery)) {
                     //Reduce phrase because will have matched both parts giving far too much score differential
                     if (quoted == true) {
                         querySub.setBoost(PHRASE_BOOST_REDUCER);
                     }
-                    //Boost as specified
-                    else if (a.getFields().get(f) != null) {
-                        querySub.setBoost(a.getFields().get(f));
+                    else {
+                        querySub.setBoost(a.getFields().get(f).getBoost());
                     }
                     q.add(querySub);
                     return true;
@@ -127,31 +120,26 @@ public class DismaxQueryParser {
                     Query queryWildcard = null;
                     Query queryFuzzy = null;
 
+                    DismaxAlias.AliasField af = a.getFields().get(f);
                     if (!quoted && queryText.length() >= MIN_FIELD_LENGTH_TO_MAKE_FUZZY) {
                         querySub = getFieldQuery(f, queryText, quoted);
                         if (querySub instanceof TermQuery) {
-                            queryWildcard = getWildcardQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text() + '*');
-                            queryFuzzy = getFuzzyQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text(), FUZZY_SIMILARITY);
+
+                            if(af.isFuzzy()) {
+                                queryWildcard = getWildcardQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text() + '*');
+                                queryFuzzy = getFuzzyQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text(), FUZZY_SIMILARITY);
+                                queryFuzzy.setBoost(af.getBoost() * WILDCARD_BOOST_REDUCER);
+                                q.add(queryFuzzy);
+                                queryWildcard.setBoost(af.getBoost() * WILDCARD_BOOST_REDUCER);
+                                q.add(queryWildcard);
+                            }
                         }
                     } else {
                         querySub = getFieldQuery(f, queryText, quoted);
                     }
 
-                    if(checkQuery(q, querySub, quoted, a, f) && ok==false) {
-                        ok=true;
-                    }
-                    if (queryFuzzy != null) {
-                        if (a.getFields().get(f) != null) {
-                            queryFuzzy.setBoost(a.getFields().get(f) * WILDCARD_BOOST_REDUCER);
-                        }
-                        q.add(queryFuzzy);
-                    }
-
-                    if (queryWildcard != null) {
-                        if (a.getFields().get(f) != null) {
-                            queryWildcard.setBoost(a.getFields().get(f) * WILDCARD_BOOST_REDUCER);
-                        }
-                        q.add(queryWildcard);
+                    if (checkQuery(q, querySub, quoted, a, f) && ok == false) {
+                        ok = true;
                     }
                 }
                 //Something has been added to disjunction query
@@ -168,29 +156,4 @@ public class DismaxQueryParser {
         }
     }
 
-    static class DismaxAlias {
-        public DismaxAlias() {
-
-        }
-
-        private float tie;
-        //Field Boosts
-        private Map<String, Float> fields;
-
-        public float getTie() {
-            return tie;
-        }
-
-        public void setTie(float tie) {
-            this.tie = tie;
-        }
-
-        public Map<String, Float> getFields() {
-            return fields;
-        }
-
-        public void setFields(Map<String, Float> fields) {
-            this.fields = fields;
-        }
-    }
 }
