@@ -25,6 +25,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -107,7 +108,7 @@ public class RecordingIndex extends DatabaseIndex {
                  " WHERE recording between ? AND ?");
 
             addPreparedStatement("TRACKS",
-                "SELECT id, track_name, recording, track_position, track_count, " +
+                "SELECT id, track_name, length as duration, recording, track_position, track_count, " +
                 "  release_id, medium_position, format " +
                 " FROM tmp_track " +
                 " WHERE recording between ? AND ?");
@@ -120,7 +121,7 @@ public class RecordingIndex extends DatabaseIndex {
                   " AND   recording between ? AND ?");
 
              addPreparedStatement("TRACKS",
-                "SELECT id, tn.name as track_name, t.recording, t.position as track_position, tl.track_count, " +
+                "SELECT id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, tl.track_count, " +
                 "  m.release as release_id, m.position as medium_position,mf.name as format " +
                 " FROM track t " +
                 "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
@@ -402,6 +403,7 @@ public class RecordingIndex extends DatabaseIndex {
             tw.setTrackName(rs.getString("track_name"));
             tw.setMediumPosition(rs.getInt("medium_position"));
             tw.setMediumFormat(rs.getString("format"));
+            tw.setDuration(rs.getInt("duration"));
             list.add(tw);
         }
         rs.close();
@@ -537,6 +539,8 @@ public class RecordingIndex extends DatabaseIndex {
                                           Map<Integer, List<TrackWrapper>> tracks,
                                           Map<Integer, Release> releases) throws SQLException {
 
+        Set<Integer> durations = new HashSet<Integer>();
+
         int id = rs.getInt("recordingId");
 
         MbDocument doc = new MbDocument();
@@ -545,8 +549,12 @@ public class RecordingIndex extends DatabaseIndex {
         String recordingName = rs.getString("trackname");
         doc.addNonEmptyField(RecordingIndexField.RECORDING, recordingName);         //Search
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
-        doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
-        doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
+        int recordingDuration = rs.getInt("duration");
+        if(recordingDuration> 0) {
+            durations.add(recordingDuration);
+            doc.addNumericField(RecordingIndexField.RECORDING_DURATION_OUTPUT, recordingDuration);
+        }
+
         doc.addFieldOrNoValue(RecordingIndexField.COMMENT, rs.getString("comment"));
 
         if (puids.containsKey(id)) {
@@ -593,6 +601,16 @@ public class RecordingIndex extends DatabaseIndex {
                     doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
                     doc.addField(RecordingIndexField.RELEASE, release.getTitle());
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
+                    int trackDuration = track.getDuration();
+                    if(trackDuration > 0) {
+                        //So can be displayed in output
+                        doc.addNumericField(RecordingIndexField.TRACK_DURATION_OUTPUT, trackDuration);
+                        durations.add(trackDuration);
+
+                    }
+                    else {
+                        doc.addField(RecordingIndexField.TRACK_DURATION_OUTPUT, Index.NO_VALUE);
+                    }
 
                     //Is Various Artist Release
                     if(release.getArtistCredit()!=null)
@@ -646,6 +664,20 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addField(RecordingIndexField.TAG, tag.getName());
                 doc.addField(RecordingIndexField.TAGCOUNT, tag.getCount().toString());
             }
+        }
+
+        //Id we have no recording length in the recording itself or the track length  then we add this value so
+        //they can search for recordings/tracks with no length
+        if(durations.size()==0) {
+            doc.addField(RecordingIndexField.DURATION, Index.NO_VALUE);
+            doc.addField(RecordingIndexField.QUANTIZED_DURATION, Index.NO_VALUE);
+        }
+        else {
+            for(Integer dur:durations) {
+                doc.addNumericField(RecordingIndexField.DURATION, dur);
+                doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, dur / QUANTIZED_DURATION);
+            }
+
         }
 
         return doc.getLuceneDocument();

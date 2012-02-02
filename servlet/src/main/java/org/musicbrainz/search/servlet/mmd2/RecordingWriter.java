@@ -32,7 +32,6 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
-import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -86,7 +85,7 @@ public class RecordingWriter extends ResultsWriter {
                 recording.setDisambiguation(comment);
             }
 
-            String duration = doc.get(RecordingIndexField.DURATION);
+            String duration = doc.get(RecordingIndexField.RECORDING_DURATION_OUTPUT);
             if (duration != null) {
                 recording.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
             }
@@ -135,6 +134,7 @@ public class RecordingWriter extends ResultsWriter {
                 String[] releaseVA          = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
                 String[] mediumFormat       = doc.getValues(RecordingIndexField.FORMAT);
                 String[] trackArtistCredits = doc.getValues(RecordingIndexField.TRACK_ARTIST_CREDIT);
+                String[] trackDurations     = doc.getValues(RecordingIndexField.TRACK_DURATION_OUTPUT);
 
                 ReleaseList releaseList = of.createReleaseList();
                 for(int i=0;i<releaseNames.length;i++) {
@@ -166,6 +166,10 @@ public class RecordingWriter extends ResultsWriter {
 
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
                     track.setTitle(trackName[i]);
+
+                    if (isNotNoValue(trackDurations[i])) {
+                        track.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackDurations[i])));
+                    }
 
                     if (isNotNoValue(trackArtistCredits[i])) {
                         ArtistCredit tac = ArtistCreditHelper.unserialize(trackArtistCredits[i]);

@@ -179,7 +179,7 @@ public class CommonTables  {
 
         getDbConnection().createStatement().execute(
             "CREATE TEMPORARY TABLE tmp_track AS " +
-                "SELECT t.id, t.recording, tn.name as track_name, t.position as track_position, tl.track_count, " +
+                "SELECT t.id, t.recording, t.length, tn.name as track_name, t.position as track_position, tl.track_count, " +
                 "  m.release as release_id, m.position as medium_position, mf.name as format " +
                 " FROM track t " +
                 "  INNER JOIN track_name tn ON t.name=tn.id" +

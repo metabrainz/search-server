@@ -85,6 +85,8 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
         doc.addNumericField(RecordingIndexField.DURATION, 234000);
+        doc.addNumericField(RecordingIndexField.RECORDING_DURATION_OUTPUT, 234000);
+
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
         doc.addNumericField(RecordingIndexField.NUM_TRACKS,10);
         doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE,10);
@@ -97,6 +99,8 @@ public class FindRecordingTest extends TestCase {
         doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
         doc.addField(RecordingIndexField.ISRC, "123456789");
         doc.addField(RecordingIndexField.ISRC, "abcdefghi");
+        doc.addNumericField(RecordingIndexField.DURATION, 233000);
+        doc.addNumericField(RecordingIndexField.TRACK_DURATION_OUTPUT, 233000);
 
         doc.addField(RecordingIndexField.TAG, "indie");
         doc.addField(RecordingIndexField.TAGCOUNT, "101");
@@ -278,6 +282,14 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    public void testFindRecordingByDuration2() throws Exception {
+            Results res = ss.searchLucene("dur:234300", 0, 10);
+            assertEquals(1, res.totalHits);
+            Result result = res.results.get(0);
+            MbDocument doc = result.doc;
+            assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
     public void testFindRecordingByISRC() throws Exception {
         Results res = ss.searchLucene("isrc:123456789", 0, 10);
         assertEquals(1, res.totalHits);
@@ -457,7 +469,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("<track-count>10</track-count>"));
         assertTrue(output.contains("<artist-credit><name-credit><artist id=\"89ad4ac3-39f7-470e-963a-56509c546377\"><name>Various Artists</name></artist></name-credit></artist-credit>"));
         assertTrue(output.contains("indie</name>"));
-        assertTrue(output.contains("<track><title>Gravitational Lens</title><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
+        assertTrue(output.contains("<track><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
         
 

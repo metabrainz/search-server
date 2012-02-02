@@ -241,7 +241,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
-            assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.DURATION.getName()).stringValue()));
+            assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
             assertEquals("Non-Album Tracks", doc.getFieldable(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
             assertEquals("Official", doc.getFieldable(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
             assertEquals("FRAAA9000038", doc.getFieldable(RecordingIndexField.ISRC.getName()).stringValue());
@@ -706,7 +706,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(7, NumericUtils.prefixCodedToInt(doc.getFieldables(RecordingIndexField.TRACKNUM.getName())[0].stringValue()));
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getFieldables(RecordingIndexField.TRACKNUM.getName())[1].stringValue()));
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
-            assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.DURATION.getName()).stringValue()));
+            assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
             assertEquals("Non-Album Tracks", doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName())[0].stringValue());
             assertEquals("Album", doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName())[1].stringValue());
             assertEquals("Official", doc.getFieldables(RecordingIndexField.RELEASE_STATUS.getName())[0].stringValue());
