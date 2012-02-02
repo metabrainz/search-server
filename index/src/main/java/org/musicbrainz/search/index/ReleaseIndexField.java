@@ -3,10 +3,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
-import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
-import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
-import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
-import org.musicbrainz.search.analysis.TitleAnalyzer;
+import org.musicbrainz.search.analysis.*;
 
 /**
  * Fields created in Lucene Search Index
@@ -21,7 +18,7 @@ public enum ReleaseIndexField implements IndexField {
     ARTIST_NAME         ("artistname",		Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     BARCODE			    ("barcode",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
-    CATALOG_NO		    ("catno",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    CATALOG_NO		    ("catno",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new StripSpacesAnalyzer()),
     COMMENT		        ("comment",		    Field.Store.YES,	Field.Index.ANALYZED),
     COUNTRY			    ("country",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     DATE			    ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),

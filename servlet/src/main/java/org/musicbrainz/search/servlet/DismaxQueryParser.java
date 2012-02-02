@@ -4,6 +4,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.musicbrainz.search.LuceneVersion;
+import org.musicbrainz.search.index.ReleaseIndexField;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,27 +13,51 @@ import java.util.Map;
 public class DismaxQueryParser {
 
     public static String IMPOSSIBLE_FIELD_NAME = "\uFFFC\uFFFC\uFFFC";
-    private DisjunctionQueryParser dqp;
+    protected DisjunctionQueryParser dqp;
+
+    protected DismaxQueryParser() {
+    }
 
     public DismaxQueryParser(org.apache.lucene.analysis.Analyzer analyzer) {
         dqp = new DisjunctionQueryParser(IMPOSSIBLE_FIELD_NAME, analyzer);
     }
 
+    /**
+     * Create query consists of disjunction queries for each term fields combo, and then
+     * a phrase search for each field as long as the original query is more than one term
+     *
+     * @param query
+     * @return
+     * @throws org.apache.lucene.queryParser.ParseException
+     */
     public Query parse(String query) throws org.apache.lucene.queryParser.ParseException {
 
-        Query q0 = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":(" + query + ")");
+        Query term   = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":(" + query + ")");
         Query phrase = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":\"" + query + "\"");
+        return buildTopQuery(term, phrase);
+    }
+
+    /**
+     * If a phrase query was built then we create a boolean query that requires something to match in
+     * the term query, under normal circumstances if nothing matches the term query nothing will match the phrase
+     * query
+     *
+     * @param term
+     * @param phrase
+     * @return
+     */
+    protected Query buildTopQuery(Query term, Query phrase) {
         if (phrase instanceof DisjunctionMaxQuery) {
             BooleanQuery bq = new BooleanQuery(true);
-            bq.add(q0, BooleanClause.Occur.MUST);
+            bq.add(term, BooleanClause.Occur.MUST);
             bq.add(phrase, BooleanClause.Occur.SHOULD);
             return bq;
         }
         else {
-            return q0;
+            return term;
         }
-
     }
+
 
     public void addAlias(String field, DismaxAlias dismaxAlias) {
         dqp.addAlias(field, dismaxAlias);
@@ -41,15 +66,15 @@ public class DismaxQueryParser {
     static class DisjunctionQueryParser extends QueryParser {
 
         //Only make terms that are this length fuzzy
-        private static final int MIN_FIELD_LENGTH_TO_MAKE_FUZZY = 4;
-        private static final float FUZZY_SIMILARITY = 0.5f;
+        protected static final int MIN_FIELD_LENGTH_TO_MAKE_FUZZY = 4;
+        protected static final float FUZZY_SIMILARITY = 0.5f;
 
         //Reduce boost of wildcard/fuzzy matches compared to exact matches
-        private static final float WILDCARD_BOOST_REDUCER = 0.8f;
+        protected static final float WILDCARD_BOOST_REDUCER = 0.8f;
 
         //Reduce phrase query scores otherwise there is too much difference between a document that matches on
         //phrase and one that doesn't quite.
-        private static final float PHRASE_BOOST_REDUCER   = 0.2f;
+        protected static final float PHRASE_BOOST_REDUCER   = 0.2f;
 
 
         public DisjunctionQueryParser(String defaultField, org.apache.lucene.analysis.Analyzer analyzer) {
@@ -62,6 +87,28 @@ public class DismaxQueryParser {
         //Field to DismaxAlias
         public void addAlias(String field, DismaxAlias dismaxAlias) {
             aliases.put(field, dismaxAlias);
+        }
+
+        protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
+            if (querySub != null) {
+                //if query was quoted but doesn't generate a phrase query we reject it
+                if (
+                        (quoted == false) ||
+                        (querySub instanceof PhraseQuery)
+                    ) {
+                    //Reduce phrase because will have matched both parts giving far too much score differential
+                    if (quoted == true) {
+                        querySub.setBoost(PHRASE_BOOST_REDUCER);
+                    }
+                    //Boost as specified
+                    else if (a.getFields().get(f) != null) {
+                        querySub.setBoost(a.getFields().get(f));
+                    }
+                    q.add(querySub);
+                    return true;
+                }
+            }
+            return false;
         }
 
         protected Query getFieldQuery(String field, String queryText, boolean quoted)
@@ -78,7 +125,7 @@ public class DismaxQueryParser {
                     //if query can be created for this field and text
                     Query querySub;
                     Query queryWildcard = null;
-                    Query queryFuzzy    = null;
+                    Query queryFuzzy = null;
 
                     if (!quoted && queryText.length() >= MIN_FIELD_LENGTH_TO_MAKE_FUZZY) {
                         querySub = getFieldQuery(f, queryText, quoted);
@@ -90,25 +137,9 @@ public class DismaxQueryParser {
                         querySub = getFieldQuery(f, queryText, quoted);
                     }
 
-                    if (querySub != null) {
-                        //if query was quoted but doesn't generate a phrase query we reject it
-                        if (
-                                (quoted == false) ||
-                                        (querySub instanceof PhraseQuery)
-                                ) {
-                            //Reduce phrase because will have matched both parts giving far too much score differential
-                            if (quoted == true) {
-                                querySub.setBoost(PHRASE_BOOST_REDUCER);
-                            }
-                            //Boost as specified
-                            else if (a.getFields().get(f) != null) {
-                                querySub.setBoost(a.getFields().get(f));
-                            }
-                            q.add(querySub);
-                            ok = true;
-                        }
+                    if(checkQuery(q, querySub, quoted, a, f) && ok==false) {
+                        ok=true;
                     }
-
                     if (queryFuzzy != null) {
                         if (a.getFields().get(f) != null) {
                             queryFuzzy.setBoost(a.getFields().get(f) * WILDCARD_BOOST_REDUCER);

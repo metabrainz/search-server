@@ -17,9 +17,14 @@ public class DismaxSearcher {
     public Query parseQuery(String query, Analyzer analyzer) throws ParseException
     {
         query= QueryParser.escape(query);
-        DismaxQueryParser queryParser = new DismaxQueryParser(analyzer);
+        DismaxQueryParser queryParser = getParser(analyzer);
         queryParser.addAlias(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME, dismaxAlias);
         Query q = queryParser.parse(query);
         return q;
     }
+
+    protected DismaxQueryParser getParser(Analyzer analyzer)  {
+        return new DismaxQueryParser(analyzer);
+    }
+
 }

@@ -25,7 +25,7 @@ public class ReleaseDismaxSearch extends ReleaseSearch {
         DismaxQueryParser.DismaxAlias dismaxAlias = new DismaxQueryParser.DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
-        dismaxSearcher = new DismaxSearcher(dismaxAlias);
+        dismaxSearcher = new ReleaseDismaxSearcher(dismaxAlias);
     }
 
 
