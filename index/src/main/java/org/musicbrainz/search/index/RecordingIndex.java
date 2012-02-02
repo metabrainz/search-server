@@ -547,7 +547,7 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         doc.addNumericField(RecordingIndexField.DURATION, rs.getInt("duration"));
         doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, rs.getInt("duration") / QUANTIZED_DURATION);
-        doc.addNonEmptyField(RecordingIndexField.COMMENT, rs.getString("comment"));
+        doc.addFieldOrNoValue(RecordingIndexField.COMMENT, rs.getString("comment"));
 
         if (puids.containsKey(id)) {
             // Add each puid for recording

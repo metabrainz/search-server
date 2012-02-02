@@ -51,4 +51,13 @@ public abstract class ResultsWriter {
     protected boolean isNotUnknown(String value) {
         return ((value != null) && !(value.equalsIgnoreCase(Index.UNKNOWN)));
     }
+
+    /**
+     *
+     * @param value
+     * @return true if the value is not null and is a real value rather than set to unknown
+     */
+    protected boolean isNotNoValue(String value) {
+        return ((value != null) && !(value.equalsIgnoreCase(Index.NO_VALUE)));
+    }
 }

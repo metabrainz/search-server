@@ -90,7 +90,7 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
             }
 
             String comment = doc.get(LabelIndexField.COMMENT);
-            if (comment != null) {
+            if (isNotNoValue(comment)) {
                 label.setDisambiguation(comment);
             }
             labelList.getLabel().add(label);

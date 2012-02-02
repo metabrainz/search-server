@@ -57,7 +57,7 @@ public class WorkWriter extends ResultsWriter {
             }
 
             String comment = doc.get(WorkIndexField.COMMENT);
-            if (comment != null) {
+            if (isNotUnknown(comment)) {
                 work.setDisambiguation(comment);
             }
 

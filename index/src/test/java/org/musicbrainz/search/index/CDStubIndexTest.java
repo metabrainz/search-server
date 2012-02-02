@@ -181,7 +181,8 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals(1, doc.getFieldables(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals("-",doc.getFieldable(CDStubIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
 

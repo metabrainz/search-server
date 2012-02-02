@@ -270,7 +270,7 @@ public class WorkIndex extends DatabaseIndex {
         doc.addField(WorkIndexField.WORK, rs.getString("name"));
         doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
-        doc.addNonEmptyField(WorkIndexField.COMMENT, rs.getString("comment"));
+        doc.addFieldOrNoValue(WorkIndexField.COMMENT, rs.getString("comment"));
 
         if (artists.containsKey(id)) {
             RelationList rl = artists.get(id);

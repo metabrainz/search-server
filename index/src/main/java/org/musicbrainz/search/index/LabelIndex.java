@@ -174,7 +174,7 @@ public class LabelIndex extends DatabaseIndex {
         doc.addField(LabelIndexField.LABEL, rs.getString("name"));
         doc.addField(LabelIndexField.SORTNAME, rs.getString("sort_name"));
         doc.addFieldOrUnknown(LabelIndexField.TYPE, rs.getString("type"));
-        doc.addNonEmptyField(LabelIndexField.COMMENT, rs.getString("comment"));
+        doc.addFieldOrNoValue(LabelIndexField.COMMENT, rs.getString("comment"));
         doc.addFieldOrUnknown(LabelIndexField.COUNTRY, rs.getString("country"));
 
 

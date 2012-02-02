@@ -100,7 +100,7 @@ public class ArtistWriter extends ResultsWriter {
             }
 
             String comment = doc.get(ArtistIndexField.COMMENT);
-            if (comment != null) {
+            if (isNotNoValue(comment)) {
                 artist.setDisambiguation(comment);
             }
 

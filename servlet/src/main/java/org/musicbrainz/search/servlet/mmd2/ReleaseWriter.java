@@ -64,7 +64,7 @@ public class ReleaseWriter extends ResultsWriter {
             }
 
             String comment = doc.get(ReleaseIndexField.COMMENT);
-            if (comment != null) {
+            if (isNotNoValue(comment)) {
                 release.setDisambiguation(comment);
             }
 
@@ -130,20 +130,20 @@ public class ReleaseWriter extends ResultsWriter {
                 for (int i = 0; i < labelNames.length; i++) {
                     LabelInfo labelInfo = of.createLabelInfo();
 
-                    if (!labelNames[i].equals(Index.NO_VALUE) || !labelIds[i].equals(Index.NO_VALUE)) {
+                    if (isNotNoValue(labelNames[i]) || isNotNoValue(labelIds[i])) {
                         Label label = of.createLabel();
                         labelInfo.setLabel(label);
                     
-                        if (!labelNames[i].equals(Index.NO_VALUE)) {
+                        if (isNotNoValue(labelNames[i])) {
                             label.setName(labelNames[i]);
                         }
                         
-                        if (!labelIds[i].equals(Index.NO_VALUE)) {
+                        if (isNotNoValue(labelIds[i])) {
                             label.setId(labelIds[i]);
                         }
                     }
                     
-                    if (!catnos[i].equals(Index.NO_VALUE)) {
+                    if (isNotNoValue(catnos[i])) {
                         labelInfo.setCatalogNumber(catnos[i]);
                     }
                     labelInfoList.getLabelInfo().add(labelInfo);
@@ -169,7 +169,7 @@ public class ReleaseWriter extends ResultsWriter {
 
                     Medium medium = of.createMedium();
 
-                    if(!formats[i].toLowerCase(Locale.US).equals(Index.NO_VALUE)) {
+                    if(isNotNoValue(formats[i])) {
                         medium.setFormat(formats[i]);
                     }
                     org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();

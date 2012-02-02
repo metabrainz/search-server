@@ -103,7 +103,7 @@ public class CDStubIndex extends DatabaseIndex {
         }
         doc.addNonEmptyField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
         doc.addNonEmptyField(CDStubIndexField.BARCODE, rs.getString("barcode"));
-        doc.addNonEmptyField(CDStubIndexField.COMMENT, rs.getString("comment"));
+        doc.addFieldOrNoValue(CDStubIndexField.COMMENT, rs.getString("comment"));
         return doc.getLuceneDocument();
     }
 

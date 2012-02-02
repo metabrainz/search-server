@@ -306,7 +306,7 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
         doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, rs.getString("language"));
         doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, rs.getString("script"));
-        doc.addNonEmptyField(ReleaseIndexField.COMMENT, rs.getString("comment"));
+        doc.addFieldOrNoValue(ReleaseIndexField.COMMENT, rs.getString("comment"));
 
         if (labelInfo.containsKey(id)) {
             for (List<String> entry : labelInfo.get(id)) {

@@ -56,7 +56,7 @@ public class ReleaseGroupWriter extends ResultsWriter {
             }
 
             String comment = doc.get(ReleaseGroupIndexField.COMMENT);
-            if (comment != null) {
+            if (isNotNoValue(comment)) {
                 releaseGroup.setDisambiguation(comment);
             }
 

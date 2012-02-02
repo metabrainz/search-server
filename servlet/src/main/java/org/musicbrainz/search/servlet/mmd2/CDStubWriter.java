@@ -84,7 +84,7 @@ public class CDStubWriter extends ResultsWriter {
             }
 
             String comment = doc.get(CDStubIndexField.COMMENT);
-            if (comment!= null)
+            if (isNotNoValue(comment))
             {
                 cdstub.setComment(comment);
             }

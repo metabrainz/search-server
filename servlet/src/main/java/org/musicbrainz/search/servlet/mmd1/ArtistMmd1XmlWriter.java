@@ -91,7 +91,7 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
             }
 
             String comment = doc.get(ArtistIndexField.COMMENT);
-            if (comment != null) {
+            if (isNotNoValue(comment)) {
                 artist.setDisambiguation(comment);
             }
 

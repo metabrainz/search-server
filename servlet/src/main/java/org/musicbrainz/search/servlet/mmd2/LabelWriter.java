@@ -98,7 +98,7 @@ public class LabelWriter extends ResultsWriter {
             }
 
             String comment = doc.get(LabelIndexField.COMMENT);
-            if (comment != null) {
+            if (isNotNoValue(comment)) {
                 label.setDisambiguation(comment);
             }
 
