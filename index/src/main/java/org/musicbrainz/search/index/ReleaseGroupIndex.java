@@ -31,7 +31,6 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 
@@ -202,8 +201,8 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         //Add each release name within this release group
         if (releases.containsKey(id)) {
             for (ReleaseWrapper release : releases.get(id)) {
-                doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE, release.getReleaseName());
-                doc.addFieldOrHyphen(ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
+                doc.addFieldOrNoValue(ReleaseGroupIndexField.RELEASE, release.getReleaseName());
+                doc.addFieldOrNoValue(ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
             }
             doc.addNumericField(ReleaseGroupIndexField.NUM_RELEASES, releases.get(id).size());
         }

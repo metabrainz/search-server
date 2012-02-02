@@ -34,6 +34,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -112,20 +113,20 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                 for (int i = 0; i < labelNames.length; i++) {
                     Event event = of.createEvent();
 
-                    if (!labelNames[i].equals("-") || !labelIds[i].equals("-")) {
+                    if (!labelNames[i].equals(Index.NO_VALUE) || !labelIds[i].equals(Index.NO_VALUE)) {
                         Label label = of.createLabel();
                         event.setLabel(label);
                         
-                        if (!labelNames[i].equals("-")) {
+                        if (!labelNames[i].equals(Index.NO_VALUE)) {
                             label.setName(labelNames[i]);
                         }
                         
-                        if (!labelIds[i].equals("-")) {
+                        if (!labelIds[i].equals(Index.NO_VALUE)) {
                             label.setId(labelIds[i]);
                         }
                     }
 
-                    if (!catnos[i].equals("-")) {
+                    if (!catnos[i].equals(Index.NO_VALUE)) {
                         event.setCatalogNumber(catnos[i]);
                     }
 

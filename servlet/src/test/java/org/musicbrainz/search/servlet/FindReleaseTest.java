@@ -13,10 +13,7 @@ import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.DatabaseIndex;
-import org.musicbrainz.search.index.MMDSerializer;
-import org.musicbrainz.search.index.ReleaseGroupIndexField;
-import org.musicbrainz.search.index.ReleaseIndexField;
+import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
@@ -81,7 +78,7 @@ public class FindReleaseTest extends TestCase {
         //Medium 2
         doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 7);
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 2);
-        doc.addField(ReleaseIndexField.FORMAT, "-");
+        doc.addField(ReleaseIndexField.FORMAT, Index.NO_VALUE);
         doc.addNumericField(ReleaseIndexField.NUM_TRACKS, 17);
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, 3);
 
@@ -97,7 +94,7 @@ public class FindReleaseTest extends TestCase {
         //Multiples allowed of these
         doc.addField(ReleaseIndexField.CATALOG_NO, "WRATHCD25");
         doc.addField(ReleaseIndexField.LABEL, "Wrath Records");
-        doc.addField(ReleaseIndexField.LABEL_ID, "-");
+        doc.addField(ReleaseIndexField.LABEL_ID, Index.NO_VALUE);
 
         doc.addField(ReleaseIndexField.CATALOG_NO, "LP001");
         doc.addField(ReleaseIndexField.LABEL, "Major Records");

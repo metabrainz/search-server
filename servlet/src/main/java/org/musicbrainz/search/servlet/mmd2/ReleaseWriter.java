@@ -130,20 +130,20 @@ public class ReleaseWriter extends ResultsWriter {
                 for (int i = 0; i < labelNames.length; i++) {
                     LabelInfo labelInfo = of.createLabelInfo();
 
-                    if (!labelNames[i].equals("-") || !labelIds[i].equals("-")) {
+                    if (!labelNames[i].equals(Index.NO_VALUE) || !labelIds[i].equals(Index.NO_VALUE)) {
                         Label label = of.createLabel();
                         labelInfo.setLabel(label);
                     
-                        if (!labelNames[i].equals("-")) {
+                        if (!labelNames[i].equals(Index.NO_VALUE)) {
                             label.setName(labelNames[i]);
                         }
                         
-                        if (!labelIds[i].equals("-")) {
+                        if (!labelIds[i].equals(Index.NO_VALUE)) {
                             label.setId(labelIds[i]);
                         }
                     }
                     
-                    if (!catnos[i].equals("-")) {
+                    if (!catnos[i].equals(Index.NO_VALUE)) {
                         labelInfo.setCatalogNumber(catnos[i]);
                     }
                     labelInfoList.getLabelInfo().add(labelInfo);
@@ -169,7 +169,7 @@ public class ReleaseWriter extends ResultsWriter {
 
                     Medium medium = of.createMedium();
 
-                    if(!formats[i].toLowerCase(Locale.US).equals("-")) {
+                    if(!formats[i].toLowerCase(Locale.US).equals(Index.NO_VALUE)) {
                         medium.setFormat(formats[i]);
                     }
                     org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();

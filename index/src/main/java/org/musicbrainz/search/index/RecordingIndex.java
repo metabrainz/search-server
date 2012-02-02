@@ -586,10 +586,10 @@ public class RecordingIndex extends DatabaseIndex {
                 {
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
                     doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
-                    doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
-                    doc.addFieldOrHyphen(RecordingIndexField.RELEASE_STATUS, release.getStatus());
-                    doc.addFieldOrHyphen(RecordingIndexField.RELEASE_DATE, release.getDate());
-                    doc.addFieldOrHyphen(RecordingIndexField.COUNTRY, release.getCountry());
+                    doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
+                    doc.addFieldOrNoValue(RecordingIndexField.RELEASE_STATUS, release.getStatus());
+                    doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, release.getDate());
+                    doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, release.getCountry());
                     doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
                     doc.addField(RecordingIndexField.RELEASE, release.getTitle());
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
@@ -601,7 +601,7 @@ public class RecordingIndex extends DatabaseIndex {
                     }
                     else
                     {
-                        doc.addField(RecordingIndexField.RELEASE_AC_VA, "-");
+                        doc.addField(RecordingIndexField.RELEASE_AC_VA, Index.NO_VALUE);
                     }
                     // Added to TRACK_OUTPUT for outputting xml,
                     doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
@@ -610,7 +610,7 @@ public class RecordingIndex extends DatabaseIndex {
                         doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
                     }
                     doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
-                    doc.addFieldOrHyphen(RecordingIndexField.FORMAT,track.getMediumFormat());
+                    doc.addFieldOrNoValue(RecordingIndexField.FORMAT, track.getMediumFormat());
 
                     //Get Artist Credit for Track
                     ArtistCreditWrapper taw = trackArtistCredits.get(track.getTrackId());
@@ -631,14 +631,14 @@ public class RecordingIndex extends DatabaseIndex {
                             RecordingIndexField.TRACK_ARTIST_CREDIT);
                     }
                     else {
-                        doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT,"-");
+                        doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT,Index.NO_VALUE);
                     }
                 }
             }
         }
         else
         {
-            doc.addFieldOrHyphen(RecordingIndexField.RELEASE_TYPE, "standalone");
+            doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, "standalone");
         }
 
         if (tags.containsKey(id)) {

@@ -32,6 +32,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -141,32 +142,32 @@ public class RecordingWriter extends ResultsWriter {
                     Release release = of.createRelease();
                     release.setId(releaseIds[i]);
                     release.setTitle(releaseNames[i]);
-                    if (!releaseStatus[i].equals("-")) {
+                    if (!releaseStatus[i].equals(Index.NO_VALUE)) {
                         release.setStatus(releaseStatus[i]);
                     }
 
-                    if (!releaseDate[i].equals("-")) {
+                    if (!releaseDate[i].equals(Index.NO_VALUE)) {
                         release.setDate(releaseDate[i].toLowerCase(Locale.US));
                     }
 
-                    if (!releaseCountry[i].equals("-")) {
+                    if (!releaseCountry[i].equals(Index.NO_VALUE)) {
                         release.setCountry(releaseCountry[i]);
                     }
 
-                    if (!releaseVA[i].equals("-")) {
+                    if (!releaseVA[i].equals(Index.NO_VALUE)) {
                         release.setArtistCredit(createVariousArtistsCredit());
                     }
 
                     ReleaseGroup rg = of.createReleaseGroup();
                     release.setReleaseGroup(rg);
-                    if (!releaseTypes[i].equals("-")) {
+                    if (!releaseTypes[i].equals(Index.NO_VALUE)) {
                         release.getReleaseGroup().setType(releaseTypes[i]);
                     }
 
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
                     track.setTitle(trackName[i]);
 
-                    if (!trackArtistCredits[i].equals("-")) {
+                    if (!trackArtistCredits[i].equals(Index.NO_VALUE)) {
                         ArtistCredit tac = ArtistCreditHelper.unserialize(trackArtistCredits[i]);
                         track.setArtistCredit(tac);
                     }
@@ -178,7 +179,7 @@ public class RecordingWriter extends ResultsWriter {
                     Medium medium = of.createMedium();
                     medium.setPosition(new BigInteger(mediumPos[i]));
                     medium.setTrackList(releaseTrackList);
-                    if(!mediumFormat[i].equals("-"))
+                    if(!mediumFormat[i].equals(Index.NO_VALUE))
                     {
                         medium.setFormat(mediumFormat[i]);
                     }

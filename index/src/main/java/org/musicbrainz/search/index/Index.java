@@ -27,8 +27,11 @@ import org.apache.lucene.search.Similarity;
 
 public interface Index {
 
-    //Used to index something as Unknwon
+    //Used to index field as Unknown when we know a value must exist for that field but we don't know it
     public static String UNKNOWN = "unknown";
+
+    //Used to index field when we dont have a value for it, and it may not actually have a value.
+    public static String NO_VALUE = "-";
 
     /**
      * The common name of the index

@@ -112,22 +112,19 @@ public class MbDocument {
      * Add field to document if not empty, otherwise add hyphen.
      *
      * This method is necessary when adding fields that make up a set within in a list so that
-     * order is preserved.
+     * order is preserved and also allows us to search for document that don't contain for a value in a particular field
      *
      * @param field
      * @param value
      */
-    //TODO is this way we can achieve the same effect without needing to store these fields
-    public void addFieldOrHyphen(IndexField field, String value) {
+    public void addFieldOrNoValue(IndexField field, String value) {
         if (value != null && !value.isEmpty()) {
                 doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
         }
         else {
-           doc.add(new Field(field.getName(), "-", field.getStore(), field.getIndex()));
+           doc.add(new Field(field.getName(), Index.NO_VALUE, field.getStore(), field.getIndex()));
         }
-
     }
-    
 
     /* Methods used for searching */
     

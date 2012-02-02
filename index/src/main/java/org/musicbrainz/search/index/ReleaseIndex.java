@@ -32,7 +32,6 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
 
 import java.io.IOException;
@@ -311,9 +310,9 @@ public class ReleaseIndex extends DatabaseIndex {
 
         if (labelInfo.containsKey(id)) {
             for (List<String> entry : labelInfo.get(id)) {
-                doc.addFieldOrHyphen(ReleaseIndexField.LABEL_ID, entry.get(0));
-                doc.addFieldOrHyphen(ReleaseIndexField.LABEL, entry.get(1));
-                doc.addFieldOrHyphen(ReleaseIndexField.CATALOG_NO, entry.get(2));
+                doc.addFieldOrNoValue(ReleaseIndexField.LABEL_ID, entry.get(0));
+                doc.addFieldOrNoValue(ReleaseIndexField.LABEL, entry.get(1));
+                doc.addFieldOrNoValue(ReleaseIndexField.CATALOG_NO, entry.get(2));
             }
         }
 
@@ -324,7 +323,7 @@ public class ReleaseIndex extends DatabaseIndex {
             for (List<String> entry : mediums.get(id)) {
                 String str;
                 str = entry.get(0);
-                doc.addFieldOrHyphen(ReleaseIndexField.FORMAT, str);
+                doc.addFieldOrNoValue(ReleaseIndexField.FORMAT, str);
                 int numTracksOnMedium = Integer.parseInt(entry.get(1));
                 doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, numTracksOnMedium);
                 trackCount += numTracksOnMedium;

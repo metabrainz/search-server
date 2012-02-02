@@ -9,6 +9,7 @@ import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.ReleaseIndexField;
 
 public class IssueSearch174Test extends TestCase {
@@ -27,7 +28,7 @@ public class IssueSearch174Test extends TestCase {
         {
             MbDocument doc = new MbDocument();
             doc.addField(ReleaseIndexField.RELEASE_ID, "11111111-1cf0-4d1f-aca7-2a6f89e34b36");
-            doc.addField(ReleaseIndexField.CATALOG_NO, "-");
+            doc.addField(ReleaseIndexField.CATALOG_NO, Index.NO_VALUE);
             writer.addDocument(doc.getLuceneDocument());
         }
 
