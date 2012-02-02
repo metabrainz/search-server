@@ -33,6 +33,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -44,6 +45,7 @@ import java.util.Locale;
 
 
 public class ReleaseWriter extends ResultsWriter {
+
 
 
     public void write(Metadata metadata, Results results) throws IOException {
@@ -69,7 +71,7 @@ public class ReleaseWriter extends ResultsWriter {
             String type = doc.get(ReleaseIndexField.TYPE);
             ReleaseGroup rg = of.createReleaseGroup();
             release.setReleaseGroup(rg);
-            if ((type != null) && !(type.equalsIgnoreCase(SearchServer.UNKNOWN))){
+            if (isNotUnknown(type)){
                 release.getReleaseGroup().setType(type);
             }
 
@@ -79,12 +81,12 @@ public class ReleaseWriter extends ResultsWriter {
             }
 
             String status = doc.get(ReleaseIndexField.STATUS);
-            if (status != null) {
+            if (isNotUnknown(status)) {
                 release.setStatus(status);
             }
 
             String country = doc.get(ReleaseIndexField.COUNTRY);
-            if ((country != null) && !(country.equalsIgnoreCase(SearchServer.UNKNOWN))){
+            if (isNotUnknown(country)){
 
                 release.setCountry(country);
             }
@@ -106,12 +108,12 @@ public class ReleaseWriter extends ResultsWriter {
 
             TextRepresentation tr = of.createTextRepresentation();
             String script = doc.get(ReleaseIndexField.SCRIPT);
-            if (script != null) {
+            if (isNotUnknown(script)) {
                 tr.setScript(script);
             }
 
             String lang = doc.get(ReleaseIndexField.LANGUAGE);
-            if (lang != null) {
+            if (isNotUnknown(lang)) {
                 tr.setLanguage(lang.toLowerCase(Locale.US));
             }
 

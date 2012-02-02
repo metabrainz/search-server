@@ -32,6 +32,7 @@ import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -50,28 +51,28 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
             MbDocument doc = result.doc;
             Label label = of.createLabel();
             label.setId(doc.get(LabelIndexField.LABEL_ID));
-            label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
+
+            String type = doc.get(LabelIndexField.TYPE);
+            if (isNotUnknown(type)) {
+                label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
+            }
 
             label.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
 
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {
                 label.setName(name);
-
             }
 
             String code = doc.get(LabelIndexField.CODE);
             if (code != null && !code.isEmpty()) {
                 label.setLabelCode(BigInteger.valueOf(NumericUtils.prefixCodedToInt(code)));
-
             }
-
 
             String sortname = doc.get(LabelIndexField.SORTNAME);
             if (sortname != null) {
                 label.setSortName(sortname);
-
-            }
+        }
 
             String begin = doc.get(LabelIndexField.BEGIN);
             String end = doc.get(LabelIndexField.END);
@@ -86,14 +87,12 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
 
                 }
                 label.setLifeSpan(lifespan);
-
             }
 
             String comment = doc.get(LabelIndexField.COMMENT);
             if (comment != null) {
                 label.setDisambiguation(comment);
             }
-
             labelList.getLabel().add(label);
 
         }

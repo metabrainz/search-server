@@ -28,6 +28,8 @@
 
 package org.musicbrainz.search.servlet;
 
+import org.musicbrainz.search.index.Index;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -41,4 +43,12 @@ public abstract class ResultsWriter {
 
     public abstract void write(PrintWriter out, Results results,String outputFormat) throws IOException ;
 
+    /**
+     *
+     * @param value
+     * @return true if the value is not null and is a real value rather than set to unknown
+     */
+    protected boolean isNotUnknown(String value) {
+        return ((value != null) && !(value.equalsIgnoreCase(Index.UNKNOWN)));
+    }
 }

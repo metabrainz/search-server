@@ -32,6 +32,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.SearchServer;
@@ -55,17 +56,17 @@ public class ArtistWriter extends ResultsWriter {
             artist.setScore(String.valueOf((int) (result.score * 100)));
 
             String artype = doc.get(ArtistIndexField.TYPE);
-            if ((artype != null) && (!artype.equalsIgnoreCase(SearchServer.UNKNOWN))) {
+            if (isNotUnknown(artype)) {
                 artist.setType(artype);
             }
 
             String gender = doc.get(ArtistIndexField.GENDER);
-            if ((gender != null) && (!gender.equalsIgnoreCase(SearchServer.UNKNOWN))) {
+            if (isNotUnknown(gender)) {
                 artist.setGender(gender);
             }
 
             String country = doc.get(ArtistIndexField.COUNTRY);
-            if ((country != null) && !(country.equalsIgnoreCase(SearchServer.UNKNOWN))) {
+            if (isNotUnknown(country)) {
                 artist.setCountry(country.toUpperCase(Locale.US));
 
             }

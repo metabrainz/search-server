@@ -58,12 +58,12 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
 
             String type = doc.get(ReleaseIndexField.TYPE);
             String status = doc.get(ReleaseIndexField.STATUS);
-            if (type != null || status != null) {
-                if (type != null) {
+            if (isNotUnknown(type) || isNotUnknown(status)) {
+                if (isNotUnknown(type)) {
                     release.getType().add(StringUtils.capitalize(type));
                 }
 
-                if (status != null) {
+                if (isNotUnknown(status)) {
                     release.getType().add(status);
                 }
             }
@@ -84,11 +84,11 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
 
             TextRepresentation tr = of.createTextRepresentation();
             String script = doc.get(ReleaseIndexField.SCRIPT);
-            if (script != null) {
+            if (isNotUnknown(script)) {
                 tr.setScript(script);
             }
             String lang = doc.get(ReleaseIndexField.LANGUAGE);
-            if (lang != null) {
+            if (isNotUnknown(lang)) {
                 tr.setLanguage(lang.toUpperCase(Locale.US));
             }
 

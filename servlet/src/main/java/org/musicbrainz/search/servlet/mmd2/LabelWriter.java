@@ -32,6 +32,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -53,7 +54,7 @@ public class LabelWriter extends ResultsWriter {
             Label label = of.createLabel();
             label.setId(doc.get(LabelIndexField.LABEL_ID));
             String type = doc.get(LabelIndexField.TYPE);
-            if ((type != null) && !(type.equalsIgnoreCase(SearchServer.UNKNOWN))){
+            if (isNotUnknown(type)){
                 label.setType(type);
             }
             label.setScore(String.valueOf((int)(result.score * 100)));
@@ -70,7 +71,7 @@ public class LabelWriter extends ResultsWriter {
             }
 
             String countryCode = doc.get(LabelIndexField.COUNTRY);
-            if ((countryCode != null) && !(countryCode.equalsIgnoreCase(SearchServer.UNKNOWN))){
+            if (isNotUnknown(countryCode)){
                 label.setCountry(countryCode.toUpperCase(Locale.US));
             }
 

@@ -56,8 +56,6 @@ public abstract class SearchServer implements Callable<Results> {
     protected int    offset;
     protected int    limit;
 
-    public final static String UNKNOWN = "unknown";
-
     protected Analyzer analyzer;
     protected ResultsWriter resultsWriter;
     protected Mmd1XmlWriter mmd1XmlWriter;

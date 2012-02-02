@@ -56,7 +56,7 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
             artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
 
             String artype = doc.get(ArtistIndexField.TYPE);
-            if (artype != null) {
+            if (isNotUnknown(artype)) {
                 artist.setType(StringUtils.capitalize(artype));
             }
 

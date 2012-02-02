@@ -78,9 +78,18 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.SORTNAME, "Dark Prism");
             doc.addField(LabelIndexField.CODE, "");
             doc.addField(LabelIndexField.TYPE, LabelType.HOLDING.getName());
-
             writer.addDocument(doc.getLuceneDocument());
         }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(LabelIndexField.LABEL_ID, "b539bb1e-f2e1-4b45-9db8-8053841e7504");
+            doc.addField(LabelIndexField.LABEL, "blob");
+            doc.addField(LabelIndexField.SORTNAME, "blob");
+            doc.addField(LabelIndexField.TYPE, "unknown");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
 
         writer.close();
         ss = new LabelSearch(new IndexSearcher(ramDir, true));
@@ -367,6 +376,21 @@ public class FindLabelTest extends TestCase {
             assertTrue(output.contains("id=\"a539bb1e-f2e1-4b45-9db8-8053841e7503\""));
             assertFalse(output.contains("<country>"));
         }
+
+    public void testOutputAsMMd1XmlWithUnknownType() throws Exception {
+
+        Results res = ss.searchLucene("blob", 0, 1);
+        ResultsWriter writer = new LabelMmd1XmlWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res);
+        pr.close();
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.contains("count=\"1\""));
+        assertTrue(output.contains("offset=\"0\""));
+        assertFalse(output.contains("label type"));
+    }
 
     /**
      * @throws Exception exception
