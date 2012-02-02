@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 
-import com.sun.org.apache.xml.internal.serializer.OutputPropertyUtils;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -283,7 +282,7 @@ public class FindRecordingTest extends TestCase {
     }
 
     public void testFindRecordingByDuration2() throws Exception {
-            Results res = ss.searchLucene("dur:234300", 0, 10);
+            Results res = ss.searchLucene("dur:234000", 0, 10);
             assertEquals(1, res.totalHits);
             Result result = res.results.get(0);
             MbDocument doc = result.doc;
