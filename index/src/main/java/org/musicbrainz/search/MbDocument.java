@@ -32,6 +32,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.util.NumericUtils;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.IndexField;
 
 /** 
@@ -90,7 +91,23 @@ public class MbDocument {
             addField(field, value);
         }
     }
-    
+
+
+    /**
+     * Add field to document if not empty, otherwise add 'unknown' so can be search for
+     * @param field
+     * @param value
+     */
+    public void addFieldOrUnknown(IndexField field, String value) {
+        if (value != null && !value.isEmpty()) {
+                doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
+        }
+        else {
+           doc.add(new Field(field.getName(), Index.UNKNOWN, field.getStore(), field.getIndex()));
+        }
+
+    }
+
     /**
      * Add field to document if not empty, otherwise add hyphen.
      *

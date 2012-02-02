@@ -173,14 +173,8 @@ public class ArtistIndex extends DatabaseIndex {
         doc.addField(ArtistIndexField.ARTIST_ID, artistGuid);
         doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
         doc.addField(ArtistIndexField.SORTNAME, rs.getString("sort_name"));
-
-        //Allows you to search for artists of unknown type
         String type = rs.getString("type");
-        if (type != null) {
-            doc.addField(ArtistIndexField.TYPE, type);
-        } else {
-            doc.addField(ArtistIndexField.TYPE, Index.UNKNOWN);
-        }
+        doc.addFieldOrUnknown(ArtistIndexField.TYPE, type);
 
         doc.addNonEmptyField(ArtistIndexField.BEGIN,
                 Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));
@@ -189,12 +183,7 @@ public class ArtistIndex extends DatabaseIndex {
                 Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day")));
 
         doc.addNonEmptyField(ArtistIndexField.COMMENT, rs.getString("comment"));
-        String country = rs.getString("country");
-        if (country != null) {
-            doc.addField(ArtistIndexField.COUNTRY, country);
-        } else {
-            doc.addField(ArtistIndexField.COUNTRY, Index.UNKNOWN);
-        }
+        doc.addFieldOrUnknown(ArtistIndexField.COUNTRY, rs.getString("country"));
 
         String gender = rs.getString("gender");
         if (gender != null) {

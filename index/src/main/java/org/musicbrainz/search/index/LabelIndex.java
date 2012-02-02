@@ -173,22 +173,10 @@ public class LabelIndex extends DatabaseIndex {
         doc.addField(LabelIndexField.LABEL_ID, labelGuid);
         doc.addField(LabelIndexField.LABEL, rs.getString("name"));
         doc.addField(LabelIndexField.SORTNAME, rs.getString("sort_name"));
-
-        //Allows you to search for labels of Unknown type
-        String type = rs.getString("type");
-        if (type != null) {
-            doc.addField(LabelIndexField.TYPE, type);
-        } else {
-            doc.addField(LabelIndexField.TYPE, "unknown");
-        }
-
+        doc.addFieldOrUnknown(LabelIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(LabelIndexField.COMMENT, rs.getString("comment"));
-        String country = rs.getString("country");
-        if (country != null) {
-            doc.addField(LabelIndexField.COUNTRY, country);
-        } else {
-            doc.addField(LabelIndexField.COUNTRY, Index.UNKNOWN);
-        }
+        doc.addFieldOrUnknown(LabelIndexField.COUNTRY, rs.getString("country"));
+
 
         doc.addNonEmptyField(LabelIndexField.BEGIN,
                 Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));

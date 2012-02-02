@@ -296,22 +296,17 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addField(ReleaseIndexField.ID, id);
         doc.addField(ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
         doc.addField(ReleaseIndexField.RELEASE, rs.getString("name"));
-        doc.addNonEmptyField(ReleaseIndexField.TYPE, rs.getString("type"));
+        doc.addFieldOrUnknown(ReleaseIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rgid"));
-        doc.addNonEmptyField(ReleaseIndexField.STATUS, rs.getString("status"));
+        doc.addFieldOrUnknown(ReleaseIndexField.STATUS, rs.getString("status"));
 
-        String country = rs.getString("country");
-        if (country != null) {
-            doc.addField(ReleaseIndexField.COUNTRY, country);
-        } else {
-            doc.addField(ReleaseIndexField.COUNTRY, Index.UNKNOWN);
-        }
+        doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, rs.getString("country"));
         doc.addNonEmptyField(ReleaseIndexField.DATE,
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
         doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
         doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
-        doc.addNonEmptyField(ReleaseIndexField.LANGUAGE, rs.getString("language"));
-        doc.addNonEmptyField(ReleaseIndexField.SCRIPT, rs.getString("script"));
+        doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, rs.getString("language"));
+        doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, rs.getString("script"));
         doc.addNonEmptyField(ReleaseIndexField.COMMENT, rs.getString("comment"));
 
         if (labelInfo.containsKey(id)) {
