@@ -102,7 +102,7 @@ public class ReleaseWriter extends ResultsWriter {
             }
 
             String asin = doc.get(ReleaseIndexField.AMAZON_ID);
-            if (asin != null) {
+            if (isNotNoValue(asin)) {
                 release.setAsin(asin);
             }
 

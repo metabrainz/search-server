@@ -61,7 +61,7 @@ public class ReleaseGroupWriter extends ResultsWriter {
             }
 
             String type = doc.get(ReleaseGroupIndexField.TYPE);
-            if(type!=null) {
+            if(isNotUnknown(type)) {
                 releaseGroup.setType(type);
             }
 

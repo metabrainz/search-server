@@ -65,7 +65,7 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
             }
 
             String code = doc.get(LabelIndexField.CODE);
-            if (code != null && !code.isEmpty()) {
+            if (isNotNoValue(code)) {
                 label.setLabelCode(BigInteger.valueOf(NumericUtils.prefixCodedToInt(code)));
             }
 

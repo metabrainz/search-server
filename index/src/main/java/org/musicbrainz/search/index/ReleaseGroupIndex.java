@@ -195,7 +195,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         doc.addField(ReleaseGroupIndexField.ID, id);
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
-        doc.addNonEmptyField(ReleaseGroupIndexField.TYPE, rs.getString("type"));
+        doc.addFieldOrUnknown(ReleaseGroupIndexField.TYPE, rs.getString("type"));
         doc.addFieldOrNoValue(ReleaseGroupIndexField.COMMENT, rs.getString("comment"));
 
         //Add each release name within this release group

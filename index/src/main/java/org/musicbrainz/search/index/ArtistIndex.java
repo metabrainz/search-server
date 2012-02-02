@@ -194,7 +194,7 @@ public class ArtistIndex extends DatabaseIndex {
             }
         }
 
-        doc.addNonEmptyField(ArtistIndexField.IPI, rs.getString("ipi_code"));
+        doc.addFieldOrNoValue(ArtistIndexField.IPI, rs.getString("ipi_code"));
 
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {

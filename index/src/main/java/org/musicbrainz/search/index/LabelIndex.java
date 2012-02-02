@@ -188,8 +188,11 @@ public class LabelIndex extends DatabaseIndex {
         if (labelcode > 0) {
             doc.addNumericField(LabelIndexField.CODE, labelcode);
         }
+        else {
+            doc.addField(LabelIndexField.CODE,Index.NO_VALUE);
+        }
 
-        doc.addNonEmptyField(ArtistIndexField.IPI, rs.getString("ipi_code"));
+        doc.addFieldOrNoValue(LabelIndexField.IPI, rs.getString("ipi_code"));
 
         if (aliases.containsKey(labelId)) {
             for (String alias : aliases.get(labelId)) {

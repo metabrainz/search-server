@@ -303,7 +303,7 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addNonEmptyField(ReleaseIndexField.DATE,
                 Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
         doc.addNonEmptyField(ReleaseIndexField.BARCODE, rs.getString("barcode"));
-        doc.addNonEmptyField(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
+        doc.addFieldOrNoValue(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
         doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, rs.getString("language"));
         doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, rs.getString("script"));
         doc.addFieldOrNoValue(ReleaseIndexField.COMMENT, rs.getString("comment"));

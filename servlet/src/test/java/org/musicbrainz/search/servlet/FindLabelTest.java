@@ -10,6 +10,7 @@ import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
+import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd1.LabelType;
@@ -76,7 +77,7 @@ public class FindLabelTest extends TestCase {
             doc.addField(LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7504");
             doc.addField(LabelIndexField.LABEL, "Dark Prism");
             doc.addField(LabelIndexField.SORTNAME, "Dark Prism");
-            doc.addField(LabelIndexField.CODE, "");
+            doc.addField(LabelIndexField.CODE, Index.NO_VALUE);
             doc.addField(LabelIndexField.TYPE, LabelType.HOLDING.getName());
             writer.addDocument(doc.getLuceneDocument());
         }
