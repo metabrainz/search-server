@@ -205,6 +205,8 @@ public class IndexBuilder
 
         IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        config.setMaxBufferedDocs(options.getMaxBufferedDocs());
+
         if(index.getSimilarity()!=null)
         {
             config.setSimilarity(index.getSimilarity());
@@ -287,11 +289,13 @@ public class IndexBuilder
 
         IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        config.setMaxBufferedDocs(options.getMaxBufferedDocs());
 
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
         indexWriter = new IndexWriter(FSDirectory.open(new File(path)), config);
+        //indexWriter.setMergeFactor(options.getMergeFactor());
 
         index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
