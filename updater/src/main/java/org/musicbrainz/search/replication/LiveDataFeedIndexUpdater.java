@@ -144,9 +144,7 @@ public class LiveDataFeedIndexUpdater {
                 writerConfig,
                 Runtime.getRuntime().availableProcessors(),
                 10);
-        indexWriter.setMaxBufferedDocs(IndexOptions.MAX_BUFFERED_DOCS);
-        //indexWriter.setMergeFactor(IndexOptions.MERGE_FACTOR);
-    	
+
         IndexReader reader = indexWriter.getReader();
     	IndexSearcher searcher = new IndexSearcher(reader);
     	
