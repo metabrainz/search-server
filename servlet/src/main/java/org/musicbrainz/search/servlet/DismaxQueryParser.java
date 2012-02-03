@@ -1,5 +1,6 @@
 package org.musicbrainz.search.servlet;
 
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.musicbrainz.search.LuceneVersion;
@@ -89,9 +90,9 @@ public class DismaxQueryParser {
         protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
             if (querySub != null) {
                 //if query was quoted but doesn't generate a phrase query we reject it
-                if ((quoted == false) || (querySub instanceof PhraseQuery)) {
+                if ((!quoted) || (querySub instanceof PhraseQuery)) {
                     //Reduce phrase because will have matched both parts giving far too much score differential
-                    if (quoted == true) {
+                    if (quoted) {
                         querySub.setBoost(PHRASE_BOOST_REDUCER);
                     }
                     else {
@@ -126,8 +127,9 @@ public class DismaxQueryParser {
                         if (querySub instanceof TermQuery) {
 
                             if(af.isFuzzy()) {
-                                queryWildcard = getWildcardQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text() + '*');
-                                queryFuzzy = getFuzzyQuery(((TermQuery) querySub).getTerm().field(), ((TermQuery) querySub).getTerm().text(), FUZZY_SIMILARITY);
+                                Term t = ((TermQuery) querySub).getTerm();
+                                queryWildcard = newWildcardQuery(new Term(t.field(),t.text() + '*'));
+                                queryFuzzy = getFuzzyQuery(t.field(), t.text(), FUZZY_SIMILARITY);
                                 queryFuzzy.setBoost(af.getBoost() * WILDCARD_BOOST_REDUCER);
                                 q.add(queryFuzzy);
                                 queryWildcard.setBoost(af.getBoost() * WILDCARD_BOOST_REDUCER);
