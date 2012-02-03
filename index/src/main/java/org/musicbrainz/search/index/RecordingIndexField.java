@@ -41,7 +41,7 @@ public enum RecordingIndexField implements IndexField {
     TAGCOUNT                ("tagcount",	    Field.Store.YES,	Field.Index.NO),
     TRACKNUM			    ("tnum",		Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),
     TRACK_ARTIST_CREDIT     ("trackartistcredit",    Field.Store.YES,    Field.Index.NO),
-    TRACK_OUTPUT            ("trackoutoutput",		Field.Store.YES,	Field.Index.NO),
+    TRACK_OUTPUT            ("trackoutput",		Field.Store.YES,	Field.Index.NO),
     TRACK_DURATION_OUTPUT   ("trackdur",			Field.Store.YES,	Field.Index.NO),
     RECORDING_DURATION_OUTPUT("recordingdur",		Field.Store.YES,	Field.Index.NO),
 

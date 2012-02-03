@@ -540,6 +540,7 @@ public class RecordingIndex extends DatabaseIndex {
                                           Map<Integer, Release> releases) throws SQLException {
 
         Set<Integer> durations = new HashSet<Integer>();
+        Set<String> trackNames = new HashSet<String>();
 
         int id = rs.getInt("recordingId");
 
@@ -547,7 +548,7 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addField(RecordingIndexField.ID, id);
         doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
         String recordingName = rs.getString("trackname");
-        doc.addNonEmptyField(RecordingIndexField.RECORDING, recordingName);         //Search
+        trackNames.add(recordingName);
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         int recordingDuration = rs.getInt("duration");
         if(recordingDuration> 0) {
@@ -606,7 +607,6 @@ public class RecordingIndex extends DatabaseIndex {
                         //So can be displayed in output
                         doc.addNumericField(RecordingIndexField.TRACK_DURATION_OUTPUT, trackDuration);
                         durations.add(trackDuration);
-
                     }
                     else {
                         doc.addField(RecordingIndexField.TRACK_DURATION_OUTPUT, Index.NO_VALUE);
@@ -623,10 +623,7 @@ public class RecordingIndex extends DatabaseIndex {
                     }
                     // Added to TRACK_OUTPUT for outputting xml,
                     doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
-                    // and if different to recording for searching
-                    if(!track.getTrackName().equals(recordingName)) {
-                        doc.addField(RecordingIndexField.RECORDING, track.getTrackName());
-                    }
+                    trackNames.add(track.getTrackName());
                     doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
                     doc.addFieldOrNoValue(RecordingIndexField.FORMAT, track.getMediumFormat());
 
@@ -680,6 +677,10 @@ public class RecordingIndex extends DatabaseIndex {
 
         }
 
+        //Allow searching of all unique recording/track names
+        for(String next:trackNames) {
+            doc.addNonEmptyField(RecordingIndexField.RECORDING, next);
+        }
         return doc.getLuceneDocument();
     }
 
