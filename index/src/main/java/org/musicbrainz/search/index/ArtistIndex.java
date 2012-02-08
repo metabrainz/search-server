@@ -28,6 +28,11 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 
 import java.io.IOException;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
 import java.sql.*;
 import java.util.*;
 
@@ -37,12 +42,23 @@ public class ArtistIndex extends DatabaseIndex {
 
     //Special purpose Artist
     private static final String DELETED_ARTIST_MBID = "c06aa285-520e-40c0-b776-83d2c9e8a6d1";
+    private static final String PERSON = "Person";
+
+    private CharsetEncoder latinEncoder;
+
+    private void initDecoders() {
+        latinEncoder = Charset.forName("ISO-8859-1").newEncoder();
+        latinEncoder.onMalformedInput(CodingErrorAction.REPORT);
+        latinEncoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+    }
 
     public ArtistIndex(Connection dbConnection) throws SQLException {
         super(dbConnection);
+        initDecoders();
     }
 
     public ArtistIndex() {
+        initDecoders();
     }
 
     public String getName() {
@@ -171,8 +187,13 @@ public class ArtistIndex extends DatabaseIndex {
         String artistGuid = rs.getString("gid");
         doc.addField(ArtistIndexField.ID, artistId);
         doc.addField(ArtistIndexField.ARTIST_ID, artistGuid);
-        doc.addField(ArtistIndexField.ARTIST, rs.getString("name"));
-        doc.addField(ArtistIndexField.SORTNAME, rs.getString("sort_name"));
+
+        String artistName = rs.getString("name");
+        doc.addField(ArtistIndexField.ARTIST, artistName );
+
+        String sortName = rs.getString("sort_name");
+        doc.addField(ArtistIndexField.SORTNAME, sortName);
+
         String type = rs.getString("type");
         doc.addFieldOrUnknown(ArtistIndexField.TYPE, type);
 
@@ -201,6 +222,7 @@ public class ArtistIndex extends DatabaseIndex {
                 doc.addField(ArtistIndexField.ALIAS, alias);
             }
         }
+        addArtistInitialized(type, artistName, sortName, doc);
 
         if (tags.containsKey(artistId)) {
             for (Tag tag : tags.get(artistId)) {
@@ -213,4 +235,39 @@ public class ArtistIndex extends DatabaseIndex {
         return doc.getLuceneDocument();
     }
 
+    /**
+     * Add artist with first name as an initial and then last name as an alias if the artist if of type Person,
+     * can be latin encoded and has a sortname containing a comma indicating probably a real name rather than a
+     * performance name
+     *
+     * @param type
+     * @param artistName
+     * @param sortName
+     * @param doc
+     */
+    private void addArtistInitialized(String type, String artistName, String sortName, MbDocument doc)
+    {
+        if(type==null || !type.equals("Person"))
+        {
+            return;
+        }
+
+        try
+        {
+            latinEncoder.encode(CharBuffer.wrap(artistName));
+        }
+        catch(CharacterCodingException cdd)
+        {
+            return;
+        }
+
+        if(sortName.contains(","))
+        {
+            String[] names = artistName.split(" ");
+            if(names.length>=2)
+            {
+                doc.addField(ArtistIndexField.ALIAS, names[0].substring(0,1) + ' ' + names[names.length - 1]);
+            }
+        }
+    }
 }

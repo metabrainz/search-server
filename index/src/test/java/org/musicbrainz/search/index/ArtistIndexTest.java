@@ -79,8 +79,9 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Siobhan Lynch')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Lynch, Siobhan')");
 
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name,)" +
-            " VALUES (76834, 1, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe', 2)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name,type)" +
+            " VALUES (76834, 1, 'ae8707b6-684c-4d4a-95c5-d117970a6dfe', 2, 1)");
+
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2)");
         stmt.addBatch("INSERT INTO artist_tag (artist, tag, count) VALUES (76834, 1, 10)");
@@ -362,7 +363,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(ArtistIndexField.TYPE.getName()).length);
-            assertEquals("unknown", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
+            assertEquals("Person", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -433,7 +434,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals("Siobhan Lynch", doc.getFieldable(ArtistIndexField.ARTIST.getName()).stringValue());
             assertEquals("ae8707b6-684c-4d4a-95c5-d117970a6dfe", doc.getFieldable(ArtistIndexField.ARTIST_ID.getName()).stringValue());
             assertEquals("Lynch, Siobhan", doc.getFieldable(ArtistIndexField.SORTNAME.getName()).stringValue());
-            assertEquals("unknown", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
+            assertEquals("Person", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -486,6 +487,49 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    /**
+     * Checks adding artist with initials as an alias
+     *
+     * @throws Exception exception
+     */
+    public void testIndexArtistAlias() throws Exception {
+
+        addArtistThree();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFieldables(ArtistIndexField.ALIAS.getName()).length);
+            assertEquals("S Lynch", doc.getFieldable(ArtistIndexField.ALIAS.getName()).stringValue());
+
+        }
+        ir.close();
+    }
+
+    /**
+     * Checks dont add group  as an artist with initials as an alias
+     *
+     * @throws Exception exception
+     */
+    public void testDontIndexArtistAliasGroup() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(0, doc.getFieldables(ArtistIndexField.ALIAS.getName()).length);
+        }
+        ir.close();
+    }
 
     public void testGetTypeByDbId () throws Exception {        
         assertEquals(ArtistType.PERSON,ArtistType.getBySearchId(1));

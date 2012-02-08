@@ -37,8 +37,8 @@ import java.util.Set;
 /**
  * Boost documents that do not have their common name as their artist name. This is a common problem for classical
  * composers who are often just known by their last name but have their full name stored in the artist field meaning
- * that a search for them by just their last name often favours other artist who have the name lastname but none/less
- * firstnames. 
+ * that a search for them by just their last name often favours other artist who have the same lastName but none/less
+ * firstNames.
  */
 public class ArtistBoostDoc {
 
