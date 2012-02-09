@@ -34,6 +34,10 @@
      <param-name>ratelimitserver_port</param-name>
      <param-value>2000</param-value>
   </init-param>
+  <init-param>
+      <param-name>remoteadmin_enabled</param-name>
+      <param-value>false</param-value>
+  </init-param>
   <load-on-startup>1</load-on-startup>
 </servlet>
 <servlet-mapping>

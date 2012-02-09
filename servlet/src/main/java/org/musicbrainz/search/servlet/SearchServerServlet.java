@@ -85,8 +85,8 @@ public class SearchServerServlet extends HttpServlet {
     private String initMessage = null;
     private static final String MUSICBRAINZ_SEARCH_WEBPAGE = "http://www.musicbrainz.org/search.html";
 
-
     private static boolean isRateLimiterEnabled = false;
+    private static boolean isAdminRemoteEnabled = false;
 
     @Override
     public void init() {
@@ -99,6 +99,11 @@ public class SearchServerServlet extends HttpServlet {
      * @param useMMapDirectory
      */
     public void init(boolean useMMapDirectory) {
+
+
+        String isAdminRemote=getServletConfig().getInitParameter("remoteadmin_enabled");
+        isAdminRemoteEnabled = Boolean.parseBoolean(isAdminRemote);
+
 
         String rateLimiterEnabled = getServletConfig().getInitParameter("ratelimitserver_enabled");
         initRateLimiter(rateLimiterEnabled);
@@ -225,11 +230,10 @@ public class SearchServerServlet extends HttpServlet {
      */
     private boolean isRequestFromLocalHost(HttpServletRequest request) {
 
-        if (
-                (request.getRemoteAddr().equals("127.0.0.1"))
-                        ||
-                        (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1"))
-                ) {
+        if (isAdminRemoteEnabled ||
+            (request.getRemoteAddr().equals("127.0.0.1")) ||
+            (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1"))
+            ) {
             log.info("isRequestFromLocalHost:VALID:" + request.getRemoteHost() + "/" + request.getRemoteAddr());
             return true;
         }
