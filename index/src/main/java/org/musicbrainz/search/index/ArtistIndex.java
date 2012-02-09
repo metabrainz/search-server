@@ -247,7 +247,7 @@ public class ArtistIndex extends DatabaseIndex {
      */
     private void addArtistInitialized(String type, String artistName, String sortName, MbDocument doc)
     {
-        if(type==null || !type.equals("Person"))
+        if(type==null || !type.equals(PERSON))
         {
             return;
         }
