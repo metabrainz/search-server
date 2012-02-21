@@ -16,10 +16,10 @@ public class RecordingDismaxSearch extends RecordingSearch {
     protected void initDismaxSearcher() {
 
         Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(2);
-        fieldBoosts.put(RecordingIndexField.RECORDING.getName(), new DismaxAlias.AliasField(false, 1.2f));
-        fieldBoosts.put(RecordingIndexField.RELEASE.getName(), new DismaxAlias.AliasField(false, 1f));
+        fieldBoosts.put(RecordingIndexField.RECORDING.getName(), new DismaxAlias.AliasField(true, 1.2f));
+        fieldBoosts.put(RecordingIndexField.RELEASE.getName(), new DismaxAlias.AliasField(true, 1f));
         fieldBoosts.put(RecordingIndexField.ARTIST_NAMECREDIT.getName(), new DismaxAlias.AliasField(false, 0.8f));
-        fieldBoosts.put(RecordingIndexField.ARTIST.getName(), new DismaxAlias.AliasField(false, 0.8f));
+        fieldBoosts.put(RecordingIndexField.ARTIST.getName(), new DismaxAlias.AliasField(true, 0.8f));
         DismaxAlias dismaxAlias = new DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
         dismaxAlias.setTie(0.1f);
