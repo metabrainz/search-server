@@ -171,7 +171,12 @@ public class LabelIndex extends DatabaseIndex {
         int labelId = rs.getInt("id");
         String labelGuid = rs.getString("gid");
         doc.addField(LabelIndexField.LABEL_ID, labelGuid);
-        doc.addField(LabelIndexField.LABEL, rs.getString("name"));
+        String name=rs.getString("name");
+        doc.addField(LabelIndexField.LABEL,name );
+
+        //Accented artist
+        doc.addField(LabelIndexField.LABEL_ACCENT, name );
+
         doc.addField(LabelIndexField.SORTNAME, rs.getString("sort_name"));
         doc.addFieldOrUnknown(LabelIndexField.TYPE, rs.getString("type"));
         doc.addFieldOrNoValue(LabelIndexField.COMMENT, rs.getString("comment"));

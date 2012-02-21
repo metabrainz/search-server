@@ -295,7 +295,10 @@ public class ReleaseIndex extends DatabaseIndex {
         int id = rs.getInt("id");
         doc.addField(ReleaseIndexField.ID, id);
         doc.addField(ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
-        doc.addField(ReleaseIndexField.RELEASE, rs.getString("name"));
+        String name = rs.getString("name");
+        doc.addField(ReleaseIndexField.RELEASE, name );
+        doc.addField(ReleaseIndexField.RELEASE_ACCENT, name);
+
         doc.addFieldOrUnknown(ReleaseIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rgid"));
         doc.addFieldOrUnknown(ReleaseIndexField.STATUS, rs.getString("status"));

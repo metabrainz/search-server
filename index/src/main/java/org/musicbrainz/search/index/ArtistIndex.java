@@ -191,6 +191,9 @@ public class ArtistIndex extends DatabaseIndex {
         String artistName = rs.getString("name");
         doc.addField(ArtistIndexField.ARTIST, artistName );
 
+        //Accented artist
+        doc.addField(ArtistIndexField.ARTIST_ACCENT, artistName );
+
         String sortName = rs.getString("sort_name");
         doc.addField(ArtistIndexField.SORTNAME, sortName);
 

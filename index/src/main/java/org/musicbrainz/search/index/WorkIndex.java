@@ -267,7 +267,10 @@ public class WorkIndex extends DatabaseIndex {
         int id = rs.getInt("wid");
         doc.addField(WorkIndexField.ID, id);
         doc.addField(WorkIndexField.WORK_ID, rs.getString("gid"));
-        doc.addField(WorkIndexField.WORK, rs.getString("name"));
+        String name = rs.getString("name");
+        doc.addField(WorkIndexField.WORK, name);
+        doc.addField(WorkIndexField.WORK_ACCENT, name);
+
         doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
         doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
         doc.addFieldOrNoValue(WorkIndexField.COMMENT, rs.getString("comment"));

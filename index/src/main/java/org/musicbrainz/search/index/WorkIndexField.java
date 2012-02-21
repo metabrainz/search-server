@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzKeepAccentsAnalyzer;
 import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
 
@@ -23,6 +24,7 @@ public enum WorkIndexField implements IndexField {
     TAG		            ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	Field.Store.YES,	Field.Index.NO),
     WORK			    ("work",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
+    WORK_ACCENT         ("workaccent",  Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
     WORK_ID		        ("wid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ;
 

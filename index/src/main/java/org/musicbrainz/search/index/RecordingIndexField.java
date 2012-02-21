@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzKeepAccentsAnalyzer;
 import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
 
@@ -30,6 +31,7 @@ public enum RecordingIndexField implements IndexField {
     QUANTIZED_DURATION	    ("qdur",		Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RECORDING_ID            ("rid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RECORDING               ("recording",		Field.Store.NO,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    RECORDING_ACCENT        ("recordingaccent",   Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
     RECORDING_OUTPUT        ("recordingoutput",		Field.Store.YES,	Field.Index.NO),
     RELEASE				    ("release",		Field.Store.YES,	Field.Index.ANALYZED, new TitleWithPosGapAnalyzer()),
     RELEASE_DATE	        ("date",		    Field.Store.YES,	Field.Index.NOT_ANALYZED, new KeywordAnalyzer()),

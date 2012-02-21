@@ -548,6 +548,9 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addField(RecordingIndexField.ID, id);
         doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
         String recordingName = rs.getString("trackname");
+        //Just add an accent version for recording name not track names
+        doc.addField(RecordingIndexField.RECORDING_ACCENT, recordingName);
+
         trackNames.add(recordingName);
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         int recordingDuration = rs.getInt("duration");

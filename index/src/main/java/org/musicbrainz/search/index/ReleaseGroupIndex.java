@@ -194,7 +194,10 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         int id = rs.getInt("id");
         doc.addField(ReleaseGroupIndexField.ID, id);
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, rs.getString("gid"));
-        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, rs.getString("name"));
+        String name = rs.getString("name");
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, name);
+        doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ACCENT, name);
+
         doc.addFieldOrUnknown(ReleaseGroupIndexField.TYPE, rs.getString("type"));
         doc.addFieldOrNoValue(ReleaseGroupIndexField.COMMENT, rs.getString("comment"));
 

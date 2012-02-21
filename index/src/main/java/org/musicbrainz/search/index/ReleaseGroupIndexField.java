@@ -31,10 +31,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
-import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
-import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
-import org.musicbrainz.search.analysis.TitleAnalyzer;
-import org.musicbrainz.search.analysis.TitleWithPosGapAnalyzer;
+import org.musicbrainz.search.analysis.*;
 
 /**
  * Fields created in Lucene Search Index
@@ -53,7 +50,8 @@ public enum ReleaseGroupIndexField implements IndexField {
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
-	TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    RELEASEGROUP_ACCENT ("releasegroupaccent",Field.Store.NO,Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
+    TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
     TYPE			    ("type",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
 	;
