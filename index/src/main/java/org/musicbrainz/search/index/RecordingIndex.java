@@ -25,7 +25,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.IOException;
 import java.math.BigInteger;

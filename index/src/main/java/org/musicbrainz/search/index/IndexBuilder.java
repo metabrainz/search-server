@@ -30,11 +30,9 @@
 package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.LogMergePolicy;
 import org.apache.lucene.store.*;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -46,12 +44,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 public class IndexBuilder
 {
-
-    private static final int MAX_THREADS_FOR_CONCURRENT_OPTIMIZATION = 1;
 
     public static void main(String[] args) throws SQLException, IOException, InterruptedException
     {
