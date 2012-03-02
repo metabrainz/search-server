@@ -247,12 +247,14 @@ Development
 
 For development environments there is a much simpler deployment possible
 
+    mvn install  (because jetty will uses the installed index.jar, not work directly from the code like the servlet code)
     cd search_server/servlet
     mvn jetty:run
 
 This will start the Jetty servlet container (instead of Tomcat), then just use the underlying url on port 8080
 
      http://localhost:8080/?type=artist&query=fred
+
 
 
 Installing onto Test Server
