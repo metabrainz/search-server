@@ -1,6 +1,7 @@
 package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
+import org.apache.commons.lang.time.StopWatch;
 import org.musicbrainz.mmd2.Metadata;
 
 import javax.xml.bind.JAXBContext;
@@ -34,6 +35,10 @@ public class AbstractIntegration extends TestCase {
     }
 
     public Metadata doSearch(String searchUrl) throws Exception {
+
+        StopWatch clock = new StopWatch();
+        clock.start();
+
         BufferedInputStream bis;
         URL url = new URL(searchUrl);
         HttpURLConnection uc = (HttpURLConnection)url.openConnection();
@@ -48,6 +53,11 @@ public class AbstractIntegration extends TestCase {
         }
 
         Metadata metadata = (Metadata) context.createUnmarshaller().unmarshal(bis);
+
+        clock.stop();
+        System.out.println(this.getName()+":"+clock.getTime()+" ms");
+        assertTrue(clock.getTime() < 5000);
+
         return metadata;
     }
 }
