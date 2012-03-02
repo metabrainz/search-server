@@ -15,7 +15,7 @@ public class ReleaseGroupIT extends AbstractIntegration {
     public void testSearchForReleaseGroup() throws Exception {
         StopWatch clock = new StopWatch();
         clock.start();
-        Metadata metadata = doSearch("http://localhost:8080/?type=releasegroup&query=fred");
+        Metadata metadata = doSearch("http://localhost:8080/?type=release-group&query=fred");
         clock.stop();
         System.out.println(this.getName()+":"+clock.getTime());
         assertTrue(clock.getTime() < 5000);
