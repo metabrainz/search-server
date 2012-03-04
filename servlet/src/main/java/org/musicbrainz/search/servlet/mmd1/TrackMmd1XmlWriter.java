@@ -67,7 +67,7 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
             }
 
             String duration = doc.get(RecordingIndexField.DURATION);
-            if (duration != null) {
+            if (isNotNoValue(duration)) {
                 track.setDuration(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
             }
 
