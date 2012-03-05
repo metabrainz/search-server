@@ -552,7 +552,7 @@ public class RecordingIndex extends DatabaseIndex {
         //Just add an accent version for recording name not track names
         doc.addField(RecordingIndexField.RECORDING_ACCENT, recordingName);
 
-        trackNames.add(recordingName);
+        trackNames.add(recordingName.toLowerCase(Locale.UK));
         doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         int recordingDuration = rs.getInt("duration");
         if(recordingDuration> 0) {
@@ -627,7 +627,7 @@ public class RecordingIndex extends DatabaseIndex {
                     }
                     // Added to TRACK_OUTPUT for outputting xml,
                     doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
-                    trackNames.add(track.getTrackName());
+                    trackNames.add(track.getTrackName().toLowerCase(Locale.UK));
                     doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
                     doc.addFieldOrNoValue(RecordingIndexField.FORMAT, track.getMediumFormat());
 
