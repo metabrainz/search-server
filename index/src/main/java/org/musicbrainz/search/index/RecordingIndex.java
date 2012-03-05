@@ -539,6 +539,8 @@ public class RecordingIndex extends DatabaseIndex {
                                           Map<Integer, Release> releases) throws SQLException {
 
         Set<Integer> durations = new HashSet<Integer>();
+        Set<Integer> qdurs     = new HashSet<Integer>();
+
         Set<String> trackNames = new HashSet<String>();
 
         int id = rs.getInt("recordingId");
@@ -674,7 +676,11 @@ public class RecordingIndex extends DatabaseIndex {
         else {
             for(Integer dur:durations) {
                 doc.addNumericField(RecordingIndexField.DURATION, dur);
-                doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, dur / QUANTIZED_DURATION);
+                qdurs.add(dur / QUANTIZED_DURATION);
+            }
+            
+            for(Integer qdur:qdurs) {
+                doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, qdur);
             }
 
         }
