@@ -78,7 +78,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             }
 
             String asin = doc.get(ReleaseIndexField.AMAZON_ID);
-            if (asin != null) {
+            if (isNotNoValue(asin)) {
                 release.setAsin(asin);
 
             }
@@ -113,24 +113,24 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                 for (int i = 0; i < labelNames.length; i++) {
                     Event event = of.createEvent();
 
-                    if (!labelNames[i].equals(Index.NO_VALUE) || !labelIds[i].equals(Index.NO_VALUE)) {
+                    if (isNotNoValue(labelNames[i]) || isNotNoValue(labelIds[i])) {
                         Label label = of.createLabel();
                         event.setLabel(label);
                         
-                        if (!labelNames[i].equals(Index.NO_VALUE)) {
+                        if (isNotNoValue(labelNames[i])) {
                             label.setName(labelNames[i]);
                         }
                         
-                        if (!labelIds[i].equals(Index.NO_VALUE)) {
+                        if (isNotNoValue(labelIds[i])) {
                             label.setId(labelIds[i]);
                         }
                     }
 
-                    if (!catnos[i].equals(Index.NO_VALUE)) {
+                    if (isNotNoValue(catnos[i])) {
                         event.setCatalogNumber(catnos[i]);
                     }
 
-                    if (country != null) {
+                    if (isNotUnknown(country)) {
                         event.setCountry(StringUtils.upperCase(country));
                     }
 
@@ -138,11 +138,11 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                         event.setDate(date);
                     }
 
-                    if (barcode != null) {
+                    if (isNotNoValue(barcode)) {
                         event.setBarcode(barcode);
                     }
 
-                    if (format != null) {
+                    if (isNotNoValue(format)) {
                         event.setFormat(format);
                     }
                     eventList.getEvent().add(event);
@@ -216,7 +216,5 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
         releaseList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setReleaseList(releaseList);
         return metadata;
-
     }
-
 }

@@ -98,7 +98,7 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
                     release.setTitle(releaseName);
 
                     String type = releaseTypes[i];
-                    if (!type.equals(Index.NO_VALUE)) {
+                    if (isNotNoValue(type)) {
                         release.getType().add(StringUtils.capitalize(type));
                     }
 

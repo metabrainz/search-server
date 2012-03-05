@@ -55,7 +55,7 @@ public abstract class ResultsWriter {
     /**
      *
      * @param value
-     * @return true if the value is not null and is a real value rather than set to unknown
+     * @return true if the value is not null and is a real value rather than set to no value
      */
     protected boolean isNotNoValue(String value) {
         return ((value != null) && !(value.equalsIgnoreCase(Index.NO_VALUE)));

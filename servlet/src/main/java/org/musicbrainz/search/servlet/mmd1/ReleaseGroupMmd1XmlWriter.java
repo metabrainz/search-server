@@ -64,7 +64,7 @@ public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
             }
 
             String type = doc.get(ReleaseGroupIndexField.TYPE);
-            if (type != null) {
+            if (isNotUnknown(type)) {
                 releaseGroup.getType().add(StringUtils.capitalize(type));
             }
 
