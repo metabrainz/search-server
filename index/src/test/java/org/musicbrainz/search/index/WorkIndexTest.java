@@ -104,7 +104,8 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals("Work", doc.getFieldable(WorkIndexField.WORK.getName()).stringValue());
             assertEquals(1, doc.getFieldables(WorkIndexField.ISWC.getName()).length);
             assertEquals("T-101779304-1", doc.getFieldable(WorkIndexField.ISWC.getName()).stringValue());
-            assertEquals(0, doc.getFieldables(WorkIndexField.TYPE.getName()).length);
+            assertEquals(1, doc.getFieldables(WorkIndexField.TYPE.getName()).length);
+            assertEquals("-", doc.getFieldable(WorkIndexField.TYPE.getName()).stringValue());
             assertEquals(1, doc.getFieldables(WorkIndexField.ARTIST_RELATION.getName()).length);
             ir.close();
         }
@@ -119,7 +120,8 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(WorkIndexField.TYPE.getName()).length);
+            assertEquals(1, doc.getFieldables(WorkIndexField.TYPE.getName()).length);
+            assertEquals("-", doc.getFieldable(WorkIndexField.TYPE.getName()).stringValue());
             ir.close();
         }
     }

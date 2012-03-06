@@ -271,8 +271,8 @@ public class WorkIndex extends DatabaseIndex {
         doc.addField(WorkIndexField.WORK, name);
         doc.addField(WorkIndexField.WORK_ACCENT, name);
 
-        doc.addNonEmptyField(WorkIndexField.TYPE, rs.getString("type"));
-        doc.addNonEmptyField(WorkIndexField.ISWC, rs.getString("iswc"));
+        doc.addFieldOrNoValue(WorkIndexField.TYPE, rs.getString("type"));
+        doc.addFieldOrNoValue(WorkIndexField.ISWC, rs.getString("iswc"));
         doc.addFieldOrNoValue(WorkIndexField.COMMENT, rs.getString("comment"));
 
         if (artists.containsKey(id)) {

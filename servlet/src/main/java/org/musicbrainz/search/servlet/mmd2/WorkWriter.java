@@ -57,17 +57,17 @@ public class WorkWriter extends ResultsWriter {
             }
 
             String comment = doc.get(WorkIndexField.COMMENT);
-            if (isNotUnknown(comment)) {
+            if (isNotNoValue(comment)) {
                 work.setDisambiguation(comment);
             }
 
             String type = doc.get(WorkIndexField.TYPE);
-            if (type != null) {
+            if (isNotNoValue(type)) {
                 work.setType(type);
             }
 
             String iswc = doc.get(WorkIndexField.ISWC);
-            if (iswc != null) {
+            if (isNotNoValue(iswc)) {
                 work.setIswc(iswc);
             }
 
