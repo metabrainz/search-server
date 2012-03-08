@@ -16,4 +16,33 @@ public class ReleaseIT extends AbstractIntegration {
         Metadata metadata = doSearch("http://localhost:8080/?type=release&query=fred");
         assertTrue(metadata.getReleaseList().getRelease().size()>0);
     }
+
+    public void testSearchForReleaseV1() throws Exception {
+        com.jthink.brainz.mmd.Metadata metadata = doSearchV1("http://localhost:8080/?type=release&query=fred&version=1");
+        assertTrue(metadata.getReleaseList().getRelease().size()>0);
+    }
+
+    public void testSearchForReleaseDismax() throws Exception {
+        Metadata metadata = doSearch("http://localhost:8080/?dismax=true&type=release&query=fred");
+        assertTrue(metadata.getReleaseList().getRelease().size()>0);
+    }
+
+    public void testSearchForReleaseDismaxPopularTerm() throws Exception {
+        Metadata metadata = doSearch("http://localhost:8080/?dismax=true&type=release&query=love");
+        assertTrue(metadata.getReleaseList().getRelease().size()>0);
+    }
+
+    /** Will not do fuzzy because term length to short
+     *
+     * @throws Exception
+     */
+    public void testSearchForReleaseDismaxNoFuzzy() throws Exception {
+        Metadata metadata = doSearch("http://localhost:8080/?dismax=true&type=release&query=the");
+        assertTrue(metadata.getReleaseList().getRelease().size()>0);
+    }
+
+    public void testSearchForReleaseDismaxMultiTerm() throws Exception {
+        Metadata metadata = doSearch("http://localhost:8080/?dismax=true&type=release&query=love+rocket");
+        assertTrue(metadata.getReleaseList().getRelease().size()>0);
+    }
 }
