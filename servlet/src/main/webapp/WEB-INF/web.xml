@@ -20,7 +20,7 @@
 <servlet-class>org.musicbrainz.search.servlet.SearchServerServlet</servlet-class>
   <init-param>
      <param-name>index_dir</param-name>
-     <param-value>/Users/paul/musicbrainzindexes</param-value>
+     <param-value>/home/search/indexdata</param-value>
   </init-param>
   <init-param>
       <param-name>ratelimitserver_enabled</param-name>
