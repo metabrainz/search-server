@@ -35,8 +35,6 @@ public class AnnotationDismaxSearch extends AnnotationSearch {
     }
 
     protected Query parseQuery(String userQuery) throws ParseException {
-        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
-        Query q2 = new BoostExactMatchQuery(q1, userQuery, AnnotationIndexField.NAME.getName());
-        return q2;
+        return dismaxSearcher.parseQuery(userQuery, analyzer);
     }
 }

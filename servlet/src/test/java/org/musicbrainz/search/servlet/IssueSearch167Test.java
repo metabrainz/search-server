@@ -36,6 +36,7 @@ public class IssueSearch167Test extends TestCase {
         {
             MbDocument doc = new MbDocument();
             doc.addField(ArtistIndexField.ARTIST_ID, "11111111-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(ArtistIndexField.ARTIST_ACCENT, "Republica");
             doc.addField(ArtistIndexField.ARTIST, "Republica");
             doc.addField(ArtistIndexField.SORTNAME, "Republica");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
@@ -56,6 +57,7 @@ public class IssueSearch167Test extends TestCase {
         {
             MbDocument doc = new MbDocument();
             doc.addField(ArtistIndexField.ARTIST_ID, "22222222-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(ArtistIndexField.ARTIST_ACCENT, "República");
             doc.addField(ArtistIndexField.ARTIST, "República");
             doc.addField(ArtistIndexField.SORTNAME, "República");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
@@ -76,6 +78,7 @@ public class IssueSearch167Test extends TestCase {
         {
             MbDocument doc = new MbDocument();
             doc.addField(ArtistIndexField.ARTIST_ID, "33333333-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(ArtistIndexField.ARTIST_ACCENT, "Repúblice");
             doc.addField(ArtistIndexField.ARTIST, "Repúblice");
             doc.addField(ArtistIndexField.SORTNAME, "Repúblice");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
@@ -96,6 +99,7 @@ public class IssueSearch167Test extends TestCase {
         {
             MbDocument doc = new MbDocument();
             doc.addField(ArtistIndexField.ARTIST_ID, "44444444-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(ArtistIndexField.ARTIST_ACCENT, "Repúblic");
             doc.addField(ArtistIndexField.ARTIST, "Repúblic");
             doc.addField(ArtistIndexField.SORTNAME, "Repúblic");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
@@ -116,6 +120,7 @@ public class IssueSearch167Test extends TestCase {
         {
             MbDocument doc = new MbDocument();
             doc.addField(ArtistIndexField.ARTIST_ID, "55555555-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(ArtistIndexField.ARTIST_ACCENT, "echo & the bunnymen");
             doc.addField(ArtistIndexField.ARTIST, "echo & the bunnymen");
             doc.addField(ArtistIndexField.SORTNAME, "bunnymen, echo");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
@@ -136,6 +141,7 @@ public class IssueSearch167Test extends TestCase {
         {
             MbDocument doc = new MbDocument();
             doc.addField(ArtistIndexField.ARTIST_ID, "66666666-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(ArtistIndexField.ARTIST_ACCENT, "echobelly");
             doc.addField(ArtistIndexField.ARTIST, "echobelly");
             doc.addField(ArtistIndexField.SORTNAME, "echobelly");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
@@ -182,12 +188,13 @@ public class IssueSearch167Test extends TestCase {
         IndexSearcher searcher = sd.getIndexSearcher();
         Query q = sd.parseQuery("República");
         TopDocs topdocs = searcher.search(q, 10);
-        assertEquals(4, topdocs.scoreDocs.length);
         for(ScoreDoc match:topdocs.scoreDocs)
         {
             Explanation explain = searcher.explain(q, match.doc);
-            System.out.println("DocNo:"+match.doc+":"+match.score+":"+sd.getIndexSearcher().doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+            System.out.println("DocNo:"+match.doc+":"+match.score+":"+sd.getIndexSearcher().doc(match.doc).getFieldable("arid").stringValue());
+            System.out.println(explain);
         }
+        assertEquals(4, topdocs.scoreDocs.length);
 
         org.apache.lucene.document.Document doc  = searcher.doc(topdocs.scoreDocs[0].doc);
         assertEquals("22222222-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));

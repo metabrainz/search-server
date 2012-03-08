@@ -16,6 +16,7 @@ public class ReleaseGroupDismaxSearch extends ReleaseGroupSearch {
     protected void initDismaxSearcher() {
 
         Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(4);
+        fieldBoosts.put(ReleaseGroupIndexField.RELEASEGROUP_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.6f));
         fieldBoosts.put(ReleaseGroupIndexField.RELEASEGROUP.getName(), new DismaxAlias.AliasField(true, 1.4f));
         fieldBoosts.put(ReleaseGroupIndexField.RELEASE.getName(), new DismaxAlias.AliasField(true, 1.2f));
         fieldBoosts.put(ReleaseGroupIndexField.ARTIST.getName(), new DismaxAlias.AliasField(true, 1f));
@@ -52,8 +53,6 @@ public class ReleaseGroupDismaxSearch extends ReleaseGroupSearch {
     }
 
     protected Query parseQuery(String userQuery) throws ParseException {
-        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
-        Query q2 = new BoostExactMatchQuery(q1, userQuery, ReleaseGroupIndexField.RELEASEGROUP.getName());
-        return q2;
+        return dismaxSearcher.parseQuery(userQuery, analyzer);
     }
 }

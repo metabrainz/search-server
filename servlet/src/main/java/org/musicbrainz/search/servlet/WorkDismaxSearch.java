@@ -49,8 +49,6 @@ public class WorkDismaxSearch extends WorkSearch {
     }
 
     protected Query parseQuery(String userQuery) throws ParseException {
-        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
-        Query q2 = new BoostExactMatchQuery(q1, userQuery, WorkIndexField.WORK.getName());
-        return q2;
+        return dismaxSearcher.parseQuery(userQuery, analyzer);
     }
 }

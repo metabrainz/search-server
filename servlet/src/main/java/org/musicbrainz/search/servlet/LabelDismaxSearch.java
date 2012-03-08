@@ -15,8 +15,9 @@ public class LabelDismaxSearch extends LabelSearch {
 
     protected void initDismaxSearcher() {
         Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(3);
-        fieldBoosts.put(LabelIndexField.SORTNAME.getName(), new DismaxAlias.AliasField(true, 1.1f));
+        fieldBoosts.put(LabelIndexField.LABEL_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.4f));
         fieldBoosts.put(LabelIndexField.LABEL.getName(), new DismaxAlias.AliasField(true, 1.3f));
+        fieldBoosts.put(LabelIndexField.SORTNAME.getName(), new DismaxAlias.AliasField(true, 1.1f));
         fieldBoosts.put(LabelIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
         DismaxAlias dismaxAlias = new DismaxAlias();
         dismaxAlias.setFields(fieldBoosts);
@@ -50,8 +51,6 @@ public class LabelDismaxSearch extends LabelSearch {
     }
 
     protected Query parseQuery(String userQuery) throws ParseException {
-        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
-        Query q2 = new BoostExactMatchQuery(q1, userQuery, LabelIndexField.LABEL.getName());
-        return q2;
+        return dismaxSearcher.parseQuery(userQuery, analyzer);
     }
 }

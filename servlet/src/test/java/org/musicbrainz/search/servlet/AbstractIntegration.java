@@ -25,13 +25,15 @@ import java.util.zip.GZIPInputStream;
 public class AbstractIntegration extends TestCase {
 
     protected JAXBContext context;
+    protected JAXBContext contextV1;
 
     protected AbstractIntegration(String testName) {
        super(testName);
     }
 
     protected void setUp() throws Exception {
-        context = JAXBContext.newInstance("org.musicbrainz.mmd2");
+        context     = JAXBContext.newInstance("org.musicbrainz.mmd2");
+        contextV1   = JAXBContext.newInstance("com.jthink.brainz.mmd");
     }
 
     public Metadata doSearch(String searchUrl) throws Exception {
@@ -53,6 +55,33 @@ public class AbstractIntegration extends TestCase {
         }
 
         Metadata metadata = (Metadata) context.createUnmarshaller().unmarshal(bis);
+
+        clock.stop();
+        System.out.println(this.getName()+":"+clock.getTime()+" ms");
+        assertTrue(clock.getTime() < 5000);
+
+        return metadata;
+    }
+
+    public com.jthink.brainz.mmd.Metadata doSearchV1(String searchUrl) throws Exception {
+
+        StopWatch clock = new StopWatch();
+        clock.start();
+
+        BufferedInputStream bis;
+        URL url = new URL(searchUrl);
+        HttpURLConnection uc = (HttpURLConnection)url.openConnection();
+        int responseCode = uc.getResponseCode();
+        assertEquals(responseCode,HttpURLConnection.HTTP_OK);
+
+        if("gzip".equals(uc.getContentEncoding())) {
+            bis = new BufferedInputStream(new GZIPInputStream(uc.getInputStream()));
+        }
+        else {
+            bis = new BufferedInputStream(uc.getInputStream());
+        }
+
+        com.jthink.brainz.mmd.Metadata metadata = (com.jthink.brainz.mmd.Metadata) contextV1.createUnmarshaller().unmarshal(bis);
 
         clock.stop();
         System.out.println(this.getName()+":"+clock.getTime()+" ms");

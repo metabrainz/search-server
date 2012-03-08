@@ -15,7 +15,8 @@ public class RecordingDismaxSearch extends RecordingSearch {
 
     protected void initDismaxSearcher() {
 
-        Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(2);
+        Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(4);
+        fieldBoosts.put(RecordingIndexField.RECORDING_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.4f));
         fieldBoosts.put(RecordingIndexField.RECORDING.getName(), new DismaxAlias.AliasField(true, 1.2f));
         fieldBoosts.put(RecordingIndexField.RELEASE.getName(), new DismaxAlias.AliasField(true, 1f));
         fieldBoosts.put(RecordingIndexField.ARTIST_NAMECREDIT.getName(), new DismaxAlias.AliasField(false, 0.8f));
@@ -52,8 +53,6 @@ public class RecordingDismaxSearch extends RecordingSearch {
     }
 
     protected Query parseQuery(String userQuery) throws ParseException {
-        Query q1 = dismaxSearcher.parseQuery(userQuery, analyzer);
-        Query q2 = new BoostExactMatchQuery(q1, userQuery, RecordingIndexField.RECORDING.getName());
-        return q2;
+        return dismaxSearcher.parseQuery(userQuery, analyzer);
     }
 }

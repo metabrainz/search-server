@@ -5,6 +5,7 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.musicbrainz.search.LuceneVersion;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ public class DismaxQueryParser {
 
     public DismaxQueryParser(org.apache.lucene.analysis.Analyzer analyzer) {
         dqp = new DisjunctionQueryParser(IMPOSSIBLE_FIELD_NAME, analyzer);
+        //Change rewrite method used by prefix queries here
+        //dqp.setMultiTermRewriteMethod(new MultiTermQuery.TopTermsBoostOnlyBooleanQueryRewrite(100));
     }
 
     /**
@@ -63,8 +66,8 @@ public class DismaxQueryParser {
 
     static class DisjunctionQueryParser extends QueryParser {
 
-        //Only make terms that are this length fuzzy
-        protected static final int MIN_FIELD_LENGTH_TO_MAKE_FUZZY = 4;
+        //Only make search terms that are this length fuzzy searchable and only match to terms that are also this length
+        protected static final int   MIN_FIELD_LENGTH_TO_MAKE_FUZZY = 4;
         protected static final float FUZZY_SIMILARITY = 0.5f;
 
         //Reduce boost of wildcard/fuzzy matches compared to exact matches
@@ -79,13 +82,16 @@ public class DismaxQueryParser {
             super(LuceneVersion.LUCENE_VERSION, defaultField, analyzer);
         }
 
-
         protected Map<String, DismaxAlias> aliases = new HashMap<String, DismaxAlias>(3);
 
         //Field to DismaxAlias
         public void addAlias(String field, DismaxAlias dismaxAlias) {
             aliases.put(field, dismaxAlias);
         }
+
+        //Rewrite Method to use for Fuzzy Queries, not currently using but may want to change to it
+        MultiTermQuery.RewriteMethod fuzzyQueryRewriteMethod
+                = new MultiTermQuery.TopTermsBoostOnlyBooleanQueryRewrite(100);
 
         protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
             if (querySub != null) {
@@ -104,6 +110,16 @@ public class DismaxQueryParser {
             }
             return false;
         }
+
+        @Override
+        protected Query getFuzzyQuery(String field, String termStr, float minSimilarity)
+        {
+            Term t = new Term(field, termStr);
+            FuzzyQuery fq = new FuzzyQuery(t,minSimilarity,MIN_FIELD_LENGTH_TO_MAKE_FUZZY);
+            //fq.setRewriteMethod(fuzzyQueryRewriteMethod);
+            return fq;
+        }
+
 
         protected Query getFieldQuery(String field, String queryText, boolean quoted)
                 throws org.apache.lucene.queryParser.ParseException {
@@ -128,7 +144,7 @@ public class DismaxQueryParser {
 
                             if(af.isFuzzy()) {
                                 Term t = ((TermQuery) querySub).getTerm();
-                                queryWildcard = newWildcardQuery(new Term(t.field(),t.text() + '*'));
+                                queryWildcard = newPrefixQuery(new Term(t.field(),t.text()));
                                 queryFuzzy = getFuzzyQuery(t.field(), t.text(), FUZZY_SIMILARITY);
                                 queryFuzzy.setBoost(af.getBoost() * WILDCARD_BOOST_REDUCER);
                                 q.add(queryFuzzy);

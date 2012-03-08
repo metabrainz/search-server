@@ -18,6 +18,7 @@ public class DismaxSearcher {
     {
         query= QueryParser.escape(query);
         DismaxQueryParser queryParser = getParser(analyzer);
+
         queryParser.addAlias(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME, dismaxAlias);
         Query q = queryParser.parse(query);
         return q;
