@@ -50,7 +50,7 @@ public enum ReleaseGroupIndexField implements IndexField {
     RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
 	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
-    RELEASEGROUP_ACCENT ("releasegroupaccent",Field.Store.NO,Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
+    RELEASEGROUP_ACCENT ("releasegroupaccent",Field.Store.NO,   Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
     TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
     TYPE			    ("type",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),

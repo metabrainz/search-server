@@ -31,8 +31,11 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.Similarity;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.RecordingSimilarity;
+import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
 
 import java.io.IOException;
 import java.sql.*;
@@ -78,6 +81,12 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         ResultSet rs = st.executeQuery("SELECT count(*) FROM release_group WHERE id<=" + maxId);
         rs.next();
         return rs.getInt(1);
+    }
+
+    @Override
+    public Similarity getSimilarity()
+    {
+        return new ReleaseGroupSimilarity();
     }
 
     @Override

@@ -332,8 +332,12 @@ public class SearchServerServlet extends HttpServlet {
             return;
         }
 
-        //Must be type ALL or map to a valid resource type
+        //Must be a type parameter and must be type ALL or map to a valid resource type
         String type = request.getParameter(RequestParameter.TYPE.getName());
+        if(type==null) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg("none"));
+        }
+
         // V1 Compatability
         if (type.equals(TYPE_TRACK)) {
             type = ResourceType.RECORDING.getName();

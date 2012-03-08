@@ -162,12 +162,13 @@ public class IssueSearch167Test extends TestCase {
         IndexSearcher searcher = sd.getIndexSearcher();
         Query q = sd.parseQuery("Republica");
         TopDocs topdocs = searcher.search(q, 10);
-        assertEquals(4, topdocs.scoreDocs.length);
         for(ScoreDoc match:topdocs.scoreDocs)
         {
             Explanation explain = searcher.explain(q, match.doc);
-            System.out.println("DocNo:"+match.doc+":"+match.score+":"+sd.getIndexSearcher().doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+            System.out.println("DocNo:"+match.doc+":"+match.score+":"+sd.getIndexSearcher().doc(match.doc).getFieldable("arid").stringValue());
+            System.out.println(explain);
         }
+        assertEquals(4, topdocs.scoreDocs.length);
 
         org.apache.lucene.document.Document doc  = searcher.doc(topdocs.scoreDocs[0].doc);
         assertEquals("11111111-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID.getName()));

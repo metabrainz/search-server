@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
@@ -29,6 +30,9 @@ public class ReleaseGroupSearch extends SearchServer {
     public ReleaseGroupSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
+        if (indexSearcher != null) {
+            indexSearcher.setSimilarity(new ReleaseGroupSimilarity());
+        }
     }
 
     public ReleaseGroupSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

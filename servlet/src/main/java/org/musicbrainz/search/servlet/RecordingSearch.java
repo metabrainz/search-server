@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
+import org.musicbrainz.search.analysis.RecordingSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
@@ -28,6 +29,9 @@ public class RecordingSearch extends SearchServer {
     public RecordingSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
+        if (indexSearcher != null) {
+            indexSearcher.setSimilarity(new RecordingSimilarity());
+        }
     }
 
     public RecordingSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

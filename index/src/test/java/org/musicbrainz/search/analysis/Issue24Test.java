@@ -152,6 +152,33 @@ public class Issue24Test extends TestCase {
                 System.out.println(searcher.explain(q,topDocs.scoreDocs[0].doc));
                 System.out.println(searcher.explain(q,topDocs.scoreDocs[1].doc));
                 assertTrue(((topDocs.scoreDocs[0].score / topDocs.scoreDocs[1].score) * 100 - 100) < 50);
+
+                //Search multiple FieldQuery
+                System.out.println("Multiple Fields OR Query");
+                q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:rod OR alias:rod");
+                topDocs = searcher.search(q, 10);
+                assertEquals(2, topDocs.totalHits);
+                System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);
+                System.out.println(topDocs.scoreDocs[1].score+":"+topDocs.scoreDocs[1].doc);
+                System.out.println(searcher.explain(q,topDocs.scoreDocs[0].doc));
+                System.out.println(searcher.explain(q,topDocs.scoreDocs[1].doc));
+
+                //Search multiple FieldQuery
+                System.out.println("Multiple Fields AND Query");
+                q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:rod AND alias:rod");
+                topDocs = searcher.search(q, 10);
+                assertEquals(1, topDocs.totalHits);
+                System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);
+                System.out.println(searcher.explain(q,topDocs.scoreDocs[0].doc));
+
+                //Search multiple FieldQuery
+                System.out.println("Multiple Fields AND Query");
+                q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod OR alias:fred");
+                topDocs = searcher.search(q, 10);
+                assertEquals(2, topDocs.totalHits);
+                System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);
+                System.out.println(searcher.explain(q,topDocs.scoreDocs[0].doc));
+
             }
         }
 

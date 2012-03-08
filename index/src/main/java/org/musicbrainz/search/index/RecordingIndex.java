@@ -23,8 +23,11 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.analysis.RecordingSimilarity;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -97,6 +100,12 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     String releases;
+
+    @Override
+    public Similarity getSimilarity()
+    {
+        return new RecordingSimilarity();
+    }
 
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
@@ -667,7 +676,7 @@ public class RecordingIndex extends DatabaseIndex {
             }
         }
 
-        //Id we have no recording length in the recording itself or the track length  then we add this value so
+        //If we have no recording length in the recording itself or the track length then we add this value so
         //they can search for recordings/tracks with no length
         if(durations.size()==0) {
             doc.addField(RecordingIndexField.DURATION, Index.NO_VALUE);
