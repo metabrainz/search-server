@@ -2,8 +2,10 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.musicbrainz.mmd2.Metadata;
+import org.musicbrainz.mmd2.Recording;
 
 import javax.xml.bind.JAXBContext;
+import java.util.List;
 
 
 public class RecordingIT extends AbstractIntegration {
@@ -44,5 +46,22 @@ public class RecordingIT extends AbstractIntegration {
     public void testSearchForRecordingDismaxMultiTerm() throws Exception {
         Metadata metadata = doSearch("http://localhost:8080/?dismax=true&type=recording&query=love+rocket");
         assertTrue(metadata.getRecordingList().getRecording().size()>0);
+
+    }
+
+    public void testSearchForRecordingWildcardScoringComparedToExactMatch() throws Exception {
+        Metadata metadata = doSearch("http://localhost:8080/?dismax=true&type=recording&query=luve");
+        assertTrue(metadata.getRecordingList().getRecording().size()>0);
+        List<Recording> recordings = metadata.getRecordingList().getRecording();
+        for(Recording r:recordings)
+        {
+            System.out.println(
+                    r.getScore()+":"
+                    +r.getTitle()+":"
+                    +r.getArtistCredit().getNameCredit().get(0).getArtist().getName()+":"
+                    +r.getReleaseList().getRelease().get(0).getTitle()
+                    );
+        }
+
     }
 }
