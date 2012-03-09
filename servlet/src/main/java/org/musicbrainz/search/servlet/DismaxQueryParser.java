@@ -116,7 +116,7 @@ public class DismaxQueryParser {
         {
             Term t = new Term(field, termStr);
             FuzzyQuery fq = new FuzzyQuery(t,minSimilarity,MIN_FIELD_LENGTH_TO_MAKE_FUZZY);
-            //fq.setRewriteMethod(fuzzyQueryRewriteMethod);
+            fq.setRewriteMethod(fuzzyQueryRewriteMethod);
             return fq;
         }
 
