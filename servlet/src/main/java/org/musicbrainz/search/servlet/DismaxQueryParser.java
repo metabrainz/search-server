@@ -230,7 +230,8 @@ public class DismaxQueryParser {
                 df = reader.docFreq(fq.getPrefix());
                 if(df>=1)
                 {
-                    idf = (float)Math.pow(similarity.idf((int) df, reader.numDocs()),2);
+                    //Same as idf value for search term, 0.5 acts as length norm
+                    idf = (float)Math.pow(similarity.idf((int) df, reader.numDocs()),2) * 0.5f;
                 }
             }
             return idf;
