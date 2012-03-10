@@ -1,9 +1,9 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.ArtistIndexField;
-import org.musicbrainz.search.index.RecordingIndexField;
 
 import java.util.HashMap;
 import java.util.Map;

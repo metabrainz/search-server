@@ -13,8 +13,6 @@ import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.V1TrackIndexField;
 
-import javax.swing.text.html.HTMLDocument;
-
 
 /**
  * Subclasses QueryParser to handle numeric fields that we might want wish to do range queries for and handle type

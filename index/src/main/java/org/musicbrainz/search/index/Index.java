@@ -19,11 +19,11 @@
 
 package org.musicbrainz.search.index;
 
-import java.io.IOException;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Similarity;
+
+import java.io.IOException;
 
 public interface Index {
 

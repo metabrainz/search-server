@@ -35,7 +35,6 @@ import com.sun.jersey.api.json.JSONMarshaller;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.musicbrainz.mmd2.Metadata;
 import org.musicbrainz.mmd2.ObjectFactory;
-import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.servlet.ErrorMessage;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.SearchServerServlet;

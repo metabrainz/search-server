@@ -21,8 +21,10 @@ package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Build temporary tables that are used by multiple indexes

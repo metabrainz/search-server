@@ -1,3 +1,32 @@
+/*
+ Copyright (c) 2012 Paul Taylor
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. Neither the name of the MusicBrainz project nor the names of the
+     contributors may be used to endorse or promote products derived from
+     this software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.index.IndexReader;
@@ -7,7 +36,9 @@ import org.apache.lucene.search.*;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class DismaxQueryParser {
 
@@ -19,9 +50,6 @@ public class DismaxQueryParser {
 
     public DismaxQueryParser(org.apache.lucene.analysis.Analyzer analyzer) {
         dqp = new DisjunctionQueryParser(IMPOSSIBLE_FIELD_NAME, analyzer);
-        //Change rewrite method used by prefix queries here
-        //dqp.setMultiTermRewriteMethod(new MultiTermQuery.TopTermsBoostOnlyBooleanQueryRewrite(100));
-        //dqp.setMultiTermRewriteMethod(ScoringRewrite.SCORING_BOOLEAN_QUERY_REWRITE);
         dqp.setMultiTermRewriteMethod(new MultiTermUseIdfOfSearchTerm(100));
     }
 
@@ -93,7 +121,7 @@ public class DismaxQueryParser {
 
         //Rewrite Method used by Prefix Search and Fuzzy Search, use idf of the original term
         MultiTermQuery.RewriteMethod fuzzyAndPrefixQueryRewriteMethod
-                = new MultiTermUseIdfOfSearchTerm(100);
+                = new MultiTermUseIdfOfSearchTerm(200);
 
         protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
             if (querySub != null) {
@@ -239,7 +267,7 @@ public class DismaxQueryParser {
 
         @Override
         public BooleanQuery rewrite(final IndexReader reader, final MultiTermQuery query) throws IOException {
-            BooleanQuery  bq = (BooleanQuery)super.rewrite(reader, query);
+            BooleanQuery  bq = super.rewrite(reader, query);
 
             float idfBoost = getQueryBoost(reader, query);
             Iterator<BooleanClause> iterator = bq.iterator();

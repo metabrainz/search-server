@@ -1,6 +1,9 @@
 package org.musicbrainz.search.index;
 
-import org.apache.lucene.store.*;
+import org.apache.lucene.store.BufferedIndexInput;
+import org.apache.lucene.store.IndexInput;
+import org.apache.lucene.store.IndexOutput;
+import org.apache.lucene.store.SimpleFSDirectory;
 
 import java.io.File;
 import java.io.IOException;

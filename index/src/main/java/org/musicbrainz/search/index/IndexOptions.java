@@ -1,13 +1,13 @@
 package org.musicbrainz.search.index;
 
+import org.kohsuke.args4j.Option;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
-
-import org.kohsuke.args4j.Option;
 
 public class IndexOptions {
 

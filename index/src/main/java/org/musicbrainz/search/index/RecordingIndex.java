@@ -26,7 +26,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.RecordingSimilarity;
 
 import java.io.IOException;

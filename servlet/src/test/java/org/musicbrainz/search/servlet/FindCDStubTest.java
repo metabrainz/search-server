@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 
-import com.jthink.brainz.mmd.Artist;
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;

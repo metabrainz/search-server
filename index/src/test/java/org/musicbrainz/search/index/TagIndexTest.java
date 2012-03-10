@@ -1,6 +1,5 @@
 package org.musicbrainz.search.index;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 

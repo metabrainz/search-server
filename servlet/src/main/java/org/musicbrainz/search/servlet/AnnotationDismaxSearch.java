@@ -4,7 +4,6 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.musicbrainz.search.index.AnnotationIndexField;
-import org.musicbrainz.search.index.LabelIndexField;
 
 import java.util.HashMap;
 import java.util.Map;

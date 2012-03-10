@@ -31,7 +31,10 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
-import org.musicbrainz.search.analysis.*;
+import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzKeepAccentsAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
