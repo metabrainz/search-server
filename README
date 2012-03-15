@@ -10,10 +10,12 @@ This server can be run on linux/osx/windows, but these instructions assume
 that you will be running linux and will be using the tomcat6 server to host
 the servlet.
 
+It also assumes you have created a user called search with a home folder of /home/search
+
 To run this search server you will also need to have a MusicBrainz database
 with the core data set loaded. Please see 
 
-  http://bugs.musicbrainz.org/browser/mb_server/branches/RELEASE_20090524-BRANCH/INSTALL
+    https://github.com/metabrainz/musicbrainz-server/blob/master/INSTALL
 
 for details on how to setup at least a "database only install". This 
 document assumes that you have completed the setup of this server.
@@ -21,85 +23,82 @@ document assumes that you have completed the setup of this server.
 You will also need these tools:
 
     - Java complete with JDK 1.6, not just the JRE
-    - Apache Tomcat 6    ( http://tomcat.apache.org )
-    - Maven version 2    ( http://maven.apache.org/download.html )
+    - Apache Tomcat 6
+    - Maven 2
 
 In a recent Ubuntu, you can install these with this command:
 
     apt-get install openjdk-6-jdk maven2 tomcat6
 
-Ensure default Java installation is at least 1.6, and that you have the 
-JDK installed not just the JRE.
+Alternatively if you're not on Ubuntu, install the required tools from the following links
 
-    java -version
+    - Java complete with JDK 1.6, not just the JRE (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+    - Apache Tomcat 6    ( http://tomcat.apache.org )
+    - Maven version 2    ( http://maven.apache.org/download.html )
 
-If you're not on Ubuntu, you can get an official version from 
-
-    http://java.sun.com/javase/downloads
-
-and setup Java Home directory in your profile (not needed on ubuntu):
+setup Java Home directory in your profile (not needed on ubuntu):
 
     export JAVA_HOME="/usr/bin/java"
-
-To build you need to install Maven, if you haven't already got it. Download
-it from:
-
-    http://maven.apache.org/download.html
 
 
 Check out and build server code
 -------------------------------
 
-If you haven't already done so, check out the mmd-schema repository using Subversion as follows:
+Check out the mmd-schema and search_server repositories using Subversion as follows:
 
     svn co http://svn.musicbrainz.org/mmd-schema/trunk mmd-schema
+    svn co http://svn.musicbrainz.org/search_server/trunk search_server
 
-Then build and install the model:
+Build and install the model:
 
     cd mmd-schema/brainz-mmd2-jaxb
     mvn install
 
-If you haven't already done so, check out the server source code using Subversion via:
+By default the search server home will be at: /home/search and the indexes will live in /home/search/indexdata.
+But the index location can be overridden by editing
 
-    svn co http://svn.musicbrainz.org/search_server/trunk search_server
+    ... /webapps/ROOT/WEB-INF/web.xml
+
+so that the index dir is correct:
+
+    <param-value>/home/search/indexdata</param-value>
 
 Then build the indexer and the search application as follows:
 
     cd search_server
-    ./makeinstall.sh
     mvn package
 
-This step will download any required java components and then compile and test
-the whole server.
+This step will download any required java components and then compile and test the whole server.
 
 
-Copy the Index Builder Server Code
+Deploy the Search Server Code
 ----------------------------------
+Unjar the search server webapp into the ROOT directory under webapps for your tomcat installation. If you installed
+Tomcat using apt this will be
 
-By default the search server home will be at: /home/search and the indexes will live in /home/search/indexdata . These
-locations can be overridden by editing ... /webapps/ROOT/WEB-INF/web.xml so that the index dir is correct:
+    /var/lib/tomcat6/webapps
 
-    <param-value>/home/search/indexdata</param-value>
+If you installed tomcat manually the webapps directory is directly within the folder tomcat has been installed to.
 
-But, it is suggested that you use the default location. Then, copy the index builder jar into /home/search:
-
-    cp /home/search/searchserver/index/target/index-2.0-SNAPSHOT-jar-with-dependencies.jar /home/search
-
-Then unjar the search server webapp into the ROOT directory under webapps for your tomcat installation.
-Automatic deployment of search apps didn't work so well in practice, so it is recommended that you 
+Automatic deployment of search apps didn't work so well in practice, so it is recommended that you
 stop tomcat before upgrading the search application.
 
 On Ubuntu this will work:
 
+    sudo /etc/init.d/tomcat6 stop
     cd /var/lib/tomcat6/webapps
-    rm -rf ROOT/* 
+    rm -rf ROOT/*
     cd ROOT
     jar -xf <your lucene java src dir>/servlet/target/searchserver.war
+    sudo /etc/init.d/tomcat6 start
 
-Now you can start tomcat again.
 
 Build Indexes
 -------------
+
+Copy the Index building code
+
+    cp /home/search/searchserver/index/target/index-2.0-SNAPSHOT-jar-with-dependencies.jar /home/search
 
 Download the latest freedb dump (in tar.bz2 format) from:
 
@@ -113,12 +112,12 @@ Place the downloaded file into /home/search.
 
 Now build indexes with these commands:
 
-    cd /home/search 
+    cd /home/search
     java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata
          -freedb-dump /home/search/<freedb tar.bz2 file>
 
 This will build all of the indexes using upto 512mb of memory using all of the defaults for connecting
-to the database servers. If your database isn't on the same server and named according to the 
+to the database servers. If your database isn't on the same server and named according to the
 defaults you will need to give the command line more options. To see the options execute this:
 
     java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --help
@@ -129,26 +128,26 @@ build it separately. If you want to build just the freedb_index, you can specify
     --indexes freedb
 
 Building the search indexes will take some time -- even on a fast machine it will still take an hour.
-Once indexes are built, ensure that your tomcat instance has the permissions to access your data. 
+Once indexes are built, ensure that your tomcat instance has the permissions to access your data.
 In Ubuntu:
 
     chown -R tomcat6:tomcat6 /home/search
 
 
+
 Tuning Tomcat
 -------------
 
-In test deployments we've found that Tomcat causes trouble when the Java security manager
-is enabled. Since its common to dedicate a whole server as a search server, it should be
-safe to turn this off. For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat6 to no:
+Ubunto enables the Java security manager by default, this will prevent the search server working.
+For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat6 to no:
 
     # Use the Java security manager? (yes/no)
     TOMCAT6_SECURITY=no
 
 Next, configure Tomcat with the max heap memory you want to use for Search Server. This is 
 very important because by default it will only use a maximum of 32MB, adding
-the following to your profile sets up Tomcat with 512MB. It is currently recommended to
-to give tomcat half of your available ram (if running a standalone production system).
+the following to your profile sets up Tomcat with 512MB. This is the optimum amount to use if you can afford it, do not
+allocate more than this because search can use the unallocated memory to cache the indexes.
 
 Also configure Tomcat to run with file encoding UTF-8, otherwise it will use the default which 
 will vary from platform to platform. To accomplish both, set the JAVA_OPTS like this:
@@ -276,7 +275,6 @@ Updating Test Server
     cd /home/username/mmd-schema/brainz-mmd2-jaxb
     mvn install
     cd /home/username/search_server
-    ./makeinstall.sh
     mvn package
     cd index/target
     java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -d musicbrainz_db_20110716 -u musicbrainz_user --indexes-dir /home/username/indexdata
