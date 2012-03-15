@@ -43,7 +43,7 @@ public class IssueSearch174Test extends TestCase {
         assertEquals(1, tr.docFreq());
         assertEquals("-", tr.term().text());
 
-        ss = new ReleaseSearch(new IndexSearcher(ramDir, true));
+        ss = new ReleaseSearch(new IndexSearcher(IndexReader.open(ramDir)));
 
 
     }

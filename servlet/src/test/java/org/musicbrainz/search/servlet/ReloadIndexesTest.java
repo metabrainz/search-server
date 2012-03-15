@@ -23,7 +23,7 @@ public class ReloadIndexesTest extends TestCase {
     protected void setUp() throws Exception {
         ramDir = new RAMDirectory();
         addArtist1();
-        ss = new ArtistSearch(new IndexSearcher(ramDir, true));
+        ss = new ArtistSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
     private void addArtist1() throws Exception {
@@ -103,7 +103,7 @@ public class ReloadIndexesTest extends TestCase {
 
         IndexReader irStart = ss.getIndexSearcher().getIndexReader();
         addArtist2();
-        ss = new ArtistSearch(new IndexSearcher(ramDir, true));
+        ss = new ArtistSearch(new IndexSearcher(IndexReader.open(ramDir)));
         IndexReader   irOld = ss.getIndexSearcher().getIndexReader();
         assertFalse(irStart==irOld) ;
         Results res = ss.searchLucene("type:\"group\"", 0, 10);

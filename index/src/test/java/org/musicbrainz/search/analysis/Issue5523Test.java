@@ -33,6 +33,7 @@ import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.QueryParser;
@@ -59,7 +60,7 @@ public class Issue5523Test extends TestCase {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("寧夏");
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -82,7 +83,7 @@ public class Issue5523Test extends TestCase {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("寧夏");
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -105,7 +106,7 @@ public class Issue5523Test extends TestCase {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("曲");
             assertEquals(1, searcher.search(q,10).totalHits);

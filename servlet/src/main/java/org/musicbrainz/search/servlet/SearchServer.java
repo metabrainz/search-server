@@ -110,8 +110,8 @@ public abstract class SearchServer implements Callable<Results> {
     	
     	if (indexSearcher != null) {
     		IndexReader oldReader = indexSearcher.getIndexReader();
-			IndexReader newReader = oldReader.reopen();
-			if (oldReader != newReader) {
+			IndexReader newReader = IndexReader.openIfChanged(oldReader);
+            if (newReader != null)  {
 				Similarity similarity = indexSearcher.getSimilarity();
 				indexSearcher = new IndexSearcher(newReader);
 				indexSearcher.setSimilarity(similarity);

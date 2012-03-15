@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -88,8 +89,8 @@ public class FindArtistTest extends TestCase {
         }
 
         writer.close();
-        ss = new ArtistSearch(new IndexSearcher(ramDir, true));
-        sd = new ArtistDismaxSearch(new IndexSearcher(ramDir, true));
+        ss = new ArtistSearch(new IndexSearcher(IndexReader.open(ramDir)));
+        sd = new ArtistDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
 
     }
 

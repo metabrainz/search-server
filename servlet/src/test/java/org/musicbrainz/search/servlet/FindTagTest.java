@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -42,7 +43,7 @@ public class FindTagTest extends TestCase {
             writer.addDocument(doc.getLuceneDocument());
         }
         writer.close();
-        ss = new TagSearch(new IndexSearcher(ramDir, true));
+        ss = new TagSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
 

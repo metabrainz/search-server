@@ -86,7 +86,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("name", tr.term().field());
         assertEquals("!!!", tr.term().text());
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!!!"));
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -145,7 +145,7 @@ public class IssueSearch33Test extends TestCase {
         assertFalse(tr.next());
 
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@*!%"));
             System.out.println(q.toString());
@@ -189,7 +189,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("fred", tr.term().text());
         assertFalse(tr.next());
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("fred"));
             System.out.println(q.toString());
@@ -236,7 +236,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("bdb24cb5-404b-4f60-bba4-7b730325ae47", tr.term().text());
         assertFalse(tr.next());
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer)
                     .parse(QueryParser.escape("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
@@ -281,7 +281,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("กข", tr.term().text());
         assertFalse(tr.next());
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("กข"));
             System.out.println(q.toString());
@@ -333,7 +333,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("!%", tr.term().text());
 
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
             System.out.println(q.toString());
@@ -384,7 +384,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("fred", tr.term().text());
 
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
             System.out.println(q.toString());
@@ -431,7 +431,7 @@ public class IssueSearch33Test extends TestCase {
         assertFalse(tr.next());
 
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
@@ -479,7 +479,7 @@ public class IssueSearch33Test extends TestCase {
         assertFalse(tr.next());
 
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
@@ -526,7 +526,7 @@ public class IssueSearch33Test extends TestCase {
         assertFalse(tr.next());
 
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
@@ -574,7 +574,7 @@ public class IssueSearch33Test extends TestCase {
         assertEquals("j", term.text());
 
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("j"));
             System.out.println(q.toString());

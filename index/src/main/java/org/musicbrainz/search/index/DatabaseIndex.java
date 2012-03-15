@@ -34,6 +34,7 @@ import java.sql.*;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An abstract Index specialized in indexing information from a Database
@@ -60,14 +61,16 @@ public abstract class DatabaseIndex implements Index {
     }
 
     public static Analyzer getAnalyzer(Class indexFieldClass) {
-        PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(new MusicbrainzAnalyzer());
+        Map<String,Analyzer> fieldAnalyzers = new HashMap<String, Analyzer>();
         for(Object o : EnumSet.allOf(indexFieldClass)) {
             IndexField indexField = (IndexField) o;
             Analyzer analyzer = indexField.getAnalyzer();
             if (analyzer != null) {
-                wrapper.addAnalyzer(indexField.getName(), analyzer);
+                fieldAnalyzers.put(indexField.getName(), analyzer);
             }
         }
+        PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(new MusicbrainzAnalyzer(), fieldAnalyzers);
+
         return wrapper;
     }
 

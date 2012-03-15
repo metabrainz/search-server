@@ -44,8 +44,8 @@ public class IssueSearch173Test extends TestCase {
         assertEquals("catno", tr.term().field());
         assertEquals("ad17t", tr.term().text());
 
-        sd = new ReleaseDismaxSearch(new IndexSearcher(ramDir, true));
-        ss = new ReleaseSearch(new IndexSearcher(ramDir, true));
+        sd = new ReleaseDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
+        ss = new ReleaseSearch(new IndexSearcher(IndexReader.open(ramDir)));
 
 
     }

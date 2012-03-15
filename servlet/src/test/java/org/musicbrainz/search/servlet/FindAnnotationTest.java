@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -96,8 +97,8 @@ public class FindAnnotationTest extends TestCase {
         }
 
         writer.close();
-        ss = new AnnotationSearch(new IndexSearcher(ramDir, true));
-        sd = new AnnotationDismaxSearch(new IndexSearcher(ramDir, true));
+        ss = new AnnotationSearch(new IndexSearcher(IndexReader.open(ramDir)));
+        sd = new AnnotationDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
 
     }
 

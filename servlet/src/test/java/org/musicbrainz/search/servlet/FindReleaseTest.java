@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -157,9 +158,9 @@ public class FindReleaseTest extends TestCase {
 
         writer.close();
         Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
-        searchers.put(ResourceType.RELEASE, new IndexSearcher(ramDir,true));
-        ss = new ReleaseSearch(new IndexSearcher(ramDir,true));
-        sd = new ReleaseDismaxSearch(new IndexSearcher(ramDir, true));
+        searchers.put(ResourceType.RELEASE, new IndexSearcher(IndexReader.open(ramDir)));
+        ss = new ReleaseSearch(new IndexSearcher(IndexReader.open(ramDir)));
+        sd = new ReleaseDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
     public void testFindReleaseById() throws Exception {

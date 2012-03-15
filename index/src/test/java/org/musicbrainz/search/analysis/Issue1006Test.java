@@ -10,6 +10,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.QueryParser;
@@ -169,7 +170,7 @@ public class Issue1006Test extends TestCase {
         writer.close();
 
 
-        IndexSearcher searcher = new IndexSearcher(dir, true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ゲーム");
             //System.out.println(q);

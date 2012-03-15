@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -47,7 +48,7 @@ public class FindFreeDBTest extends TestCase {
         }
 
         writer.close();
-        ss = new FreeDBSearch(new IndexSearcher(ramDir, true));
+        ss = new FreeDBSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
     public void testSearchFreeDBByArtist() throws Exception {

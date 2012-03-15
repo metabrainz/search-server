@@ -2,6 +2,7 @@ package org.musicbrainz.search.servlet;
 
 import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -108,8 +109,8 @@ public class FindRecordingTest extends TestCase {
 
         writer.addDocument(doc.getLuceneDocument());
         writer.close();
-        ss = new RecordingSearch(new IndexSearcher(ramDir,true));
-        sd = new RecordingDismaxSearch(new IndexSearcher(ramDir, true));
+        ss = new RecordingSearch(new IndexSearcher(IndexReader.open(ramDir)));
+        sd = new RecordingDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
     public void testFindRecordingByV1TrackField() throws Exception {

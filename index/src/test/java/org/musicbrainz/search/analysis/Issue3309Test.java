@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.QueryParser;
@@ -78,7 +79,7 @@ public class Issue3309Test extends TestCase {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S");
         TopDocs docs = searcher.search(q,10);
         assertEquals(1, docs.totalHits);
@@ -95,7 +96,7 @@ public class Issue3309Test extends TestCase {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(dir,true);
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S.");
         TopDocs docs = searcher.search(q,10);
         assertEquals(1, docs.totalHits);
