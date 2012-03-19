@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -37,16 +38,14 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -181,7 +180,7 @@ public abstract class SearchServer implements Callable<Results> {
     }
 
     /**
-     * Parse and search lucene query, returning between results from offset upto limit
+     * Parse and search lucene query, returning between results from offset up to limit
      *
      * @param query
      * @param offset
@@ -205,6 +204,7 @@ public abstract class SearchServer implements Callable<Results> {
         }
     }
 
+    
     /**
      *
      * @param searcher
@@ -245,7 +245,7 @@ public abstract class SearchServer implements Callable<Results> {
     }
 
     /**
-     * Get Query Parser for parsing queries for this resourcetype , QueryParser  is not thread safe so always
+     * Get Query Parser for parsing queries for this resourceType , QueryParser  is not thread safe so always
      * get a new instance;
      *
      * @return
@@ -275,5 +275,69 @@ public abstract class SearchServer implements Callable<Results> {
         }
         return results;
     }
+
+    /**
+     * Explain the results
+     *
+     * This method is for debugging and to allow end users to understand why their query is not returning the results
+     * they expected so they can refine their query
+     *
+     * @param query
+     * @param offset
+     * @param limit
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    public String explain(String query, int offset, int limit) throws IOException, ParseException {
+        IndexSearcher searcher=null;
+        StringBuffer sb = new StringBuffer("<html><head/>\n<body>\n");
+        try {
+            searcher = getIndexSearcher();
+            incRef(searcher);
+            Query parsedQuery = parseQuery(query);
+            TopDocs topdocs = searcher.search(parsedQuery, offset + limit);
+            ScoreDoc docs[] = topdocs.scoreDocs;
+            float maxScore = topdocs.getMaxScore();
+            sb.append("<p>Query:"+parsedQuery.toString()+"</p>");
+            for (int i =0; i < docs.length; i++) {
+                explainAndDisplayResult(i, sb, searcher, parsedQuery, docs[i], maxScore);
+            }
+            searchCount.incrementAndGet();
+        }
+        finally {
+            decRef(searcher);
+        }
+        sb.append("</body></html>");
+        return sb.toString();
+    }
+
+    /** Output the Explain for the document
+     *
+     * @param sb
+     * @param searcher
+     * @param query
+     * @param scoreDoc
+     * @throws IOException
+     * @throws ParseException
+     */
+    protected void explainAndDisplayResult(int i, StringBuffer sb, IndexSearcher searcher, Query query, ScoreDoc scoreDoc, float maxScore)
+            throws IOException, ParseException {
+        sb.append("<p>"+i+":Score:"+(scoreDoc.score /maxScore) * 100 +"</br>");
+        sb.append(printExplainHeader(searcher.doc(scoreDoc.doc)));
+        sb.append(searcher.explain(query, scoreDoc.doc).toHtml()+"</p>\n");
+
+    }
+
+    /**
+     * Print details about the matching document, override to give resource type specific information
+     *
+     * @param doc
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     */
+    protected abstract  String printExplainHeader(Document doc)
+            throws IOException, ParseException;
 
 }

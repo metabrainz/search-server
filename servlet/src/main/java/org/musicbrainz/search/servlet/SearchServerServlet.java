@@ -31,6 +31,7 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
@@ -47,6 +48,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -339,7 +341,7 @@ public class SearchServerServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg("none"));
         }
 
-        // V1 Compatability
+        // V1 Compatibility
         if (type.equals(TYPE_TRACK)) {
             type = ResourceType.RECORDING.getName();
         }
@@ -410,6 +412,12 @@ public class SearchServerServlet extends HttpServlet {
             }
         }
 
+        boolean isExplain = false;
+        String strIsExplain = request.getParameter(RequestParameter.EXPLAIN.getName());
+        if (strIsExplain!= null && strIsExplain.equals("true")) {
+            isExplain=true;
+        }
+
         boolean isDismax = false;
         String strIsDismax = request.getParameter(RequestParameter.DISMAX.getName());
         if (strIsDismax!= null && strIsDismax.equals("true")) {
@@ -419,7 +427,7 @@ public class SearchServerServlet extends HttpServlet {
         try {
             if (resourceType != null) {
                 //log.log(Level.SEVERE,"Query sent"+query);
-                doSearch(response, resourceType, query, isDismax, offset, limit, responseFormat, responseVersion);
+                doSearch(response, resourceType, query, isDismax, isExplain, offset, limit, responseFormat, responseVersion);
             } else {
                 doAllSearch(response, query, isDismax, offset, limit, responseFormat);
             }
@@ -451,6 +459,7 @@ public class SearchServerServlet extends HttpServlet {
                           ResourceType resourceType,
                           String query,
                           boolean isDismax,
+                          boolean isExplain,
                           Integer offset,
                           Integer limit,
                           String responseFormat,
@@ -469,6 +478,16 @@ public class SearchServerServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(resourceType));
             return;
         }
+        
+        if(isExplain) {
+            String explainationOutput = searchServer.explain(query, offset, limit);
+            response.setCharacterEncoding(CHARSET);
+            response.setContentType("text/html");
+            response.getOutputStream().println(explainationOutput);
+            response.getOutputStream().close();
+            return;
+        }
+                
         Results results = searchServer.search(query, offset, limit);
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
 
