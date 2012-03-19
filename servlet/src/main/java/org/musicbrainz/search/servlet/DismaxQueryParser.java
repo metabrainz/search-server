@@ -213,7 +213,7 @@ public class DismaxQueryParser {
         }
     }
 
-    public static class MultiTermUseIdfOfSearchTerm<Q extends Query> extends TopTermsRewrite<BooleanQuery> {
+    public static class MultiTermUseIdfOfSearchTerm<Q extends DisjunctionMaxQuery> extends TopTermsRewrite<Query> {
 
     //public static final class MultiTermUseIdfOfSearchTerm extends TopTermsRewrite<BooleanQuery> {
         private final Similarity similarity;
@@ -237,15 +237,15 @@ public class DismaxQueryParser {
         }
 
         @Override
-        protected BooleanQuery getTopLevelQuery() {
-            return new BooleanQuery(true);
+        protected DisjunctionMaxQuery getTopLevelQuery() {
+            return new DisjunctionMaxQuery(0.1f);
         }
 
         @Override
-        protected void addClause(BooleanQuery topLevel, Term term, float boost) {
+        protected void addClause(Query topLevel, Term term, float boost) {
             final Query tq = new ConstantScoreQuery(new TermQuery(term));
             tq.setBoost(boost);
-            topLevel.add(tq, BooleanClause.Occur.SHOULD);
+            ((DisjunctionMaxQuery)topLevel).add(tq);
         }
 
         protected float getQueryBoost(final IndexReader reader, final MultiTermQuery query)
@@ -266,15 +266,15 @@ public class DismaxQueryParser {
         }
 
         @Override
-        public BooleanQuery rewrite(final IndexReader reader, final MultiTermQuery query) throws IOException {
-            BooleanQuery  bq = super.rewrite(reader, query);
+        public Query rewrite(final IndexReader reader, final MultiTermQuery query) throws IOException {
+            DisjunctionMaxQuery  bq = (DisjunctionMaxQuery)super.rewrite(reader, query);
 
             float idfBoost = getQueryBoost(reader, query);
-            Iterator<BooleanClause> iterator = bq.iterator();
+            Iterator<Query> iterator = bq.iterator();
             while(iterator.hasNext())
             {
-                BooleanClause next = iterator.next();
-                next.getQuery().setBoost(next.getQuery().getBoost() * idfBoost);
+                Query next = iterator.next();
+                next.setBoost(next.getBoost() * idfBoost);
             }
             return bq;
         }
