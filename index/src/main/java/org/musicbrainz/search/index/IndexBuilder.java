@@ -45,9 +45,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class IndexBuilder
 {
+
+    private static final int MAX_THREADS_FOR_CONCURRENT_OPTIMIZATION = 1;
 
     public static void main(String[] args) throws SQLException, IOException, InterruptedException
     {
@@ -134,6 +137,8 @@ public class IndexBuilder
         CommonTables commonTables = new CommonTables(mainDbConn, indexesToBeBuilt);
         commonTables.createTemporaryTables(false);
 
+        ExecutorService es = Executors.newFixedThreadPool(MAX_THREADS_FOR_CONCURRENT_OPTIMIZATION);
+        CompletionService<Boolean> cs = new ExecutorCompletionService<Boolean>(es);
         for (DatabaseIndex index : indexes) {
 
             // Check if this index should be built
@@ -144,12 +149,7 @@ public class IndexBuilder
 
             IndexWriter indexWriter = createIndexWriter(index,options);
             int maxId = buildDatabaseIndex(indexWriter, index, options);
-            indexWriter.close();
-            if(true) {
-                int dbRows = index.getNoOfRows(maxId);
-                IndexReader reader = IndexReader.open(FSDirectory.open(new File(options.getIndexesDir() + index.getFilename())),true);
-                System.out.println(index.getName()+":"+dbRows+" db rows:"+(reader.maxDoc() - 1)+" lucene docs");
-            }
+            cs.submit(new IndexWriterOptimizerAndClose(maxId,indexWriter, index, options));
         }
 
         // FreeDB data indexing
@@ -165,6 +165,24 @@ public class IndexBuilder
                 }
             }
         }
+
+        //Wait for each index to be optimized and closed before exiting from Index Build
+        System.out.println("Waiting for any indexes to finish optimizing:"+ Utils.formatCurrentTimeForOutput());
+        for (int i =0;i<indexesToBeBuilt.size();i++) {
+            Future<Boolean> result = cs.take();
+            try
+            {
+                if(!result.get())
+                {
+                    System.out.println("Optimize Failed");
+                }
+            }
+            catch(ExecutionException ee)
+            {
+                System.out.println("Optimize Failed with unexpected exception");
+            }
+        }
+        es.shutdown();
         System.out.println("Index Builder Finished:"+ Utils.formatCurrentTimeForOutput());
     }
 
@@ -295,7 +313,90 @@ public class IndexBuilder
 
         index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
+
+        indexWriter.optimize();
         indexWriter.close();
         System.out.println(index.getName()+":Finished:" + Utils.formatClock(clock));
+
+    }
+
+    /*
+     * Optimize the index in and close writer once index has been optimized
+     *
+     *
+     * We run this as a future task so we can be optimizing the last index whilst the next index is being built.
+     *
+     */
+   static class IndexWriterOptimizerAndClose implements Callable<Boolean>
+    {
+        private int             maxId;
+        private IndexWriter     indexWriter;
+        private DatabaseIndex   index;
+        private IndexOptions    options;
+
+        /**
+         *
+         * @param maxId
+         * @param indexWriter
+         * @param index
+         * @param options
+         */
+        public IndexWriterOptimizerAndClose(int maxId, IndexWriter indexWriter, DatabaseIndex index, IndexOptions options)
+        {
+            this.maxId=maxId;
+            this.indexWriter= indexWriter;
+            this.index=index;
+            this.options=options;
+        }
+
+        public Boolean call()
+        {
+            IndexReader reader=null;
+            try
+            {
+                StopWatch clock = new StopWatch();
+                clock.start();
+                String path = options.getIndexesDir() + index.getFilename();
+                System.out.println(index.getName()+":Started Optimization at "+Utils.formatCurrentTimeForOutput());
+
+                indexWriter.optimize();
+                indexWriter.close();
+                clock.stop();
+                // For debugging to check sql is not creating too few/many rows
+                if(true) {
+                    int dbRows = index.getNoOfRows(maxId);
+                    reader = IndexReader.open(FSDirectory.open(new File(path)),true);
+                    System.out.println(index.getName()+":"+dbRows+" db rows:"+(reader.maxDoc() - 1)+" lucene docs");
+                }
+                System.out.println(index.getName()+":Finished Optimization:" + Utils.formatClock(clock));
+                return true;
+            }
+            catch(IOException ioe)
+            {
+                ioe.printStackTrace();
+                try
+                {
+                    indexWriter.close();
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                return false;
+            }
+            catch(SQLException sqle)
+            {
+                sqle.printStackTrace();
+                try
+                {
+                    indexWriter.close();
+                }
+                catch(Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                return false;
+            }
+        }
     }
 }
