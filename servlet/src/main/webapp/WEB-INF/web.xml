@@ -38,6 +38,10 @@
       <param-name>remoteadmin_enabled</param-name>
       <param-value>false</param-value>
   </init-param>
+  <init-param>
+      <param-name>search_webpage</param-name>
+      <param-value>http://www.musicbrainz.org/search.html</param-value>
+  </init-param>
   <load-on-startup>1</load-on-startup>
 </servlet>
 <servlet-mapping>
