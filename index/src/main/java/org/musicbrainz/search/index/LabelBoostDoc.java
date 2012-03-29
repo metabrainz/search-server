@@ -41,8 +41,7 @@ import java.util.Set;
  */
 public class LabelBoostDoc {
 
-    //Double the score of this doc if it comes up in search (note will have no effect if matches on alias field because
-    //norms are disabled for aliases.
+    //Double the score of this doc if it comes up in search
     private static float DOC_BOOST = 2.0f;
 
     private static Set<String> labelGuIdSet = new HashSet<String>();
@@ -55,8 +54,8 @@ public class LabelBoostDoc {
         labelGuIdSet.add("f9ada3ae-3081-44df-8581-ca27a3462b68"); //Sony BMG Music Entertainment
     }
 
-    public static void boost(String artistGuid, MbDocument doc) {
-        if(labelGuIdSet.contains(artistGuid)) {
+    public static void boost(String labelGuid, MbDocument doc) {
+        if(labelGuIdSet.contains(labelGuid)) {
             doc.getLuceneDocument().setBoost(DOC_BOOST);
         }
     }

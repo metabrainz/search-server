@@ -42,8 +42,7 @@ import java.util.Set;
  */
 public class ArtistBoostDoc {
 
-    //Double the score of this doc if it comes up in search (note will have no effect if matches on alias field because
-    //norms are disabled for aliases.
+    //Double the score of this doc if it comes up in search
     private static float ARTIST_DOC_BOOST = 2.0f;
 
     private static Set<String> artistGuIdSet = new HashSet<String>();
