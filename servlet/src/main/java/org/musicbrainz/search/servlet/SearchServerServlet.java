@@ -86,8 +86,7 @@ public class SearchServerServlet extends HttpServlet {
 
 
     private String initMessage = null;
-    private static final String MUSICBRAINZ_SEARCH_WEBPAGE = "http://www.musicbrainz.org/search.html";
-
+    private static String searchWebPage = "";
     private static boolean isRateLimiterEnabled = false;
     private static boolean isAdminRemoteEnabled = false;
 
@@ -103,6 +102,7 @@ public class SearchServerServlet extends HttpServlet {
      */
     public void init(boolean useMMapDirectory) {
 
+        searchWebPage=getServletConfig().getInitParameter("search_webpage");
 
         String isAdminRemote=getServletConfig().getInitParameter("remoteadmin_enabled");
         isAdminRemoteEnabled = Boolean.parseBoolean(isAdminRemote);
@@ -331,7 +331,7 @@ public class SearchServerServlet extends HttpServlet {
 
         // If they have entered nothing, redirect to them the Musicbrainz Search Page
         if (request.getParameterMap().size() == 0) {
-            response.sendRedirect(MUSICBRAINZ_SEARCH_WEBPAGE);
+            response.sendRedirect(searchWebPage);
             return;
         }
 
