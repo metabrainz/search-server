@@ -5,15 +5,14 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.junit.Test;
 
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
 
 public class LabelIndexTest extends AbstractIndexTest {
 
-    public void setUp() throws Exception {
-        super.setup();
-    }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
 
@@ -95,6 +94,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         stmt.close();
     }
 
+    @Test
     public void testIndexLabel() throws Exception {
 
            addLabelThree();
@@ -115,6 +115,7 @@ public class LabelIndexTest extends AbstractIndexTest {
        }
 
 
+    @Test
     public void testIndexLabelWithNoCountry() throws Exception {
 
         addLabelOne();
@@ -132,6 +133,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
     }
 
+    @Test
     public void testIndexLabelWithCountry() throws Exception {
 
         addLabelThree();
@@ -149,6 +151,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
     }
 
+    @Test
     public void testIndexLabelWithIPI() throws Exception {
 
         addLabelOne();
@@ -166,6 +169,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
     }
 
+    @Test
     public void testIndexLabelWithNoComment() throws Exception {
 
         addLabelOne();
@@ -182,6 +186,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testIndexLabelWithComment() throws Exception {
 
         addLabelTwo();
@@ -199,6 +204,7 @@ public class LabelIndexTest extends AbstractIndexTest {
     }
 
 
+    @Test
     public void testIndexLabelWithNoLabelCode() throws Exception {
 
         addLabelThree();
@@ -215,7 +221,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-
+    @Test
     public void testIndexLabelWithLabelCode() throws Exception {
 
         addLabelOne();
@@ -232,6 +238,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testIndexLabelWithLabelCodeWithZeroes() throws Exception {
 
         addLabelTwo();
@@ -253,6 +260,7 @@ public class LabelIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexLabelWithAlias() throws Exception {
 
         addLabelOne();
@@ -273,6 +281,7 @@ public class LabelIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexLabelWithBeginDate() throws Exception {
 
         addLabelOne();
@@ -295,6 +304,7 @@ public class LabelIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexLabelWithNoBeginDate() throws Exception {
 
         addLabelThree();
@@ -315,6 +325,7 @@ public class LabelIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexLabelWithEndDate() throws Exception {
 
         addLabelTwo();
@@ -336,6 +347,7 @@ public class LabelIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexLabelWithNoEndDate() throws Exception {
 
         addLabelThree();
@@ -352,6 +364,7 @@ public class LabelIndexTest extends AbstractIndexTest {
     }
 
 
+    @Test
     public void testIndexLabelWithType() throws Exception {
 
         addLabelOne();
@@ -373,6 +386,7 @@ public class LabelIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexLabelWithTag() throws Exception {
 
         addLabelThree();

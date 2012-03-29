@@ -7,17 +7,15 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.junit.Test;
 import org.musicbrainz.mmd2.ArtistCredit;
 
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ReleaseIndexTest extends AbstractIndexTest {
-
-
-    public void setUp() throws Exception {
-        super.setup();
-    }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
         IndexWriter writer = createIndexWriter(ramDir,ReleaseIndexField.class);
@@ -222,6 +220,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseMinPlusTypeAndStatusFields() throws Exception {
 
         addReleaseOne();
@@ -249,6 +248,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseArtist() throws Exception {
 
         addReleaseOne();
@@ -270,6 +270,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNumDiscs() throws Exception {
 
         addReleaseOne();
@@ -288,6 +289,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testIndexReleaseNumMediums() throws Exception {
 
         addReleaseOne();
@@ -311,6 +313,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseSortArtist() throws Exception {
 
         addReleaseOne();
@@ -331,6 +334,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoType() throws Exception {
 
         addReleaseTwo();
@@ -350,6 +354,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoLanguage() throws Exception {
 
         addReleaseTwo();
@@ -370,7 +375,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
-
+    @Test
     public void testIndexReleaseNoScript() throws Exception {
 
         addReleaseTwo();
@@ -391,6 +396,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoFormat() throws Exception {
 
         addReleaseTwo();
@@ -411,6 +417,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoBarcode() throws Exception {
 
         addReleaseTwo();
@@ -430,6 +437,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoLabel() throws Exception {
 
         addReleaseTwo();
@@ -449,6 +457,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoCatalogNo() throws Exception {
 
         addReleaseTwo();
@@ -468,6 +477,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoCountry() throws Exception {
 
         addReleaseTwo();
@@ -489,6 +499,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoDate() throws Exception {
 
         addReleaseTwo();
@@ -508,6 +519,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNoStatus() throws Exception {
 
         addReleaseThree();
@@ -528,6 +540,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseLanguage() throws Exception {
 
         addReleaseFour();
@@ -548,6 +561,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseASIN() throws Exception {
 
         addReleaseFour();
@@ -568,7 +582,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
-
+    @Test
     public void testIndexReleaseScript() throws Exception {
 
         addReleaseFour();
@@ -589,7 +603,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
-
+    @Test
     public void testIndexReleaseComment() throws Exception {
 
         addReleaseOne();
@@ -610,6 +624,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseFormat() throws Exception {
         addReleaseFive();
         RAMDirectory ramDir = new RAMDirectory();
@@ -629,6 +644,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseCountry() throws Exception {
         addReleaseFive();
         RAMDirectory ramDir = new RAMDirectory();
@@ -648,6 +664,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseDiscIds() throws Exception {
 
         addReleaseThree();
@@ -668,6 +685,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseNumTracks() throws Exception {
 
         addReleaseThree();
@@ -688,7 +706,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
-
+    @Test
     public void testIndexFullReleaseEvent() throws Exception {
 
         addReleaseFive();
@@ -721,7 +739,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
-
+    @Test
     public void testIndexNoLabelInfo() throws Exception {
 
         addReleaseTwo();
@@ -747,6 +765,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      * Tets Puid Indexed (not stored)
      * @throws Exception
      */
+    @Test
     public void testIndexPuid() throws Exception {
 
         addReleaseOne();
@@ -763,6 +782,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testIndexReleaseGroupId() throws Exception {
         addReleaseOne();
         RAMDirectory ramDir = new RAMDirectory();

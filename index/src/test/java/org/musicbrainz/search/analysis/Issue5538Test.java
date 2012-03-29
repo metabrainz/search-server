@@ -1,6 +1,5 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -11,14 +10,18 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
+
+import static org.junit.Assert.assertEquals;
 
 /** Test that analyser treats No.x and No. x the same (where x can be any number) , because both forms are found
  * in the database.
  */
-public class Issue5538Test extends TestCase {
+public class Issue5538Test  {
 
 
+    @Test
     public void testNo1Handling() throws Exception {
 
         Analyzer analyzer = new TitleAnalyzer();

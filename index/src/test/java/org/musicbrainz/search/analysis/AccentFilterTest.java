@@ -1,6 +1,5 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -13,19 +12,22 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
-public class AccentFilterTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class AccentFilterTest  {
 
     private Analyzer analyzer = new MusicbrainzAnalyzer();
     private RAMDirectory dir = new RAMDirectory();
 
-    public AccentFilterTest(String testName) {
-        super(testName);
+    public AccentFilterTest() {
     }
 
-	@Override
-    protected void setUp() throws Exception {
+	@Before
+    public void setUp() throws Exception {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
@@ -60,6 +62,7 @@ public class AccentFilterTest extends TestCase {
         writer.close();
     }
 
+    @Test
     public void testSearchUnaccented() throws Exception {
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("test");
@@ -70,6 +73,7 @@ public class AccentFilterTest extends TestCase {
         assertEquals("tést", searcher.doc(scoredocs[1].doc).getFieldable("name").stringValue());
     }
 
+    @Test
     public void testSearchAccented() throws Exception {
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("tést");
@@ -80,6 +84,7 @@ public class AccentFilterTest extends TestCase {
         assertEquals("tést", searcher.doc(scoredocs[1].doc).getFieldable("name").stringValue());
     }
 
+    @Test
     public void testSearchAccented2() throws Exception {
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("abcaef");
@@ -111,6 +116,7 @@ public class AccentFilterTest extends TestCase {
      * Only one doc matches (even though two terms within doc that match)
      * @throws Exception exception
      */
+    @Test
     public void testSearchQe() throws Exception {
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("qwe");
@@ -122,6 +128,7 @@ public class AccentFilterTest extends TestCase {
         assertEquals("qwe 2", values[1]);
     }
 
+    @Test
     public void testSearchQe2() throws Exception {
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("qwee");

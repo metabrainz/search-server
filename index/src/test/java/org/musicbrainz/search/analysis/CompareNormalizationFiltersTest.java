@@ -1,19 +1,20 @@
 package org.musicbrainz.search.analysis;
 
 import com.ibm.icu.text.Normalizer;
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
 import java.io.StringReader;
 
 /**
- * Compare FIlters
+ * Compare Filters
  */
-public class CompareNormalizationFiltersTest extends TestCase {
+public class CompareNormalizationFiltersTest {
 
+    @Test
     public void testFilters() throws IOException
     {
         StringBuffer sb = new StringBuffer();

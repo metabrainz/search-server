@@ -29,7 +29,6 @@
 
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -40,15 +39,17 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
+import static org.junit.Assert.assertEquals;
 
 /** Test that analyser matches simplified chinese to traditional and vice versa because when indexed traditional
  *  chinese is now convert to simple.
  */
-public class Issue5523Test extends TestCase {
+public class Issue5523Test {
 
-
+    @Test
     public void testChineseHandling() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
@@ -72,6 +73,7 @@ public class Issue5523Test extends TestCase {
         }
     }
 
+    @Test
     public void testChineseHandling2() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
@@ -95,6 +97,7 @@ public class Issue5523Test extends TestCase {
         }
     }
 
+    @Test
     public void testChineseHandling3() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();

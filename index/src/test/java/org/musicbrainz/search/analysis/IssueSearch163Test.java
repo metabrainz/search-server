@@ -29,7 +29,6 @@
 
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -40,15 +39,18 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test can search for fields with accents important
  *
  */
-public class IssueSearch163Test extends TestCase {
+public class IssueSearch163Test {
 
-
+    @Test
     public void testAccentsMustMatch() throws Exception {
 
 

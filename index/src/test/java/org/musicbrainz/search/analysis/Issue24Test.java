@@ -29,7 +29,6 @@
 
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -41,19 +40,23 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test scoring
  */
-public class Issue24Test extends TestCase {
+public class Issue24Test {
 
 
     /* Without alias similarity fix , match on docs with multiple matching aliases does better than just one
        matching alias. This is a particular problem for non-latin artists who have a single latin alias amongst
        a large number of non-latin aliases.
      */
+     @Test
      public void testAliasMatchWhenOneOffMany() throws Exception {
 
         {
@@ -192,6 +195,7 @@ public class Issue24Test extends TestCase {
      * and there was a match
      * @throws Exception exception
      */
+    @Test
     public void testAliasesPreferredToArtistHandling() throws Exception {
 
         //Without alias similarity fix , match on alias fields give much higher score

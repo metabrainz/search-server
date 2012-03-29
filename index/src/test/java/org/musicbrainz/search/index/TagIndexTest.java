@@ -2,15 +2,12 @@ package org.musicbrainz.search.index;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 
 import java.sql.Statement;
 
-
 public class TagIndexTest extends AbstractIndexTest {
 
-    public void setUp() throws Exception {
-        super.setup();
-    }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
         IndexWriter writer = createIndexWriter(ramDir,TagIndexField.class);
@@ -35,6 +32,7 @@ public class TagIndexTest extends AbstractIndexTest {
         conn.close();
     }
 
+    @Test
     public void testIndexTag() throws Exception {
 
         addTagOne();

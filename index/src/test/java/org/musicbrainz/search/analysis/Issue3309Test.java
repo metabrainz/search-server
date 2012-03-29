@@ -1,6 +1,5 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -16,13 +15,16 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.StringReader;
 
+import static org.junit.Assert.*;
 
-public class Issue3309Test extends TestCase {
+public class Issue3309Test {
 
+    @Test
     public void testTokenizeAcronyms() throws Exception {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("R.E.S"));
@@ -37,6 +39,7 @@ public class Issue3309Test extends TestCase {
         assertFalse(tokenizer.incrementToken());
     }
 
+    @Test
     public void testFilterAcronyms() throws Exception {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("R.E.S"));
@@ -52,6 +55,7 @@ public class Issue3309Test extends TestCase {
         assertFalse(tokenizer.incrementToken());
     }
 
+    @Test
     public void testFilterAcronyms2() throws Exception {
 
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("R.E.S."));
@@ -68,6 +72,7 @@ public class Issue3309Test extends TestCase {
         }
 
 
+    @Test
     public void testMatchAcronymnsWithoutTrailingDot() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
@@ -85,6 +90,7 @@ public class Issue3309Test extends TestCase {
         assertEquals(1, docs.totalHits);
     }
 
+    @Test
     public void testMatchAcronymnsWithTrailingDot() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
@@ -101,7 +107,4 @@ public class Issue3309Test extends TestCase {
         TopDocs docs = searcher.search(q,10);
         assertEquals(1, docs.totalHits);
     }
-
-
-
 }

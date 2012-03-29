@@ -29,7 +29,6 @@
 
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -40,15 +39,19 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test colon in fieldname should not matter
  *
  */
-public class IssueSearch159Test extends TestCase {
+public class IssueSearch159Test {
 
 
+    @Test
     public void testIgnoreColonTitleAnalyzer() throws Exception {
 
 
@@ -69,6 +72,7 @@ public class IssueSearch159Test extends TestCase {
         }
     }
 
+    @Test
     public void testIgnoreColonTitleAnalyzer2() throws Exception {
 
 
@@ -89,6 +93,7 @@ public class IssueSearch159Test extends TestCase {
         }
     }
 
+    @Test
     public void testIgnoreColonMusicbrainzAnalyzer() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();

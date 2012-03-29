@@ -1,6 +1,5 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -13,17 +12,20 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
-public class Issue1446Test extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class Issue1446Test {
 
     private Analyzer analyzer = new MusicbrainzAnalyzer();
     private RAMDirectory dir = new RAMDirectory();
 
-    public Issue1446Test(String testName) {
-        super(testName);
+    public Issue1446Test() {
     }
 
+    @Test
     public void testUppercaseKanatakaMatchesLowercaseKanataka() throws Exception {
 
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -42,6 +44,7 @@ public class Issue1446Test extends TestCase {
     }
 	
 
+    @Test
     public void testLowercaseKanatakaMatchesUppercaseKanataka() throws Exception {
 
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -60,6 +63,7 @@ public class Issue1446Test extends TestCase {
         assertEquals("ヨ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
     }
 
+    @Test
     public void testUppercaseHiruganaMatchesLowercaseHirugana() throws Exception {
 
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -78,7 +82,7 @@ public class Issue1446Test extends TestCase {
         assertEquals("ぇ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
     }
 
-
+    @Test
     public void testLowercaseHiruganaMatchesUppercaseHirugana() throws Exception {
 
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);

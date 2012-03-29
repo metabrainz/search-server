@@ -4,15 +4,14 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
 
 public class CDStubIndexTest extends AbstractIndexTest{
 
-    public void setUp() throws Exception {
-        super.setup();
-    }
 
      private void createIndex(RAMDirectory ramDir) throws Exception {
 
@@ -56,6 +55,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
          stmt.close();
      }
 
+     @Test
      public void testIndexCDStub() throws Exception {
 
         addCDStubOne();
@@ -84,6 +84,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
 
     }
 
+    @Test
     public void testArtist() throws Exception {
 
         addCDStubOne();
@@ -101,7 +102,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
 
     }
 
-
+    @Test
     public void testNoArtist() throws Exception {
 
         addCDStubTwo();
@@ -118,6 +119,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
 
     }
 
+    @Test
     public void testBarcode() throws Exception {
 
         addCDStubOne();
@@ -135,7 +137,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
 
     }
 
-
+    @Test
     public void testNoBarcode() throws Exception {
 
         addCDStubTwo();
@@ -152,6 +154,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
 
     }
 
+    @Test
     public void testComment() throws Exception {
 
         addCDStubOne();
@@ -169,7 +172,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
 
     }
 
-
+    @Test
     public void testNoComment() throws Exception {
 
         addCDStubTwo();

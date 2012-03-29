@@ -1,6 +1,5 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -11,15 +10,18 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
+import static org.junit.Assert.assertEquals;
 
-public class AmpersandTest extends TestCase {
+public class AmpersandTest  {
 
 
     /**
      * Test filter is being used for indexing and searching , and can search either way
      */
+    @Test
     public void testAmpersandSearching() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();

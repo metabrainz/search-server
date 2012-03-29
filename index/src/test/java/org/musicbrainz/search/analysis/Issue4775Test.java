@@ -1,6 +1,5 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -15,13 +14,16 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.StringReader;
 
+import static org.junit.Assert.*;
 
-public class Issue4775Test extends TestCase {
+public class Issue4775Test  {
 
+    @Test
     public void testApostropheHandling() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
@@ -69,6 +71,7 @@ public class Issue4775Test extends TestCase {
         }
     }
 
+    @Test
     public void testTokenizeApostrophe() throws Exception {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
@@ -83,6 +86,7 @@ public class Issue4775Test extends TestCase {
         assertFalse(tokenizer.incrementToken());
     }
 
+    @Test
     public void testFilterApostrophe() throws Exception {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
@@ -98,6 +102,7 @@ public class Issue4775Test extends TestCase {
         assertFalse(tokenizer.incrementToken());
     }
 
+    @Test
     public void testTokenizeDoubleApostrophe() throws Exception {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
@@ -112,6 +117,7 @@ public class Issue4775Test extends TestCase {
         assertFalse(tokenizer.incrementToken());
     }
 
+    @Test
     public void testFilterDoubleApostrophe() throws Exception {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
@@ -127,6 +133,7 @@ public class Issue4775Test extends TestCase {
         assertFalse(tokenizer.incrementToken());
     }
 
+    @Test
     public void testDashHandling() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
@@ -159,6 +166,7 @@ public class Issue4775Test extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testAcronymHandling() throws Exception {
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();

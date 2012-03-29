@@ -1,6 +1,5 @@
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -13,21 +12,20 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.util.HashSet;
 
-public class StopWordsTest extends TestCase
+import static org.junit.Assert.assertEquals;
+
+public class StopWordsTest
 {
-    public StopWordsTest(String testName) {
-        super(testName);
+    public StopWordsTest() {
     }
 
-	@Override
-    protected void setUp() throws Exception {
 
-    }
-
+    @Test
      public void testUnableToFindStopWordsWithStandardAnalyser() throws Exception {
 
         Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION);
@@ -46,6 +44,7 @@ public class StopWordsTest extends TestCase
 
     }
 
+    @Test
     public void testAbleToFindStopWordsWithStandardAnalyserIfNoStopWords() throws Exception {
 
         Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION, new HashSet());
@@ -63,6 +62,7 @@ public class StopWordsTest extends TestCase
         assertEquals(1, docs.totalHits);
     }
 
+    @Test
      public void testAbleToFindStopWords() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();

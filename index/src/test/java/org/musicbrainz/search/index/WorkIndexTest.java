@@ -4,10 +4,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.mmd2.RelationList;
 
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class WorkIndexTest extends AbstractIndexTest {
 
@@ -90,6 +93,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.close();
     }
 
+    @Test
     public void testIndexWork() throws Exception {
 
         addWorkOne();
@@ -110,6 +114,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         }
     }
 
+    @Test
     public void testIndexWorkWithoutType() throws Exception {
 
         addWorkOne();
@@ -125,6 +130,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         }
     }
 
+    @Test
     public void testIndexWorkWithType() throws Exception {
 
         addWorkTwo();
@@ -140,6 +146,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         }
     }
 
+    @Test
     public void testIndexWorkWithComment() throws Exception {
 
         addWorkOne();
@@ -155,6 +162,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         }
     }
 
+    @Test
     public void testIndexWorkWithArtistRelation() throws Exception {
 
         addWorkOne();
@@ -175,6 +183,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         }
     }
 
+    @Test
     public void testIndexWorkWithArtistRelationAttribute() throws Exception {
 
         addWorkTwo();
@@ -196,7 +205,8 @@ public class WorkIndexTest extends AbstractIndexTest {
     }
 
 
-     public void testIndexWorkWithAlias() throws Exception {
+    @Test
+    public void testIndexWorkWithAlias() throws Exception {
 
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
@@ -211,6 +221,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         }
     }
 
+    @Test
     public void testIndexWorkWithNoAlias() throws Exception {
 
         addWorkTwo();
@@ -230,6 +241,7 @@ public class WorkIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testIndexWorkWithTag() throws Exception {
 
         addWorkOne();

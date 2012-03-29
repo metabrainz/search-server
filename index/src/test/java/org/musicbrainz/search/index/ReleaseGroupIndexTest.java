@@ -26,16 +26,15 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.junit.Test;
 import org.musicbrainz.mmd2.ArtistCredit;
 
 import java.sql.Statement;
 
+import static org.junit.Assert.*;
 
 public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
-    public void setUp() throws Exception {
-        super.setup();
-    }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
         IndexWriter writer = createIndexWriter(ramDir,ReleaseGroupIndexField.class);
@@ -189,6 +188,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexReleaseGroupFields() throws Exception {
 
         addReleaseGroupTwo();
@@ -218,6 +218,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexReleaseGroupAlias() throws Exception {
 
         addReleaseGroupTwo();
@@ -240,7 +241,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
 
 
-
+    @Test
     public void testIndexReleaseGroupWithType() throws Exception {
 
         addReleaseGroupOne();
@@ -257,7 +258,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-
+    @Test
     public void testIndexReleaseGroupWithComment() throws Exception {
 
         addReleaseGroupOne();
@@ -274,6 +275,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testIndexReleaseGroupNumReleases() throws Exception {
 
         addReleaseGroupOne();
@@ -295,6 +297,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
     }
 
+    @Test
     public void testIndexReleaseGroupSortname() throws Exception {
 
         addReleaseGroupOne();
@@ -344,6 +347,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
      *
      * @throws Exception
      */
+    @Test
     public void testIndexReleaseGroupWithMultipleReleases() throws Exception {
 
         addReleaseGroupThree();
@@ -364,7 +368,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-
+    @Test
     public void testIndexReleaseGroupMultipleArtists() throws Exception {
 
         addReleaseGroupFour();
@@ -424,7 +428,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
     }
 
-
+    @Test
      public void testIndexReleaseGroupWithTag() throws Exception {
 
         addReleaseGroupFour();

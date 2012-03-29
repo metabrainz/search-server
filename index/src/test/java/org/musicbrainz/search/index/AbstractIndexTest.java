@@ -1,9 +1,9 @@
 package org.musicbrainz.search.index;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
@@ -12,8 +12,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
 
-public abstract class AbstractIndexTest extends TestCase {
+public abstract class AbstractIndexTest {
 
     /**
      * Holds connection to be used for the duration of an individual test
@@ -79,6 +80,7 @@ public abstract class AbstractIndexTest extends TestCase {
         assertEquals(value, tr.term().text());
     }
 
+    @Before
     public void setup() throws Exception {
         try {
             createConnection();

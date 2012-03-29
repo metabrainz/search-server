@@ -29,7 +29,6 @@
 
 package org.musicbrainz.search.analysis;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -42,17 +41,19 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.StringReader;
 
+import static org.junit.Assert.*;
 
 /** Test that analyser treats No.x and No. x the same (where x can be any number) , because both forms are found
  * in the database.
  */
-public class IssueSearch33Test extends TestCase {
+public class IssueSearch33Test  {
 
-
+    @Test
     public void testGetNoMatchWithStandardAnalyzer() throws Exception {
 
         //Show no token generated with Lucene Standard Tokenizer
@@ -94,6 +95,7 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    @Test
     public void testGetMatchofPunctuationOnlyField() throws Exception {
 
         //Show token is kept intact
@@ -154,6 +156,7 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    @Test
     public void testNormalBehaviourWhenPunctuationAndLetterField() throws Exception {
 
         //Show token is kept intact
@@ -198,12 +201,14 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    @Test
     public void testJavaThaiDefinition()
     {
         assertTrue(Character.isLetterOrDigit('ก'));
         System.out.println(new Integer(new Character('♠')).toString());
     }
 
+    @Test
     public void testGidBehaviour() throws Exception {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
@@ -246,6 +251,7 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    @Test
     public void testNormalBehaviourWhenPunctuationAndThaiLetterField() throws Exception {
 
         //Show token is kept intact
@@ -291,6 +297,7 @@ public class IssueSearch33Test extends TestCase {
     }
 
 
+    @Test
     public void testGetMatchMultipleWordPunctuationOnly() throws Exception {
 
         //Show token is kept intact
@@ -342,6 +349,7 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    @Test
     public void testGetMatchMultipleWordPunctuationOnlyForFirstWord() throws Exception {
 
         //Show token is kept intact
@@ -393,6 +401,7 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    @Test
     public void testAlphaNumPunc1() throws Exception {
 
         //Show token is kept intact
@@ -441,6 +450,7 @@ public class IssueSearch33Test extends TestCase {
     }
 
 
+    @Test
     public void testAlphaNumPunc2() throws Exception {
 
         //Show token is kept intact
@@ -488,6 +498,7 @@ public class IssueSearch33Test extends TestCase {
 
     }
 
+    @Test
     public void testAlphaNumPunc3() throws Exception {
 
         //Show token is kept intact
@@ -534,6 +545,7 @@ public class IssueSearch33Test extends TestCase {
         }
     }
 
+    @Test
     public void testIssue158() throws Exception {
 
         //Show token is kept intact

@@ -1,7 +1,6 @@
 package org.musicbrainz.search.analysis;
 
 import com.ibm.icu.text.Transliterator;
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -17,18 +16,22 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.StringReader;
 
+import static org.junit.Assert.assertEquals;
 
-public class Issue1006Test extends TestCase {
+
+public class Issue1006Test {
 
     /**
      * Tests word is preserved and identified as alpahnumeric
      *
      * @throws Exception
      */
+    @Test
     public void testKatakanaHiraganaTokenizer() throws Exception {
 
         {
@@ -84,6 +87,7 @@ public class Issue1006Test extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testKatakanaHiraganaEquivalenceFilter() throws Exception {
 
         {
@@ -146,6 +150,7 @@ public class Issue1006Test extends TestCase {
     /**
      * Test filter is being used for indexing and searching
      */
+    @Test
     public void testKatakanaHiraganaEquivalence() throws Exception {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();

@@ -1,9 +1,13 @@
 package org.musicbrainz.search.index;
 
-import junit.framework.TestCase;
 
-public class UtilsTest extends TestCase {
+import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
+public class UtilsTest {
+
+    @Test
 	   public void testFormatDate() throws Exception {
 
 		   assertEquals("", Utils.formatDate(null, null, null));

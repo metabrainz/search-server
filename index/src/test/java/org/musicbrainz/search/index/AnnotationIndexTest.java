@@ -4,16 +4,16 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class AnnotationIndexTest extends AbstractIndexTest {
 
 
-    public void setUp() throws Exception {
-        super.setup();
-    }
 
     private void createIndex(RAMDirectory ramDir) throws Exception {
         IndexWriter writer = createIndexWriter(ramDir,AnnotationIndexField.class);
@@ -141,7 +141,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
-
+    @Test
     public void testReleaseIndexAnnotationFields() throws Exception {
         addReleaseAnnotation();
         RAMDirectory ramDir = new RAMDirectory();
@@ -168,7 +168,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
-
+     @Test
     public void testReleaseGroupIndexAnnotationFields() throws Exception {
         addReleaseGroupAnnotation();
         RAMDirectory ramDir = new RAMDirectory();
@@ -195,7 +195,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
-
+       @Test
     public void testArtistIndexAnnotationFields() throws Exception {
         addArtistAnnotation();
         RAMDirectory ramDir = new RAMDirectory();
@@ -222,7 +222,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
-
+       @Test
     public void testLabelIndexAnnotationFields() throws Exception {
         addLabelAnnotation();
         RAMDirectory ramDir = new RAMDirectory();
@@ -249,7 +249,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
-
+    @Test
     public void testRecordingIndexAnnotationFields() throws Exception {
         addRecordingAnnotation();
         RAMDirectory ramDir = new RAMDirectory();
@@ -270,7 +270,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
-
+    @Test
     public void testGetTypeByDbId () throws Exception {
         assertNull(AnnotationType.getByDbId(0));
         assertEquals(AnnotationType.ARTIST,AnnotationType.getByDbId(1));

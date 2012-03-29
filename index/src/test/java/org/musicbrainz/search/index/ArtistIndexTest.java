@@ -4,16 +4,14 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
 
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
 
 public class ArtistIndexTest extends AbstractIndexTest {
 
-
-    public void setUp() throws Exception {
-        super.setup();
-    }
 
 
 
@@ -106,6 +104,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testIndexArtistWithNoAlias() throws Exception {
 
         addArtistOne();
@@ -135,7 +134,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
 
     }
 
-
+    @Test
     public void testIndexArtistWithType() throws Exception {
 
         addArtistOne();
@@ -152,7 +151,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-
+    @Test
     public void testIndexArtistWithComment() throws Exception {
 
         addArtistTwo();
@@ -169,6 +168,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testIndexArtistWithCountry() throws Exception {
 
             addArtistOne();
@@ -186,7 +186,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         }
 
 
-
+    @Test
     public void testIndexArtistWithIPI() throws Exception {
 
                 addArtistOne();
@@ -203,7 +203,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
                 ir.close();
             }
 
-
+    @Test
     public void testIndexArtistWithNoCountry() throws Exception {
 
             addArtistTwo();
@@ -219,6 +219,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
             }
             ir.close();
         }
+
+    @Test
     public void testIndexArtistWithGender() throws Exception {
 
         addArtistOne();
@@ -235,6 +237,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testIndexArtistPersonWithUnknownGender() throws Exception {
 
         addArtistFour();
@@ -251,6 +254,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testIndexGroupWithNoGender() throws Exception {
 
         addArtistTwo();
@@ -273,6 +277,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testIndexArtistWithAlias() throws Exception {
 
         addArtistTwo();
@@ -307,6 +312,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testBeginDate() throws Exception {
 
         addArtistTwo();
@@ -328,6 +334,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testEndDate() throws Exception {
 
         addArtistTwo();
@@ -349,6 +356,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception  exception
      */
+    @Test
     public void testIndexArtistWithNoType() throws Exception {
 
         addArtistThree();
@@ -371,6 +379,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception  exception
      */
+    @Test
     public void testIndexArtistWithNoComment() throws Exception {
 
         addArtistThree();
@@ -393,6 +402,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception  exception
      */
+    @Test
     public void testIndexArtistWithNoBeginDate() throws Exception {
 
         addArtistThree();
@@ -414,6 +424,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception  exception
      */
+    @Test
     public void testIndexArtistWithNoEndDate() throws Exception {
 
         addArtistThree();
@@ -441,6 +452,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception  exception
      */
+    @Test
     public void testIndexArtistWithDifferentSortName() throws Exception {
 
         addArtistThree();
@@ -465,6 +477,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testIndexArtistWithTag() throws Exception {
 
         addArtistThree();
@@ -489,6 +502,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testIndexArtistAlias() throws Exception {
 
         addArtistThree();
@@ -512,6 +526,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      *
      * @throws Exception exception
      */
+    @Test
     public void testDontIndexArtistAliasGroup() throws Exception {
 
         addArtistOne();
@@ -528,10 +543,12 @@ public class ArtistIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
     public void testGetTypeByDbId () throws Exception {        
         assertEquals(ArtistType.PERSON,ArtistType.getBySearchId(1));
     }
-    
+
+    @Test
     public void testMetaInformation() throws Exception {
     	
         RAMDirectory ramDir = new RAMDirectory();
@@ -544,7 +561,5 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals("42459", doc.getFieldable(MetaIndexField.REPLICATION_SEQUENCE.getName()).stringValue());
             assertEquals("12", doc.getFieldable(MetaIndexField.SCHEMA_SEQUENCE.getName()).stringValue());
         }
-        
-    	
     }
 }
