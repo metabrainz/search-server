@@ -222,7 +222,10 @@ public class ArtistIndex extends DatabaseIndex {
 
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {
-                doc.addField(ArtistIndexField.ALIAS, alias);
+                //Ignore artist credits that are identical to artist name
+                if(!alias.equalsIgnoreCase(artistName)) {
+                    doc.addField(ArtistIndexField.ALIAS, alias);
+                }
             }
         }
         addArtistInitialized(type, artistName, sortName, doc);
