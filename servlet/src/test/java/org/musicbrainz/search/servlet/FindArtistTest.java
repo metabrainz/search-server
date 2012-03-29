@@ -1,12 +1,13 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
@@ -21,20 +22,18 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.*;
 /**
  * Test retrieving artist from index and Outputting as Xml
  */
-public class FindArtistTest extends TestCase {
+public class FindArtistTest {
 
     private SearchServer ss;
     private SearchServer sd;
 
-    public FindArtistTest(String testName) {
-        super(testName);
-    }
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -94,7 +93,7 @@ public class FindArtistTest extends TestCase {
 
     }
 
-
+    @Test
     public void testFindArtistById() throws Exception {
         Results res = ss.searchLucene("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -110,6 +109,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("Group", doc.get(ArtistIndexField.TYPE));
     }
 
+    @Test
     public void testFindArtistByName() throws Exception {
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -118,6 +118,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
+    @Test
     public void testFindArtistDismaxSingleTerm() throws Exception {
         Results res = sd.searchLucene("Farming", 0, 10);
         assertEquals(1, res.totalHits);
@@ -126,6 +127,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
+    @Test
     public void testFindArtistDismaxPhrase() throws Exception {
         Results res = sd.searchLucene("Farming Incident", 0, 10);
         assertEquals(1, res.totalHits);
@@ -134,6 +136,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
+    @Test
     public void testFindArtistDismaxFuzzy() throws Exception {
             Results res = sd.searchLucene("Farmin", 0, 10);
             assertEquals(1, res.totalHits);
@@ -142,6 +145,7 @@ public class FindArtistTest extends TestCase {
             assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
         }
 
+    @Test
     public void testFindArtistBySortName() throws Exception {
         Results res = ss.searchLucene("sortname:\"Incident, Farming\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -151,6 +155,7 @@ public class FindArtistTest extends TestCase {
     }
 
 
+    @Test
     public void testFindArtistByType() throws Exception {
         Results res = ss.searchLucene("type:\"group\"", 0, 10);
         assertEquals(2, res.totalHits);
@@ -159,6 +164,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
+    @Test
     public void testFindArtistByIpi() throws Exception {
         Results res = ss.searchLucene("ipi:1001", 0, 10);
         assertEquals(1, res.totalHits);
@@ -167,6 +173,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
+    @Test
     public void testFindArtistByNumericType() throws Exception {
         Results res = ss.searchLucene("type:2", 0, 10);
         assertEquals(2, res.totalHits);
@@ -175,7 +182,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
-
+    @Test
     public void testFindArtistByBeginDate() throws Exception {
         Results res = ss.searchLucene("begin:\"1999-04\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -184,16 +191,19 @@ public class FindArtistTest extends TestCase {
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
+    @Test
     public void testFindArtistByEndDate() throws Exception {
         Results res = ss.searchLucene("end:\"1999-04\"", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
+    @Test
     public void testFindArtistByTypePerson() throws Exception {
         Results res = ss.searchLucene("type:\"person\"", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testFindArtistByAlias() throws Exception {
         Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -203,6 +213,7 @@ public class FindArtistTest extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistByCountry() throws Exception {
         Results res = ss.searchLucene("country:\"af\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -212,6 +223,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
     }
 
+    @Test
     public void testFindArtistWithNoCountry() throws Exception {
         Results res = ss.searchLucene("country:unknown", 0, 10);
         assertEquals(1, res.totalHits);
@@ -220,6 +232,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.get(ArtistIndexField.ARTIST_ID));
     }
 
+    @Test
     public void testFindArtistWithNoGender() throws Exception {
         Results res = ss.searchLucene("gender:unknown", 0, 10);
         assertEquals(1, res.totalHits);
@@ -229,6 +242,7 @@ public class FindArtistTest extends TestCase {
     }
 
 
+    @Test
     public void testFindArtistByCountryUppercase() throws Exception {
         Results res = ss.searchLucene("country:\"AF\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -238,6 +252,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
     }
 
+    @Test
     public void testFindArtistByGenderLowercase() throws Exception {
         Results res = ss.searchLucene("gender:\"male\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -247,6 +262,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
     }
 
+    @Test
     public void testFindArtistByGenderTitlecase() throws Exception {
         Results res = ss.searchLucene("gender:\"Male\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -256,6 +272,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
     }
 
+    @Test
     public void testFindArtistByTag() throws Exception {
         Results res = ss.searchLucene("tag:Thrash", 0, 10);
         assertEquals(1, res.totalHits);
@@ -265,6 +282,7 @@ public class FindArtistTest extends TestCase {
         assertEquals("Farming Incident", doc.get(ArtistIndexField.ARTIST));
     }
 
+    @Test
     public void testFindArtistByDefaultField() throws Exception {
 
         //Matches on name field without it being specified
@@ -307,6 +325,7 @@ public class FindArtistTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testOutputAsMmd1Xml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);

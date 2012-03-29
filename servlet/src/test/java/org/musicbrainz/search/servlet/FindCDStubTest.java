@@ -1,12 +1,13 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.CDStubIndexField;
@@ -17,26 +18,26 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test retrieving Annotations entries from index and Outputting as Html
  */
-public class FindCDStubTest extends TestCase {
+public class FindCDStubTest {
 
     private SearchServer ss;
     private SearchServer sd;
 
-    public FindCDStubTest(String testName) {
-        super(testName);
-    }
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(CDStubIndexField.class);
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
-        
+
         {
             MbDocument doc = new MbDocument();
             doc.addField(CDStubIndexField.ARTIST, "Doo Doo");
@@ -61,60 +62,71 @@ public class FindCDStubTest extends TestCase {
         sd = new CDStubDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
+    @Test
     public void testSearchByArtist() throws Exception {
         Results res = ss.searchLucene("artist:\"Doo Doo\"", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByDismax1() throws Exception {
-            Results res = sd.searchLucene("First", 0, 10);
-            assertEquals(1, res.totalHits);
+        Results res = sd.searchLucene("First", 0, 10);
+        assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByDismax2() throws Exception {
-            Results res = sd.searchLucene("Doo Doo", 0, 10);
-            assertEquals(1, res.totalHits);
+        Results res = sd.searchLucene("Doo Doo", 0, 10);
+        assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByDismax3() throws Exception {
-            Results res = sd.searchLucene("837101029193", 0, 10);
-            assertEquals(1, res.totalHits);
+        Results res = sd.searchLucene("837101029193", 0, 10);
+        assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByDismax4() throws Exception {
-            Results res = sd.searchLucene("CD Baby", 0, 10);
-            assertEquals(1, res.totalHits);
+        Results res = sd.searchLucene("CD Baby", 0, 10);
+        assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByTitle() throws Exception {
         Results res = ss.searchLucene("title:\"Doo Doo First\"", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByBarcode() throws Exception {
         Results res = ss.searchLucene("barcode:\"837101029193\"", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByComment() throws Exception {
         Results res = ss.searchLucene("comment:\"CD Baby id:vozzolo\"", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByDiscId() throws Exception {
         Results res = ss.searchLucene("discid:qA87dKURKperVfmckD5b_xo8BO8-", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByNumTracks() throws Exception {
         Results res = ss.searchLucene("tracks:2", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
 
-/**
+    /**
      * @throws Exception
      */
+    @Test
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
@@ -140,8 +152,9 @@ public class FindCDStubTest extends TestCase {
     }
 
     /**
-         * @throws Exception
-         */
+     * @throws Exception
+     */
+    @Test
     public void testOutputXmlNoArtist() throws Exception {
 
         Results res = ss.searchLucene("title:fred", 0, 1);
@@ -165,7 +178,7 @@ public class FindCDStubTest extends TestCase {
 
     }
 
-
+    @Test
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);

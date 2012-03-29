@@ -1,12 +1,13 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
@@ -16,18 +17,15 @@ import org.musicbrainz.search.servlet.mmd2.TagWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class FindTagTest extends TestCase {
+public class FindTagTest {
 
     private SearchServer ss;
 
-
-    public FindTagTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
 
         Analyzer analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
@@ -47,7 +45,7 @@ public class FindTagTest extends TestCase {
     }
 
 
-
+    @Test
     public void testFindTagByName() throws Exception {
         Results res = ss.searchLucene("tag:rock", 0, 10);
         assertEquals(2, res.totalHits);
@@ -61,6 +59,7 @@ public class FindTagTest extends TestCase {
         assertEquals("classic rock", doc.get(TagIndexField.TAG));
     }
 
+    @Test
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("tag:rock", 0, 10);

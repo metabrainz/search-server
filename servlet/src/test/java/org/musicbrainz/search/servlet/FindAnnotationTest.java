@@ -1,12 +1,13 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.AnnotationIndexField;
@@ -17,20 +18,20 @@ import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test retrieving Annotations entries from index and Outputting as Html
  */
-public class FindAnnotationTest extends TestCase {
+public class FindAnnotationTest {
 
     private SearchServer ss;
     private SearchServer sd;
 
-    public FindAnnotationTest(String testName) {
-        super(testName);
-    }
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(AnnotationIndexField.class);
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -102,72 +103,86 @@ public class FindAnnotationTest extends TestCase {
 
     }
 
+    @Test
     public void testSearchByTypeRelease() throws Exception {
         Results res = ss.searchLucene("type:release", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByTypeArtist() throws Exception {
         Results res = ss.searchLucene("type:artist", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByDismax1() throws Exception {
         Results res = sd.searchLucene("Pieds nus", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByDismax2() throws Exception {
         Results res = sd.searchLucene("0828768226629", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByTypeReleaseGroup() throws Exception {
         Results res = ss.searchLucene("type:release-group", 0, 10);
         assertEquals("3 Songs", res.results.get(0).getDoc().get(AnnotationIndexField.NAME));
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByTypeRecording() throws Exception {
         Results res = ss.searchLucene("type:recording", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByTypeWork() throws Exception {
         Results res = ss.searchLucene("type:work", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByName() throws Exception {
         Results res = ss.searchLucene("name:Pieds nus sur la braise", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByNameNoMatch() throws Exception {
         Results res = ss.searchLucene("name:fred", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
+    @Test
     public void testSearchByEntity() throws Exception {
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByEntitydNoMatch() throws Exception {
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
+    @Test
     public void testSearchByText() throws Exception {
         Results res = ss.searchLucene("text:DiscID", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testSearchByTextNoMatch() throws Exception {
         Results res = ss.searchLucene("text:fred", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
+    @Test
     public void testSearchByDefaultField() throws Exception {
 
         Results res = ss.searchLucene("DiscID", 0, 10);
@@ -177,6 +192,7 @@ public class FindAnnotationTest extends TestCase {
 /**
      * @throws Exception
      */
+@Test
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
@@ -195,10 +211,11 @@ public class FindAnnotationTest extends TestCase {
         assertTrue(output.contains("<name>Pieds nus sur la braise</name>"));
         assertTrue(output.contains("type=\"release\""));
         assertTrue(output.contains("<entity>bdb24cb5-404b-4f60-bba4-7b730325ae47</entity>"));
-        assertTrue(output.contains("<text>EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-</text>"));
+        assertTrue (output.contains("<text>EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-</text>"));
 
     }
 
+    @Test
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);

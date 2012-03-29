@@ -5,6 +5,8 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
@@ -16,8 +18,8 @@ public class IssueSearch174Test extends TestCase {
 
     private SearchServer ss;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -48,6 +50,7 @@ public class IssueSearch174Test extends TestCase {
 
     }
 
+    @Test
     public void testFindReleaseByUnknownValue() throws Exception {
 
         IndexSearcher searcher = ss.getIndexSearcher();

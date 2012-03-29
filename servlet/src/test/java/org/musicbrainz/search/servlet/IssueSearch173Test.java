@@ -1,23 +1,27 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.ReleaseIndexField;
 
-public class IssueSearch173Test extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class IssueSearch173Test  {
 
     private SearchServer ss;
     private SearchServer sd;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -50,6 +54,7 @@ public class IssueSearch173Test extends TestCase {
 
     }
 
+    @Test
     public void testFindReleaseByCatnoDismax() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -64,6 +69,7 @@ public class IssueSearch173Test extends TestCase {
         }
     }
 
+    @Test
     public void testFindReleaseByCatnoWithSpacesDismax() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -78,6 +84,7 @@ public class IssueSearch173Test extends TestCase {
         }
     }
 
+    @Test
     public void testFindReleaseByCatno() throws Exception {
 
         IndexSearcher searcher = ss.getIndexSearcher();
@@ -92,6 +99,7 @@ public class IssueSearch173Test extends TestCase {
         }
     }
 
+    @Test
     public void testFindReleaseByCatnoWithSpaces() throws Exception {
 
         IndexSearcher searcher = ss.getIndexSearcher();

@@ -1,12 +1,13 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
@@ -14,13 +15,15 @@ import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
 import org.musicbrainz.search.index.DatabaseIndex;
 
-public class ReloadIndexesTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class ReloadIndexesTest  {
 
     private SearchServer ss;
     private RAMDirectory ramDir;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         ramDir = new RAMDirectory();
         addArtist1();
         ss = new ArtistSearch(new IndexSearcher(IndexReader.open(ramDir)));
@@ -52,6 +55,7 @@ public class ReloadIndexesTest extends TestCase {
         writer.close();
     }
 
+
     private void addArtist2() throws Exception {
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
         IndexWriterConfig  writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -77,6 +81,7 @@ public class ReloadIndexesTest extends TestCase {
     }
 
 
+    @Test
     public void testReloadDoesNothingIfIndexNotChanged() throws Exception {
 
         IndexReader irStart = ss.getIndexSearcher().getIndexReader();
@@ -87,6 +92,7 @@ public class ReloadIndexesTest extends TestCase {
         assertEquals(1, res.totalHits);
     }
 
+    @Test
      public void testReloadUpdatesReaderIfIndexChanged() throws Exception {
 
         IndexReader irStart = ss.getIndexSearcher().getIndexReader();
@@ -99,6 +105,7 @@ public class ReloadIndexesTest extends TestCase {
         assertEquals(2, res.totalHits);
     }
 
+    @Test
     public void testInitUpdatesReaderIfIndexChanged() throws Exception {
 
         IndexReader irStart = ss.getIndexSearcher().getIndexReader();

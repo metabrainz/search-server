@@ -1,9 +1,9 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.commons.lang.time.StopWatch;
+import org.junit.Test;
 import org.musicbrainz.mmd2.Metadata;
 import org.musicbrainz.mmd2.Recording;
-import org.musicbrainz.mmd2.Release;
 
 import java.io.BufferedInputStream;
 import java.net.HttpURLConnection;
@@ -12,9 +12,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.zip.GZIPInputStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class LoadIT extends AbstractIntegration {
@@ -28,8 +29,8 @@ public class LoadIT extends AbstractIntegration {
     final static int  PARALLELISM   = 20;
     final static int  NO_OF_QUERIES = 200;
 
-    public LoadIT(String testName) {
-        super(testName);
+    public LoadIT() {
+        super();
     }
 
     /**
@@ -41,6 +42,8 @@ public class LoadIT extends AbstractIntegration {
      *
      * @throws Exception
      */
+
+    @Test
     public void testSearchMultipleRecordingSearchesinParallel() throws Exception {
 
         //20 Queries in parallel

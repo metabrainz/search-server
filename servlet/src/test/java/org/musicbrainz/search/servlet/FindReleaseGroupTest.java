@@ -1,12 +1,13 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.NameCredit;
@@ -23,22 +24,22 @@ import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
  * will not get added to another release
  */
-public class FindReleaseGroupTest extends TestCase {
+public class FindReleaseGroupTest {
 
     private SearchServer ss;
     private SearchServer sd;
 
 
-    public FindReleaseGroupTest(String testName) {
-        super(testName);
-    }
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseGroupIndexField.class);
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -115,6 +116,7 @@ public class FindReleaseGroupTest extends TestCase {
         sd = new ReleaseGroupDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
+    @Test
     public void testFindReleaseGroupById() throws Exception {
         Results res = ss.searchLucene("rgid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -126,6 +128,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseGroupByName() throws Exception {
         Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -136,6 +139,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseGroupByDismax1() throws Exception {
         Results res = sd.searchLucene("Twisting", 0, 10);
         assertEquals(1, res.totalHits);
@@ -146,6 +150,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseGroupByDismax2() throws Exception {
         Results res = sd.searchLucene("secret", 0, 10);
         assertEquals(1, res.totalHits);
@@ -156,6 +161,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseGroupByDismax3() throws Exception {
         Results res = sd.searchLucene("wedding", 0, 10);
         assertEquals(1, res.totalHits);
@@ -166,6 +172,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseGroupByRelease() throws Exception {
         Results res = ss.searchLucene("releasegroup:\"secret\"", 0, 10);
         assertEquals(0, res.totalHits);
@@ -178,11 +185,13 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseByNumberofReleases() throws Exception {
         Results res = ss.searchLucene("releases:1", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testFindReleaseGroupByReleaseId() throws Exception {
         Results res = ss.searchLucene("releaseid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"", 0, 10);
         assertEquals(0, res.totalHits);
@@ -195,7 +204,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
-    //release
+    @Test
     public void testFindReleaseGroupByArtist() throws Exception {
         Results res = ss.searchLucene("artist:\"The Wedding Present\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -206,9 +215,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
-
-
-
+    @Test
     public void testFindReleaseGroupByType() throws Exception {
         Results res = ss.searchLucene("type:\"single\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -219,6 +226,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseGroupByNumericType() throws Exception {
         Results res = ss.searchLucene("type:2", 0, 10);
         assertEquals(1, res.totalHits);
@@ -229,6 +237,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseGroupByDefault() throws Exception {
         Results res = ss.searchLucene("\"secret\"", 0, 10);
         assertEquals(0, res.totalHits);
@@ -244,6 +253,7 @@ public class FindReleaseGroupTest extends TestCase {
     }
 
 
+    @Test
     public void testFindReleaseGroupByArtist2() throws Exception {
         Results res = ss.searchLucene("artist:\"Erich Kunzel\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -251,9 +261,9 @@ public class FindReleaseGroupTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
-
     }
 
+    @Test
     public void testFindReleaseGroupByAllArtist2() throws Exception {
         Results res = ss.searchLucene("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -263,7 +273,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     }
 
-
+    @Test
     public void testFindReleaseGroupByArtistName() throws Exception {
         Results res = ss.searchLucene("artistname:\"Erich Kunzel\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -273,6 +283,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     }
 
+    @Test
     public void testFindReleaseGroupByAllArtistName() throws Exception {
         Results res = ss.searchLucene("artistname:\"Erich Kunzel\" AND artistname:\"Cincinnati Pops\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -283,6 +294,7 @@ public class FindReleaseGroupTest extends TestCase {
 
     }
 
+    @Test
     public void testFindReleaseGroupByTag() throws Exception {
         Results res = ss.searchLucene("tag:indie", 0, 10);
         assertEquals(1, res.totalHits);
@@ -292,6 +304,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     }
 
+    @Test
     public void testFindReleaseGroupByComment() throws Exception {
         Results res = ss.searchLucene("comment:demo", 0, 10);
         assertEquals(1, res.totalHits);
@@ -308,6 +321,7 @@ public class FindReleaseGroupTest extends TestCase {
      *
      * @throws Exception exception
      */
+    @Test
     public void testOutputAsAsMmd1Xml() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
@@ -336,6 +350,7 @@ public class FindReleaseGroupTest extends TestCase {
      *
      * @throws Exception exception
      */
+    @Test
     public void testOutputAsAsXml() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
@@ -371,6 +386,7 @@ public class FindReleaseGroupTest extends TestCase {
      *
      * @throws Exception exception
      */
+    @Test
     public void testOutputAsAsMmd1Xml2() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 1);
@@ -396,6 +412,7 @@ public class FindReleaseGroupTest extends TestCase {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testOutputAsAsXml2() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 1);
@@ -425,6 +442,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("release-list count=\"0\""));
     }
 
+    @Test
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
@@ -444,6 +462,7 @@ public class FindReleaseGroupTest extends TestCase {
         assertTrue(output.contains("title\":\"Epics\""));
     }
 
+    @Test
     public void testOutputJsonMultiple() throws Exception {
         Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45  OR artist:kunzel", 0, 10);
 

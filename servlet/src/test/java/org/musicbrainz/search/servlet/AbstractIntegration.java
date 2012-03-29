@@ -1,7 +1,7 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.commons.lang.time.StopWatch;
+import org.junit.Before;
 import org.musicbrainz.mmd2.Metadata;
 
 import javax.xml.bind.JAXBContext;
@@ -9,6 +9,9 @@ import java.io.BufferedInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Abstract Integration test for  searching against real indexes using latest search code in jetty
@@ -22,16 +25,13 @@ import java.util.zip.GZIPInputStream;
  * allow for the fact that in some environments it may be difficult to setup up integration tests
  *
  */
-public class AbstractIntegration extends TestCase {
+public class AbstractIntegration  {
 
     protected JAXBContext context;
     protected JAXBContext contextV1;
-
-    protected AbstractIntegration(String testName) {
-       super(testName);
-    }
-
-    protected void setUp() throws Exception {
+   
+    @Before
+    public void setUp() throws Exception {
         context     = JAXBContext.newInstance("org.musicbrainz.mmd2");
         contextV1   = JAXBContext.newInstance("com.jthink.brainz.mmd");
     }
@@ -57,7 +57,7 @@ public class AbstractIntegration extends TestCase {
         Metadata metadata = (Metadata) context.createUnmarshaller().unmarshal(bis);
 
         clock.stop();
-        System.out.println(this.getName()+":"+clock.getTime()+" ms");
+        System.out.println(getClass()+":"+clock.getTime()+" ms");
         assertTrue(clock.getTime() < 5000);
 
         return metadata;
@@ -84,7 +84,7 @@ public class AbstractIntegration extends TestCase {
         com.jthink.brainz.mmd.Metadata metadata = (com.jthink.brainz.mmd.Metadata) contextV1.createUnmarshaller().unmarshal(bis);
 
         clock.stop();
-        System.out.println(this.getName()+":"+clock.getTime()+" ms");
+        System.out.println(getClass()+":"+clock.getTime()+" ms");
         assertTrue(clock.getTime() < 5000);
 
         return metadata;

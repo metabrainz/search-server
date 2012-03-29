@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -8,6 +7,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.NameCredit;
@@ -23,24 +24,23 @@ import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
  * will not get added to another release
  */
-public class FindRecordingTest extends TestCase {
+public class FindRecordingTest {
 
 
     private SearchServer ss;
     private SearchServer sd;
 
 
-    public FindRecordingTest(String testName) {
-        super(testName);
-    }
 
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         ObjectFactory of = new ObjectFactory();
 
         RAMDirectory ramDir = new RAMDirectory();
@@ -113,6 +113,7 @@ public class FindRecordingTest extends TestCase {
         sd = new RecordingDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
+    @Test
     public void testFindRecordingByV1TrackField() throws Exception {
         Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -127,6 +128,7 @@ public class FindRecordingTest extends TestCase {
     }
 
 
+    @Test
     public void testFindRecording() throws Exception {
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -142,6 +144,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("123456789", doc.get(RecordingIndexField.ISRC));
     }
 
+    @Test
     public void testFindRecordingDismax1() throws Exception {
         Results res = sd.searchLucene("Gravitational", 0, 10);
         assertEquals(1, res.totalHits);
@@ -150,7 +153,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
-
+    @Test
     public void testFindRecordingDismax2() throws Exception {
         Results res = sd.searchLucene("Glorious", 0, 10);
         assertEquals(1, res.totalHits);
@@ -159,6 +162,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingDismax3() throws Exception {
         Results res = sd.searchLucene("Farming Incident", 0, 10);
         assertEquals(1, res.totalHits);
@@ -167,7 +171,8 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
-     public void testFindRecordingByV1TrackId() throws Exception {
+    @Test
+    public void testFindRecordingByV1TrackId() throws Exception {
         Results res = ss.searchLucene("trid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -175,6 +180,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingById() throws Exception {
         Results res = ss.searchLucene("rid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -183,6 +189,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByReleaseId() throws Exception {
         Results res = ss.searchLucene("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -191,6 +198,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByDemo() throws Exception {
         Results res = ss.searchLucene("comment:\"demo\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -199,6 +207,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("demo", doc.get(RecordingIndexField.COMMENT));
     }
 
+    @Test
     public void testFindRecordingByArtistId() throws Exception {
         Results res = ss.searchLucene("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -216,6 +225,7 @@ public class FindRecordingTest extends TestCase {
     }
 
     /** Searches recording field, which should include names of associated tracks) */
+    @Test
     public void testFindRecordingByTrackName() throws Exception {
         Results res = ss.searchLucene("recording:\"Gravitational Lens\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -224,8 +234,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
-
-
+    @Test
     public void testFindRecordingByReleaseType() throws Exception {
         Results res = ss.searchLucene("type:\"album\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -234,7 +243,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
-
+    @Test
     public void testFindRecordingByReleaseCountry() throws Exception {
         Results res = ss.searchLucene("country:UK", 0, 10);
         assertEquals(1, res.totalHits);
@@ -243,6 +252,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByReleaseFormat() throws Exception {
         Results res = ss.searchLucene("format:Vinyl", 0, 10);
         assertEquals(1, res.totalHits);
@@ -251,6 +261,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByReleaseTypeNumeric() throws Exception {
         Results res = ss.searchLucene("type:\"1\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -258,6 +269,8 @@ public class FindRecordingTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
+
+    @Test
     public void testFindRecordingByNumberOfTracksOnMediumOnRelease() throws Exception {
         Results res = ss.searchLucene("tracks:10", 0, 10);
         assertEquals(1, res.totalHits);
@@ -266,7 +279,8 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
-     public void testFindRecordingByNumberOfTracksOnRelease() throws Exception {
+    @Test
+    public void testFindRecordingByNumberOfTracksOnRelease() throws Exception {
         Results res = ss.searchLucene("tracksrelease:10", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -274,6 +288,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByDuration() throws Exception {
         Results res = ss.searchLucene("dur:234000", 0, 10);
         assertEquals(1, res.totalHits);
@@ -282,6 +297,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByDuration2() throws Exception {
             Results res = ss.searchLucene("dur:234000", 0, 10);
             assertEquals(1, res.totalHits);
@@ -290,6 +306,7 @@ public class FindRecordingTest extends TestCase {
             assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByISRC() throws Exception {
         Results res = ss.searchLucene("isrc:123456789", 0, 10);
         assertEquals(1, res.totalHits);
@@ -298,12 +315,13 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByNonNumericDuration() throws Exception {
         Results res = ss.searchLucene("dur:fred", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
-
+    @Test
     public void testFindRecordingByTag() throws Exception {
         Results res = ss.searchLucene("tag:indie", 0, 10);
         assertEquals(1, res.totalHits);
@@ -312,6 +330,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     }
 
+    @Test
     public void testFindRecordingByDurationRange() throws Exception {
         Results res = ss.searchLucene("dur:[87 TO 240000]", 0, 10);
         assertEquals(1, res.totalHits);
@@ -324,6 +343,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    @Test
     public void testFindRecordingByQdur() throws Exception {
         Results res = ss.searchLucene("qdur:117", 0, 10);
         assertEquals(1, res.totalHits);
@@ -337,6 +357,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    @Test
     public void testFindRecordingByTrackNumber() throws Exception {
         Results res = ss.searchLucene("tnum:5", 0, 10);
         assertEquals(1, res.totalHits);
@@ -349,6 +370,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    @Test
     public void testFindRecordingByPosition() throws Exception {
         Results res = ss.searchLucene("position:1", 0, 10);
         assertEquals(1, res.totalHits);
@@ -361,6 +383,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    @Test
     public void testFindRecordingByReleaseStatus() throws Exception {
         Results res = ss.searchLucene("status:Official", 0, 10);
         assertEquals(1, res.totalHits);
@@ -373,6 +396,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    @Test
     public void testFindRecordingByReleaseDate() throws Exception {
         Results res = ss.searchLucene("date:1970-01-01", 0, 10);
         assertEquals(1, res.totalHits);
@@ -385,7 +409,7 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
-
+    @Test
     public void testFindRecordingByDefault() throws Exception {
         Results res = ss.searchLucene("\"Gravitational Lenz\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -399,16 +423,19 @@ public class FindRecordingTest extends TestCase {
         assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
     }
 
+    @Test
     public void testNumericRangeQuery() throws Exception {
            Results res = ss.searchLucene("tracks:[1 TO 10]", 0, 10);
            assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testFindRecordingByPuidIsDisallowed() throws Exception {
         Results res = ss.searchLucene("puid:1d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
         assertEquals(0, res.totalHits);
     }
 
+    @Test
     public void testOutputAsMmd1Xml() throws Exception {
 
         Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
@@ -433,6 +460,7 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("count=\"10\""));
     }
 
+    @Test
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
@@ -471,10 +499,9 @@ public class FindRecordingTest extends TestCase {
         assertTrue(output.contains("indie</name>"));
         assertTrue(output.contains("<track><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
-        
-
     }
 
+    @Test
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);

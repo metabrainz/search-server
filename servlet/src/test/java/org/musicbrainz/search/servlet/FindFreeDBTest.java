@@ -1,12 +1,13 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
@@ -17,19 +18,17 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 /**
  * Test retrieving FreeDB entries from index and Outputting as Html
  */
-public class FindFreeDBTest extends TestCase {
+public class FindFreeDBTest  {
 
     private SearchServer ss;
 
-    public FindFreeDBTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(FreeDBIndexField.class);
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -51,6 +50,7 @@ public class FindFreeDBTest extends TestCase {
         ss = new FreeDBSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
+    @Test
     public void testSearchFreeDBByArtist() throws Exception {
         Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -64,6 +64,7 @@ public class FindFreeDBTest extends TestCase {
         assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
     }
 
+    @Test
     public void testSearchFreeDBByTitle() throws Exception {
         Results res = ss.searchLucene("title:\"L\u00e1grimas & Gozos\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -77,6 +78,7 @@ public class FindFreeDBTest extends TestCase {
         assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
     }
 
+    @Test
     public void testSearchFreeDBByDiscId() throws Exception {
         Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -90,6 +92,7 @@ public class FindFreeDBTest extends TestCase {
         assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
     }
 
+    @Test
     public void testSearchFreeDBByYear() throws Exception {
         Results res = ss.searchLucene("year:\"2008\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -103,6 +106,7 @@ public class FindFreeDBTest extends TestCase {
         assertEquals("2008", doc.get(FreeDBIndexField.YEAR));
     }
 
+    @Test
     public void testSearchFreeDBByDefaultField() throws Exception {
 
         //by artist
@@ -138,6 +142,7 @@ public class FindFreeDBTest extends TestCase {
     /**
      * @throws Exception exception
      */
+    @Test
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
@@ -159,9 +164,9 @@ public class FindFreeDBTest extends TestCase {
         assertTrue(output.contains("<year>2008</year>"));
         assertTrue(output.contains("<category>folk</category>"));
         assertTrue(output.contains("<track-list count=\"13\"/>"));
-
     }
 
+    @Test
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);

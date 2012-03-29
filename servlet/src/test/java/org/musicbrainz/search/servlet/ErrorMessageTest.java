@@ -18,15 +18,20 @@ package org.musicbrainz.search.servlet;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class ErrorMessageTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
 
+public class ErrorMessageTest {
+
+
+    @Test
     public void testWriteErrorMessageNoArgs() throws Exception {
         assertEquals("No Query parameter supplied", ErrorMessage.NO_QUERY_PARAMETER.getMsg());
     }
 
+    @Test
     public void testWriteErrorMessageWithArgs() throws Exception {
         assertEquals("No handler for resource type cdstub and format xml", ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg("cdstub", "xml"));
     }

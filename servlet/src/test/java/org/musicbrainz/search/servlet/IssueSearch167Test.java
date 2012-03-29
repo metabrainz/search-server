@@ -1,31 +1,30 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Test retrieving artist from index and Outputting as Xml
  */
-public class IssueSearch167Test extends TestCase {
+public class IssueSearch167Test {
 
     private SearchServer sd;
 
-    public IssueSearch167Test(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
@@ -163,7 +162,7 @@ public class IssueSearch167Test extends TestCase {
         sd = new ArtistDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
-
+    @Test
     public void testFindArtistDismax1() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -184,6 +183,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismax2() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -208,6 +208,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismaxFuzzy() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -225,6 +226,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismaxWildcard() throws Exception {
         IndexSearcher searcher = sd.getIndexSearcher();
         Query q = sd.parseQuery("Repúb");
@@ -238,6 +240,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismaxTooShortForWildcard() throws Exception {
         IndexSearcher searcher = sd.getIndexSearcher();
         Query q = sd.parseQuery("Rep");
@@ -246,6 +249,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismaxPhraseFuzzy() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -266,6 +270,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismaxPhraseFuzzy2() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -286,6 +291,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismaxWildcard2() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -306,6 +312,7 @@ public class IssueSearch167Test extends TestCase {
 
     }
 
+    @Test
     public void testFindArtistDismaxSpecialChars() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();
@@ -319,6 +326,7 @@ public class IssueSearch167Test extends TestCase {
         }
     }
 
+    @Test
     public void testFindArtistDismaxSpecialChars2() throws Exception {
 
         IndexSearcher searcher = sd.getIndexSearcher();

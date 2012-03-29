@@ -1,6 +1,5 @@
 package org.musicbrainz.search.servlet;
 
-import junit.framework.TestCase;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -8,6 +7,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
+import org.junit.Before;
+import org.junit.Test;
 import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.NameCredit;
@@ -24,27 +25,25 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Assumes an index has been built stored and in the data folder, I've picked a fairly obscure bside so hopefully
  * will not get added to another release
  */
-public class FindReleaseTest extends TestCase {
+public class FindReleaseTest {
 
     private SearchServer ss;
     private SearchServer sd;
 
-
-    public FindReleaseTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         RAMDirectory ramDir = new RAMDirectory();
         ObjectFactory of = new ObjectFactory();
 
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
         MbDocument doc = new MbDocument();
@@ -69,9 +68,9 @@ public class FindReleaseTest extends TestCase {
         nc.setArtist(artist);
         ac.getNameCredit().add(nc);
         doc.addField(ReleaseIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
-        doc.addField(ReleaseIndexField.PUID,"668f3a22-03e8-e3cd-55e4-2e9a0906419a");
-        doc.addField(ReleaseIndexField.PUID,"1fa8aa07-c688-1f7c-734b-4d82e528b09a");
-                
+        doc.addField(ReleaseIndexField.PUID, "668f3a22-03e8-e3cd-55e4-2e9a0906419a");
+        doc.addField(ReleaseIndexField.PUID, "1fa8aa07-c688-1f7c-734b-4d82e528b09a");
+
         //Medium 1
         doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 10);
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
@@ -101,7 +100,7 @@ public class FindReleaseTest extends TestCase {
         doc.addField(ReleaseIndexField.LABEL, "Major Records");
         doc.addField(ReleaseIndexField.LABEL_ID, "c1dfaf9c-d498-4f6c-b040-f7714315fcea");
 
-        doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,2);
+        doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS, 2);
 
         writer.addDocument(doc.getLuceneDocument());
 
@@ -151,7 +150,7 @@ public class FindReleaseTest extends TestCase {
 
         doc.addField(ReleaseIndexField.COUNTRY, "US");
         doc.addField(ReleaseIndexField.DATE, "2003-09-23");
-        doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS,1);
+        doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS, 1);
         doc.addField(ReleaseIndexField.BARCODE, ReleaseIndex.BARCODE_NONE);
 
         writer.addDocument(doc.getLuceneDocument());
@@ -163,6 +162,7 @@ public class FindReleaseTest extends TestCase {
         sd = new ReleaseDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
 
+    @Test
     public void testFindReleaseById() throws Exception {
         Results res = ss.search("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -193,6 +193,7 @@ public class FindReleaseTest extends TestCase {
 
     }
 
+    @Test
     public void testFindReleaseByName() throws Exception {
         Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -202,6 +203,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
+    @Test
     public void testFindReleaseByDismax1() throws Exception {
         Results res = sd.search("Wrath", 0, 10);
         assertEquals(1, res.totalHits);
@@ -211,6 +213,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
+    @Test
     public void testFindReleaseByDismax2() throws Exception {
         Results res = sd.search("Farming", 0, 10);
         assertEquals(1, res.totalHits);
@@ -220,6 +223,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
+    @Test
     public void testFindReleaseByDismax3() throws Exception {
         Results res = sd.search("Incident", 0, 10);
         assertEquals(1, res.totalHits);
@@ -229,6 +233,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
+    @Test
     public void testFindReleaseByDismax4() throws Exception {
         Results res = sd.search("Our Glorious", 0, 10);
         assertEquals(1, res.totalHits);
@@ -238,6 +243,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
+    @Test
     public void testFindReleaseByDefault() throws Exception {
         Results res = ss.search("\"Our Glorious 5 Year Plan\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -248,6 +254,7 @@ public class FindReleaseTest extends TestCase {
 
     }
 
+    @Test
     public void testFindReleaseByArtistName() throws Exception {
         Results res = ss.search("artist:\"Farming Incident\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -257,6 +264,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
+    @Test
     public void testFindReleaseByFormat() throws Exception {
         Results res = ss.search("format:Vinyl", 0, 10);
         assertEquals(1, res.totalHits);
@@ -267,6 +275,7 @@ public class FindReleaseTest extends TestCase {
 
     }
 
+    @Test
     public void testFindReleaseByCatNo() throws Exception {
         Results res = ss.search("catno:WRATHCD25", 0, 10);
         assertEquals(1, res.totalHits);
@@ -276,6 +285,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
 
+    @Test
     public void testFindReleaseByBarcodeWithoutZero() throws Exception {
         Results res = ss.search("barcode:7599273202", 0, 10);
         assertEquals(1, res.totalHits);
@@ -287,6 +297,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("07599273202", doc.get(ReleaseIndexField.BARCODE));
     }
 
+    @Test
     public void testFindReleaseByBarcodeWithZero() throws Exception {
         Results res = ss.search("barcode:07599273202", 0, 10);
         assertEquals(1, res.totalHits);
@@ -298,7 +309,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("07599273202", doc.get(ReleaseIndexField.BARCODE));
     }
 
-
+    @Test
     public void testFindReleaseByAsin() throws Exception {
         Results res = ss.search("asin:B00004Y6O9", 0, 10);
         assertEquals(1, res.totalHits);
@@ -306,21 +317,24 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    }
 
-     public void testFindReleaseByAsinLowercase() throws Exception {
+    @Test
+    public void testFindReleaseByAsinLowercase() throws Exception {
         Results res = ss.search("asin:b00004y6O9", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    }
 
-    /** Works as is even though lang code not analysed because lang code always lowercase
+    /**
+     * Works as is even though lang code not analysed because lang code always lowercase
      *
      * @throws Exception
      */
+    @Test
     public void testFindReleaseByLanguage() throws Exception {
         Results res = ss.search("lang:eng", 0, 10);
         assertEquals(1, res.totalHits);
@@ -328,12 +342,14 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    }
 
-    /** Works as is even though lang code not analysed because lang code always lowercase
+    /**
+     * Works as is even though lang code not analysed because lang code always lowercase
      *
      * @throws Exception
      */
+    @Test
     public void testFindReleaseByLanguageUppercase() throws Exception {
         Results res = ss.search("lang:ENG", 0, 10);
         assertEquals(1, res.totalHits);
@@ -341,12 +357,12 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    }
 
-     /**
-     *
+    /**
      * @throws Exception
      */
+    @Test
     public void testFindReleaseByScript() throws Exception {
         Results res = ss.search("script:latn", 0, 10);
         assertEquals(1, res.totalHits);
@@ -354,12 +370,12 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    }
 
     /**
-     *
      * @throws Exception
      */
+    @Test
     public void testFindReleaseByComment() throws Exception {
         Results res = ss.search("comment:demo", 0, 10);
         assertEquals(1, res.totalHits);
@@ -367,12 +383,12 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("demo", doc.get(ReleaseIndexField.COMMENT));
-     }
+    }
 
     /**
-     *
      * @throws Exception
      */
+    @Test
     public void testFindReleaseByScriptUppercase() throws Exception {
         Results res = ss.search("script:LATN", 0, 10);
         assertEquals(1, res.totalHits);
@@ -385,18 +401,20 @@ public class FindReleaseTest extends TestCase {
     /*
       * @throws Exception
       */
-     public void testFindReleaseByCountry() throws Exception {
-         Results res = ss.search("country:gb", 0, 10);
-         assertEquals(1, res.totalHits);
-         Result result = res.results.get(0);
-         MbDocument doc = result.doc;
-         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-      }
+    @Test
+    public void testFindReleaseByCountry() throws Exception {
+        Results res = ss.search("country:gb", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
 
     /*
       * @throws Exception
       */
+    @Test
     public void testFindReleaseWithNoBarcode() throws Exception {
         Results res = ss.search("barcode:none", 0, 10);
         assertEquals(1, res.totalHits);
@@ -408,6 +426,7 @@ public class FindReleaseTest extends TestCase {
     /*
       * @throws Exception
       */
+    @Test
     public void testFindReleaseWithNotKnownBarcode() throws Exception {
         Results res = ss.search("barcode:\\-", 0, 10);
         assertEquals(0, res.totalHits);
@@ -416,6 +435,7 @@ public class FindReleaseTest extends TestCase {
     /*
      * @throws Exception
      */
+    @Test
     public void testFindReleaseByNumTracks() throws Exception {
         Results res = ss.search("tracks:17", 0, 10);
         assertEquals(1, res.totalHits);
@@ -423,11 +443,12 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    }
 
     /*
      * @throws Exception
      */
+    @Test
     public void testFindReleaseByTracksOnMedium() throws Exception {
         Results res = ss.search("tracksmedium:10", 0, 10);
         assertEquals(1, res.totalHits);
@@ -435,55 +456,60 @@ public class FindReleaseTest extends TestCase {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    }
 
     /*
-        * @throws Exception
-        */
-       public void testFindReleaseByNumDiscOnMedium() throws Exception {
-           Results res = ss.search("discidsmedium:2", 0, 10);
-           assertEquals(1, res.totalHits);
-           Result result = res.results.get(0);
-           MbDocument doc = result.doc;
-           assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        }
+    * @throws Exception
+    */
+    @Test
+    public void testFindReleaseByNumDiscOnMedium() throws Exception {
+        Results res = ss.search("discidsmedium:2", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
 
     /*
-        * @throws Exception
-        */
-       public void testFindReleaseByNumDisc() throws Exception {
-           Results res = ss.search("discids:3", 0, 10);
-           assertEquals(1, res.totalHits);
-           Result result = res.results.get(0);
-           MbDocument doc = result.doc;
-           assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        }
-     /**
-      *
-      * @throws Exception
-      */
-     public void testFindReleaseByCountryUppercase() throws Exception {
-         Results res = ss.search("country:GB", 0, 10);
-         assertEquals(1, res.totalHits);
-         Result result = res.results.get(0);
-         MbDocument doc = result.doc;
-         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-     }
+    * @throws Exception
+    */
+    @Test
+    public void testFindReleaseByNumDisc() throws Exception {
+        Results res = ss.search("discids:3", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testFindReleaseByCountryUppercase() throws Exception {
+        Results res = ss.search("country:GB", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
 
 
+    @Test
     public void testFindReleaseByDate() throws Exception {
-            Results res = ss.search("date:2005", 0, 10);
-            assertEquals(1, res.totalHits);
-            Result result = res.results.get(0);
-            MbDocument doc = result.doc;
-            assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-            assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        }
+        Results res = ss.search("date:2005", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
 
-     public void testFindReleaseByTypeLowercase() throws Exception {
+    @Test
+    public void testFindReleaseByTypeLowercase() throws Exception {
         Results res = ss.searchLucene("type:\"album\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -493,6 +519,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseByTypeTitleCase() throws Exception {
         Results res = ss.searchLucene("type:\"Album\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -503,8 +530,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
-
-
+    @Test
     public void testFindReleaseByRgid() throws Exception {
         Results res = ss.searchLucene("rgid:1d9e8ed6-3893-4d3b-aa7d-6cd79609e333", 0, 10);
         assertEquals(1, res.totalHits);
@@ -515,17 +541,19 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseByNumericType() throws Exception {
-           Results res = ss.searchLucene("type:1", 0, 10);
-           assertEquals(1, res.totalHits);
-           Result result = res.results.get(0);
-           MbDocument doc = result.doc;
-           assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-           assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
-       }
+        Results res = ss.searchLucene("type:1", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
 
-     public void testFindReleaseByStatusLowercase() throws Exception {
+    @Test
+    public void testFindReleaseByStatusLowercase() throws Exception {
         Results res = ss.searchLucene("status:\"official\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -535,6 +563,7 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
     public void testFindReleaseByStatusTitleCase() throws Exception {
         Results res = ss.searchLucene("status:\"Official\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -544,16 +573,19 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
         assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
     }
-    public void testFindReleaseByNumericstatus() throws Exception {
-           Results res = ss.searchLucene("status:1", 0, 10);
-           assertEquals(1, res.totalHits);
-           Result result = res.results.get(0);
-           MbDocument doc = result.doc;
-           assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
-           assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-           assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
-       }
 
+    @Test
+    public void testFindReleaseByNumericstatus() throws Exception {
+        Results res = ss.searchLucene("status:1", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    @Test
     public void testFindReleaseGroupByArtist2() throws Exception {
         Results res = ss.searchLucene("artist:\"Erich Kunzel\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -564,6 +596,7 @@ public class FindReleaseTest extends TestCase {
 
     }
 
+    @Test
     public void testFindReleaseGroupByAllArtist2() throws Exception {
         Results res = ss.searchLucene("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -573,21 +606,25 @@ public class FindReleaseTest extends TestCase {
         assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
     }
 
+    @Test
     public void testFindReleaseByNumberofMediums() throws Exception {
         Results res = ss.searchLucene("mediums:2", 0, 10);
         assertEquals(1, res.totalHits);
     }
 
+    @Test
     public void testFindReleaseByLabelId() throws Exception {
         Results res = ss.searchLucene("laid:c1dfaf9c-d498-4f6c-b040-f7714315fcea", 0, 10);
         assertEquals(1, res.totalHits);
     }
-    
-    public void testNumericRangeQuery() throws Exception {
-           Results res = ss.searchLucene("tracksmedium:[7 TO 17]", 0, 10);
-           assertEquals(2, res.totalHits);
-       }
 
+    @Test
+    public void testNumericRangeQuery() throws Exception {
+        Results res = ss.searchLucene("tracksmedium:[7 TO 17]", 0, 10);
+        assertEquals(2, res.totalHits);
+    }
+
+    @Test
     public void testFindReleaseByPuid() throws Exception {
         Results res = ss.searchLucene("puid:668f3a22-03e8-e3cd-55e4-2e9a0906419a", 0, 10);
         assertEquals(1, res.totalHits);
@@ -599,6 +636,7 @@ public class FindReleaseTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testOutputAsMmdv1Xml() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
@@ -637,6 +675,7 @@ public class FindReleaseTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
@@ -673,6 +712,7 @@ public class FindReleaseTest extends TestCase {
         assertTrue(output.contains("<medium-list count=\"2\">"));
     }
 
+    @Test
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
