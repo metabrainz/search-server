@@ -20,17 +20,24 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -74,12 +81,37 @@ public abstract class DatabaseIndex implements Index {
         return wrapper;
     }
 
+	
+	public DatabaseIndexMetadata readMetaInformation(IndexReader reader) throws IOException {
+		
+		DatabaseIndexMetadata metadata = new DatabaseIndexMetadata();
+		IndexSearcher searcher = new IndexSearcher(reader);
+		
+		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
+		TermQuery query = new TermQuery(term);
+		TopDocs hits = searcher.search(query, 10);
+		
+		if (hits.scoreDocs.length == 0) {
+		    throw new IllegalArgumentException("No matches in the index for the given Term.");
+		} else if (hits.scoreDocs.length > 1) {
+		    throw new IllegalArgumentException("Given Term matches more than 1 document in the index.");
+		} else {
+		    int docId = hits.scoreDocs[0].doc;
+		
+		    MbDocument doc = new MbDocument(searcher.doc(docId));
+		    metadata.replicationSequence = Integer.parseInt(doc.get(MetaIndexField.REPLICATION_SEQUENCE));
+		    metadata.schemaSequence = Integer.parseInt(doc.get(MetaIndexField.SCHEMA_SEQUENCE));
+		    String tmpStr = doc.get(MetaIndexField.LAST_CHANGE_SEQUENCE);
+		    metadata.changeSequence = (tmpStr != null && !tmpStr.isEmpty()) ? Integer.parseInt(tmpStr) : null;
+		    
+		}
+		return metadata; 
+	}    
+    
 	@Override
 	public void addMetaInformation(IndexWriter indexWriter) throws IOException {
-    	MbDocument doc = new MbDocument();
-    	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-        doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
-        
+
+        DatabaseIndexMetadata metadata = new DatabaseIndexMetadata();
         Statement st;
 		try {
 			st = dbConnection.createStatement();
@@ -88,17 +120,33 @@ public abstract class DatabaseIndex implements Index {
 	        		"	(SELECT MAX(seqid) FROM dbmirror_pending) as max_seq_id " +
 	        		"FROM replication_control;");
 	        rs.next();
-	        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, rs.getString("current_schema_sequence"));
-	        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, rs.getString("current_replication_sequence"));
-	        doc.addNonEmptyField(MetaIndexField.LAST_CHANGE_SEQUENCE, rs.getString("max_seq_id"));
+
+	        metadata.schemaSequence = rs.getInt("current_schema_sequence");
+	        metadata.replicationSequence = rs.getInt("current_replication_sequence");
+	        metadata.changeSequence = rs.getInt("max_seq_id");
+	        
 		} catch (SQLException e) {
 			System.err.println(getName()+":Unable to get replication information");
 		}
         
-        indexWriter.addDocument(doc.getLuceneDocument());
+		addMetaInformation(indexWriter, metadata);
+	}
+	
+	public void addMetaInformation(IndexWriter indexWriter, DatabaseIndexMetadata metadata) throws IOException {
+		
+    	MbDocument doc = new MbDocument();
+    	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+        doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, metadata.schemaSequence);
+        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, metadata.replicationSequence);
+        if (metadata.changeSequence != null) {
+        	doc.addField(MetaIndexField.LAST_CHANGE_SEQUENCE, metadata.changeSequence);
+        }
+        indexWriter.addDocument(doc.getLuceneDocument());       
+
 	}
 
-	public void updateMetaInformation(IndexWriter indexWriter, int schemaSeq, int replicationSeq, Integer changeSeq, Date indexingDate) throws IOException {
+	public void updateMetaInformation(IndexWriter indexWriter, DatabaseIndexMetadata metadata) throws IOException {
 		
 		// Remove the old one
 		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
@@ -106,15 +154,7 @@ public abstract class DatabaseIndex implements Index {
 		indexWriter.deleteDocuments(query);
 		
 		// And the new one
-    	MbDocument doc = new MbDocument();
-    	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-        doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(indexingDate.getTime()));
-        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, schemaSeq);
-        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, replicationSeq);
-        if (changeSeq != null) {
-        	doc.addField(MetaIndexField.LAST_CHANGE_SEQUENCE, changeSeq);
-        }
-        indexWriter.addDocument(doc.getLuceneDocument());
+		addMetaInformation(indexWriter, metadata);
 	}
     
     public PreparedStatement addPreparedStatement(String identifier, String SQL) throws SQLException {
