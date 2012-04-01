@@ -39,13 +39,19 @@ public class IndexOptions {
     private String mainDatabasePassword = "";
     public String getMainDatabasePassword() { return mainDatabasePassword; }
 
-    public Connection getMainDatabaseConnection() throws SQLException {
+    public Connection getMainDatabaseConnection() {
         String url = "jdbc:postgresql://" + getMainDatabaseHost() + "/" + getMainDatabaseName();
         Properties props = new Properties();
         props.setProperty("user", getMainDatabaseUser());
         props.setProperty("password", getMainDatabasePassword());
-        Connection c = DriverManager.getConnection(url, props);
-        PrepareDatabase.prepareDbConnection(c);
+        Connection c = null;
+		try {
+			c = DriverManager.getConnection(url, props);
+			PrepareDatabase.prepareDbConnection(c);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        
         return c;
     }
     

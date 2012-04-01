@@ -34,6 +34,7 @@ import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -116,17 +117,26 @@ public abstract class DatabaseIndex implements Index {
 		try {
 			st = dbConnection.createStatement();
 	        ResultSet rs = st.executeQuery(
-	        		"SELECT current_schema_sequence, current_replication_sequence, " +
-	        		"	(SELECT MAX(seqid) FROM dbmirror_pending) as max_seq_id " +
-	        		"FROM replication_control;");
+	        		"SELECT current_schema_sequence, current_replication_sequence " +
+	        		"FROM replication_control");
 	        rs.next();
-
+	        
 	        metadata.schemaSequence = rs.getInt("current_schema_sequence");
 	        metadata.replicationSequence = rs.getInt("current_replication_sequence");
-	        metadata.changeSequence = rs.getInt("max_seq_id");
+	        
+			// Check if dbmirror tables exist to get last change sequence
+			DatabaseMetaData meta = dbConnection.getMetaData();
+			rs = meta.getTables(null, null, "dbmirror_pending", new String[] {"TABLE"});
+			if (rs.first()) {
+				rs = st.executeQuery("SELECT MAX(seqid) FROM dbmirror_pending");
+				rs.first();
+				metadata.changeSequence = rs.getInt(0);
+			} else {
+				metadata.changeSequence = null;
+			}
 	        
 		} catch (SQLException e) {
-			System.err.println(getName()+":Unable to get replication information");
+			System.err.println(getName()+": Unable to get replication information");
 		}
         
 		addMetaInformation(indexWriter, metadata);
