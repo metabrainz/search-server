@@ -1,4 +1,4 @@
-package org.musicbrainz.search.replication.packet;
+package org.musicbrainz.search.replication;
 
 public enum DatabaseOperation {
 

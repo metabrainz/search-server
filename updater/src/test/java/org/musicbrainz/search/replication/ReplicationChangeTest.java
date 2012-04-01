@@ -1,4 +1,7 @@
-package org.musicbrainz.search.replication.packet;
+package org.musicbrainz.search.replication;
+
+import org.musicbrainz.search.replication.ReplicationChange;
+import org.musicbrainz.search.replication.UnpackUtils;
 
 import junit.framework.TestCase;
 

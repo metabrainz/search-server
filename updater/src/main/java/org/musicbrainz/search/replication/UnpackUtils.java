@@ -1,4 +1,4 @@
-package org.musicbrainz.search.replication.packet;
+package org.musicbrainz.search.replication;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,9 @@ public class UnpackUtils {
 			String value = m.group(2);
 			
 			if (value != null) {
-				value = value.substring(1, value.length()-1).replace("''", "'").replace("\\\\", "\\");				
+				value = value.substring(1, value.length()-1) // remove leading white space
+						.replace("''", "'")					 // remove escaping of ' 
+						.replace("\\\\", "\\");				 // remove escaping of \
 			}
 			
 			map.put(name, value);

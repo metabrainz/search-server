@@ -1,17 +1,20 @@
-package org.musicbrainz.search.replication;
+package org.musicbrainz.search.update.dependencies;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.musicbrainz.search.update.dependencies.DatabaseIndexDependencies;
+import org.musicbrainz.search.update.dependencies.DatabaseTableRelation;
+
 import junit.framework.TestCase;
 
-public class LinkedTableTest extends TestCase {
+public class DatabaseTableRelationTest extends TestCase {
 
 	public void testEndOfPath() {
 		
-		LinkedTable artistlt = new LinkedTable("artist");
-    	LinkedTable acnlt = new LinkedTable("artist_credit_name");
-    	LinkedTable worklt = new LinkedTable("work");
+		DatabaseTableRelation artistlt = new DatabaseTableRelation("artist");
+    	DatabaseTableRelation acnlt = new DatabaseTableRelation("artist_credit_name");
+    	DatabaseTableRelation worklt = new DatabaseTableRelation("work");
     	
     	artistlt.setTargetTable(acnlt, "artist", "id");
     	acnlt.setTargetTable(worklt, "artist_credit", "artist_credit");
@@ -24,9 +27,9 @@ public class LinkedTableTest extends TestCase {
 
 	public void testGetFinalTargetTable() {
 		
-		LinkedTable artistlt = new LinkedTable("artist");
-    	LinkedTable acnlt = new LinkedTable("artist_credit_name");
-    	LinkedTable worklt = new LinkedTable("work");
+		DatabaseTableRelation artistlt = new DatabaseTableRelation("artist");
+    	DatabaseTableRelation acnlt = new DatabaseTableRelation("artist_credit_name");
+    	DatabaseTableRelation worklt = new DatabaseTableRelation("work");
     	
     	artistlt.setTargetTable(acnlt, "artist", "id");
     	acnlt.setTargetTable(worklt, "artist_credit", "artist_credit");
@@ -40,17 +43,17 @@ public class LinkedTableTest extends TestCase {
 	public void testSQLGeneration() {
 		
 		// Work
-		EntityDependencyTree dependencyTree = new EntityDependencyTree();
+		DatabaseIndexDependencies dependencyTree = new DatabaseIndexDependencies("test");
 
     	for (String table : new String[]{"work_alias", "work_tag"}) {
-        	LinkedTable lt = new LinkedTable(table);
-        	lt.setTargetTable(new LinkedTable("work"), "id", "work");
+        	DatabaseTableRelation lt = new DatabaseTableRelation(table);
+        	lt.setTargetTable(new DatabaseTableRelation("work"), "id", "work");
         	dependencyTree.addDependency(lt);
     	}
     	
-    	LinkedTable artistlt = new LinkedTable("artist");
-    	LinkedTable acnlt = new LinkedTable("artist_credit_name");
-    	LinkedTable worklt = new LinkedTable("work");
+    	DatabaseTableRelation artistlt = new DatabaseTableRelation("artist");
+    	DatabaseTableRelation acnlt = new DatabaseTableRelation("artist_credit_name");
+    	DatabaseTableRelation worklt = new DatabaseTableRelation("work");
     	
     	acnlt.setTargetTable(worklt, "artist_credit", "artist_credit");
     	artistlt.setTargetTable(acnlt, "artist", "id");

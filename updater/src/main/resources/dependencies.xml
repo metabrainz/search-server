@@ -37,9 +37,9 @@
 			<join src_field='id' target_field='work'>
 				<table name='work_tag' />
 			</join>
-			<join src_field='artist_credit' target_field='artist_credit'>
-				<table name='artist_credit_name'>
-					<join src_field='artist' target_field='id'>
+			<join src_field='id' target_field='entity1'>
+				<table name='l_artist_work'>
+					<join src_field='entity0' target_field='id'>
 						<table name='artist' used_fields='name,sort_name' />
 					</join>
 				</table>

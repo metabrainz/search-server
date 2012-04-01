@@ -1,4 +1,4 @@
-package org.musicbrainz.search.replication;
+package org.musicbrainz.search.update.dependencies;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,23 +7,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class LinkedTable {
+public class DatabaseTableRelation {
 
-	public String tableName;
+	public String sourceTableName;
 	private String sourceJoinField;
-	private LinkedTable targetTable;
+	private DatabaseTableRelation targetTable;
 	private String targetJoinField;
 	private Set<String> fieldsUsedForIndexing = new HashSet<String>();
 
-	public LinkedTable(String sourceTable) {
-		this.tableName = sourceTable;
+	public DatabaseTableRelation(String sourceTable) {
+		this.sourceTableName = sourceTable;
 	}
 
-	public String getTableName() {
-		return tableName;
+	public String getSourceTableName() {
+		return sourceTableName;
 	}
 	
-	public LinkedTable getTargetTable() {
+	public DatabaseTableRelation getTargetTable() {
 		return targetTable;
 	}
 
@@ -49,7 +49,7 @@ public class LinkedTable {
 		this.fieldsUsedForIndexing = fieldsUsedForIndexing;
 	}
 	
-	public void setTargetTable(LinkedTable targetTable, String targetJoinField, String sourceJoinField) {
+	public void setTargetTable(DatabaseTableRelation targetTable, String targetJoinField, String sourceJoinField) {
 		if (targetTable == null || targetJoinField == null || sourceJoinField == null) {
 			throw new IllegalArgumentException("arguments can not be null");
 		}
@@ -63,8 +63,8 @@ public class LinkedTable {
 		return (this.targetTable == null);
 	}
 
-	public LinkedTable getHead() {
-		LinkedTable lt = this;
+	public DatabaseTableRelation getHead() {
+		DatabaseTableRelation lt = this;
 		while (!lt.isHead()) {
 			lt = lt.targetTable;
 		}
@@ -84,18 +84,18 @@ public class LinkedTable {
 		}
 		
 		StringBuffer sb = new StringBuffer();
-		LinkedTable finalLT = getHead(); 
-		sb.append("SELECT " + finalLT.getTableName() + ".id");
-		sb.append(" FROM " + finalLT.getTableName());
+		DatabaseTableRelation finalLT = getHead(); 
+		sb.append("SELECT " + finalLT.getSourceTableName() + ".id");
+		sb.append(" FROM " + finalLT.getSourceTableName());
 		
 		// JOINs should be added reversely, so we need to first store them before adding them to the SQL query
 		List<String> joins = new ArrayList<String>();
 		
 		if (!isHead()) {
-			LinkedTable lt = this.getTargetTable();
+			DatabaseTableRelation lt = this.getTargetTable();
 			while (!lt.isHead()) {
-				joins.add(" JOIN " + lt.getTableName() + " ON (" + lt.getTableName() + "." + lt.getSourceJoinField() 
-						+ " = " + lt.getTargetTable().getTableName() + "." + lt.getTargetJoinField() + ")");
+				joins.add(" JOIN " + lt.getSourceTableName() + " ON (" + lt.getSourceTableName() + "." + lt.getSourceJoinField() 
+						+ " = " + lt.getTargetTable().getSourceTableName() + "." + lt.getTargetJoinField() + ")");
 				lt = lt.getTargetTable();
 			}
 			
@@ -104,7 +104,7 @@ public class LinkedTable {
 			}
 		}
 		
-		sb.append(" WHERE " + this.getTargetTable().getTableName() + "." + this.getTargetJoinField() + " IN (");
+		sb.append(" WHERE " + this.getTargetTable().getSourceTableName() + "." + this.getTargetJoinField() + " IN (");
 		
 		Iterator<Integer> it = keys.iterator();
 		while(it.hasNext()) {
