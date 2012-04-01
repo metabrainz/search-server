@@ -59,6 +59,7 @@ public class ReplicationPacketTest extends TestCase {
 		assertNull(packet.getMaxChangeId());
 	}
 
+    /*
 	public void testBigPacket() throws Exception {
         
 		// #57157 => 11M
@@ -74,7 +75,6 @@ public class ReplicationPacketTest extends TestCase {
         System.out.println("It tooks " + elapsedTimeSeconds + " s to load " + bigPacket.getChanges().size() + " changes");
         assertNotNull(bigPacket);
 	}
-    /*	
 	*/ 
 	
 	public void testNotExistingPacket() throws Exception {
