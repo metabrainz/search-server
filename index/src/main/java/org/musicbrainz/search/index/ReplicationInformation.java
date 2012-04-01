@@ -1,6 +1,6 @@
 package org.musicbrainz.search.index;
 
-public class DatabaseIndexMetadata {
+public class ReplicationInformation {
 
 	public Integer schemaSequence;
 	public Integer replicationSequence;

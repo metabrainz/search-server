@@ -2,7 +2,7 @@ package org.musicbrainz.search.update;
 
 import java.util.Iterator;
 
-import org.musicbrainz.search.index.DatabaseIndexMetadata;
+import org.musicbrainz.search.index.ReplicationInformation;
 import org.musicbrainz.search.replication.ReplicationPacket;
 
 public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
@@ -10,13 +10,13 @@ public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
 	private boolean nextPacketChecked = false;
 	private ReplicationPacket nextPacket = null;
 	
-	private DatabaseIndexMetadata metadataPosition = null;
+	private ReplicationInformation currentReplicationPosition = null;
 
-	public ReplicationPacketIterator(DatabaseIndexMetadata initialState) {
-		this.metadataPosition = new DatabaseIndexMetadata();
-		this.metadataPosition.replicationSequence = initialState.replicationSequence;
-		this.metadataPosition.schemaSequence = initialState.schemaSequence;
-		this.metadataPosition.changeSequence = initialState.changeSequence;
+	public ReplicationPacketIterator(ReplicationInformation initialReplicationInfo) {
+		this.currentReplicationPosition = new ReplicationInformation();
+		this.currentReplicationPosition.replicationSequence = initialReplicationInfo.replicationSequence;
+		this.currentReplicationPosition.schemaSequence = initialReplicationInfo.schemaSequence;
+		this.currentReplicationPosition.changeSequence = initialReplicationInfo.changeSequence;
 	}
 
 	@Override
@@ -37,9 +37,9 @@ public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
 		
 		// Update 
 		if (nextPacket != null) {
-			metadataPosition.changeSequence = nextPacket.getMaxChangeId();
-			metadataPosition.replicationSequence = nextPacket.getReplicationSequence();
-			metadataPosition.schemaSequence = nextPacket.getSchemaSequence();
+			currentReplicationPosition.changeSequence = nextPacket.getMaxChangeId();
+			currentReplicationPosition.replicationSequence = nextPacket.getReplicationSequence();
+			currentReplicationPosition.schemaSequence = nextPacket.getSchemaSequence();
 			
 			// Reset next packet and check status, since you're moving forward
 			nextPacketChecked = false;
@@ -50,14 +50,14 @@ public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
 	}
 
 	private void checkNextPacket() {
-		int packetNo = metadataPosition.replicationSequence + 1;
+		int packetNo = currentReplicationPosition.replicationSequence + 1;
 		
 		// First try to load from repository
 		nextPacket = ReplicationPacket.loadFromRepository(packetNo, IndexUpdaterOptions.getInstance().getRepositoryPath());
 		
 		// No packet in repository: let's try with pending changes from database 
 		if (nextPacket == null) {
-			nextPacket = ReplicationPacket.loadFromDatabase(IndexUpdaterOptions.getInstance().getMainDatabaseConnection(), metadataPosition.changeSequence);
+			nextPacket = ReplicationPacket.loadFromDatabase(IndexUpdaterOptions.getInstance().getMainDatabaseConnection(), currentReplicationPosition.changeSequence);
 		}
 		
 		nextPacketChecked = true;
@@ -68,8 +68,8 @@ public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
 		throw new UnsupportedOperationException();
 	}
 
-	public DatabaseIndexMetadata getMetadataPosition() {
-		return metadataPosition;
+	public ReplicationInformation getCurrentReplicationPosition() {
+		return currentReplicationPosition;
 	}
 	
 }

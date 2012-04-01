@@ -29,7 +29,7 @@ import org.musicbrainz.search.index.AnnotationIndex;
 import org.musicbrainz.search.index.ArtistIndex;
 import org.musicbrainz.search.index.CommonTables;
 import org.musicbrainz.search.index.DatabaseIndex;
-import org.musicbrainz.search.index.DatabaseIndexMetadata;
+import org.musicbrainz.search.index.ReplicationInformation;
 import org.musicbrainz.search.index.LabelIndex;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.RecordingIndex;
@@ -144,7 +144,7 @@ public class IndexUpdater {
                 10);
 
         IndexReader reader = indexWriter.getReader();     
-        DatabaseIndexMetadata metadata = index.readMetaInformation(reader);
+        ReplicationInformation replicationInfo = index.readReplicationInformationFromIndex(reader);
         DatabaseIndexDependencies dependencies = new DatabaseIndexDependencies(index.getName());
         try {
 			dependencies.loadFromConfigFile( getClass().getResourceAsStream("/dependencies.xml") );
@@ -153,26 +153,26 @@ public class IndexUpdater {
 			e.printStackTrace();
 		}
         
-        Integer lastChangeSequence = metadata.changeSequence;
+        Integer lastChangeSequence = replicationInfo.changeSequence;
 
-        LOGGER.info("Current index properties: schema_sequence=" + metadata.schemaSequence +
-        		", replication_sequence=" + metadata.replicationSequence + 
-        		", change_sequence=" + (metadata.changeSequence != null ? metadata.changeSequence : "") );
+        LOGGER.info("Current index properties: schema_sequence=" + replicationInfo.schemaSequence +
+        		", replication_sequence=" + replicationInfo.replicationSequence + 
+        		", change_sequence=" + (replicationInfo.changeSequence != null ? replicationInfo.changeSequence : "") );
         
         // Load and process each replication packet released since
         ChangesAnalyzer changesAnalyzer = new ChangesAnalyzer(index, dependencies);
         
         boolean packetsFound = false;
-        ReplicationPacketIterator itPacket = new ReplicationPacketIterator(metadata);
+        ReplicationPacketIterator itPacket = new ReplicationPacketIterator(replicationInfo);
         while (itPacket.hasNext()) {
         	
         	packetsFound = true;
         	ReplicationPacket packet = itPacket.next();           	
         	LOGGER.info("Loading packet #" + packet.getReplicationSequence());
         	
-        	if (metadata.schemaSequence != packet.getSchemaSequence()) {
+        	if (replicationInfo.schemaSequence != packet.getSchemaSequence()) {
         		LOGGER.info("Aborting, new packet is for a different SCHEMA sequence");
-        		throw new DatabaseSchemaChangedException(metadata.schemaSequence, packet.getSchemaSequence());
+        		throw new DatabaseSchemaChangedException(replicationInfo.schemaSequence, packet.getSchemaSequence());
         	}
         	
         	changesAnalyzer.analyze(packet, lastChangeSequence);
@@ -208,7 +208,7 @@ public class IndexUpdater {
     	
     	// Only update the index if we've been able to load at least one packet
     	if (packetsFound) {
-    		index.updateMetaInformation(indexWriter, itPacket.getMetadataPosition());
+    		index.updateMetaInformation(indexWriter, itPacket.getCurrentReplicationPosition());
     		indexWriter.commit();
     		// TODO: index don't need to be optimized on each update, it's way too resource intensive
     		// => disabled for now, need to be done on a regular basis that should determined

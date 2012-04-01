@@ -83,9 +83,9 @@ public abstract class DatabaseIndex implements Index {
     }
 
 	
-	public DatabaseIndexMetadata readMetaInformation(IndexReader reader) throws IOException {
+	public ReplicationInformation readReplicationInformationFromIndex(IndexReader reader) throws IOException {
 		
-		DatabaseIndexMetadata metadata = new DatabaseIndexMetadata();
+		ReplicationInformation info = new ReplicationInformation();
 		IndexSearcher searcher = new IndexSearcher(reader);
 		
 		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
@@ -100,20 +100,19 @@ public abstract class DatabaseIndex implements Index {
 		    int docId = hits.scoreDocs[0].doc;
 		
 		    MbDocument doc = new MbDocument(searcher.doc(docId));
-		    metadata.replicationSequence = Integer.parseInt(doc.get(MetaIndexField.REPLICATION_SEQUENCE));
-		    metadata.schemaSequence = Integer.parseInt(doc.get(MetaIndexField.SCHEMA_SEQUENCE));
+		    info.replicationSequence = Integer.parseInt(doc.get(MetaIndexField.REPLICATION_SEQUENCE));
+		    info.schemaSequence = Integer.parseInt(doc.get(MetaIndexField.SCHEMA_SEQUENCE));
 		    String tmpStr = doc.get(MetaIndexField.LAST_CHANGE_SEQUENCE);
-		    metadata.changeSequence = (tmpStr != null && !tmpStr.isEmpty()) ? Integer.parseInt(tmpStr) : null;
+		    info.changeSequence = (tmpStr != null && !tmpStr.isEmpty()) ? Integer.parseInt(tmpStr) : null;
 		    
 		}
-		return metadata; 
+		return info; 
 	}    
     
-	@Override
-	public void addMetaInformation(IndexWriter indexWriter) throws IOException {
-
-        DatabaseIndexMetadata metadata = new DatabaseIndexMetadata();
-        Statement st;
+	public ReplicationInformation readReplicationInformationFromDatabase() throws IOException {
+		
+		ReplicationInformation info = new ReplicationInformation();
+		Statement st;
 		try {
 			st = dbConnection.createStatement();
 	        ResultSet rs = st.executeQuery(
@@ -121,8 +120,8 @@ public abstract class DatabaseIndex implements Index {
 	        		"FROM replication_control");
 	        rs.next();
 	        
-	        metadata.schemaSequence = rs.getInt("current_schema_sequence");
-	        metadata.replicationSequence = rs.getInt("current_replication_sequence");
+	        info.schemaSequence = rs.getInt("current_schema_sequence");
+	        info.replicationSequence = rs.getInt("current_replication_sequence");
 	        
 			// Check if dbmirror tables exist to get last change sequence
 			DatabaseMetaData meta = dbConnection.getMetaData();
@@ -130,33 +129,40 @@ public abstract class DatabaseIndex implements Index {
 			if (rs.first()) {
 				rs = st.executeQuery("SELECT MAX(seqid) FROM dbmirror_pending");
 				rs.first();
-				metadata.changeSequence = rs.getInt(0);
+				info.changeSequence = rs.getInt(0);
 			} else {
-				metadata.changeSequence = null;
+				info.changeSequence = null;
 			}
 	        
 		} catch (SQLException e) {
 			System.err.println(getName()+": Unable to get replication information");
 		}
-        
-		addMetaInformation(indexWriter, metadata);
+		
+		return info;
 	}
 	
-	public void addMetaInformation(IndexWriter indexWriter, DatabaseIndexMetadata metadata) throws IOException {
+	@Override
+	public void addMetaInformation(IndexWriter indexWriter) throws IOException {
+
+        ReplicationInformation info = readReplicationInformationFromDatabase();
+		addMetaInformation(indexWriter, info);
+	}
+	
+	public void addMetaInformation(IndexWriter indexWriter, ReplicationInformation info) throws IOException {
 		
     	MbDocument doc = new MbDocument();
     	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
         doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
-        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, metadata.schemaSequence);
-        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, metadata.replicationSequence);
-        if (metadata.changeSequence != null) {
-        	doc.addField(MetaIndexField.LAST_CHANGE_SEQUENCE, metadata.changeSequence);
+        doc.addField(MetaIndexField.SCHEMA_SEQUENCE, info.schemaSequence);
+        doc.addField(MetaIndexField.REPLICATION_SEQUENCE, info.replicationSequence);
+        if (info.changeSequence != null) {
+        	doc.addField(MetaIndexField.LAST_CHANGE_SEQUENCE, info.changeSequence);
         }
         indexWriter.addDocument(doc.getLuceneDocument());       
 
 	}
 
-	public void updateMetaInformation(IndexWriter indexWriter, DatabaseIndexMetadata metadata) throws IOException {
+	public void updateMetaInformation(IndexWriter indexWriter, ReplicationInformation info) throws IOException {
 		
 		// Remove the old one
 		Term term = new Term(MetaIndexField.META.getName(), MetaIndexField.META_VALUE);
@@ -164,7 +170,7 @@ public abstract class DatabaseIndex implements Index {
 		indexWriter.deleteDocuments(query);
 		
 		// And the new one
-		addMetaInformation(indexWriter, metadata);
+		addMetaInformation(indexWriter, info);
 	}
     
     public PreparedStatement addPreparedStatement(String identifier, String SQL) throws SQLException {

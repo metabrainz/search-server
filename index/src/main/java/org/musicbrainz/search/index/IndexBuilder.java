@@ -133,7 +133,10 @@ public class IndexBuilder
             }
         }
 
-        //Create temporary tables used by multiple indexes
+        // Extract current replication information, using one database index
+        ReplicationInformation initialReplicationInformation = indexes[0].readReplicationInformationFromDatabase();
+        
+        // Create temporary tables used by multiple indexes
         CommonTables commonTables = new CommonTables(mainDbConn, indexesToBeBuilt);
         commonTables.createTemporaryTables(false);
 
@@ -148,7 +151,7 @@ public class IndexBuilder
             }
 
             IndexWriter indexWriter = createIndexWriter(index,options);
-            int maxId = buildDatabaseIndex(indexWriter, index, options);
+            int maxId = buildDatabaseIndex(indexWriter, index, options, initialReplicationInformation);
             cs.submit(new IndexWriterOptimizerAndClose(maxId,indexWriter, index, options));
         }
 
@@ -241,10 +244,11 @@ public class IndexBuilder
      * Build an index from database
      * 
      * @param options
+     * @param initialReplicationInformation 
      * @throws IOException 
      * @throws SQLException 
      */
-    private static int buildDatabaseIndex(IndexWriter indexWriter, DatabaseIndex index, IndexOptions options) throws IOException, SQLException
+    private static int buildDatabaseIndex(IndexWriter indexWriter, DatabaseIndex index, IndexOptions options, ReplicationInformation initialReplicationInformation) throws IOException, SQLException
     {
         try
         {
@@ -252,7 +256,7 @@ public class IndexBuilder
             clock.start();
             System.out.println(index.getName()+":Started at "+ Utils.formatCurrentTimeForOutput());
             index.init(indexWriter, false);
-            index.addMetaInformation(indexWriter);
+            index.addMetaInformation(indexWriter, initialReplicationInformation);
             int maxId = index.getMaxId();
             if(maxId > 0) {
 
