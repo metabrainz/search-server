@@ -1,9 +1,9 @@
-package org.musicbrainz.search.update;
+package org.musicbrainz.search.replication;
 
 import java.util.Iterator;
 
 import org.musicbrainz.search.index.ReplicationInformation;
-import org.musicbrainz.search.replication.ReplicationPacket;
+import org.musicbrainz.search.update.LiveDataFeedIndexUpdaterOptions;
 
 public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
 
@@ -53,11 +53,11 @@ public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
 		int packetNo = currentReplicationPosition.replicationSequence + 1;
 		
 		// First try to load from repository
-		nextPacket = ReplicationPacket.loadFromRepository(packetNo, IndexUpdaterOptions.getInstance().getRepositoryPath());
+		nextPacket = ReplicationPacket.loadFromRepository(packetNo, LiveDataFeedIndexUpdaterOptions.getInstance().getRepositoryPath());
 		
 		// No packet in repository: let's try with pending changes from database 
 		if (nextPacket == null) {
-			nextPacket = ReplicationPacket.loadFromDatabase(IndexUpdaterOptions.getInstance().getMainDatabaseConnection(), currentReplicationPosition.changeSequence);
+			nextPacket = ReplicationPacket.loadFromDatabase(LiveDataFeedIndexUpdaterOptions.getInstance().getMainDatabaseConnection(), currentReplicationPosition.changeSequence);
 		}
 		
 		nextPacketChecked = true;

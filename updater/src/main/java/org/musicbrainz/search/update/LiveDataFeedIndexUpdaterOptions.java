@@ -3,15 +3,15 @@ package org.musicbrainz.search.update;
 import org.kohsuke.args4j.Option;
 import org.musicbrainz.search.index.IndexOptions;
 
-public class IndexUpdaterOptions extends IndexOptions {
+public class LiveDataFeedIndexUpdaterOptions extends IndexOptions {
 
-	private static IndexUpdaterOptions instance = null;
+	private static LiveDataFeedIndexUpdaterOptions instance = null;
 	
-	private IndexUpdaterOptions() {}	
+	private LiveDataFeedIndexUpdaterOptions() {}	
 	
-	public static IndexUpdaterOptions getInstance() {
+	public static LiveDataFeedIndexUpdaterOptions getInstance() {
 		if (instance == null) {
-			instance = new IndexUpdaterOptions();
+			instance = new LiveDataFeedIndexUpdaterOptions();
 		} 
 		return instance;
 	}

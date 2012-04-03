@@ -39,16 +39,17 @@ import org.musicbrainz.search.index.TagIndex;
 import org.musicbrainz.search.index.ThreadedIndexWriter;
 import org.musicbrainz.search.index.WorkIndex;
 import org.musicbrainz.search.replication.ReplicationPacket;
+import org.musicbrainz.search.replication.ReplicationPacketIterator;
 import org.musicbrainz.search.update.dependencies.DatabaseIndexDependencies;
 
-public class IndexUpdater {
+public class LiveDataFeedIndexUpdater {
 
 //	private Map<String, DatabaseIndexDependencies> dependencyTrees;
-	private final Logger LOGGER = Logger.getLogger(IndexUpdater.class.getName());
+	private final Logger LOGGER = Logger.getLogger(LiveDataFeedIndexUpdater.class.getName());
 	
 	private Connection mainDbConn;
 	
-	public IndexUpdater(IndexUpdaterOptions options) {
+	public LiveDataFeedIndexUpdater(LiveDataFeedIndexUpdaterOptions options) {
 		
 		LOGGER.setUseParentHandlers(false);
 	    Handler conHdlr = new ConsoleHandler();
@@ -68,7 +69,7 @@ public class IndexUpdater {
 	
 	public void update() throws SQLException, IOException {
 		
-		IndexUpdaterOptions options = IndexUpdaterOptions.getInstance();
+		LiveDataFeedIndexUpdaterOptions options = LiveDataFeedIndexUpdaterOptions.getInstance();
 		
         // Connect to main database
         mainDbConn = options.getMainDatabaseConnection();
@@ -132,7 +133,7 @@ public class IndexUpdater {
      * @throws SQLException 
 	 * @throws DatabaseSchemaChangedException 
      */
-    private void updateDatabaseIndex(DatabaseIndex index, IndexUpdaterOptions options) throws IOException, SQLException, DatabaseSchemaChangedException
+    private void updateDatabaseIndex(DatabaseIndex index, LiveDataFeedIndexUpdaterOptions options) throws IOException, SQLException, DatabaseSchemaChangedException
     {
 
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,index.getAnalyzer());
@@ -233,7 +234,7 @@ public class IndexUpdater {
 	 */
 	public static void main(String[] args) throws IOException, SQLException {
 		
-		IndexUpdaterOptions options = IndexUpdaterOptions.getInstance();
+		LiveDataFeedIndexUpdaterOptions options = LiveDataFeedIndexUpdaterOptions.getInstance();
         CmdLineParser parser = new CmdLineParser(options);
 
         try {
@@ -258,7 +259,7 @@ public class IndexUpdater {
             System.exit(1);
         }
         
-        IndexUpdater updater = new IndexUpdater(options);
+        LiveDataFeedIndexUpdater updater = new LiveDataFeedIndexUpdater(options);
         updater.update();
 	}
     
