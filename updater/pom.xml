@@ -119,7 +119,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>org.musicbrainz.search.replication.LiveDataFeedIndexUpdater</mainClass>
+              <mainClass>org.musicbrainz.search.update.LiveDataFeedIndexUpdater</mainClass>
               <packageName>org.musicbrainz.search</packageName>
               <addClasspath>true</addClasspath>
             </manifest>
