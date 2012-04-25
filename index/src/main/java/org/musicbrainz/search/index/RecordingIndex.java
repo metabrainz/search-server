@@ -115,7 +115,7 @@ public class RecordingIndex extends DatabaseIndex {
                  " WHERE recording between ? AND ?");
 
             addPreparedStatement("TRACKS",
-                "SELECT id, track_name, length as duration, recording, track_position, track_count, " +
+                "SELECT id, track_name, length as duration, recording, track_position, track_number, track_count, " +
                 "  release_id, medium_position, format " +
                 " FROM tmp_track " +
                 " WHERE recording between ? AND ?");
@@ -128,7 +128,7 @@ public class RecordingIndex extends DatabaseIndex {
                   " AND   recording between ? AND ?");
 
              addPreparedStatement("TRACKS",
-                "SELECT id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, tl.track_count, " +
+                "SELECT id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, tl.track_count, " +
                 "  m.release as release_id, m.position as medium_position,mf.name as format " +
                 " FROM track t " +
                 "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
@@ -411,6 +411,7 @@ public class RecordingIndex extends DatabaseIndex {
             tw.setMediumPosition(rs.getInt("medium_position"));
             tw.setMediumFormat(rs.getString("format"));
             tw.setDuration(rs.getInt("duration"));
+            tw.setTrackNumber(rs.getString("track_number"));
             list.add(tw);
         }
         rs.close();
@@ -607,6 +608,7 @@ public class RecordingIndex extends DatabaseIndex {
                 {
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
                     doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
+                    doc.addFieldOrNoValue(RecordingIndexField.NUMBER, track.getTrackNumber());
                     doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getType());
                     doc.addFieldOrNoValue(RecordingIndexField.RELEASE_STATUS, release.getStatus());
                     doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, release.getDate());

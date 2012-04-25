@@ -484,6 +484,7 @@ public abstract class AbstractIndexTest {
                 "  recording integer NOT NULL," +
                 "  tracklist integer NOT NULL," +
                 "  position integer NOT NULL," +
+                "  number text, " +
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +

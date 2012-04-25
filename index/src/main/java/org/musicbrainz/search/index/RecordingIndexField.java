@@ -27,6 +27,7 @@ public enum RecordingIndexField implements IndexField {
     NUM_TRACKS              ("tracks",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     NUM_TRACKS_RELEASE      ("tracksrelease",   Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     POSITION                ("position",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    NUMBER                  ("number",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS),
     PUID    		        ("puid",		    Field.Store.YES,	Field.Index.NO),
     QUANTIZED_DURATION	    ("qdur",		    Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RECORDING_ID            ("rid",		        Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),

@@ -12,6 +12,7 @@ class TrackWrapper {
     private int     mediumPosition;
     private String  mediumFormat;
     private int     duration;
+    private String  trackNumber;
 
     public int getTrackPosition() {
         return trackPosition;
@@ -76,5 +77,13 @@ class TrackWrapper {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getTrackNumber() {
+        return trackNumber;
+    }
+
+    public void setTrackNumber(String trackNumber) {
+        this.trackNumber = trackNumber;
     }
 }

@@ -56,8 +56,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO tracklist (id, track_count) VALUES (1, 2)");
 
-        stmt.addBatch("INSERT INTO track (id, recording, tracklist, position, name, artist_credit, length) "
-                + " VALUES (1, 1, 1, 4, 2, 1, 33100)");
+        stmt.addBatch("INSERT INTO track (id, recording, tracklist, position, number, name, artist_credit, length) "
+                + " VALUES (1, 1, 1, 4, 'A4', 2, 1, 33100)");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment)"
                 + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000, 'demo')");
 
@@ -636,6 +636,49 @@ public class RecordingIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    /**
+     * Test tracknum
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testTrackNumber() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.NUMBER.getName()).length);
+            assertEquals("A4", doc.getFieldable(RecordingIndexField.NUMBER.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * Test tracknum
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testTrackPosition() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.TRACKNUM.getName()).length);
+            assertEquals(4, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.TRACKNUM.getName()).stringValue()));
+        }
+        ir.close();
+    }
     /**
      * Test gives format
      *
