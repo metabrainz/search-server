@@ -119,7 +119,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE script");
 
                 stmt.addBatch("DROP TABLE release_group");
-                stmt.addBatch("DROP TABLE release_group_type");
+                stmt.addBatch("DROP TABLE release_group_primary_type");
                 stmt.addBatch("DROP TABLE release_group_tag");
 
                 stmt.addBatch("DROP TABLE track_name");
@@ -444,7 +444,7 @@ public abstract class AbstractIndexTest {
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE release_group_type (" +
+        stmt.addBatch("CREATE TABLE release_group_primary_type (" +
                 "  id serial NOT NULL," +
                 "  name character varying(255) NOT NULL" +
                 ")");
@@ -758,7 +758,7 @@ public abstract class AbstractIndexTest {
                 "(5, 'Other') "
         );
 
-        stmt.addBatch("INSERT INTO release_group_type (id, name) VALUES " + 
+        stmt.addBatch("INSERT INTO release_group_primary_type (id, name) VALUES " +
                 "(1, 'Non-Album Tracks'), " +
                 "(2, 'Album'), " +
                 "(3, 'Single'), " +

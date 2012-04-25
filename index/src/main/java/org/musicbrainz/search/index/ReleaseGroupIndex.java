@@ -121,10 +121,10 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 " ORDER BY r.id, a.pos");
 
         addPreparedStatement("RELEASEGROUPS",
-                "SELECT rg.id, rg.gid, n0.name as name, release_group_type.name as type, rg.comment " +
+                "SELECT rg.id, rg.gid, n0.name as name, release_group_primary_type.name as type, rg.comment " +
                 " FROM release_group AS rg " +
                 "  LEFT JOIN release_name n0 ON rg.name = n0.id " +
-                "  LEFT JOIN release_group_type ON rg.type = release_group_type.id " +
+                "  LEFT JOIN release_group_primary_type ON rg.type = release_group_primary_type.id " +
                 " WHERE rg.id BETWEEN ? AND ?" +
                 " ORDER BY rg.id");
     }

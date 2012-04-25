@@ -150,7 +150,7 @@ public class CommonTables  {
                 " FROM release r " +
                 "  LEFT JOIN release_meta rm ON r.id = rm.id " +
                 "  LEFT JOIN release_group rg ON rg.id = r.release_group " +
-                "  LEFT JOIN release_group_type rgt  ON rg.type = rgt.id " +
+                "  LEFT JOIN release_group_primary_type rgt  ON rg.type = rgt.id " +
                 "  LEFT JOIN country ON r.country=country.id " +
                 "  LEFT JOIN release_name rn ON r.name = rn.id " +
                 "  LEFT JOIN release_status rs ON r.status = rs.id " +
