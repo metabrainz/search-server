@@ -161,7 +161,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
                 "language, script, date_year, date_month, date_day) " +
                 "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 28, 1, 1, 1)");
         stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
-        	" VALUES (1, 'eng', 'eng', 'eng', 'en', 'English', 1)");
+        	" VALUES (1, null, 'eng', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
@@ -197,7 +197,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
                 "  language, script, date_year, date_month, date_day, barcode) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 221, 1, 28, 1970, 1, 1, '5060180310066')");
         stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
-        	" VALUES (1, 'eng', 'eng', 'eng', 'en', 'English', 1)");
+        	" VALUES (1, null, 'end', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
         stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (221, 'GB', 'United Kingdom')");
 
@@ -554,6 +554,27 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFieldables(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFieldables(ReleaseIndexField.LANGUAGE.getName()).length);
             assertEquals("eng", doc.getFieldable(ReleaseIndexField.LANGUAGE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testIndexReleaseLanguageNo3() throws Exception {
+
+        addReleaseFive();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(1, doc.getFieldables(ReleaseIndexField.LANGUAGE.getName()).length);
+            assertEquals("end", doc.getFieldable(ReleaseIndexField.LANGUAGE.getName()).stringValue());
         }
         ir.close();
     }

@@ -414,7 +414,7 @@ public abstract class AbstractIndexTest {
         
         stmt.addBatch("CREATE TABLE language (" +
                 "  id serial NOT NULL," +
-                "  iso_code_3  character(3) NOT NULL," +
+                "  iso_code_3  character(3)," +
                 "  iso_code_2t character(3) NOT NULL," +
                 "  iso_code_2b character(3) NOT NULL," +
                 "  iso_code_2 character(2)," +
