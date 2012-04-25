@@ -150,7 +150,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 " SELECT id, gid, name, " +
                 "  barcode, country, " +
                 "  date_year, date_month, date_day, type, rgid, amazon_asin, " +
-                "  language, script, status, comment " +
+                "  language, language_2t, script, status, comment " +
                 " FROM tmp_release rl " +
                 "WHERE  id BETWEEN ? AND ? ");
     }
@@ -318,7 +318,17 @@ public class ReleaseIndex extends DatabaseIndex {
             doc.addField(ReleaseIndexField.BARCODE,barcode);
         }
         doc.addFieldOrNoValue(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
-        doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, rs.getString("language"));
+
+        String lang3= rs.getString("language");
+        String lang2= rs.getString("language_2t");
+        if(lang3!=null)
+        {
+            doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, lang3);
+        }
+        else
+        {
+            doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, lang2);
+        }
         doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, rs.getString("script"));
         doc.addFieldOrNoValue(ReleaseIndexField.COMMENT, rs.getString("comment"));
 
