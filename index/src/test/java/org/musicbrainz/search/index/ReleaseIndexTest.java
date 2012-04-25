@@ -157,6 +157,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
 
+        stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,1)");
+        stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,2)");
+
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
                 "language, script, date_year, date_month, date_day) " +
                 "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 28, 1, 1, 1)");
@@ -815,6 +818,29 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(ReleaseIndexField.RELEASEGROUP_ID.getName()).length);
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFieldable(ReleaseIndexField.RELEASEGROUP_ID.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testIndexReleaseSecondaryType() throws Exception {
+
+        addReleaseFour();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(2, doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName()).length);
+            assertEquals("Compilation", doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName())[0].stringValue());
+            assertEquals("Soundtrack", doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName())[1].stringValue());
+
         }
         ir.close();
     }

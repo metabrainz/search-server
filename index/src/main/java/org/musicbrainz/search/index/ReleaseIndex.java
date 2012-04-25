@@ -146,13 +146,24 @@ public class ReleaseIndex extends DatabaseIndex {
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
 
-         addPreparedStatement("RELEASES",
+        addPreparedStatement("SECONDARYTYPES",
+                "SELECT rg.name as type, r.id as rid" +
+                " FROM tmp_release r " +
+                " INNER JOIN release_group_secondary_type_join  rgj " +
+                " ON r.rg_id=rgj.release_group " +
+                " INNER JOIN release_group_secondary_type rg  " +
+                " ON rgj.secondary_type = rg.id " +
+                " WHERE rgj.release_group BETWEEN ? AND ?");
+
+        addPreparedStatement("RELEASES",
                 " SELECT id, gid, name, " +
                 "  barcode, country, " +
-                "  date_year, date_month, date_day, type, rgid, amazon_asin, " +
+                "  date_year, date_month, date_day, type, rg_gid, amazon_asin, " +
                 "  language, language_2t, script, status, comment " +
                 " FROM tmp_release rl " +
                 "WHERE  id BETWEEN ? AND ? ");
+
+
     }
 
 
@@ -172,6 +183,41 @@ public class ReleaseIndex extends DatabaseIndex {
             ex.printStackTrace();
         }
     }
+
+
+    /**
+     * Load work iswcs
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<String>> loadSecondaryTypes(int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> secondaryTypes = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("SECONDARYTYPES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        System.out.println("Done Secondary Types");
+        while (rs.next()) {
+            System.out.println("Next:Done Secondary Types");
+            int releaseId = rs.getInt("rid");
+
+            List<String> list;
+            if (!secondaryTypes.containsKey(releaseId)) {
+                list = new LinkedList<String>();
+                secondaryTypes.put(releaseId, list);
+            } else {
+                list = secondaryTypes.get(releaseId);
+            }
+            list.add(rs.getString("type"));
+        }
+        rs.close();
+        return secondaryTypes;
+    }
+
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
@@ -253,6 +299,7 @@ public class ReleaseIndex extends DatabaseIndex {
         puidClock.suspend();
 
 
+
         //Artist Credits
         artistClock.resume();
         st = getPreparedStatement("ARTISTCREDITS");
@@ -274,6 +321,7 @@ public class ReleaseIndex extends DatabaseIndex {
         rs.close();
         artistClock.suspend();
 
+        Map<Integer, List<String>> secondaryTypes = loadSecondaryTypes(min, max);
         st = getPreparedStatement("RELEASES");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -281,12 +329,13 @@ public class ReleaseIndex extends DatabaseIndex {
         rs = st.executeQuery();
         releaseClock.suspend();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, labelInfo, mediums, puidWrapper, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, labelInfo, mediums, puidWrapper, artistCredits));
         }
         rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, List<String>> secondaryTypes,
                                           Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<String>> puids,
@@ -300,7 +349,14 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addField(ReleaseIndexField.RELEASE_ACCENT, name);
 
         doc.addFieldOrUnknown(ReleaseIndexField.TYPE, rs.getString("type"));
-        doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rgid"));
+
+        if (secondaryTypes.containsKey(id)) {
+            for (String secondaryType : secondaryTypes.get(id)) {
+                doc.addField(ReleaseIndexField.SECONDARY_TYPE, secondaryType);
+            }
+        }
+
+        doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rg_gid"));
         doc.addFieldOrUnknown(ReleaseIndexField.STATUS, rs.getString("status"));
 
         doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, rs.getString("country"));

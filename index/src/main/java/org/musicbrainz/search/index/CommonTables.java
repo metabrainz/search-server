@@ -142,7 +142,7 @@ public class CommonTables  {
             "CREATE TEMPORARY TABLE tmp_release AS " +
                 "SELECT r.id, r.gid, rn.name as name, " +
                 "  barcode, country.iso_code as country, " +
-                "  date_year, date_month, date_day, rgt.name as type, rg.gid as rgid, rm.amazon_asin, " +
+                "  date_year, date_month, date_day, rgt.name as type, rg.id as rg_id, rg.gid as rg_gid, rm.amazon_asin, " +
                 "  language.iso_code_3 as language, language.iso_code_2t as language_2t, script.iso_code as script, rs.name as status, " +
                 "  sum(tr.track_count) as tracks," +
                 "  r.artist_credit," +
