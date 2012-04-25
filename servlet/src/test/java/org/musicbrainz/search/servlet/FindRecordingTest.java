@@ -502,6 +502,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
     }
 
+
     @Test
     public void testOutputJson() throws Exception {
 
