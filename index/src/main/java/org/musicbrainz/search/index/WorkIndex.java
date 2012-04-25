@@ -102,8 +102,13 @@ public class WorkIndex extends DatabaseIndex {
                         "  JOIN work_name n ON (work_alias.name = n.id) " +
                         " WHERE work BETWEEN ? AND ?");
 
+        addPreparedStatement("ISWCS",
+                "SELECT work, iswc" +
+                        " FROM iswc " +
+                        " WHERE work BETWEEN ? AND ?");
+
         addPreparedStatement("WORKS",
-                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, iswc, comment " +
+                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, comment " +
                         " FROM work AS w " +
                         "  LEFT JOIN work_name wn ON w.name = wn.id " +
                         "  LEFT JOIN work_type wt ON w.type = wt.id " +
@@ -233,6 +238,36 @@ public class WorkIndex extends DatabaseIndex {
     }
 
     /**
+     * Load work iswcs
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<String>> loadISWCs(int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> iswcs = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("ISWCS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int workId = rs.getInt("work");
+
+            List<String> list;
+            if (!iswcs.containsKey(workId)) {
+                list = new LinkedList<String>();
+                iswcs.put(workId, list);
+            } else {
+                list = iswcs.get(workId);
+            }
+            list.add(rs.getString("iswc"));
+        }
+        rs.close();
+        return iswcs;
+    }
+    /**
      * Index data with workids between min and max
      *
      * @param indexWriter
@@ -243,9 +278,10 @@ public class WorkIndex extends DatabaseIndex {
      */
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        Map<Integer, List<Tag>>    tags = loadTags(min, max);
-        Map<Integer, RelationList> artistRelations = loadArtistRelations(min, max);
-        Map<Integer, List<String>> aliases = loadAliases(min, max);
+        Map<Integer, List<Tag>>    tags             = loadTags(min, max);
+        Map<Integer, RelationList> artistRelations  = loadArtistRelations(min, max);
+        Map<Integer, List<String>> aliases          = loadAliases(min, max);
+        Map<Integer, List<String>> iswcs            = loadISWCs(min,max);
 
         //Works
         PreparedStatement st = getPreparedStatement("WORKS");
@@ -253,7 +289,7 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, artistRelations, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, artistRelations, aliases, iswcs));
         }
         rs.close();
 
@@ -262,7 +298,9 @@ public class WorkIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<Tag>> tags,
                                           Map<Integer, RelationList> artists,
-                                          Map<Integer, List<String>> aliases) throws SQLException {
+                                          Map<Integer, List<String>> aliases,
+                                          Map<Integer, List<String>> iswcs
+                                          ) throws SQLException {
         MbDocument doc = new MbDocument();
         int id = rs.getInt("wid");
         doc.addField(WorkIndexField.ID, id);
@@ -272,7 +310,6 @@ public class WorkIndex extends DatabaseIndex {
         doc.addField(WorkIndexField.WORK_ACCENT, name);
 
         doc.addFieldOrNoValue(WorkIndexField.TYPE, rs.getString("type"));
-        doc.addFieldOrNoValue(WorkIndexField.ISWC, rs.getString("iswc"));
         doc.addFieldOrNoValue(WorkIndexField.COMMENT, rs.getString("comment"));
 
         if (artists.containsKey(id)) {
@@ -289,6 +326,12 @@ public class WorkIndex extends DatabaseIndex {
         if (aliases.containsKey(id)) {
             for (String alias : aliases.get(id)) {
                 doc.addField(WorkIndexField.ALIAS, alias);
+            }
+        }
+
+        if (iswcs.containsKey(id)) {
+            for (String iswc : iswcs.get(id)) {
+                doc.addField(WorkIndexField.ISWC, iswc);
             }
         }
 

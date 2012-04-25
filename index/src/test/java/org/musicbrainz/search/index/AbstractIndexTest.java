@@ -146,6 +146,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE track_raw");
 
                 stmt.addBatch("DROP TABLE work");
+                stmt.addBatch("DROP TABLE iswc");
                 stmt.addBatch("DROP TABLE work_alias");
                 stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work_type");
@@ -618,10 +619,18 @@ public abstract class AbstractIndexTest {
                 "  name integer NOT NULL," +
                 "  artist_credit integer NOT NULL," +
                 "  type integer," +
-                "  iswc character(15)," +
                 "  comment character varying(255)," +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE iswc (" +
+                "id SERIAL NOT NULL," +
+                "work INTEGER NOT NULL," +
+                "iswc CHARACTER(15)," +
+                "source SMALLINT," +
+                "edits_pending INTEGER NOT NULL DEFAULT 0," +
+                "created TIMESTAMP" +
                 ")");
 
         stmt.addBatch("CREATE TABLE work_alias (" +

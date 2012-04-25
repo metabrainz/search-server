@@ -47,9 +47,10 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (1, 'Work')");
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (2, 'Play')");
-        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, iswc, comment)" +
-                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 'T-101779304-1', 'demo')");
+        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, comment)" +
+                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1,  'demo')");
         stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 2)");
+        stmt.addBatch("INSERT INTO iswc(work,iswc) VALUES(1,'T-101779304-1')");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Classical', 2);");
         stmt.addBatch("INSERT INTO work_tag (work, tag, count) VALUES (1, 1, 10)");
@@ -78,8 +79,12 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (1, 'Work')");
         stmt.addBatch("INSERT INTO work_type (id, name) VALUES (1, 'Opera')");
         
-        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, type, iswc)" +
-                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1, 'T-101779304-1')");
+        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, type)" +
+                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1)");
+        stmt.addBatch("INSERT INTO iswc(work,iswc) VALUES(1,'T-101779304-1')");
+        stmt.addBatch("INSERT INTO iswc(work,iswc) VALUES(1,'B-101779304-1')");
+
+
         stmt.addBatch("INSERT INTO l_artist_work(id, link, entity0, entity1) VALUES (1, 1, 16153, 1);");
         stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
         stmt.addBatch("INSERT INTO link_type(id,name) VALUES (1, 'composer')");
@@ -158,6 +163,23 @@ public class WorkIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(WorkIndexField.COMMENT.getName()).length);
             assertEquals("demo", doc.getFieldable(WorkIndexField.COMMENT.getName()).stringValue());
+            ir.close();
+        }
+    }
+
+    @Test
+    public void testIndexWorkWithMultipleIswc() throws Exception {
+
+        addWorkTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(2, doc.getFieldables(WorkIndexField.ISWC.getName()).length);
+            assertEquals("T-101779304-1", doc.getFieldables(WorkIndexField.ISWC.getName())[0].stringValue());
+            assertEquals("B-101779304-1", doc.getFieldables(WorkIndexField.ISWC.getName())[1].stringValue());
             ir.close();
         }
     }
