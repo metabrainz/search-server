@@ -173,6 +173,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
                 "    VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2)");
 
+        stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (1,1)");
+        stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (1,2)");
+
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group) " +
                 " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 1)");
 
@@ -446,4 +449,23 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
+    public void testIndexReleaseGroupWithSecondaryTypes() throws Exception {
+
+        addReleaseGroupFour();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
+            assertEquals(2, doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName()).length);
+            assertEquals("Compilation", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[0].stringValue());
+            assertEquals("Soundtrack", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[1].stringValue());
+
+        }
+        ir.close();
+    }
 }

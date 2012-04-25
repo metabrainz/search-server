@@ -120,6 +120,13 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
 
+        addPreparedStatement("SECONDARYTYPES",
+                "SELECT rg.name as type, rgj.release_group as release_group " +
+                " FROM release_group_secondary_type_join rgj " +
+                " INNER JOIN release_group_secondary_type rg" +
+                " ON rgj.secondary_type = rg.id " +
+                " WHERE rgj.release_group BETWEEN ? AND ?");
+
         addPreparedStatement("RELEASEGROUPS",
                 "SELECT rg.id, rg.gid, n0.name as name, release_group_primary_type.name as type, rg.comment " +
                 " FROM release_group AS rg " +
@@ -132,21 +139,39 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-
-        // Get Tags
-        PreparedStatement st = getPreparedStatement("TAGS");
+        Map<Integer, List<Tag>> tags                        = loadTags(min, max);
+        Map<Integer, List<ReleaseWrapper>> releases         = loadReleases(min, max);
+        Map<Integer, ArtistCreditWrapper> artistCredits     = loadArtistCredits(min, max);
+        Map<Integer, List<String>> secondaryTypes           = loadSecondaryTypes(min, max);
+        //ReleaseGroups
+        PreparedStatement st = getPreparedStatement("RELEASEGROUPS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release_group");
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, tags, releases, artistCredits));
+        }
         rs.close();
+
+    }
+
+    /**
+     * Load Releases
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<ReleaseWrapper>> loadReleases(int min, int max) throws SQLException, IOException {
 
         //Releases
         Map<Integer, List<ReleaseWrapper>> releases = new HashMap<Integer, List<ReleaseWrapper>>();
-        st = getPreparedStatement("RELEASES");
+        PreparedStatement st = getPreparedStatement("RELEASES");
         st.setInt(1, min);
         st.setInt(2, max);
-        rs = st.executeQuery();
+        ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int rgId = rs.getInt("release_group");
             List<ReleaseWrapper> list;
@@ -162,39 +187,97 @@ public class ReleaseGroupIndex extends DatabaseIndex {
             list.add(rw);
         }
         rs.close();
+        return releases;
+    }
 
-        //Artist Credits
-        st = getPreparedStatement("ARTISTCREDITS");
+    
+    /**
+     * Load Tags
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<Tag>> loadTags(int min, int max) throws SQLException, IOException {
+
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
         st.setInt(2, max);
-        rs = st.executeQuery();
-        Map<Integer, ArtistCreditWrapper> artistCredits
-                = ArtistCreditHelper.completeArtistCreditFromDbResults
-                 (rs,
-                  "releaseGroupId",
-                  "artist_Credit",
-                  "artistId",
-                  "artistName",
-                  "artistSortName",
-                  "comment",
-                  "joinphrase",
-                  "artistCreditName",
-                  "aliasName");
+        ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release_group");
         rs.close();
-
-        //ReleaseGroups
-        st = getPreparedStatement("RELEASEGROUPS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, releases, artistCredits));
-        }
-        rs.close();
+        return tags;
 
     }
 
+    /**
+     * Load Tags
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, ArtistCreditWrapper> loadArtistCredits(int min, int max) throws SQLException, IOException {
+
+        //Artist Credits
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        Map<Integer, ArtistCreditWrapper> artistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                (rs,
+                        "releaseGroupId",
+                        "artist_Credit",
+                        "artistId",
+                        "artistName",
+                        "artistSortName",
+                        "comment",
+                        "joinphrase",
+                        "artistCreditName",
+                        "aliasName");
+        rs.close();
+        return artistCredits;
+    }
+
+    /**
+     * Load work iswcs
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<String>> loadSecondaryTypes(int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> secondaryTypes = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("SECONDARYTYPES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int rgId = rs.getInt("release_group");
+
+            List<String> list;
+            if (!secondaryTypes.containsKey(rgId)) {
+                list = new LinkedList<String>();
+                secondaryTypes.put(rgId, list);
+            } else {
+                list = secondaryTypes.get(rgId);
+            }
+            list.add(rs.getString("type"));
+        }
+        rs.close();
+        return secondaryTypes;
+    }
+
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, List<String>> secondaryTypes,
                                           Map<Integer,List<Tag>> tags,
                                           Map<Integer, List<ReleaseWrapper>> releases,
                                           Map<Integer, ArtistCreditWrapper> artistCredits) throws SQLException {
@@ -207,6 +290,13 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ACCENT, name);
 
         doc.addFieldOrUnknown(ReleaseGroupIndexField.TYPE, rs.getString("type"));
+
+        if (secondaryTypes.containsKey(id)) {
+            for (String secondaryType : secondaryTypes.get(id)) {
+                doc.addField(ReleaseGroupIndexField.SECONDARY_TYPE, secondaryType);
+            }
+        }
+
         doc.addFieldOrNoValue(ReleaseGroupIndexField.COMMENT, rs.getString("comment"));
 
         //Add each release name within this release group

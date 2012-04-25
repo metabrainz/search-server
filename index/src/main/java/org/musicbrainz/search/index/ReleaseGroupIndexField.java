@@ -54,7 +54,9 @@ public enum ReleaseGroupIndexField implements IndexField {
     TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
     TYPE			    ("type",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-	;
+    SECONDARY_TYPE      ("secondarytype",   Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+
+    ;
 
     private String name;
 	private Field.Store store;
