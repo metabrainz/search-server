@@ -91,6 +91,7 @@ public class FindRecordingTest {
         doc.addNumericField(RecordingIndexField.NUM_TRACKS,10);
         doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE,10);
         doc.addNumericField(RecordingIndexField.TRACKNUM, 5);
+        doc.addField(RecordingIndexField.NUMBER, "A4");
         doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
         doc.addField(RecordingIndexField.POSITION, "1");
@@ -497,7 +498,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("<track-count>10</track-count>"));
         assertTrue(output.contains("<artist-credit><name-credit><artist id=\"89ad4ac3-39f7-470e-963a-56509c546377\"><name>Various Artists</name></artist></name-credit></artist-credit>"));
         assertTrue(output.contains("indie</name>"));
-        assertTrue(output.contains("<track><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
+        assertTrue(output.contains("<track><number>A4</number><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
     }
 

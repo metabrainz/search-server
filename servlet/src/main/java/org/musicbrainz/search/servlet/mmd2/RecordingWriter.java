@@ -126,7 +126,8 @@ public class RecordingWriter extends ResultsWriter {
                 String[] releaseStatus      = doc.getValues(RecordingIndexField.RELEASE_STATUS);
                 String[] releaseCountry     = doc.getValues(RecordingIndexField.COUNTRY);
                 String[] releaseDate        = doc.getValues(RecordingIndexField.RELEASE_DATE);
-                String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
+                String[] trackPos           = doc.getValues(RecordingIndexField.TRACKNUM);
+                String[] trackNos           = doc.getValues(RecordingIndexField.NUMBER);
                 String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
                 String[] trackName          = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
                 String[] mediumPos          = doc.getValues(RecordingIndexField.POSITION);
@@ -167,6 +168,10 @@ public class RecordingWriter extends ResultsWriter {
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
                     track.setTitle(trackName[i]);
 
+                    if (isNotNoValue(trackNos[i])) {
+                        track.setNumber(trackNos[i]);
+                    }
+
                     if (isNotNoValue(trackDurations[i])) {
                         track.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackDurations[i])));
                     }
@@ -177,7 +182,7 @@ public class RecordingWriter extends ResultsWriter {
                     }
 
                     org.musicbrainz.mmd2.Medium.TrackList releaseTrackList = of.createMediumTrackList();
-                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNos[i]) - 1));
+                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackPos[i]) - 1));
                     releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
                     releaseTrackList.getDefTrack().add(track);
                     Medium medium = of.createMedium();
