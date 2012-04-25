@@ -120,6 +120,9 @@ public abstract class AbstractIndexTest {
 
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE release_group_primary_type");
+                stmt.addBatch("DROP TABLE release_group_secondary_type_join");
+                stmt.addBatch("DROP TABLE release_group_secondary_type");
+
                 stmt.addBatch("DROP TABLE release_group_tag");
 
                 stmt.addBatch("DROP TABLE track_name");
@@ -449,6 +452,16 @@ public abstract class AbstractIndexTest {
                 "  name character varying(255) NOT NULL" +
                 ")");
 
+        stmt.addBatch("CREATE TABLE release_group_secondary_type_join (" +
+                "  release_group INTEGER NOT NULL," +
+                "  secondary_type INTEGER NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_group_secondary_type (" +
+                "  id serial NOT NULL," +
+                "  name character varying(255) NOT NULL" +
+                ")");
+
         stmt.addBatch("CREATE TABLE release_group_tag" +
                 "(" +
                 "  release_group integer NOT NULL," +
@@ -771,6 +784,15 @@ public abstract class AbstractIndexTest {
                 "(10, 'Live'), " +
                 "(11, 'Remix'), " +
                 "(12, 'Other') "
+        );
+
+        stmt.addBatch("INSERT INTO release_group_secondary_type (id, name) VALUES " +
+                "(1, 'Compilation'), " +
+                "(2, 'Soundtrack'), " +
+                "(3, 'Spokenword'), " +
+                "(4, 'Interview'), " +
+                "(5, 'Live'), " +
+                "(6, 'Remix') "
         );
 
         stmt.addBatch("INSERT INTO medium_format (id, name, year) VALUES " + 
