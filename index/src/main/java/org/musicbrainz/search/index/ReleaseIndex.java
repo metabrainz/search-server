@@ -200,9 +200,7 @@ public class ReleaseIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        System.out.println("Done Secondary Types");
         while (rs.next()) {
-            System.out.println("Next:Done Secondary Types");
             int releaseId = rs.getInt("rid");
 
             List<String> list;
