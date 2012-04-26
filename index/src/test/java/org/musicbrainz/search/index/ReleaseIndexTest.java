@@ -230,7 +230,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -258,7 +258,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -280,7 +280,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -299,7 +299,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -323,7 +323,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -344,7 +344,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -364,7 +364,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -385,7 +385,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -406,7 +406,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -427,7 +427,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -447,7 +447,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -467,7 +467,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -487,7 +487,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -509,7 +509,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -529,7 +529,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -550,7 +550,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -571,7 +571,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -592,7 +592,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -613,7 +613,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -634,7 +634,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -654,7 +654,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -674,7 +674,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -695,7 +695,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -716,7 +716,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -737,7 +737,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -770,7 +770,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -796,7 +796,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         TermEnum tr = ir.terms(new Term(ReleaseIndexField.PUID.getName(), ""));
         assertEquals(ReleaseIndexField.PUID.getName(), tr.term().field());
         assertEquals(1, tr.docFreq());
@@ -812,7 +812,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -832,7 +832,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);

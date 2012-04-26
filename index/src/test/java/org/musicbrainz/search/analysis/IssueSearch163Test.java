@@ -64,13 +64,13 @@ public class IssueSearch163Test {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir,true));
+        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Európa");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
-        searcher = new IndexSearcher(IndexReader.open(dir,true));
+        searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Europa");
             assertEquals(0, searcher.search(q,10).totalHits);

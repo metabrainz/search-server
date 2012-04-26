@@ -62,7 +62,7 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
             maxOpenFileDescriptors = getFileDescriptorCount();
         }
         //report("Open Output:"+name);
-        File file = new File(getFile(),name);
+        File file = new File(getDirectory(),name);
         if(file.exists() && !file.delete())
         {
             throw new IOException("Cannot Overwrite:"+file);
@@ -76,7 +76,7 @@ public class TrackingFSDirectory extends SimpleFSDirectory {
 
         public TrackingFSIndexInput( String name, int bufferSize) throws IOException
         {
-            super(new File(getFile(),name),bufferSize,getReadChunkSize());
+            super(new File(getDirectory(),name),bufferSize,getReadChunkSize());
             this.name=name;
         }
 

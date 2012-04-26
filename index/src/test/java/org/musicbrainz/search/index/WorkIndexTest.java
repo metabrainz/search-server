@@ -106,7 +106,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -127,7 +127,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -143,7 +143,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkTwo();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -159,7 +159,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -175,7 +175,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -191,7 +191,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkTwo();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -208,7 +208,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -229,7 +229,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkTwo();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -251,7 +251,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -267,7 +267,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkTwo();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -288,7 +288,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir, true);
+        IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
