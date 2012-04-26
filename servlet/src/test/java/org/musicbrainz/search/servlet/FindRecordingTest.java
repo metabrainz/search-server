@@ -359,8 +359,21 @@ public class FindRecordingTest {
     }
 
     @Test
-    public void testFindRecordingByTrackNumber() throws Exception {
+    public void testFindRecordingByTrackPosition() throws Exception {
         Results res = ss.searchLucene("tnum:5", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
+        assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+        assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
+        assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    }
+
+    @Test
+    public void testFindRecordingByTrackNumber() throws Exception {
+        Results res = ss.searchLucene("number:A4", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
