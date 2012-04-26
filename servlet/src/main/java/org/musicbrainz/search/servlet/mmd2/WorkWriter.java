@@ -77,7 +77,7 @@ public class WorkWriter extends ResultsWriter {
                 IswcList iswcList = of.createIswcList();
                 for(int i=0;i<iswcs.length;i++)
                 {
-                    iswcList.getIswc().add(iswcs[0]);
+                    iswcList.getIswc().add(iswcs[i]);
                 }
                 work.setIswcList(iswcList);
             }

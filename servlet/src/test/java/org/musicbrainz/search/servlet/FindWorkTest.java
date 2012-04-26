@@ -235,6 +235,7 @@ public class FindWorkTest {
         assertTrue(output.contains("<sort-name>Пётр Ильич Чайковский</sort-name>"));
         assertTrue(output.contains("<relation type=\"composer\""));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
+        assertTrue(output.contains("<iswc>B-101779304-1</iswc>"));
         assertTrue(output.contains("<language>eng</language>"));
         assertTrue(output.contains("<relation-list target-type=\"artist\">"));
         assertTrue(output.contains("<direction>backward</direction>"));
