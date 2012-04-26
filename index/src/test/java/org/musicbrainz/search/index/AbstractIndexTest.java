@@ -621,6 +621,7 @@ public abstract class AbstractIndexTest {
                 "  artist_credit integer NOT NULL," +
                 "  type integer," +
                 "  comment character varying(255)," +
+                "  language integer," +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");

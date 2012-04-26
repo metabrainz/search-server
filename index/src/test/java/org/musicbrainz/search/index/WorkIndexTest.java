@@ -47,8 +47,10 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (1, 'Work')");
         stmt.addBatch("INSERT INTO work_name (id, name) VALUES (2, 'Play')");
-        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, comment)" +
-                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1,  'demo')");
+        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, comment, language)" +
+                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1,  'demo', 1)");
+        stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
+                " VALUES (1, 'eng', 'eng', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 2)");
         stmt.addBatch("INSERT INTO iswc(work,iswc) VALUES(1,'T-101779304-1')");
 
@@ -163,6 +165,22 @@ public class WorkIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(WorkIndexField.COMMENT.getName()).length);
             assertEquals("demo", doc.getFieldable(WorkIndexField.COMMENT.getName()).stringValue());
+            ir.close();
+        }
+    }
+
+    @Test
+    public void testIndexWorkWithLanguage() throws Exception {
+
+        addWorkOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = IndexReader.open(ramDir, true);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(WorkIndexField.LYRICS_LANG.getName()).length);
+            assertEquals("eng", doc.getFieldable(WorkIndexField.LYRICS_LANG.getName()).stringValue());
             ir.close();
         }
     }

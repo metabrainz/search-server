@@ -66,6 +66,11 @@ public class WorkWriter extends ResultsWriter {
                 work.setType(type);
             }
 
+            String lyricsLanguage = doc.get(WorkIndexField.LYRICS_LANG);
+            if (isNotNoValue(lyricsLanguage)) {
+                work.setLanguage(lyricsLanguage);
+            }
+            
             String iswc = doc.get(WorkIndexField.ISWC);
             if (isNotNoValue(iswc)) {
                 work.setIswc(iswc);

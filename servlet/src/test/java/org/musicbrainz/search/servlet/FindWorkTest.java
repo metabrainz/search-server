@@ -47,7 +47,7 @@ public class FindWorkTest {
             doc.addField(WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
             doc.addField(WorkIndexField.ARTIST, "Пётр Ильич Чайковский");
             doc.addField(WorkIndexField.COMMENT, "demo");
-
+            doc.addField(WorkIndexField.LYRICS_LANG, "eng");
             doc.addField(WorkIndexField.TYPE, "Opera");
             doc.addField(WorkIndexField.ALIAS, "Symp5");
             doc.addField(WorkIndexField.TAG, "classical");
@@ -90,6 +90,16 @@ public class FindWorkTest {
     @Test
     public void testFindWorkByName() throws Exception {
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+    @Test
+    public void testFindWorkByLyricsLang() throws Exception {
+        Results res = ss.searchLucene("lyricslang:eng", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -224,6 +234,7 @@ public class FindWorkTest {
         assertTrue(output.contains("<sort-name>Пётр Ильич Чайковский</sort-name>"));
         assertTrue(output.contains("<relation type=\"composer\""));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
+        assertTrue(output.contains("<language>eng</language>"));
         assertTrue(output.contains("<relation-list target-type=\"artist\">"));
         assertTrue(output.contains("<direction>backward</direction>"));
         assertTrue(output.contains("<attribute-list><attribute>additional</attribute></attribute-list>"));

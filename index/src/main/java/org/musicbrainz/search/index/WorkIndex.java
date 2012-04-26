@@ -108,10 +108,11 @@ public class WorkIndex extends DatabaseIndex {
                         " WHERE work BETWEEN ? AND ?");
 
         addPreparedStatement("WORKS",
-                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, comment " +
+                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, l.iso_code_3 as language, comment " +
                         " FROM work AS w " +
                         "  LEFT JOIN work_name wn ON w.name = wn.id " +
                         "  LEFT JOIN work_type wt ON w.type = wt.id " +
+                        "  LEFT JOIN language l on w.language = l.id " +
                         " WHERE w.id BETWEEN ? AND ? " +
                         " ORDER BY w.id");
     }
@@ -308,7 +309,7 @@ public class WorkIndex extends DatabaseIndex {
         String name = rs.getString("name");
         doc.addField(WorkIndexField.WORK, name);
         doc.addField(WorkIndexField.WORK_ACCENT, name);
-
+        doc.addFieldOrNoValue(WorkIndexField.LYRICS_LANG,rs.getString("language"));
         doc.addFieldOrNoValue(WorkIndexField.TYPE, rs.getString("type"));
         doc.addFieldOrNoValue(WorkIndexField.COMMENT, rs.getString("comment"));
 
