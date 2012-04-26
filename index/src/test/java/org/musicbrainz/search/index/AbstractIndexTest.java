@@ -92,6 +92,7 @@ public abstract class AbstractIndexTest {
 
                 stmt.addBatch("DROP TABLE artist");
                 stmt.addBatch("DROP TABLE artist_alias");
+                stmt.addBatch("DROP TABLE artist_alias_type");
                 stmt.addBatch("DROP TABLE artist_name");
                 stmt.addBatch("DROP TABLE artist_type");
                 stmt.addBatch("DROP TABLE artist_credit");
@@ -101,6 +102,7 @@ public abstract class AbstractIndexTest {
 
                 stmt.addBatch("DROP TABLE label");
                 stmt.addBatch("DROP TABLE label_alias");
+                stmt.addBatch("DROP TABLE label_alias_type");
                 stmt.addBatch("DROP TABLE label_name");
                 stmt.addBatch("DROP TABLE label_type");
                 stmt.addBatch("DROP TABLE label_tag");
@@ -148,6 +150,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE work");
                 stmt.addBatch("DROP TABLE iswc");
                 stmt.addBatch("DROP TABLE work_alias");
+                stmt.addBatch("DROP TABLE work_alias_type");
                 stmt.addBatch("DROP TABLE work_name");
                 stmt.addBatch("DROP TABLE work_type");
                 stmt.addBatch("DROP TABLE work_tag");
@@ -256,9 +259,22 @@ public abstract class AbstractIndexTest {
                 "  id serial NOT NULL," +
                 "  artist integer NOT NULL," +
                 "  name integer NOT NULL," +
+                "  sort_name INTEGER," +
+                "  type                INTEGER," +
+                "  begin_date_year     SMALLINT," +
+                "  begin_date_month    SMALLINT," +
+                "  begin_date_day      SMALLINT," +
+                "  end_date_year       SMALLINT," +
+                "  end_date_month      SMALLINT," +
+                "  end_date_day        SMALLINT," +
                 "  locale text," +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE artist_alias_type (" +
+                " id SERIAL,"  +
+                " name TEXT" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_name (" +
@@ -310,8 +326,21 @@ public abstract class AbstractIndexTest {
                 "  id serial NOT NULL," +
                 "  label integer NOT NULL," +
                 "  name integer NOT NULL," +
+                "  sort_name INTEGER," +
+                "  type                INTEGER," +
+                "  begin_date_year     SMALLINT," +
+                "  begin_date_month    SMALLINT," +
+                "  begin_date_day      SMALLINT," +
+                "  end_date_year       SMALLINT," +
+                "  end_date_month      SMALLINT," +
+                "  end_date_day        SMALLINT," +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE label_alias_type (" +
+                " id SERIAL,"  +
+                " name TEXT" +
                 ")");
 
         stmt.addBatch("CREATE TABLE label_name (" +
@@ -639,8 +668,21 @@ public abstract class AbstractIndexTest {
                 "  id serial NOT NULL," +
                 "  work integer NOT NULL," +
                 "  name integer NOT NULL," +
+                "  sort_name INTEGER," +
+                "  type                INTEGER," +
+                "  begin_date_year     SMALLINT," +
+                "  begin_date_month    SMALLINT," +
+                "  begin_date_day      SMALLINT," +
+                "  end_date_year       SMALLINT," +
+                "  end_date_month      SMALLINT," +
+                "  end_date_day        SMALLINT," +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE work_alias_type (" +
+                " id SERIAL,"  +
+                " name TEXT" +
                 ")");
 
         stmt.addBatch("CREATE TABLE work_name (" +
@@ -824,6 +866,13 @@ public abstract class AbstractIndexTest {
                 "(15, 'Piano Roll', 1883), " +
                 "(16, 'DCC', 1992) "
         );
+
+        stmt.addBatch("INSERT INTO artist_alias_type (id, name) VALUES (1, 'Search hint')");
+
+        stmt.addBatch("INSERT INTO label_alias_type (id, name) VALUES (1, 'Search hint')");
+
+        stmt.addBatch("INSERT INTO work_alias_type (id, name) VALUES (1, 'Search hint')");
+
     }
     
     protected void insertReplicationInfo(Statement stmt) throws Exception {

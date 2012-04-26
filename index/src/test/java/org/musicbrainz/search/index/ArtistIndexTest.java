@@ -49,12 +49,15 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (3, 'Echo & The Bunnyman')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (4, 'Echo And The Bunnymen')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (5, 'Bunnymen Orchestra')");
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (6, 'Buunymen, Echo And The')");
 
-        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (1, 16153, 2)");
+        stmt.addBatch("INSERT INTO artist_alias (id, sort_name, type, artist, name, begin_date_year,begin_date_month,begin_date_day) " +
+                " VALUES (1, 6, 1, 16153, 2,1978,05,01)");
+
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
         stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (5, 'Bunnymen Orchestra')");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
                 " VALUES (1, 0, 16153, 5)");
 
@@ -64,6 +67,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, comment, begin_date_year, end_date_year, type)" +
                    " VALUES (16153, 1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 'a comment', 1978, 1995, 2)");
+
+
         stmt.executeBatch();
         stmt.close();
     }
