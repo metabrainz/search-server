@@ -44,6 +44,7 @@ public class FindWorkTest {
             doc.addField(WorkIndexField.WORK_ID, "4ff89cf0-86af-11de-90ed-001fc6f176ff");
             doc.addField(WorkIndexField.WORK, "Symphony No. 5");
             doc.addField(WorkIndexField.ISWC, "T-101779304-1");
+            doc.addField(WorkIndexField.ISWC, "B-101779304-1");
             doc.addField(WorkIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
             doc.addField(WorkIndexField.ARTIST, "Пётр Ильич Чайковский");
             doc.addField(WorkIndexField.COMMENT, "demo");

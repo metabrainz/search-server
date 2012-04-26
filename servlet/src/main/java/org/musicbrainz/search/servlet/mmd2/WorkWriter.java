@@ -71,9 +71,15 @@ public class WorkWriter extends ResultsWriter {
                 work.setLanguage(lyricsLanguage);
             }
             
-            String iswc = doc.get(WorkIndexField.ISWC);
-            if (isNotNoValue(iswc)) {
-                work.setIswc(iswc);
+            String[] iswcs = doc.getValues(WorkIndexField.ISWC);
+            if(iswcs.length>0)
+            {
+                IswcList iswcList = of.createIswcList();
+                for(int i=0;i<iswcs.length;i++)
+                {
+                    iswcList.getIswc().add(iswcs[0]);
+                }
+                work.setIswcList(iswcList);
             }
 
             String artistRelation = doc.get(WorkIndexField.ARTIST_RELATION);
