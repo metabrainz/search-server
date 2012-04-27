@@ -7,6 +7,7 @@ class ReleaseWrapper {
 
     private String  releaseId;
     private String  releaseName;
+    private String  status;
 
     public String getReleaseId() {
         return releaseId;
@@ -25,4 +26,11 @@ class ReleaseWrapper {
     }
 
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

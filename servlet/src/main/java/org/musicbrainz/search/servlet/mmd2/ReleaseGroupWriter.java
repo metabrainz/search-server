@@ -72,12 +72,16 @@ public class ReleaseGroupWriter extends ResultsWriter {
 
             String[] releaseIds          = doc.getValues(ReleaseGroupIndexField.RELEASE_ID);
             String[] releaseNames        = doc.getValues(ReleaseGroupIndexField.RELEASE);
+            String[] releaseStatuses     = doc.getValues(ReleaseGroupIndexField.RELEASESTATUS);
+
             ReleaseList releaseList = of.createReleaseList();
             releaseList.setCount(BigInteger.valueOf(releaseIds.length));
             for(int i =0; i< releaseIds.length; i++) {
                 Release release = of.createRelease();
                 release.setId(releaseIds[i]);
                 release.setTitle(releaseNames[i]);
+                release.setStatus(releaseStatuses[i]);
+
                 releaseList.getRelease().add(release);
             }
             releaseGroup.setReleaseList(releaseList);

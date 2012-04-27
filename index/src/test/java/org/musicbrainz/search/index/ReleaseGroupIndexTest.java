@@ -176,8 +176,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (1,1)");
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (1,2)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group) " +
-                " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status) " +
+                " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 1, 1)");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'punk', 2)");
         stmt.addBatch("INSERT INTO release_group_tag (release_group, tag, count) VALUES (1, 1, 10)");
@@ -445,6 +445,23 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
             assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TAG.getName()).length);
             assertEquals("punk", doc.getFieldable(ReleaseGroupIndexField.TAG.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexReleaseGroupWithStatus() throws Exception {
+
+        addReleaseGroupFour();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASESTATUS.getName()).length);
+            assertEquals("Official", doc.getFieldable(ReleaseGroupIndexField.RELEASESTATUS.getName()).stringValue());
         }
         ir.close();
     }

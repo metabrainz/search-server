@@ -38,10 +38,7 @@ import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ReleaseGroupIndex extends DatabaseIndex {
 
@@ -99,9 +96,10 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
 
         addPreparedStatement("RELEASES",
-                "SELECT DISTINCT release_group, release.gid as gid, n0.name as name " +
+                "SELECT DISTINCT release_group, release.gid as gid, n0.name as name, rs.name as status " +
                 " FROM release " +
                 "  LEFT JOIN release_name n0 ON release.name = n0.id " +
+                "  LEFT JOIN release_status rs ON release.status = rs.id " +
                 " WHERE release_group BETWEEN ? AND ?");
 
         addPreparedStatement("ARTISTCREDITS",
@@ -184,6 +182,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
             ReleaseWrapper rw = new ReleaseWrapper();
             rw.setReleaseId(rs.getString("gid"));
             rw.setReleaseName(rs.getString("name"));
+            rw.setStatus(rs.getString("status"));
             list.add(rw);
         }
         rs.close();
@@ -304,6 +303,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
             for (ReleaseWrapper release : releases.get(id)) {
                 doc.addFieldOrNoValue(ReleaseGroupIndexField.RELEASE, release.getReleaseName());
                 doc.addFieldOrNoValue(ReleaseGroupIndexField.RELEASE_ID, release.getReleaseId());
+                doc.addFieldOrNoValue(ReleaseGroupIndexField.RELEASESTATUS, release.getStatus());
             }
             doc.addNumericField(ReleaseGroupIndexField.NUM_RELEASES, releases.get(id).size());
         }

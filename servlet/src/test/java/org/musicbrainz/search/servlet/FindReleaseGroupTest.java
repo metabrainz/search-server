@@ -50,6 +50,7 @@ public class FindReleaseGroupTest {
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
         doc.addField(ReleaseGroupIndexField.RELEASE_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c46");
+        doc.addField(ReleaseGroupIndexField.RELEASESTATUS, "Official");
         doc.addField(ReleaseGroupIndexField.RELEASE, "secret");
         doc.addField(ReleaseGroupIndexField.TAG, "indie");
         doc.addField(ReleaseGroupIndexField.TAGCOUNT, "101");
@@ -139,6 +140,16 @@ public class FindReleaseGroupTest {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+    @Test
+    public void testFindReleaseGroupByReleaseStatus() throws Exception {
+        Results res = ss.searchLucene("status:official", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
     @Test
     public void testFindReleaseGroupByDismax1() throws Exception {
         Results res = sd.searchLucene("Twisting", 0, 10);
@@ -373,7 +384,7 @@ public class FindReleaseGroupTest {
         assertTrue(output.contains("artist id=\"707622da-475f-48e1-905d-248718df6521\""));
         assertTrue(output.contains("type=\"Single\""));
         assertTrue(output.contains("release-list count=\"1\""));
-        assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title></release>"));
+        assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title><status>Official</status></release>"));
         assertTrue(output.contains("indie</name>"));
 
 
