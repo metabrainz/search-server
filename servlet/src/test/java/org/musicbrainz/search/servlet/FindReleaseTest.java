@@ -58,6 +58,9 @@ public class FindReleaseTest {
         doc.addField(ReleaseIndexField.ARTIST_NAME, "Farming Incident");
         doc.addField(ReleaseIndexField.ARTIST_NAMECREDIT, "Farming Incident");
         doc.addField(ReleaseIndexField.COMMENT, "demo");
+        doc.addField(ReleaseIndexField.SECONDARY_TYPE, "Live");
+        doc.addField(ReleaseIndexField.SECONDARY_TYPE, "Compilation");
+
 
         ArtistCredit ac = of.createArtistCredit();
         NameCredit nc = of.createNameCredit();
@@ -520,6 +523,28 @@ public class FindReleaseTest {
     }
 
     @Test
+    public void testFindReleaseBySecondaryTypeFirst() throws Exception {
+        Results res = ss.searchLucene("secondarytype:\"Live\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    @Test
+    public void testFindReleaseBySecondaryTypeSecond() throws Exception {
+        Results res = ss.searchLucene("secondarytype:\"Compilation\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    @Test
     public void testFindReleaseByTypeTitleCase() throws Exception {
         Results res = ss.searchLucene("type:\"Album\"", 0, 10);
         assertEquals(1, res.totalHits);
@@ -710,6 +735,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("<label id=\"c1dfaf9c-d498-4f6c-b040-f7714315fcea\"><name>Major Records</name></label>"));
         assertTrue(output.contains("<catalog-number>WRATHCD25</catalog-number>"));
         assertTrue(output.contains("<medium-list count=\"2\">"));
+        assertTrue(output.contains("<secondary-type-list><secondary-type>Live</secondary-type><secondary-type>Compilation</secondary-type></secondary-type-list>"));
     }
 
     @Test
@@ -736,6 +762,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"barcode\":\"07599273202\""));
         assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
         assertTrue(output.contains("\"track-count\":17"));
+        assertTrue(output.contains("\"secondary-type-list\":{\"secondary-type\":[\"Live\",\"Compilation\"]}}"));
 
     }
 }

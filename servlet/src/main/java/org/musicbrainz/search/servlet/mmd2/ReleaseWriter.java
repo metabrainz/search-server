@@ -33,6 +33,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -71,6 +72,15 @@ public class ReleaseWriter extends ResultsWriter {
             release.setReleaseGroup(rg);
             if (isNotUnknown(type)){
                 release.getReleaseGroup().setType(type);
+            }
+
+            String[] secondaryTypes = doc.getValues(ReleaseIndexField.SECONDARY_TYPE);
+            if(secondaryTypes.length>0) {
+                SecondaryTypeList stl = of.createSecondaryTypeList();
+                for(int i =0; i< secondaryTypes.length; i++) {
+                    stl.getSecondaryType().add(secondaryTypes[i]);
+                }
+                release.getReleaseGroup().setSecondaryTypeList(stl);
             }
 
             String rgid = doc.get(ReleaseIndexField.RELEASEGROUP_ID);
