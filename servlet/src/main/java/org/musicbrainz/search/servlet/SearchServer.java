@@ -301,7 +301,7 @@ public abstract class SearchServer implements Callable<Results> {
             TopDocs topdocs = searcher.search(parsedQuery, offset + limit);
             ScoreDoc docs[] = topdocs.scoreDocs;
             float maxScore = topdocs.getMaxScore();
-            sb.append("<p>Query:"+parsedQuery.toString()+"</p>");
+            sb.append("<p>Query:"+parsedQuery.toString()+"</p>\n");
             for (int i =0; i < docs.length; i++) {
                 explainAndDisplayResult(i, sb, searcher, parsedQuery, docs[i], maxScore);
             }
@@ -325,7 +325,7 @@ public abstract class SearchServer implements Callable<Results> {
      */
     protected void explainAndDisplayResult(int i, StringBuffer sb, IndexSearcher searcher, Query query, ScoreDoc scoreDoc, float maxScore)
             throws IOException, ParseException {
-        sb.append("<p>"+i+":Score:"+(scoreDoc.score /maxScore) * 100 +"</p>\n</br>");
+        sb.append("<p>"+i+":Score:"+(scoreDoc.score /maxScore) * 100);
         sb.append(printExplainHeader(searcher.doc(scoreDoc.doc)));
         sb.append(searcher.explain(query, scoreDoc.doc).toHtml()+"</p>\n");
 
