@@ -292,7 +292,7 @@ public abstract class SearchServer implements Callable<Results> {
     public String explain(String query, int offset, int limit) throws IOException, ParseException {
         IndexSearcher searcher=null;
         StringBuffer sb = new StringBuffer("<html>\n<head>\n");
-        sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+        sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=\"UTF-8\"\">\n");
         sb.append("</head>\n<body>");
         try {
             searcher = getIndexSearcher();
