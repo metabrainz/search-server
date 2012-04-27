@@ -292,7 +292,7 @@ public abstract class SearchServer implements Callable<Results> {
     public String explain(String query, int offset, int limit) throws IOException, ParseException {
         IndexSearcher searcher=null;
         StringBuffer sb = new StringBuffer("<html>\n<head>\n");
-        sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=\"UTF-8\"\">\n");
+        sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
         sb.append("</head>\n<body>");
         try {
             searcher = getIndexSearcher();
@@ -325,7 +325,7 @@ public abstract class SearchServer implements Callable<Results> {
      */
     protected void explainAndDisplayResult(int i, StringBuffer sb, IndexSearcher searcher, Query query, ScoreDoc scoreDoc, float maxScore)
             throws IOException, ParseException {
-        sb.append("<p>"+i+":Score:"+(scoreDoc.score /maxScore) * 100 +"</br>");
+        sb.append("<p>"+i+":Score:"+(scoreDoc.score /maxScore) * 100 +"</p>\n</br>");
         sb.append(printExplainHeader(searcher.doc(scoreDoc.doc)));
         sb.append(searcher.explain(query, scoreDoc.doc).toHtml()+"</p>\n");
 
