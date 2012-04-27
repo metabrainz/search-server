@@ -56,6 +56,8 @@ public class FindReleaseGroupTest {
         doc.addField(ReleaseGroupIndexField.TAGCOUNT, "101");
 
         doc.addField(ReleaseGroupIndexField.TYPE, "Single");
+        doc.addField(ReleaseGroupIndexField.SECONDARY_TYPE, "Live");
+
         doc.addField(ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
         doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
         doc.addField(ReleaseGroupIndexField.ARTIST, "The Wedding Present");
@@ -226,9 +228,22 @@ public class FindReleaseGroupTest {
         assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
+
+
     @Test
     public void testFindReleaseGroupByType() throws Exception {
         Results res = ss.searchLucene("type:\"single\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    @Test
+    public void testFindReleaseGroupBySecondaryType() throws Exception {
+        Results res = ss.searchLucene("secondarytype:\"live\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -386,8 +401,7 @@ public class FindReleaseGroupTest {
         assertTrue(output.contains("release-list count=\"1\""));
         assertTrue(output.contains("<release id=\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"><title>secret</title><status>Official</status></release>"));
         assertTrue(output.contains("indie</name>"));
-
-
+        assertTrue(output.contains("<secondary-type-list><secondary-type>Live</secondary-type></secondary-type-list>"));
     }
 
 

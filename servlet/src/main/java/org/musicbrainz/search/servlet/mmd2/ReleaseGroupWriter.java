@@ -65,6 +65,15 @@ public class ReleaseGroupWriter extends ResultsWriter {
                 releaseGroup.setType(type);
             }
 
+            String[] secondaryTypes = doc.getValues(ReleaseGroupIndexField.SECONDARY_TYPE);
+            if(secondaryTypes.length>0) {
+                SecondaryTypeList stl = of.createSecondaryTypeList();
+                for(int i =0; i< secondaryTypes.length; i++) {
+                    stl.getSecondaryType().add(secondaryTypes[i]);
+                }
+                releaseGroup.setSecondaryTypeList(stl);
+            }
+            
             if(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT)!=null) {
                 ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
                 releaseGroup.setArtistCredit(ac);
