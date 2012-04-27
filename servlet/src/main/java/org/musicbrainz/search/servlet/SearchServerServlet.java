@@ -483,8 +483,8 @@ public class SearchServerServlet extends HttpServlet {
             String explainationOutput = searchServer.explain(query, offset, limit);
             response.setCharacterEncoding(CHARSET);
             response.setContentType("text/html");
-            response.getOutputStream().println(explainationOutput);
-            response.getOutputStream().close();
+            response.getWriter().println(explainationOutput);
+            response.getWriter().close();
             return;
         }
                 
