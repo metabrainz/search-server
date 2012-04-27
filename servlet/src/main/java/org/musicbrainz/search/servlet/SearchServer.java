@@ -291,7 +291,8 @@ public abstract class SearchServer implements Callable<Results> {
      */
     public String explain(String query, int offset, int limit) throws IOException, ParseException {
         IndexSearcher searcher=null;
-        StringBuffer sb = new StringBuffer("<html lang=\"en\">\n<head>\n");
+        StringBuffer sb = new StringBuffer("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
+        sb.append("<html lang=\"en\">\n<head>\n");
         sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
         sb.append("</head>\n<body>");
         try {
