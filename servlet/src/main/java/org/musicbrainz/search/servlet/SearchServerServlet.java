@@ -265,8 +265,8 @@ public class SearchServerServlet extends HttpServlet {
                 init(init.equals("mmap"));
                 response.setCharacterEncoding(CHARSET);
                 response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getOutputStream().println("Indexes Loaded:");
-                response.getOutputStream().close();
+                response.getWriter().println("Indexes Loaded:");
+                response.getWriter().close();
                 return;
             } else {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -284,8 +284,8 @@ public class SearchServerServlet extends HttpServlet {
                 initRateLimiter(rate);
                 response.setCharacterEncoding(CHARSET);
                 response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getOutputStream().println("Rate Limiter:" + rate);
-                response.getOutputStream().close();
+                response.getWriter().println("Rate Limiter:" + rate);
+                response.getWriter().close();
                 return;
             } else {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -301,8 +301,8 @@ public class SearchServerServlet extends HttpServlet {
                 reloadIndexes();
                 response.setCharacterEncoding(CHARSET);
                 response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getOutputStream().println("Indexes Reloaded");
-                response.getOutputStream().close();
+                response.getWriter().println("Indexes Reloaded");
+                response.getWriter().close();
                 return;
             } else {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -324,8 +324,8 @@ public class SearchServerServlet extends HttpServlet {
             SearchServer searchServerCount = searchers.get(resourceType);
             response.setCharacterEncoding(CHARSET);
             response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-            response.getOutputStream().println(searchServerCount.getCount());
-            response.getOutputStream().close();
+            response.getWriter().println(searchServerCount.getCount());
+            response.getWriter().close();
             return;
         }
 
