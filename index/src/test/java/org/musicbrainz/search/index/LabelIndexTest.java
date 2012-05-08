@@ -39,8 +39,9 @@ public class LabelIndexTest extends AbstractIndexTest {
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, begin_date_year,ipi_code) " +
-					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, 1979,'1001')");
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, begin_date_year) " +
+					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, 1979)");
+        stmt.addBatch("INSERT INTO label_ipi (label, ipi) values(1,'1001')");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (1, 2)");
 
         stmt.executeBatch();

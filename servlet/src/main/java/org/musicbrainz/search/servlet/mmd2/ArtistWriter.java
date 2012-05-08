@@ -72,14 +72,17 @@ public class ArtistWriter extends ResultsWriter {
             String name = doc.get(ArtistIndexField.ARTIST);
             if (name != null) {
                 artist.setName(name);
-
             }
 
-            String ipi = doc.get(ArtistIndexField.IPI);
-            if (isNotNoValue(ipi)) {
-                artist.setIpi(ipi);
+            String[] ipiCodes = doc.getValues(ArtistIndexField.IPI);
+            if (ipiCodes.length > 0) {
+                IpiList ipiList = of.createIpiList();
+                for (int i = 0; i < ipiCodes.length; i++) {
+                    ipiList.getIpi().add(ipiCodes[i]);
+                }
+                artist.setIpiList(ipiList);
             }
-
+            
             String sortname = doc.get(ArtistIndexField.SORTNAME);
             if (sortname != null) {
                 artist.setSortName(sortname);

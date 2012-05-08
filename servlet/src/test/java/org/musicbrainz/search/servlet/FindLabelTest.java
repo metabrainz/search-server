@@ -377,6 +377,7 @@ public class FindLabelTest {
         assertTrue(output.contains("<label-code>1234</label-code>"));
         assertTrue(output.contains("<country>GB</country>"));
         assertTrue(output.contains("dance</name>"));
+        assertTrue(output.contains("<ipi-list><ipi>1001</ipi></ipi-list>"));
     }
 
     @Test

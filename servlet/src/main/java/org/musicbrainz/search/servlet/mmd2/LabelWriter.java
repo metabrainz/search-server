@@ -32,6 +32,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -59,12 +60,15 @@ public class LabelWriter extends ResultsWriter {
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {
                 label.setName(name);
+}
 
-            }
-
-            String ipi = doc.get(LabelIndexField.IPI);
-            if (isNotNoValue(ipi)) {
-                label.setIpi(ipi);
+            String[] ipiCodes = doc.getValues(LabelIndexField.IPI);
+            if (ipiCodes.length > 0) {
+                IpiList ipiList = of.createIpiList();
+                for (int i = 0; i < ipiCodes.length; i++) {
+                    ipiList.getIpi().add(ipiCodes[i]);
+                }
+                label.setIpiList(ipiList);
             }
 
             String code = doc.get(LabelIndexField.CODE);

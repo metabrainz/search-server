@@ -354,6 +354,7 @@ public class FindArtistTest {
     /**
      * @throws Exception
      */
+    @Test
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
@@ -364,7 +365,7 @@ public class FindArtistTest {
         pr.close();
 
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        System.out.println("Xml1 is" + output);
         assertTrue(output.contains("id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
         assertTrue(output.contains("count=\"1\""));
@@ -375,6 +376,7 @@ public class FindArtistTest {
         assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
         assertTrue(output.contains("<country>AF</country>"));
         assertTrue(output.contains("<gender>male</gender>"));
+        assertTrue(output.contains("<ipi-list><ipi>1001</ipi></ipi-list>"));
         assertTrue(output.contains("thrash</name>"));
         assertTrue(output.contains("güth</name>"));
         assertFalse(output.contains("alias"));
@@ -384,6 +386,7 @@ public class FindArtistTest {
     /**
      * @throws Exception
      */
+    @Test
     public void testOutputXml2() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Echo & the Bunnymen\"", 0, 1);
@@ -393,7 +396,7 @@ public class FindArtistTest {
         v1Writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        System.out.println("Xml2 is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("type=\"group\""));
@@ -409,6 +412,7 @@ public class FindArtistTest {
     /**
      * @throws Exception
      */
+    @Test
     public void testOutputXml3() throws Exception {
 
         Results res = ss.searchLucene("artist:\"PJ Harvey\"", 0, 1);
@@ -418,7 +422,7 @@ public class FindArtistTest {
         v1Writer.write(pr, res);
         pr.close();
         String output = sw.toString();
-        System.out.println("Xml is" + output);
+        System.out.println("Xml3 is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("type=\"person\""));
@@ -431,6 +435,7 @@ public class FindArtistTest {
      *
      * @throws Exception
      */
+    @Test
     public void testOutputAsMmd1XmlSpecialCharacters() throws Exception {
 
         Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 1);
@@ -451,6 +456,7 @@ public class FindArtistTest {
     /**
      * @throws Exception
      */
+    @Test
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
@@ -475,6 +481,7 @@ public class FindArtistTest {
         assertTrue(output.contains("\"tag\":[{\"count\":5,\"name\":\"thrash\"},{\"count\":11,\"name\":\"güth\"}"));
     }
 
+    @Test
     public void testOutputJsonMultiple() throws Exception {
         Results res = ss.searchLucene("artist:\"Farming Incident\" OR artist:\"Echo & The Bunnymen\"", 0, 2);
 

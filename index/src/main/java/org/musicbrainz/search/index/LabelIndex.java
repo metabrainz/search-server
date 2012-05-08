@@ -105,14 +105,43 @@ public class LabelIndex extends DatabaseIndex {
                 "SELECT label.id, gid, n0.name as name, n1.name as sort_name, " +
                 "  label_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
                 "  end_date_year, end_date_month, end_date_day, " +
-                "  comment, label_code, lower(iso_code) as country, ipi_code " +
+                "  comment, label_code, lower(iso_code) as country " +
                 " FROM label " +
                 "  LEFT JOIN label_name n0 ON label.name = n0.id " +
                 "  LEFT JOIN label_name n1 ON label.sort_name = n1.id " +
                 "  LEFT JOIN label_type ON label.type = label_type.id " +
                 "  LEFT JOIN country ON label.country = country.id " +
                 " WHERE label.id BETWEEN ? AND ?");
+
+        addPreparedStatement("IPICODES",
+                "SELECT ipi, label " +
+                        " FROM label_ipi  " +
+                        " WHERE label between ? AND ?");
+
     }
+
+    private  Map<Integer, List<String>> loadIpiCodes(int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> ipiCodes = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("IPICODES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int artistId = rs.getInt("label");
+
+            List<String> list;
+            if (!ipiCodes.containsKey(artistId)) {
+                list = new LinkedList<String>();
+                ipiCodes.put(artistId, list);
+            } else {
+                list = ipiCodes.get(artistId);
+            }
+            list.add(rs.getString("ipi"));
+        }
+        rs.close();
+        return ipiCodes;
+    }
+
 
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
@@ -124,6 +153,10 @@ public class LabelIndex extends DatabaseIndex {
         ResultSet rs = st.executeQuery();
         Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"label");
         rs.close();
+
+        // IPI Codes
+        Map<Integer, List<String>> ipiCodes = loadIpiCodes(min,max);
+
 
         // Get labels aliases
         Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
@@ -156,13 +189,14 @@ public class LabelIndex extends DatabaseIndex {
             {
                 continue;
             }
-            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, ipiCodes, aliases));
         }
         rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer,List<Tag>> tags,
+                                          Map<Integer, List<String>> ipiCodes,
                                           Map<Integer, List<String>> aliases) throws SQLException {
 
         MbDocument doc = new MbDocument();
@@ -195,8 +229,6 @@ public class LabelIndex extends DatabaseIndex {
             doc.addField(LabelIndexField.CODE,Index.NO_VALUE);
         }
 
-        doc.addFieldOrNoValue(LabelIndexField.IPI, rs.getString("ipi_code"));
-
         if (aliases.containsKey(labelId)) {
             for (String alias : aliases.get(labelId)) {
                 doc.addField(LabelIndexField.ALIAS, alias);
@@ -207,6 +239,12 @@ public class LabelIndex extends DatabaseIndex {
             for (Tag tag : tags.get(labelId)) {
                 doc.addField(LabelIndexField.TAG, tag.getName());
                 doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
+            }
+        }
+
+        if (ipiCodes.containsKey(labelId)) {
+            for (String ipiCode : ipiCodes.get(labelId)) {
+                doc.addField(ArtistIndexField.IPI, ipiCode);
             }
         }
 

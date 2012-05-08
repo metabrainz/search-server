@@ -123,7 +123,7 @@ public class ArtistIndex extends DatabaseIndex {
                 "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
                 "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
                 "  end_date_year, end_date_month, end_date_day, " +
-                "  comment, lower(iso_code) as country, lower(gender.name) as gender, ipi_code " +
+                "  comment, lower(iso_code) as country, lower(gender.name) as gender " +
                 " FROM artist " +
                 "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
                 "  LEFT JOIN artist_name n1 ON artist.sort_name = n1.id " +
@@ -131,8 +131,36 @@ public class ArtistIndex extends DatabaseIndex {
                 "  LEFT JOIN country ON artist.country = country.id " +
                 "  LEFT JOIN gender ON artist.gender=gender.id " +
                 " WHERE artist.id BETWEEN ? AND ?");
+
+        addPreparedStatement("IPICODES",
+                "SELECT ipi, artist " +
+                " FROM artist_ipi  " +
+                " WHERE artist between ? AND ?");
+
     }
 
+    private  Map<Integer, List<String>> loadIpiCodes(int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> ipiCodes = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("IPICODES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int artistId = rs.getInt("artist");
+
+            List<String> list;
+            if (!ipiCodes.containsKey(artistId)) {
+                list = new LinkedList<String>();
+                ipiCodes.put(artistId, list);
+            } else {
+                list = ipiCodes.get(artistId);
+            }
+            list.add(rs.getString("ipi"));
+        }
+        rs.close();
+        return ipiCodes;
+    }
+    
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         // Get Tags
@@ -143,6 +171,9 @@ public class ArtistIndex extends DatabaseIndex {
         Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"artist");
         rs.close();
 
+        // IPI Codes
+        Map<Integer, List<String>> ipiCodes = loadIpiCodes(min,max);
+        
         //Aliases (and Artist Credits)
         Map<Integer, Set<String>> aliases = new HashMap<Integer, Set<String>>();
         st = getPreparedStatement("ALIASES");
@@ -173,13 +204,14 @@ public class ArtistIndex extends DatabaseIndex {
             {
                 continue;
             }
-            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, ipiCodes, aliases));
         }
         rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer,List<Tag>> tags,
+                                          Map<Integer, List<String>> ipiCodes,
                                           Map<Integer, Set<String>> aliases) throws SQLException {
 
         MbDocument doc = new MbDocument();
@@ -218,8 +250,6 @@ public class ArtistIndex extends DatabaseIndex {
             }
         }
 
-        doc.addFieldOrNoValue(ArtistIndexField.IPI, rs.getString("ipi_code"));
-
         if (aliases.containsKey(artistId)) {
             for (String alias : aliases.get(artistId)) {
                 //Ignore artist credits that are identical to artist name
@@ -236,6 +266,13 @@ public class ArtistIndex extends DatabaseIndex {
                 doc.addField(ArtistIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }
+
+        if (ipiCodes.containsKey(artistId)) {
+            for (String ipiCode : ipiCodes.get(artistId)) {
+                doc.addField(ArtistIndexField.IPI, ipiCode);
+            }
+        }
+
 
         ArtistBoostDoc.boost(artistGuid, doc);
         return doc.getLuceneDocument();

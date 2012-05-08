@@ -99,6 +99,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE artist_credit_name");
                 stmt.addBatch("DROP TABLE gender");
                 stmt.addBatch("DROP TABLE artist_tag");
+                stmt.addBatch("DROP TABLE artist_ipi");
 
                 stmt.addBatch("DROP TABLE label");
                 stmt.addBatch("DROP TABLE label_alias");
@@ -106,6 +107,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE label_name");
                 stmt.addBatch("DROP TABLE label_type");
                 stmt.addBatch("DROP TABLE label_tag");
+                stmt.addBatch("DROP TABLE label_ipi");
 
                 stmt.addBatch("DROP TABLE release");
                 stmt.addBatch("DROP TABLE release_meta");
@@ -234,7 +236,6 @@ public abstract class AbstractIndexTest {
                 "  country integer," +
                 "  gender integer," +
                 "  comment character varying(255)," +
-                "  ipi_code VARCHAR(11)," +
                 "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");
@@ -299,6 +300,18 @@ public abstract class AbstractIndexTest {
                 "  count integer NOT NULL," +
                 "  last_updated timestamp," +
                 ")");
+
+
+        stmt.addBatch("CREATE TABLE artist_ipi" +
+                   "(" +
+                   " artist              INTEGER," +
+                   " ipi                 VARCHAR(11)," +
+                   " edits_pending       INTEGER," +
+                   " created             TIMESTAMP" +
+                   " )"
+                   );
+
+
     }
 
     protected void setupLabelTables(Statement stmt) throws Exception {
@@ -317,7 +330,6 @@ public abstract class AbstractIndexTest {
                 "  type integer," +
                 "  country integer," +
                 "  comment character varying(255)," +
-                "  ipi_code VARCHAR(11)," +
                 "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");
@@ -359,6 +371,15 @@ public abstract class AbstractIndexTest {
                 "  count integer NOT NULL," +
                 "  last_updated timestamp" +
                 ")");
+
+        stmt.addBatch("CREATE TABLE label_ipi" +
+                "(" +
+                " label              INTEGER," +
+                " ipi                 VARCHAR(11)," +
+                " edits_pending       INTEGER," +
+                " created             TIMESTAMP" +
+                " )"
+        );
     }
 
     protected void setupReleaseTables(Statement stmt) throws Exception {
