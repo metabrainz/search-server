@@ -346,13 +346,16 @@ public class ReleaseIndex extends DatabaseIndex {
         doc.addField(ReleaseIndexField.RELEASE, name );
         doc.addField(ReleaseIndexField.RELEASE_ACCENT, name);
 
-        doc.addFieldOrUnknown(ReleaseIndexField.TYPE, rs.getString("type"));
-
+        String primaryType = rs.getString("type");
+        doc.addFieldOrUnknown(ReleaseIndexField.PRIMARY_TYPE, primaryType);
         if (secondaryTypes.containsKey(id)) {
             for (String secondaryType : secondaryTypes.get(id)) {
                 doc.addField(ReleaseIndexField.SECONDARY_TYPE, secondaryType);
             }
         }
+        String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType, secondaryTypes.get(id));
+        doc.addFieldOrUnknown(ReleaseIndexField.TYPE, type);
+
 
         doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rg_gid"));
         doc.addFieldOrUnknown(ReleaseIndexField.STATUS, rs.getString("status"));

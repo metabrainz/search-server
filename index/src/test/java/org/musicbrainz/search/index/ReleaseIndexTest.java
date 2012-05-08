@@ -154,8 +154,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
-        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2)");
 
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,1)");
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,2)");
@@ -837,6 +837,14 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(ReleaseIndexField.RELEASE.getName()).length);
+
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
+            assertEquals("Album", doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName())[0].stringValue());
+
+            //NOte old type field maps secondary type to compilation
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TYPE.getName()).length);
+            assertEquals("Compilation", doc.getFieldables(ReleaseGroupIndexField.TYPE.getName())[0].stringValue());
+
             assertEquals(2, doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName()).length);
             assertEquals("Compilation", doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName())[0].stringValue());
             assertEquals("Soundtrack", doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName())[1].stringValue());

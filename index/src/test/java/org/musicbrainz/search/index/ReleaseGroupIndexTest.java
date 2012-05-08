@@ -255,8 +255,12 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TYPE.getName()).length);
+            assertEquals("Album", doc.getFieldable(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
             assertEquals("Album", doc.getFieldable(ReleaseGroupIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TYPE.getName()).length);
+
+            assertEquals("Album", doc.getFieldable(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -477,6 +481,13 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
+            assertEquals("Album", doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName())[0].stringValue());
+
+            //NOte old type field maps secondary type to compilation
+            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TYPE.getName()).length);
+            assertEquals("Compilation", doc.getFieldables(ReleaseGroupIndexField.TYPE.getName())[0].stringValue());
+
             assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
             assertEquals(2, doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName()).length);
             assertEquals("Compilation", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[0].stringValue());

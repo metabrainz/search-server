@@ -275,6 +275,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         return secondaryTypes;
     }
 
+
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<String>> secondaryTypes,
                                           Map<Integer,List<Tag>> tags,
@@ -288,13 +289,16 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP, name);
         doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ACCENT, name);
 
-        doc.addFieldOrUnknown(ReleaseGroupIndexField.TYPE, rs.getString("type"));
+        String primaryType = rs.getString("type");
+        doc.addFieldOrUnknown(ReleaseGroupIndexField.PRIMARY_TYPE, primaryType);
 
         if (secondaryTypes.containsKey(id)) {
             for (String secondaryType : secondaryTypes.get(id)) {
                 doc.addField(ReleaseGroupIndexField.SECONDARY_TYPE, secondaryType);
             }
         }
+        String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType, secondaryTypes.get(id));
+        doc.addFieldOrUnknown(ReleaseGroupIndexField.TYPE, type);
 
         doc.addFieldOrNoValue(ReleaseGroupIndexField.COMMENT, rs.getString("comment"));
 
