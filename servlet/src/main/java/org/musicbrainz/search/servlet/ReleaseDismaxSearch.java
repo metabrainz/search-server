@@ -46,7 +46,7 @@ public class ReleaseDismaxSearch extends ReleaseSearch {
         fieldBoosts.put(ReleaseIndexField.RELEASE_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.4f));
         fieldBoosts.put(ReleaseIndexField.RELEASE.getName(), new DismaxAlias.AliasField(true, 1.2f));
         fieldBoosts.put(ReleaseIndexField.BARCODE.getName(), new DismaxAlias.AliasField(false, 1.2f));
-        fieldBoosts.put(ReleaseIndexField.CATALOG_NO.getName(), new DismaxAlias.AliasField(false, 1.2f));
+        fieldBoosts.put(ReleaseIndexField.CATALOG_NO.getName(), new DismaxAlias.AliasField(false, 0.5f));
         fieldBoosts.put(ReleaseIndexField.ARTIST.getName(), new DismaxAlias.AliasField(true, 1f));
         fieldBoosts.put(ReleaseIndexField.ARTIST_NAMECREDIT.getName(), new DismaxAlias.AliasField(true, 1f));
         fieldBoosts.put(ReleaseIndexField.LABEL.getName(), new DismaxAlias.AliasField(true, 0.8f));
