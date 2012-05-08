@@ -65,6 +65,11 @@ public class ReleaseGroupWriter extends ResultsWriter {
                 releaseGroup.setType(type);
             }
 
+            String primaryType = doc.get(ReleaseGroupIndexField.PRIMARY_TYPE);
+            if(isNotUnknown(primaryType )) {
+                releaseGroup.setPrimaryType(primaryType );
+            }
+
             String[] secondaryTypes = doc.getValues(ReleaseGroupIndexField.SECONDARY_TYPE);
             if(secondaryTypes.length>0) {
                 SecondaryTypeList stl = of.createSecondaryTypeList();

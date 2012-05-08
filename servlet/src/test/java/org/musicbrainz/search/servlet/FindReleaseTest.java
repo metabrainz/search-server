@@ -86,7 +86,9 @@ public class FindReleaseTest {
         doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, 3);
 
         doc.addField(ReleaseIndexField.STATUS, "Official");
-        doc.addField(ReleaseIndexField.TYPE, "Album");
+        doc.addField(ReleaseIndexField.PRIMARY_TYPE, "Album");
+        doc.addField(ReleaseIndexField.TYPE, "Compilation");
+
         doc.addField(ReleaseIndexField.AMAZON_ID, "B00004Y6O9");
 
         doc.addField(ReleaseIndexField.COUNTRY, "GB");
@@ -189,7 +191,8 @@ public class FindReleaseTest {
         assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
         assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
         assertEquals("Official", doc.get(ReleaseIndexField.STATUS));
-        assertEquals("Album", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Compilation", doc.get(ReleaseIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseIndexField.PRIMARY_TYPE));
         assertEquals("Vinyl", doc.get(ReleaseIndexField.FORMAT));
         assertEquals("B00004Y6O9", doc.get(ReleaseIndexField.AMAZON_ID));
 
@@ -513,13 +516,13 @@ public class FindReleaseTest {
 
     @Test
     public void testFindReleaseByTypeLowercase() throws Exception {
-        Results res = ss.searchLucene("type:\"album\"", 0, 10);
+        Results res = ss.searchLucene("type:\"compilation\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
@@ -530,7 +533,8 @@ public class FindReleaseTest {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
@@ -541,18 +545,20 @@ public class FindReleaseTest {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
     public void testFindReleaseByTypeTitleCase() throws Exception {
-        Results res = ss.searchLucene("type:\"Album\"", 0, 10);
+        Results res = ss.searchLucene("type:\"Compilation\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseIndexField.TYPE));
     }
 
     @Test
@@ -563,18 +569,20 @@ public class FindReleaseTest {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
     public void testFindReleaseByNumericType() throws Exception {
-        Results res = ss.searchLucene("type:1", 0, 10);
+        Results res = ss.searchLucene("type:4", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
@@ -585,7 +593,8 @@ public class FindReleaseTest {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
@@ -596,7 +605,8 @@ public class FindReleaseTest {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
@@ -607,7 +617,8 @@ public class FindReleaseTest {
         MbDocument doc = result.doc;
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-        assertEquals("Album", doc.get(ReleaseGroupIndexField.TYPE));
+        assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
+        assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
     }
 
     @Test
@@ -677,7 +688,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("language=\"ENG\""));
         assertTrue(output.contains("script=\"Latn\""));
-        assertTrue(output.contains("type=\"Album Official\""));
+        assertTrue(output.contains("type=\"Compilation Official\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
@@ -717,7 +728,9 @@ public class FindReleaseTest {
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<language>eng</language>"));
         assertTrue(output.contains("<script>Latn</script>"));
-        assertTrue(output.contains("<release-group type=\"Album\""));
+        assertTrue(output.contains("<release-group type=\"Compilation\""));
+        assertTrue(output.contains("<primary-type>Album</primary-type>"));
+
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e333\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("<name>Farming Incident</name>"));
@@ -754,7 +767,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("id\":\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
-        assertTrue(output.contains("\"type\":\"Album\""));
+        assertTrue(output.contains("\"type\":\"Compilation\""));
         assertTrue(output.contains("title\":\"Our Glorious 5 Year Plan\""));
         assertTrue(output.contains("\"status\":\"Official\""));
         assertTrue(output.contains("\"language\":\"eng\""));

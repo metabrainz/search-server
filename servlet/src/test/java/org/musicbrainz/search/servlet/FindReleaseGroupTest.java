@@ -56,6 +56,7 @@ public class FindReleaseGroupTest {
         doc.addField(ReleaseGroupIndexField.TAGCOUNT, "101");
 
         doc.addField(ReleaseGroupIndexField.TYPE, "Single");
+        doc.addField(ReleaseGroupIndexField.PRIMARY_TYPE, "Single");
         doc.addField(ReleaseGroupIndexField.SECONDARY_TYPE, "Live");
 
         doc.addField(ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
@@ -233,6 +234,17 @@ public class FindReleaseGroupTest {
     @Test
     public void testFindReleaseGroupByType() throws Exception {
         Results res = ss.searchLucene("type:\"single\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
+        assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
+    }
+
+    @Test
+    public void testFindReleaseGroupByPrimaryType() throws Exception {
+        Results res = ss.searchLucene("primarytype:\"single\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
