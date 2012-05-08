@@ -77,7 +77,7 @@ public class AnnotationIndex extends DatabaseIndex {
                 "              ) AS last_ann ON ea." + info.entityDbName + "=last_ann.id AND a.created=last_ann.created_date "  +
                 "  INNER JOIN " + info.entityDbName + " e ON ea." + info.entityDbName + "=e.id " +
                 "  INNER JOIN " + info.nameTable + " en ON e.name=en.id " +
-                " WHERE a.id BETWEEN ? and ? " 
+                " WHERE a.id BETWEEN ? and ? AND length(a.text) > 0"
             );
         }
 

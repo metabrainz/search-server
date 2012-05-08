@@ -1,14 +1,17 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
 
 import java.sql.Statement;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class AnnotationIndexTest extends AbstractIndexTest {
@@ -90,6 +93,43 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         stmt.close();
     }
 
+    /**
+     * @throws Exception exception
+     */
+    private void addArtistEmptyAnnotation() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name)" +
+                "  VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1)");
+
+        stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
+                "  VALUES (1, 1, '', 'change', now())");
+        stmt.addBatch("INSERT INTO artist_annotation (artist, annotation) VALUES (521316, 1)");
+
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    private void addArtistEmptyAnnotation2() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name)" +
+                "  VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1)");
+
+        stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
+                "  VALUES (1, 1, null, 'change', now())");
+        stmt.addBatch("INSERT INTO artist_annotation (artist, annotation) VALUES (521316, 1)");
+
+        stmt.executeBatch();
+        stmt.close();
+    }
       /**
      * @throws Exception  exception
      */
@@ -213,7 +253,49 @@ public class AnnotationIndexTest extends AbstractIndexTest {
             assertEquals("artist annotation newer", doc.getFieldable(AnnotationIndexField.TEXT.getName()).stringValue());
             assertEquals(1, doc.getFieldables(AnnotationIndexField.TYPE.getName()).length);
             assertEquals("artist", doc.getFieldable(AnnotationIndexField.TYPE.getName()).stringValue());
+
+            doc = ir.document(0);
+            assertNotNull(doc);
+            assertEquals("1", doc.getFieldable(MetaIndexField.META.getName()).stringValue());
         }
+        ir.close();
+    }
+
+    /*
+     * Empty annotations should be ignored
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testEmptyArtistIndexAnnotationFields() throws Exception {
+        addArtistEmptyAnnotation();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        assertEquals(1, ir.numDocs());
+        Document doc = ir.document(0);
+        assertNotNull(doc);
+        assertEquals("1", doc.getFieldable(MetaIndexField.META.getName()).stringValue());
+        ir.close();
+    }
+
+    /**
+     * Null annotations should be ignored
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testEmptyArtistIndexAnnotationFields2() throws Exception {
+        addArtistEmptyAnnotation2();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        assertEquals(1, ir.numDocs());
+        Document doc = ir.document(0);
+        assertNotNull(doc);
+        assertEquals("1", doc.getFieldable(MetaIndexField.META.getName()).stringValue());
         ir.close();
     }
 
