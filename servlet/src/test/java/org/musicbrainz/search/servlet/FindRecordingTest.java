@@ -444,10 +444,11 @@ public class FindRecordingTest {
     }
 
     @Test
-    public void testFindRecordingByPuidIsDisallowed() throws Exception {
+    public void testFindRecordingByPuid() throws Exception {
         Results res = ss.searchLucene("puid:1d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
-        assertEquals(0, res.totalHits);
+        assertEquals(1, res.totalHits);
     }
+
 
     @Test
     public void testOutputAsMmd1Xml() throws Exception {
