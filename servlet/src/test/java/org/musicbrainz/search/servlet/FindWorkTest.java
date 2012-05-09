@@ -100,7 +100,7 @@ public class FindWorkTest {
 
     @Test
     public void testFindWorkByLyricsLang() throws Exception {
-        Results res = ss.searchLucene("lyricslang:eng", 0, 10);
+        Results res = ss.searchLucene("lang:eng", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;

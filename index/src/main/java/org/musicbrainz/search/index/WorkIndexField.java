@@ -20,7 +20,7 @@ public enum WorkIndexField implements IndexField {
     ARTIST_RELATION     ("artistrelation",    Field.Store.YES,    Field.Index.NO),
     COMMENT		        ("comment",		Field.Store.YES,	Field.Index.ANALYZED),
     ISWC		        ("iswc",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    LYRICS_LANG		    ("lyricslang",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    LYRICS_LANG		    ("lang",	    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TYPE		        ("type",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TAG		            ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT            ("tagcount",	Field.Store.YES,	Field.Index.NO),
