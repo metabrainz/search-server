@@ -153,7 +153,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 " ON r.rg_id=rgj.release_group " +
                 " INNER JOIN release_group_secondary_type rg  " +
                 " ON rgj.secondary_type = rg.id " +
-                " WHERE rgj.release_group BETWEEN ? AND ?");
+                " WHERE r.id BETWEEN ? AND ?");
 
         addPreparedStatement("RELEASES",
                 " SELECT id, gid, name, " +
@@ -161,7 +161,7 @@ public class ReleaseIndex extends DatabaseIndex {
                 "  date_year, date_month, date_day, type, rg_gid, amazon_asin, " +
                 "  language, language_2t, script, status, comment " +
                 " FROM tmp_release rl " +
-                "WHERE  id BETWEEN ? AND ? ");
+                " WHERE id BETWEEN ? AND ? ");
 
 
     }
