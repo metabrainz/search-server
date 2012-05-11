@@ -68,7 +68,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type, comment)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2, 'demo')");
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 1, 'demo')");
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240)");
@@ -171,7 +171,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Epics')");
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
-                "    VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2)");
+                "    VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 1)");
 
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (1,1)");
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (1,2)");
@@ -491,7 +491,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
             assertEquals(2, doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName()).length);
             assertEquals("Compilation", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[0].stringValue());
-            assertEquals("Soundtrack", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[1].stringValue());
+            assertEquals("Interview", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[1].stringValue());
 
         }
         ir.close();

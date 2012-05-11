@@ -9,15 +9,13 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.musicbrainz.mmd2.Artist;
-import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.NameCredit;
-import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
+import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
 
@@ -95,7 +93,14 @@ public class FindRecordingTest {
         doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
         doc.addField(RecordingIndexField.POSITION, "1");
-        doc.addField(RecordingIndexField.RELEASE_TYPE, "Album");
+        doc.addField(RecordingIndexField.RELEASE_TYPE, "Compilation");
+        doc.addField(RecordingIndexField.RELEASE_PRIMARY_TYPE, "Album");
+        doc.addField(RecordingIndexField.RELEASE_SECONDARY_TYPE, "Compilation");
+
+        SecondaryTypeList stl = of.createSecondaryTypeList();
+        stl.getSecondaryType().add("Compilation");
+        doc.addField(RecordingIndexField.SECONDARY_TYPE_OUTPUT, MMDSerializer.serialize(stl));
+
         doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
         doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
         doc.addField(RecordingIndexField.ISRC, "123456789");
@@ -237,7 +242,25 @@ public class FindRecordingTest {
 
     @Test
     public void testFindRecordingByReleaseType() throws Exception {
-        Results res = ss.searchLucene("type:\"album\"", 0, 10);
+        Results res = ss.searchLucene("type:\"compilation\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+    @Test
+    public void testFindRecordingByPrimaryReleaseType() throws Exception {
+        Results res = ss.searchLucene("primarytype:\"album\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+    @Test
+    public void testFindRecordingBySecondaryReleaseType() throws Exception {
+        Results res = ss.searchLucene("secondarytype:\"compilation\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -264,7 +287,7 @@ public class FindRecordingTest {
 
     @Test
     public void testFindRecordingByReleaseTypeNumeric() throws Exception {
-        Results res = ss.searchLucene("type:\"1\"", 0, 10);
+        Results res = ss.searchLucene("type:\"4\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -469,7 +492,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
-        assertTrue(output.contains("release type=\"Album\" id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("release type=\"Compilation\" id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
@@ -497,7 +520,9 @@ public class FindRecordingTest {
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("release id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
-        assertTrue(output.contains("release-group type=\"Album\""));
+        assertTrue(output.contains("release-group type=\"Compilation\""));
+        assertTrue(output.contains("<primary-type>Album"));
+        assertTrue(output.contains("<secondary-type>Compilation"));
         assertTrue(output.contains("track-list offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
         assertTrue(output.contains("offset=\"0\""));
@@ -506,6 +531,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("<format>Vinyl</format>"));
         assertTrue(output.contains("<isrc id=\"123456789\"/>"));
         assertTrue(output.contains("<isrc id=\"abcdefghi\"/>"));
+        assertTrue(output.contains("<primary-type>Album</primary-type>"));
         assertTrue(output.contains("<title>Gravitational Lens</title>"));
         assertTrue(output.contains("<status>Official</status>"));
         assertTrue(output.contains("<date>1970-01-01</date>"));
@@ -534,7 +560,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"score\":\"100\""));
-        assertTrue(output.contains("\"type\":\"Album\""));
+        assertTrue(output.contains("\"type\":\"Compilation\""));
         assertTrue(output.contains("title\":\"Gravitational Lenz\""));
         assertTrue(output.contains("\"length\":234000"));
         assertTrue(output.contains("\"isrc\":[{\"id\":\"123456789"));
@@ -543,6 +569,8 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"track-count\":10"));
         assertTrue(output.contains("format\":\"Vinyl\""));
         assertTrue(output.contains("country\":\"UK\""));
+        assertTrue(output.contains("\"primary-type\":\"Album\""));
+        assertTrue(output.contains("{\"secondary-type\":[\"Compilation\"]}}"));
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
         assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
         assertTrue(output.contains("\"artist-credit\":{\"name-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}"));

@@ -50,6 +50,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 1)");
 
+        stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,1)");
+        stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,2)");
+
+
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
                 "  language, script, date_year, date_month, date_day) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1970, 1, 1)");
@@ -239,7 +243,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.TRACKNUM.getName()).stringValue()));
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
-            assertEquals("Non-Album Tracks", doc.getFieldable(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            assertEquals("Compilation", doc.getFieldable(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
             assertEquals("Official", doc.getFieldable(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
             assertEquals("FRAAA9000038", doc.getFieldable(RecordingIndexField.ISRC.getName()).stringValue());
             assertEquals("1", doc.getFieldable(RecordingIndexField.POSITION.getName()).stringValue());
@@ -275,7 +279,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * Basic test of all fields
+     * Old Type Field
      *
      * @throws Exception exception
      */
@@ -292,11 +296,33 @@ public class RecordingIndexTest extends AbstractIndexTest {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFieldables(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
             assertEquals(1, doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals("Non-Album Tracks", doc.getFieldable(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            assertEquals("Compilation", doc.getFieldable(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
         }
         ir.close();
     }
 
+    /**
+     * Old Type Field
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testReleasePrimaryType() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.RELEASE_PRIMARY_TYPE.getName()).length);
+            assertEquals("Album", doc.getFieldable(RecordingIndexField.RELEASE_PRIMARY_TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
     /**
      * Basic test of all fields
      *
@@ -758,8 +784,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(4, NumericUtils.prefixCodedToInt(doc.getFieldables(RecordingIndexField.TRACKNUM.getName())[1].stringValue()));
             assertEquals(2, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
             assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
-            assertEquals("Non-Album Tracks", doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName())[0].stringValue());
-            assertEquals("Album", doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName())[1].stringValue());
+            assertEquals("Album", doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName())[0].stringValue());
+            assertEquals("Single", doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName())[1].stringValue());
             assertEquals("Official", doc.getFieldables(RecordingIndexField.RELEASE_STATUS.getName())[0].stringValue());
             assertEquals("Promotion", doc.getFieldables(RecordingIndexField.RELEASE_STATUS.getName())[1].stringValue());
 

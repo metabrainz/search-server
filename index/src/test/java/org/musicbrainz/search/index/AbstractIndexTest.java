@@ -846,27 +846,21 @@ public abstract class AbstractIndexTest {
         );
 
         stmt.addBatch("INSERT INTO release_group_primary_type (id, name) VALUES " +
-                "(1, 'Non-Album Tracks'), " +
-                "(2, 'Album'), " +
-                "(3, 'Single'), " +
-                "(4, 'EP'), " +
-                "(5, 'Compilation'), " +
-                "(6, 'Soundtrack'), " +
-                "(7, 'Spokenword'), " +
-                "(8, 'Interview'), " +
-                "(9, 'Audiobook'), " +
-                "(10, 'Live'), " +
-                "(11, 'Remix'), " +
-                "(12, 'Other') "
+                "(1, 'Album'), " +
+                "(2, 'Single'), " +
+                "(3, 'EP'), " +
+                "(4, 'Other'), " +
+                "(5, 'Audiobook') "
         );
 
         stmt.addBatch("INSERT INTO release_group_secondary_type (id, name) VALUES " +
                 "(1, 'Compilation'), " +
-                "(2, 'Soundtrack'), " +
-                "(3, 'Spokenword'), " +
-                "(4, 'Interview'), " +
-                "(5, 'Live'), " +
-                "(6, 'Remix') "
+                "(2, 'Interview'), " +
+                "(3, 'Live'), " +
+                "(4, 'Remix'), " +
+                "(5, 'Soundtrack'), " +
+                "(6, 'Spokenword') "
+
         );
 
         stmt.addBatch("INSERT INTO medium_format (id, name, year) VALUES " + 

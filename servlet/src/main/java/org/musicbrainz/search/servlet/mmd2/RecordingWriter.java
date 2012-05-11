@@ -32,6 +32,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -121,21 +122,23 @@ public class RecordingWriter extends ResultsWriter {
 
             if(releaseNames.length>0)
             {
-                String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
-                String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
-                String[] releaseStatus      = doc.getValues(RecordingIndexField.RELEASE_STATUS);
-                String[] releaseCountry     = doc.getValues(RecordingIndexField.COUNTRY);
-                String[] releaseDate        = doc.getValues(RecordingIndexField.RELEASE_DATE);
-                String[] trackPos           = doc.getValues(RecordingIndexField.TRACKNUM);
-                String[] trackNos           = doc.getValues(RecordingIndexField.NUMBER);
-                String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS);
-                String[] trackName          = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
-                String[] mediumPos          = doc.getValues(RecordingIndexField.POSITION);
-                String[] numTracksRelease   = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
-                String[] releaseVA          = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
-                String[] mediumFormat       = doc.getValues(RecordingIndexField.FORMAT);
-                String[] trackArtistCredits = doc.getValues(RecordingIndexField.TRACK_ARTIST_CREDIT);
-                String[] trackDurations     = doc.getValues(RecordingIndexField.TRACK_DURATION_OUTPUT);
+                String[] releaseTypes           = doc.getValues(RecordingIndexField.RELEASE_TYPE);
+                String[] releasePrimaryTypes    = doc.getValues(RecordingIndexField.RELEASE_PRIMARY_TYPE);
+                String[] releaseSecondaryTypes  = doc.getValues(RecordingIndexField.SECONDARY_TYPE_OUTPUT);
+                String[] releaseIds             = doc.getValues(RecordingIndexField.RELEASE_ID);
+                String[] releaseStatus          = doc.getValues(RecordingIndexField.RELEASE_STATUS);
+                String[] releaseCountry         = doc.getValues(RecordingIndexField.COUNTRY);
+                String[] releaseDate            = doc.getValues(RecordingIndexField.RELEASE_DATE);
+                String[] trackPos               = doc.getValues(RecordingIndexField.TRACKNUM);
+                String[] trackNos               = doc.getValues(RecordingIndexField.NUMBER);
+                String[] numTracks              = doc.getValues(RecordingIndexField.NUM_TRACKS);
+                String[] trackName              = doc.getValues(RecordingIndexField.TRACK_OUTPUT);
+                String[] mediumPos              = doc.getValues(RecordingIndexField.POSITION);
+                String[] numTracksRelease       = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
+                String[] releaseVA              = doc.getValues(RecordingIndexField.RELEASE_AC_VA);
+                String[] mediumFormat           = doc.getValues(RecordingIndexField.FORMAT);
+                String[] trackArtistCredits     = doc.getValues(RecordingIndexField.TRACK_ARTIST_CREDIT);
+                String[] trackDurations         = doc.getValues(RecordingIndexField.TRACK_DURATION_OUTPUT);
 
                 ReleaseList releaseList = of.createReleaseList();
                 for(int i=0;i<releaseNames.length;i++) {
@@ -162,7 +165,17 @@ public class RecordingWriter extends ResultsWriter {
                     ReleaseGroup rg = of.createReleaseGroup();
                     release.setReleaseGroup(rg);
                     if (isNotNoValue(releaseTypes[i])) {
-                        release.getReleaseGroup().setType(releaseTypes[i]);
+                        rg.setType(releaseTypes[i]);
+                    }
+
+                    if(isNotUnknown(releasePrimaryTypes[i])) {
+                        rg.setPrimaryType(releasePrimaryTypes[i]);
+                    }
+
+                    if(isNotNoValue(releaseSecondaryTypes[i])) {
+                        SecondaryTypeList stl = (SecondaryTypeList)MMDSerializer
+                                .unserialize(releaseSecondaryTypes[i],SecondaryTypeList.class);
+                        release.getReleaseGroup().setSecondaryTypeList(stl);
                     }
 
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();

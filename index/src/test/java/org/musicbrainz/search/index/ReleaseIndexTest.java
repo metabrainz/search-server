@@ -155,7 +155,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 2)");
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 1)");
 
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,1)");
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,2)");
@@ -238,7 +238,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("Crocodiles (bonus disc)", doc.getFieldable(ReleaseIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getFieldable(ReleaseIndexField.RELEASE_ID.getName()).stringValue());
             assertEquals(1, doc.getFieldables(ReleaseIndexField.TYPE.getName()).length);
-            assertEquals("Single", doc.getFieldable(ReleaseIndexField.TYPE.getName()).stringValue());
+            assertEquals("EP", doc.getFieldable(ReleaseIndexField.TYPE.getName()).stringValue());
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFieldable(ReleaseIndexField.RELEASEGROUP_ID.getName()).stringValue());
             assertEquals(1, doc.getFieldables(ReleaseIndexField.STATUS.getName()).length);
             assertEquals("Official", doc.getFieldable(ReleaseIndexField.STATUS.getName()).stringValue());
@@ -847,7 +847,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
             assertEquals(2, doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName()).length);
             assertEquals("Compilation", doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName())[0].stringValue());
-            assertEquals("Soundtrack", doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName())[1].stringValue());
+            assertEquals("Interview", doc.getFieldables(ReleaseIndexField.SECONDARY_TYPE.getName())[1].stringValue());
 
         }
         ir.close();
