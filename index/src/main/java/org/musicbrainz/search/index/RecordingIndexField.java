@@ -42,6 +42,7 @@ public enum RecordingIndexField implements IndexField {
     RELEASE_SECONDARY_TYPE  ("secondarytype",       Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     RELEASE_STATUS          ("status",              Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     RELEASE_TYPE            ("type",                Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    RELEASEGROUP_ID	        ("rgid",			    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     SECONDARY_TYPE_OUTPUT   ("secondarytypeoutput", Field.Store.YES,	Field.Index.NO),
     TAG		                ("tag",		            Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TAGCOUNT                ("tagcount",	        Field.Store.YES,	Field.Index.NO),

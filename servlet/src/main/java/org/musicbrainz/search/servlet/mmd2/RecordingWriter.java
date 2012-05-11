@@ -122,9 +122,10 @@ public class RecordingWriter extends ResultsWriter {
 
             if(releaseNames.length>0)
             {
-                String[] releaseTypes           = doc.getValues(RecordingIndexField.RELEASE_TYPE);
-                String[] releasePrimaryTypes    = doc.getValues(RecordingIndexField.RELEASE_PRIMARY_TYPE);
-                String[] releaseSecondaryTypes  = doc.getValues(RecordingIndexField.SECONDARY_TYPE_OUTPUT);
+                String[] rgTypes                = doc.getValues(RecordingIndexField.RELEASE_TYPE);
+                String[] rgIds                  = doc.getValues(RecordingIndexField.RELEASEGROUP_ID);
+                String[] rgPrimaryTypes         = doc.getValues(RecordingIndexField.RELEASE_PRIMARY_TYPE);
+                String[] rgSecondaryTypes       = doc.getValues(RecordingIndexField.SECONDARY_TYPE_OUTPUT);
                 String[] releaseIds             = doc.getValues(RecordingIndexField.RELEASE_ID);
                 String[] releaseStatus          = doc.getValues(RecordingIndexField.RELEASE_STATUS);
                 String[] releaseCountry         = doc.getValues(RecordingIndexField.COUNTRY);
@@ -164,17 +165,21 @@ public class RecordingWriter extends ResultsWriter {
 
                     ReleaseGroup rg = of.createReleaseGroup();
                     release.setReleaseGroup(rg);
-                    if (isNotNoValue(releaseTypes[i])) {
-                        rg.setType(releaseTypes[i]);
+                    if (isNotUnknown(rgIds[i])) {
+                        rg.setId(rgIds[i]);
                     }
 
-                    if(isNotUnknown(releasePrimaryTypes[i])) {
-                        rg.setPrimaryType(releasePrimaryTypes[i]);
+                    if (isNotNoValue(rgTypes[i])) {
+                        rg.setType(rgTypes[i]);
                     }
 
-                    if(isNotNoValue(releaseSecondaryTypes[i])) {
+                    if(isNotUnknown(rgPrimaryTypes[i])) {
+                        rg.setPrimaryType(rgPrimaryTypes[i]);
+                    }
+
+                    if(isNotNoValue(rgSecondaryTypes[i])) {
                         SecondaryTypeList stl = (SecondaryTypeList)MMDSerializer
-                                .unserialize(releaseSecondaryTypes[i],SecondaryTypeList.class);
+                                .unserialize(rgSecondaryTypes[i],SecondaryTypeList.class);
                         release.getReleaseGroup().setSecondaryTypeList(stl);
                     }
 

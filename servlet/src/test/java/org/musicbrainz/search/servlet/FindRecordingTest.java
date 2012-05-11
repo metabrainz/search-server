@@ -92,6 +92,8 @@ public class FindRecordingTest {
         doc.addField(RecordingIndexField.NUMBER, "A4");
         doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
         doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
+        doc.addField(RecordingIndexField.RELEASEGROUP_ID, "4444e264-1cf0-4d1f-aca7-2a6f89e34b36");
+
         doc.addField(RecordingIndexField.POSITION, "1");
         doc.addField(RecordingIndexField.RELEASE_TYPE, "Compilation");
         doc.addField(RecordingIndexField.RELEASE_PRIMARY_TYPE, "Album");
@@ -261,6 +263,15 @@ public class FindRecordingTest {
     @Test
     public void testFindRecordingBySecondaryReleaseType() throws Exception {
         Results res = ss.searchLucene("secondarytype:\"compilation\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
+    }
+
+    @Test
+    public void testFindRecordingByReleaseGroupId() throws Exception {
+        Results res = ss.searchLucene("rgid:\"4444e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
         MbDocument doc = result.doc;
@@ -512,6 +523,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
+        assertTrue(output.contains("id=\"4444e264-1cf0-4d1f-aca7-2a6f89e34b36\">"));
         assertTrue(output.contains("id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
         assertTrue(output.contains("<title>Gravitational Lenz</title>"));
         assertTrue(output.contains("<disambiguation>demo</disambiguation>"));

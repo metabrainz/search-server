@@ -184,7 +184,7 @@ public class RecordingIndex extends DatabaseIndex {
         releases =
                 "SELECT " +
                         "  id as releaseKey, gid as releaseid, name as releasename, type, " +
-                        "  status, date_year, date_month, date_day, tracks,artist_credit, country " +
+                        "  status, date_year, date_month, date_day, tracks,artist_credit, country,rg_gid " +
                         " FROM tmp_release r1 " +
                         " WHERE r1.id in ";
 
@@ -522,6 +522,7 @@ public class RecordingIndex extends DatabaseIndex {
             release.setId(rs.getString("releaseId"));
             release.setTitle(rs.getString("releasename"));
             rg.setPrimaryType(rs.getString("type"));
+            rg.setId(rs.getString("rg_gid"));
             release.setReleaseGroup(rg);
             release.setStatus(rs.getString("status"));
             release.setCountry(rs.getString("country"));
@@ -649,6 +650,7 @@ public class RecordingIndex extends DatabaseIndex {
                 if (release != null) {
                     ReleaseGroup rg = release.getReleaseGroup();
                     String primaryType = rg.getPrimaryType();
+                    doc.addFieldOrUnknown(RecordingIndexField.RELEASEGROUP_ID,rg.getId());
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASE_PRIMARY_TYPE, primaryType);
                     if (
                             (rg.getSecondaryTypeList() != null) &&

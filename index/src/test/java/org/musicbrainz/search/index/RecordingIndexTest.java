@@ -279,6 +279,29 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     /**
+     * Release Group Field
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testReleaseGroupId() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.RELEASEGROUP_ID.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFieldable(RecordingIndexField.RELEASEGROUP_ID.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+
+    /**
      * Old Type Field
      *
      * @throws Exception exception
