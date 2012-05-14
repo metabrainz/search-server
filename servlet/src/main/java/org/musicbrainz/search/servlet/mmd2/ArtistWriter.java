@@ -91,19 +91,19 @@ public class ArtistWriter extends ResultsWriter {
 
             String begin = doc.get(ArtistIndexField.BEGIN);
             String end = doc.get(ArtistIndexField.END);
-            if (begin != null || end != null) {
-                LifeSpan lifespan = of.createLifeSpan();
-                if (begin != null) {
-                    lifespan.setBegin(begin);
+            String ended = doc.get(ArtistIndexField.ENDED);
 
-                }
-                if (end != null) {
-                    lifespan.setEnd(end);
+            LifeSpan lifespan = of.createLifeSpan();
+            artist.setLifeSpan(lifespan);
 
-                }
-                artist.setLifeSpan(lifespan);
-
+            if (begin != null) {
+                lifespan.setBegin(begin);
             }
+
+            if (end != null) {
+                lifespan.setEnd(end);
+            }
+            lifespan.setEnded(ended);
 
             String comment = doc.get(ArtistIndexField.COMMENT);
             if (isNotNoValue(comment)) {

@@ -85,24 +85,23 @@ public class LabelWriter extends ResultsWriter {
             String sortname = doc.get(LabelIndexField.SORTNAME);
             if (sortname != null) {
                 label.setSortName(sortname);
-
             }
 
             String begin = doc.get(LabelIndexField.BEGIN);
             String end = doc.get(LabelIndexField.END);
-            if (begin != null || end != null) {
-                LifeSpan lifespan = of.createLifeSpan();
-                if (begin != null) {
-                    lifespan.setBegin(begin);
+            String ended = doc.get(LabelIndexField.ENDED);
 
-                }
-                if (end != null) {
-                    lifespan.setEnd(end);
+            LifeSpan lifespan = of.createLifeSpan();
+            label.setLifeSpan(lifespan);
 
-                }
-                label.setLifeSpan(lifespan);
-
+            if (begin != null) {
+                lifespan.setBegin(begin);
             }
+
+            if (end != null) {
+                lifespan.setEnd(end);
+            }
+            lifespan.setEnded(ended);
 
             String comment = doc.get(LabelIndexField.COMMENT);
             if (isNotNoValue(comment)) {

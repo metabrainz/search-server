@@ -50,6 +50,7 @@ public enum ArtistIndexField implements IndexField {
     COMMENT		    ("comment",		Field.Store.YES,	Field.Index.ANALYZED),
     COUNTRY         ("country",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     END			    ("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ENDED           ("ended",       Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     GENDER          ("gender",      Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     IPI             ("ipi",         Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED),

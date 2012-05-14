@@ -122,7 +122,7 @@ public class ArtistIndex extends DatabaseIndex {
         addPreparedStatement("ARTISTS",
                 "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
                 "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
-                "  end_date_year, end_date_month, end_date_day, " +
+                "  end_date_year, end_date_month, end_date_day,ended, " +
                 "  comment, lower(iso_code) as country, lower(gender.name) as gender " +
                 " FROM artist " +
                 "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
@@ -231,6 +231,13 @@ public class ArtistIndex extends DatabaseIndex {
 
         String type = rs.getString("type");
         doc.addFieldOrUnknown(ArtistIndexField.TYPE, type);
+
+        if(rs.getBoolean("ended")) {
+           doc.addFieldOrUnknown(ArtistIndexField.ENDED, "true");
+        }
+        else {
+            doc.addFieldOrUnknown(ArtistIndexField.ENDED, "false");
+        }
 
         doc.addNonEmptyField(ArtistIndexField.BEGIN,
                 Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));

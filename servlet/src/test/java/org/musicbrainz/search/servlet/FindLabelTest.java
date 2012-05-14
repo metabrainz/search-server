@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.LabelIndexField;
@@ -50,6 +51,7 @@ public class FindLabelTest {
             doc.addNumericField(LabelIndexField.CODE, 1234);
             doc.addField(LabelIndexField.BEGIN, "1993");
             doc.addField(LabelIndexField.END, "2004");
+            doc.addField(LabelIndexField.ENDED, "true");
             doc.addField(LabelIndexField.TYPE, "Production");
             doc.addField(LabelIndexField.COUNTRY, "GB");
             doc.addField(LabelIndexField.TAG, "dance");
@@ -290,7 +292,7 @@ public class FindLabelTest {
     }
 
     @Test
-    public void testFindArtistByTag() throws Exception {
+    public void testFindLabelByTag() throws Exception {
         Results res = ss.searchLucene("tag:dance", 0, 10);
         assertEquals(1, res.totalHits);
         Result result = res.results.get(0);
@@ -298,6 +300,16 @@ public class FindLabelTest {
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
+
+    @Test
+    public void testFindLabelByEnded() throws Exception {
+        Results res = ss.searchLucene("ended:\"true\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+    }
+
 
     public void testIssue66() throws Exception {
         Results res = ss.searchLucene("dark", 0, 10);
@@ -376,6 +388,7 @@ public class FindLabelTest {
         assertTrue(output.contains("<end>2004</end>"));
         assertTrue(output.contains("<label-code>1234</label-code>"));
         assertTrue(output.contains("<country>GB</country>"));
+        assertTrue(output.contains("<ended>true</ended>"));
         assertTrue(output.contains("dance</name>"));
         assertTrue(output.contains("<ipi-list><ipi>1001</ipi></ipi-list>"));
     }
@@ -440,5 +453,6 @@ public class FindLabelTest {
         assertTrue(output.contains("\"label-code\":1234"));
         assertTrue(output.contains("\"country\":\"GB\""));
         assertTrue(output.contains("tag-list\":{\"tag\":[{\"count\":22,\"name\":\"dance\"}"));
+        assertTrue(output.contains("\"ended\":\"true\""));
     }
 }

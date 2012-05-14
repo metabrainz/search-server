@@ -48,6 +48,7 @@ public class FindArtistTest {
             doc.addField(ArtistIndexField.ARTIST, "Farming Incident");
             doc.addField(ArtistIndexField.SORTNAME, "Incident, Farming");
             doc.addField(ArtistIndexField.BEGIN, "1999-04");
+            doc.addField(ArtistIndexField.ENDED, "true");
             doc.addField(ArtistIndexField.TYPE, "Group");
             doc.addField(ArtistIndexField.COMMENT, "the real one");
             doc.addField(ArtistIndexField.COUNTRY, "AF");
@@ -190,6 +191,16 @@ public class FindArtistTest {
         MbDocument doc = result.doc;
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
     }
+
+    @Test
+    public void testFindArtistByEnded() throws Exception {
+        Results res = ss.searchLucene("ended:\"true\"", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+    }
+
 
     @Test
     public void testFindArtistByEndDate() throws Exception {
@@ -373,8 +384,9 @@ public class FindArtistTest {
         assertTrue(output.contains("type=\"Group\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
-        assertTrue(output.contains("<life-span><begin>1999-04</begin></life-span>"));
+        assertTrue(output.contains("<begin>1999-04</begin>"));
         assertTrue(output.contains("<country>AF</country>"));
+        assertTrue(output.contains("<ended>true</ended>"));
         assertTrue(output.contains("<gender>male</gender>"));
         assertTrue(output.contains("<ipi-list><ipi>1001</ipi></ipi-list>"));
         assertTrue(output.contains("thrash</name>"));
@@ -475,7 +487,8 @@ public class FindArtistTest {
         assertTrue(output.contains("\"type\":\"Group\""));
         assertTrue(output.contains("name\":\"Farming Incident\""));
         assertTrue(output.contains("\"sort-name\":\"Incident, Farming\""));
-        assertTrue(output.contains("\"life-span\":{\"begin\":\"1999-04\"}"));
+        assertTrue(output.contains("\"begin\":\"1999-04\""));
+        assertTrue(output.contains("\"ended\":\"true\""));
         assertTrue(output.contains("\"country\":\"AF\""));
         assertTrue(output.contains("\"gender\":\"male\""));
         assertTrue(output.contains("\"tag\":[{\"count\":5,\"name\":\"thrash\"},{\"count\":11,\"name\":\"güth\"}"));

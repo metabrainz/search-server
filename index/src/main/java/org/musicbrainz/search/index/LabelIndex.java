@@ -104,7 +104,7 @@ public class LabelIndex extends DatabaseIndex {
         addPreparedStatement("LABELS",
                 "SELECT label.id, gid, n0.name as name, n1.name as sort_name, " +
                 "  label_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
-                "  end_date_year, end_date_month, end_date_day, " +
+                "  end_date_year, end_date_month, end_date_day, ended," +
                 "  comment, label_code, lower(iso_code) as country " +
                 " FROM label " +
                 "  LEFT JOIN label_name n0 ON label.name = n0.id " +
@@ -214,6 +214,13 @@ public class LabelIndex extends DatabaseIndex {
         doc.addFieldOrNoValue(LabelIndexField.COMMENT, rs.getString("comment"));
         doc.addFieldOrUnknown(LabelIndexField.COUNTRY, rs.getString("country"));
 
+
+        if(rs.getBoolean("ended")) {
+            doc.addFieldOrUnknown(ArtistIndexField.ENDED, "true");
+        }
+        else {
+            doc.addFieldOrUnknown(ArtistIndexField.ENDED, "false");
+        }
 
         doc.addNonEmptyField(LabelIndexField.BEGIN,
                 Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));

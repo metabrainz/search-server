@@ -48,6 +48,7 @@ public enum LabelIndexField implements IndexField {
     CODE		("code",		Field.Store.YES, 	Field.Index.ANALYZED, new KeywordAnalyzer()),
     COUNTRY		("country",		Field.Store.YES, 	Field.Index.ANALYZED),
     END			("end",			Field.Store.YES, 	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ENDED       ("ended",       Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     IPI         ("ipi",         Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     LABEL		("label",		Field.Store.YES, 	Field.Index.ANALYZED, new MusicbrainzAnalyzer()),
     LABEL_ACCENT("labelaccent", Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),

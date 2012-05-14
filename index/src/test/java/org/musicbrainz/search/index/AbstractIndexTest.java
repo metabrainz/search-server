@@ -237,7 +237,8 @@ public abstract class AbstractIndexTest {
                 "  gender integer," +
                 "  comment character varying(255)," +
                 "  last_updated timestamp," +
-                "  edits_pending integer DEFAULT 0" +
+                "  edits_pending integer DEFAULT 0," +
+                "  ended boolean" +
                 ")");
 
         stmt.addBatch("CREATE TABLE artist_credit (" +
@@ -331,7 +332,8 @@ public abstract class AbstractIndexTest {
                 "  country integer," +
                 "  comment character varying(255)," +
                 "  last_updated timestamp," +
-                "  edits_pending integer DEFAULT 0" +
+                "  edits_pending integer DEFAULT 0," +
+                "  ended boolean" +
                 ")");
 
         stmt.addBatch("CREATE TABLE label_alias (" +
