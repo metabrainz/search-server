@@ -135,7 +135,7 @@ public class IndexBuilder
 
         // Extract current replication information, using one database index
         ReplicationInformation initialReplicationInformation=null;
-        if(indexes.length>0) {
+        if(indexesToBeBuilt.size()>0) {
             initialReplicationInformation = indexes[0].readReplicationInformationFromDatabase();
         }
         // Create temporary tables used by multiple indexes
