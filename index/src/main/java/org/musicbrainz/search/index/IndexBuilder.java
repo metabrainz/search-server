@@ -134,8 +134,10 @@ public class IndexBuilder
         }
 
         // Extract current replication information, using one database index
-        ReplicationInformation initialReplicationInformation = indexes[0].readReplicationInformationFromDatabase();
-        
+        ReplicationInformation initialReplicationInformation=null;
+        if(indexes.length>0) {
+            initialReplicationInformation = indexes[0].readReplicationInformationFromDatabase();
+        }
         // Create temporary tables used by multiple indexes
         CommonTables commonTables = new CommonTables(mainDbConn, indexesToBeBuilt);
         commonTables.createTemporaryTables(false);
