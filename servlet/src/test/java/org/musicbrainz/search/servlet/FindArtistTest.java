@@ -574,4 +574,23 @@ public class FindArtistTest {
 
 
 
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testOutputJsonNewPrettyWithAliases() throws Exception {
+
+        Results res = ss.searchLucene("arid:ccd4879c-5e88-4385-b131-bf65296bf245", 0, 1);
+        ResultsWriter writer = new ArtistWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("JSON New Pretty is" + output);
+        assertTrue(output.contains("\"sort-name\" : \"Echo & The Bunnymen\""));
+        assertTrue(output.contains("\"aliases\" : [ \"Echo And The Bunnymen\", \"Echo & The Bunnyman\", \"Echo and The Bunymen\", \"Echo & The Bunymen\" ]"));
+    }
+
 }

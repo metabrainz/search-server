@@ -241,5 +241,26 @@
                 <xml-element java-attribute="relationList" name="relations"/>
             </java-attributes>
         </java-type>
+        <java-type name="Artist">
+            <java-attributes>
+                <xml-element java-attribute="aliasList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="AnnotationList">
+            <java-attributes>
+                <xml-element java-attribute="annotation" name="annotations"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="CdstubList">
+            <java-attributes>
+                <xml-element java-attribute="cdstub" name="cdstubs"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="ReleaseGroup">
+            <java-attributes>
+                <xml-element java-attribute="tagList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+
     </java-types>
 </xml-bindings>

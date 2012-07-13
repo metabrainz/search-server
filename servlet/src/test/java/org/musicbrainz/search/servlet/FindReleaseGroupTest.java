@@ -561,4 +561,21 @@ public class FindReleaseGroupTest {
 
     }
 
+    @Test
+    public void testOutputJsonNewPretty2() throws Exception {
+
+        Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45", 0, 10);
+        ResultsWriter writer = new ReleaseGroupWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Pretty is" + output);
+        assertTrue(output.contains("\"offset\" : 0,"));
+        assertTrue(output.contains("\"tags\" : [ {"));
+        assertTrue(output.contains("\"name\" : \"indie\""));
+
+    }
 }
