@@ -718,7 +718,7 @@ public class FindReleaseTest {
         ResultsWriter writer = new ReleaseWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_XML);
         pr.close();
         String output = sw.toString();
         System.out.println("Xml is" + output);
@@ -728,7 +728,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
         assertTrue(output.contains("<language>eng</language>"));
         assertTrue(output.contains("<script>Latn</script>"));
-        assertTrue(output.contains("<release-group type=\"Compilation\""));
+        assertTrue(output.contains("type=\"Compilation\""));
         assertTrue(output.contains("<primary-type>Album</primary-type>"));
 
         assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e333\""));
@@ -776,6 +776,50 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
         assertTrue(output.contains("\"track-count\":17"));
         assertTrue(output.contains("\"secondary-type-list\":{\"secondary-type\":[\"Live\",\"Compilation\"]}}"));
+
+    }
+
+    @Test
+    public void testOutputJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
+        ResultsWriter writer = new ReleaseWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json Nw is" + output);
+
+        assertTrue(output.contains("id\":\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("\"type\":\"Compilation\""));
+        assertTrue(output.contains("title\":\"Our Glorious 5 Year Plan\""));
+        assertTrue(output.contains("\"status\":\"Official\""));
+        assertTrue(output.contains("\"language\":\"eng\""));
+        assertTrue(output.contains("\"script\":\"Latn\""));
+        assertTrue(output.contains("\"barcode\":\"07599273202\""));
+        assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
+        assertTrue(output.contains("\"secondary-types\":[\"Live\",\"Compilation\"]"));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"track-count\":17"));
+
+    }
+
+    @Test
+    public void testOutputJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
+        ResultsWriter writer = new ReleaseWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New  Pretty is" + output);
+        assertTrue(output.contains("\"count\" : 1"));
 
     }
 }

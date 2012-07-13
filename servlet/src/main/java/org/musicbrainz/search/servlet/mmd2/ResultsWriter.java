@@ -33,6 +33,8 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONMarshaller;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.musicbrainz.mmd2.Metadata;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.servlet.ErrorMessage;
@@ -44,12 +46,15 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ResultsWriter extends org.musicbrainz.search.servlet.ResultsWriter {
 
-    static final JAXBContext            context         = initContext();
-    static final NamespacePrefixMapper  prefixMapper    = new PreferredMapper();
-    static final JSONJAXBContext        jsoncontext     = initJsonContext();
+    static final JAXBContext            context                 = initContext();
+    static final NamespacePrefixMapper  prefixMapper            = new PreferredMapper();
+    static final JSONJAXBContext        internalJsoncontext     = initInternalJsonContext();
+    static final JAXBContext            jsonContext             = initJsonContext();
 
     public String getMimeType() {
           return "application/xml; charset=UTF-8";
@@ -61,6 +66,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
     
     private static JAXBContext initContext() {
         try {
+            //return JAXBContextFactory.createContext("org.musicbrainz.mmd2",null);
             return JAXBContext.newInstance("org.musicbrainz.mmd2");
         }
         catch (JAXBException ex) {
@@ -69,13 +75,27 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
         }
     }
 
-    private static JSONJAXBContext initJsonContext() {
+    private static JSONJAXBContext initInternalJsonContext() {
         try {
             return new JSONJAXBContext(JSONConfiguration.natural().build(),
             "org.musicbrainz.mmd2");
         }
         catch (JAXBException ex) {
             //Unable to initilize jaxb context, should never happen
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static JAXBContext initJsonContext() {
+        try {
+            Map<String, Object> properties = new HashMap<String, Object>(3);
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, "oxml.xml");
+            properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
+            properties.put(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
+            return JAXBContextFactory.createContext(new Class[]{Metadata.class}, properties);
+        }
+        catch (JAXBException ex) {
+            //Unable to initilize jaxb/Users/paul/code/MusicBrainz/SearchServer/servlet/src/main/resources/oxml.xml context, should never happen
             throw new RuntimeException(ex);
         }
     }
@@ -107,17 +127,36 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
     /**
      * Write the results to provider writer as Xml
      *
+     *
      * @param out
      * @param results
+     * @param isPretty
      * @throws java.io.IOException
      */
-    public void write(PrintWriter out, Results results,String outputFormat) throws IOException {
+    public void write(PrintWriter out, Results results, String outputFormat, boolean isPretty) throws IOException {
+
         if(outputFormat.equals(SearchServerServlet.RESPONSE_XML)) {
 
             try {
                 Metadata metadata = write(results);
                 Marshaller m = context.createMarshaller();
                 m.setProperty("com.sun.xml.bind.namespacePrefixMapper", prefixMapper);
+                if(isPretty) {
+                    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                }
+                m.marshal(metadata, out);
+            }
+            catch (JAXBException je) {
+                throw new IOException(je);
+            }
+        }
+        else if(outputFormat.equals(SearchServerServlet.RESPONSE_JSON_NEW)) {
+            try {
+                Metadata metadata = write(results);
+                Marshaller m = jsonContext.createMarshaller();
+                if(isPretty) {
+                    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                }
                 m.marshal(metadata, out);
             }
             catch (JAXBException je) {
@@ -127,7 +166,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
         else if(outputFormat.equals(SearchServerServlet.RESPONSE_JSON)) {
             try {
                 Metadata metadata = write(results);
-                JSONMarshaller m = jsoncontext.createJSONMarshaller();
+                JSONMarshaller m = internalJsoncontext.createJSONMarshaller();
                 m.marshallToJSON(metadata, out);
             }
             catch (JAXBException je) {

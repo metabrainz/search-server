@@ -74,6 +74,63 @@ public class FindTagTest {
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("<name>rock</name>"));
         assertTrue(output.contains("<name>classic rock</name>"));
+    }
+
+    @Test
+    public void testOutputAsJson() throws Exception {
+
+        Results res = ss.searchLucene("tag:rock", 0, 10);
+        ResultsWriter writer = new TagWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("\"name\":\"rock\""));
+        assertTrue(output.contains("\"name\":\"classic rock\""));
+        assertTrue(output.contains("\"count\":2"));
+        assertTrue(output.contains("\"offset\":0"));
+
+
+    }
+
+    @Test
+    public void testOutputAsJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("tag:rock", 0, 10);
+        ResultsWriter writer = new TagWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+        assertTrue(output.contains("\"name\":\"rock\""));
+        assertTrue(output.contains("\"name\":\"classic rock\""));
+        assertTrue(output.contains("\"count\":2"));
+        assertTrue(output.contains("\"offset\":0"));
+
+
+    }
+
+    @Test
+    public void testOutputAsJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("tag:rock", 0, 10);
+        ResultsWriter writer = new TagWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Pretty is" + output);
+        assertTrue(output.contains("\"offset\" : 0"));
 
 
     }

@@ -238,4 +238,43 @@ public class FindAnnotationTest {
 
     }
 
+    @Test
+    public void testOutputJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+
+        assertTrue(output.contains("\"score\":\"100\","));
+        assertTrue(output.contains("\"name\":\"Pieds nus sur la braise\""));
+        assertTrue(output.contains("\"type\":\"release\""));
+        assertTrue(output.contains("\"entity\":\"bdb24cb5-404b-4f60-bba4-7b730325ae47\""));
+        assertTrue(output.contains("\"text\":\"EAN: 0828768226629 - DiscID: TWj6cLku360MfFYAq_MEaT_stgc-\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+
+    }
+
+    @Test
+    public void testOutputJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Pretty is" + output);
+        assertTrue(output.contains("\"offset\" : 0,"));
+
+    }
 }

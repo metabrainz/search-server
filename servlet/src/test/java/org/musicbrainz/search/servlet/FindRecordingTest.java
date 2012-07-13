@@ -503,7 +503,8 @@ public class FindRecordingTest {
         assertTrue(output.contains("<artist id=\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
-        assertTrue(output.contains("release type=\"Compilation\" id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("type=\"Compilation\""));
+        assertTrue(output.contains("id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386"));
         assertTrue(output.contains("<title>Our Glorious 5 Year Plan</title>"));
         assertTrue(output.contains("offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
@@ -516,14 +517,14 @@ public class FindRecordingTest {
         ResultsWriter writer = new RecordingWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
+        writer.write(pr, res,SearchServerServlet.RESPONSE_XML);
         pr.close();
         String output = sw.toString();
         System.out.println("Xml is" + output);
         assertTrue(output.contains("count=\"1\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("xmlns:ext=\"http://musicbrainz.org/ns/ext#-2.0\""));
-        assertTrue(output.contains("id=\"4444e264-1cf0-4d1f-aca7-2a6f89e34b36\">"));
+        assertTrue(output.contains("id=\"4444e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("id=\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
         assertTrue(output.contains("<title>Gravitational Lenz</title>"));
         assertTrue(output.contains("<disambiguation>demo</disambiguation>"));
@@ -532,10 +533,10 @@ public class FindRecordingTest {
         assertTrue(output.contains("<name>Farming Incident</name>"));
         assertTrue(output.contains("<sort-name>Incident, Farming</sort-name>"));
         assertTrue(output.contains("release id=\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
-        assertTrue(output.contains("release-group type=\"Compilation\""));
+        assertTrue(output.contains("type=\"Compilation\""));
         assertTrue(output.contains("<primary-type>Album"));
         assertTrue(output.contains("<secondary-type>Compilation"));
-        assertTrue(output.contains("track-list offset=\"4\""));
+        assertTrue(output.contains("offset=\"4\""));
         assertTrue(output.contains("count=\"10\""));
         assertTrue(output.contains("offset=\"0\""));
         assertTrue(output.contains("count=\"1\""));
@@ -588,4 +589,54 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"artist-credit\":{\"name-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}"));
     }
 
+    @Test
+    public void testOutputJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+        ResultsWriter writer = new RecordingWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+        assertTrue(output.contains("id\":\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
+        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"type\":\"Compilation\""));
+        assertTrue(output.contains("title\":\"Gravitational Lenz\""));
+        assertTrue(output.contains("\"isrcs\":[{\"id\":\"123456789"));
+        assertTrue(output.contains("\"status\":\"Official\""));
+        assertTrue(output.contains("format\":\"Vinyl\""));
+        assertTrue(output.contains("\"position\":1,\"format\":\"Vinyl\""));
+        assertTrue(output.contains("\"releases\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
+        assertTrue(output.contains("country\":\"UK\""));
+        assertTrue(output.contains("\"primary-type\":\"Album\""));
+        assertTrue(output.contains("\"secondary-types\":[\"Compilation\"]}"));
+        assertTrue(output.contains("\"tags\":[{\"count\":101,\"name\":\"indie\"}"));
+        assertTrue(output.contains("puids\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}"));
+        assertTrue(output.contains("\"artist-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}}"));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"length\":234000"));
+        assertTrue(output.contains("\"position\":1"));
+        assertTrue(output.contains("\"track-count\":10"));
+
+    }
+
+    @Test
+    public void testOutputJsonNewIdent() throws Exception {
+
+        Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+        ResultsWriter writer = new RecordingWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Ident is" + output);
+        assertTrue(output.contains("\"offset\" : 0"));
+    }
 }

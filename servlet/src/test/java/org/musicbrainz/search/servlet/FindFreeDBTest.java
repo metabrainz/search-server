@@ -191,5 +191,44 @@ public class FindFreeDBTest  {
 
     }
 
+    @Test
+    public void testOutputJsonNew() throws Exception {
 
+        Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+        ResultsWriter writer = new FreeDBWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+        assertTrue(output.contains("\"score\":\"100\","));
+        assertTrue(output.contains("\"id\":\"c20c4b0d\""));
+        assertTrue(output.contains("\"title\":\"L\u00e1grimas & Gozos\""));
+        assertTrue(output.contains("\"artist\":\"Ska-P\""));
+        assertTrue(output.contains("\"year\":\"2008\""));
+        assertTrue(output.contains("\"category\":\"folk\""));
+        assertTrue(output.contains("\"count\":13,"));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+
+    }
+
+    @Test
+    public void testOutputJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+        ResultsWriter writer = new FreeDBWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Pretty is" + output);
+        assertTrue(output.contains("\"offset\" : 0,"));
+
+    }
 }

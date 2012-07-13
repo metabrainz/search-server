@@ -31,7 +31,6 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
@@ -48,7 +47,6 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -62,8 +60,9 @@ public class SearchServerServlet extends HttpServlet {
     final static int DEFAULT_MATCHES_LIMIT = 25;
     final static int MAX_MATCHES_LIMIT = 100;
 
-    public final static String RESPONSE_XML = "xml";
-    public final static String RESPONSE_JSON = "json";
+    public final static String RESPONSE_XML         = "xml";
+    public final static String RESPONSE_JSON        = "json";
+    public final static String RESPONSE_JSON_NEW    = "jsonnew";
 
     final static String WS_VERSION_1 = "1";
     final static String WS_VERSION_2 = "2";
@@ -418,6 +417,13 @@ public class SearchServerServlet extends HttpServlet {
             isExplain=true;
         }
 
+        boolean isPretty = false;
+        String strIsPretty = request.getParameter(RequestParameter.PRETTY.getName());
+        if (strIsPretty!= null && strIsPretty.equals("true")) {
+            isPretty=true;
+        }
+
+
         boolean isDismax = false;
         String strIsDismax = request.getParameter(RequestParameter.DISMAX.getName());
         if (strIsDismax!= null && strIsDismax.equals("true")) {
@@ -427,9 +433,9 @@ public class SearchServerServlet extends HttpServlet {
         try {
             if (resourceType != null) {
                 //log.log(Level.SEVERE,"Query sent"+query);
-                doSearch(response, resourceType, query, isDismax, isExplain, offset, limit, responseFormat, responseVersion);
+                doSearch(response, resourceType, query, isDismax, isExplain, isPretty, offset, limit, responseFormat, responseVersion);
             } else {
-                doAllSearch(response, query, isDismax, offset, limit, responseFormat);
+                doAllSearch(response, query, isDismax, offset, limit, responseFormat, isPretty);
             }
         } catch (ParseException pe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
@@ -449,7 +455,8 @@ public class SearchServerServlet extends HttpServlet {
      * @param resourceType
      * @param query
      * @param isDismax
-     *@param offset
+     * @param isPretty
+     * @param offset
      * @param limit
      * @param responseFormat
      * @param responseVersion     @throws ParseException
@@ -460,6 +467,7 @@ public class SearchServerServlet extends HttpServlet {
                           String query,
                           boolean isDismax,
                           boolean isExplain,
+                          boolean isPretty,
                           Integer offset,
                           Integer limit,
                           String responseFormat,
@@ -503,7 +511,7 @@ public class SearchServerServlet extends HttpServlet {
         }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-        writer.write(out, results, responseFormat);
+        writer.write(out, results, responseFormat, isPretty);
         out.close();
     }
 
@@ -514,16 +522,17 @@ public class SearchServerServlet extends HttpServlet {
      * @param response
      * @param query
      * @param isDismax
-     *@param offset
+     * @param offset
      * @param limit
      * @param responseFormat    @throws ParseException
+     * @param isPretty
      * @throws IOException
      */
     private void doAllSearch(HttpServletResponse response,
                              String query,
                              boolean isDismax, Integer offset,
                              Integer limit,
-                             String responseFormat)
+                             String responseFormat, boolean isPretty)
             throws Exception {
 
         SearchServer artistSearch = searchers.get(ResourceType.ARTIST);
@@ -573,7 +582,7 @@ public class SearchServerServlet extends HttpServlet {
         }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-        writer.write(out, allResults, responseFormat);
+        writer.write(out, allResults, responseFormat, isPretty);
         out.close();
     }
 }

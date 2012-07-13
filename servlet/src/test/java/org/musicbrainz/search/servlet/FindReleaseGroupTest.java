@@ -516,4 +516,49 @@ public class FindReleaseGroupTest {
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
     }
 
+    @Test
+    public void testOutputJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
+        ResultsWriter writer = new ReleaseGroupWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+        assertTrue(output.contains("id\":\"0011c128-b1f2-300e-88cc-c33c30dce704\""));
+        assertTrue(output.contains("\"type\":\"album\""));
+        assertTrue(output.contains("title\":\"Epics\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"disambiguation\":\"demo\""));
+        assertTrue(output.contains("\"name\":\"Erich Kunzel\""));
+        assertTrue(output.contains("\"sort-name\":\"Kunzel, Eric\""));
+        assertTrue(output.contains("\"joinphrase\":\"and\""));
+        assertTrue(output.contains("\"id\":\"99845d0c-f239-4051-a6b1-4b5e9f7ede0b\""));
+
+
+
+
+    }
+
+    @Test
+    public void testOutputJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
+        ResultsWriter writer = new ReleaseGroupWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Pretty is" + output);
+        assertTrue(output.contains("\"offset\" : 0,"));
+
+    }
+
 }

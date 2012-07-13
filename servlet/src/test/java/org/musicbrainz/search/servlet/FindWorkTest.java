@@ -243,7 +243,103 @@ public class FindWorkTest {
         assertTrue(output.contains("type=\"Opera\""));
         assertTrue(output.contains("<alias-list><alias>Symp5</alias></alias-list>"));
         assertTrue(output.contains("<tag-list><tag count=\"10\"><name>classical</name></tag></tag-list>"));
+    }
 
+    /**
+     * Tests
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testOutputAsJson() throws Exception {
 
+        Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
+        ResultsWriter writer = new WorkWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json is" + output);
+
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0"));
+        assertTrue(output.contains("\"work\":[{\"id\":\"4ff89cf0-86af-11de-90ed-001fc6f176ff\""));
+        assertTrue(output.contains("\"type\":\"Opera\""));
+        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"title\":\"Symphony No. 5\""));
+        assertTrue(output.contains("\"language\":\"eng\""));
+        assertTrue(output.contains("\"iswc-list\":{\"iswc\":[\"T-101779304-1\",\"B-101779304-1\"]}"));
+        assertTrue(output.contains("\"disambiguation\":\"demo\""));
+        assertTrue(output.contains("\"alias-list\":{\"alias\":[\"Symp5\"]}"));
+        assertTrue(output.contains("\"relation-list\":[{\"target-type\":\"artist\""));
+        assertTrue(output.contains("\"relation\":[{\"type\":\"composer\",\"direction\":\"backward\",\"attribute-list\":{\"attribute\":[\"additional\"]}"));
+        assertTrue(output.contains("\"artist\":{\"id\":\"1f9df192-a621-4f54-8850-2c5373b7eac9\""));
+        assertTrue(output.contains("\"name\":\"Пётр Ильич Чайковский\""));
+        assertTrue(output.contains("\"sort-name\":\"Пётр Ильич Чайковский\""));
+        assertTrue(output.contains("\"tag-list\":{\"tag\""));
+        assertTrue(output.contains("\"name\":\"classical\""));
+        assertTrue(output.contains("\"count\":10"));
+        assertTrue(output.contains(""));
+    }
+
+    /**
+     * Tests
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testOutputAsJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
+        ResultsWriter writer = new WorkWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0"));
+        assertTrue(output.contains("\"work\":[{\"id\":\"4ff89cf0-86af-11de-90ed-001fc6f176ff\""));
+        assertTrue(output.contains("\"type\":\"Opera\""));
+        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"title\":\"Symphony No. 5\""));
+        assertTrue(output.contains("\"language\":\"eng\""));
+        assertTrue(output.contains("iswcs\":[\"T-101779304-1\",\"B-101779304-1\"]"));
+        assertTrue(output.contains("\"disambiguation\":\"demo\""));
+        assertTrue(output.contains("\"aliases\":[\"Symp5\"]"));
+        assertTrue(output.contains("\"relations\":[{\"target-type\":\"artist\""));
+        assertTrue(output.contains("\"artist\":{\"id\":\"1f9df192-a621-4f54-8850-2c5373b7eac9\""));
+        assertTrue(output.contains("\"name\":\"Пётр Ильич Чайковский\""));
+        assertTrue(output.contains("\"sort-name\":\"Пётр Ильич Чайковский\""));
+        assertTrue(output.contains("\"tags\":[{\"count\":10,\"name\":\"classical\"}"));
+        assertTrue(output.contains("\"count\":10"));
+        assertTrue(output.contains(""));
+    }
+
+    /**
+     * Tests
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testOutputAsJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
+        ResultsWriter writer = new WorkWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Pretty is" + output);
+
+        assertTrue(output.contains("\"count\" : 1"));
+        assertTrue(output.contains(""));
     }
 }

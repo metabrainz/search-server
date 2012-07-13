@@ -203,4 +203,44 @@ public class FindCDStubTest {
 
     }
 
+    @Test
+    public void testOutputJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
+        ResultsWriter writer = new CDStubWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"score\":\"100\","));
+        assertTrue(output.contains("\"id\":\"qA87dKURKperVfmckD5b_xo8BO8-\""));
+        assertTrue(output.contains("\"count\":2"));
+        assertTrue(output.contains("\"title\":\"Doo Doo First\""));
+        assertTrue(output.contains("\"artist\":\"Doo Doo\""));
+        assertTrue(output.contains("\"barcode\":\"837101029193\""));
+        assertTrue(output.contains("\"comment\":\"CD Baby id:vozzolo\""));
+    }
+
+    @Test
+    public void testOutputJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
+        ResultsWriter writer = new CDStubWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Pretty is" + output);
+        assertTrue(output.contains("\"offset\" : 0,"));
+
+    }
 }

@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.LabelIndexField;
@@ -454,5 +453,57 @@ public class FindLabelTest {
         assertTrue(output.contains("\"country\":\"GB\""));
         assertTrue(output.contains("tag-list\":{\"tag\":[{\"count\":22,\"name\":\"dance\"}"));
         assertTrue(output.contains("\"ended\":\"true\""));
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testOutputJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new LabelWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New is" + output);
+
+        assertTrue(output.contains("id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
+        assertTrue(output.contains("\"type\":\"Production\""));
+        assertTrue(output.contains("name\":\"Jockey Slut\""));
+        assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
+        assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
+        assertTrue(output.contains("\"country\":\"GB\""));
+        assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"dance\"}]"));
+        assertTrue(output.contains("\"ended\":true"));
+        assertTrue(output.contains("\"ipis\":[\"1001\""));
+        assertTrue(output.contains("\"aliases\":[\"Jockeys\"]"));
+        assertTrue(output.contains("\"end\":\"2004\""));
+        assertTrue(output.contains("\"label-code\":1234"));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0,"));
+
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testOutputJsonNewIdent() throws Exception {
+
+        Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new LabelWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Json New Ident is" + output);
+        assertTrue(output.contains("\"offset\" : 0"));
+
     }
 }

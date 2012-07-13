@@ -81,12 +81,14 @@ public abstract class Mmd1XmlWriter extends ResultsWriter {
     /**
      * Write the results to provider writer
      *
+     *
      * @param out
      * @param results
+     * @param isPretty
      * @throws IOException
      */
     @Override
-    public void write(PrintWriter out, Results results, String outputFormat) throws IOException {
+    public void write(PrintWriter out, Results results, String outputFormat, boolean isPretty) throws IOException {
 
         //SEARCH-66 Create StringWriter so that we can hack the namespace for backwards compatibility
         StringWriter sw =  new StringWriter();
@@ -94,6 +96,9 @@ public abstract class Mmd1XmlWriter extends ResultsWriter {
         try {
             Metadata metadata = write(results);
             Marshaller m = context.createMarshaller();
+            if(isPretty) {
+                m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            }
             m.marshal(metadata, sw);
         }
         catch (JAXBException je) {

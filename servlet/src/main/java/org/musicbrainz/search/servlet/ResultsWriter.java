@@ -38,10 +38,14 @@ public abstract class ResultsWriter {
     public abstract String getMimeType();
 
     public void write(PrintWriter out, Results results) throws IOException {
-        write(out, results, SearchServerServlet.RESPONSE_XML ) ;
+        write(out, results, SearchServerServlet.RESPONSE_XML, false) ;
     }
 
-    public abstract void write(PrintWriter out, Results results,String outputFormat) throws IOException ;
+    public void write(PrintWriter out, Results results, String outputFormat) throws IOException {
+        write(out, results, outputFormat, false) ;
+    }
+
+    public abstract void write(PrintWriter out, Results results, String outputFormat, boolean isPretty) throws IOException ;
 
     /**
      *

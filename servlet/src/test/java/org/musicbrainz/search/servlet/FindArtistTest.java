@@ -58,6 +58,7 @@ public class FindArtistTest {
             doc.addField(ArtistIndexField.TAG, "güth");
             doc.addField(ArtistIndexField.TAGCOUNT, "11");
             doc.addField(ArtistIndexField.IPI,"1001");
+            doc.addField(ArtistIndexField.IPI,"1002");
 
             writer.addDocument(doc.getLuceneDocument());
         }
@@ -330,6 +331,15 @@ public class FindArtistTest {
         }
     }
 
+    @Test
+    public void testFindArtistByExcalamation() throws Exception {
+        Results res = ss.searchLucene("Farming\\!", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.get(ArtistIndexField.ARTIST_ID));
+    }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/artist/?type=xml&query=%22Farming%20Incident%22
@@ -388,7 +398,7 @@ public class FindArtistTest {
         assertTrue(output.contains("<country>AF</country>"));
         assertTrue(output.contains("<ended>true</ended>"));
         assertTrue(output.contains("<gender>male</gender>"));
-        assertTrue(output.contains("<ipi-list><ipi>1001</ipi></ipi-list>"));
+        assertTrue(output.contains("<ipi-list><ipi>1001</ipi><ipi>1002</ipi></ipi-list>"));
         assertTrue(output.contains("thrash</name>"));
         assertTrue(output.contains("güth</name>"));
         assertFalse(output.contains("alias"));
@@ -494,6 +504,8 @@ public class FindArtistTest {
         assertTrue(output.contains("\"tag\":[{\"count\":5,\"name\":\"thrash\"},{\"count\":11,\"name\":\"güth\"}"));
     }
 
+
+
     @Test
     public void testOutputJsonMultiple() throws Exception {
         Results res = ss.searchLucene("artist:\"Farming Incident\" OR artist:\"Echo & The Bunnymen\"", 0, 2);
@@ -507,6 +519,59 @@ public class FindArtistTest {
         assertTrue(output.contains("\"score\":\"100\""));
         assertTrue(output.contains("\"score\":\"31\""));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testOutputJsonNew() throws Exception {
+
+        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+        ResultsWriter writer = new ArtistWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("JNew is" + output);
+
+        assertTrue(output.contains("id\":\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
+        assertTrue(output.contains("\"type\":\"Group\""));
+        assertTrue(output.contains("name\":\"Farming Incident\""));
+        assertTrue(output.contains("\"sort-name\":\"Incident, Farming\""));
+        assertTrue(output.contains("\"begin\":\"1999-04\""));
+        assertTrue(output.contains("\"ended\":true"));
+        assertTrue(output.contains("\"country\":\"AF\""));
+        assertTrue(output.contains("\"gender\":\"male\""));
+        assertTrue(output.contains("\"tags\":[{"));
+        assertTrue(output.contains("\"count\":5"));
+        assertTrue(output.contains("\"name\":\"thrash\""));
+        assertTrue(output.contains("\"name\":\"güth\""));
+        assertTrue(output.contains("\"count\":1"));
+        assertTrue(output.contains("\"offset\":0"));
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testOutputJsonNewPretty() throws Exception {
+
+        Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+        ResultsWriter writer = new ArtistWriter();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("JSON New Pretty is" + output);
+        assertTrue(output.contains("\"offset\" : 0"));
+
+    }
+
 
 
 }

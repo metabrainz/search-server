@@ -177,7 +177,7 @@ public class TestSearchOnly {
         Results results = searchServer.search(query, offset, limit);
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter("xml", responseVersion);
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new NullOutputStream(), CHARSET)));
-        writer.write(out, results, "xml");
+        writer.write(out, results, "xml", false);
         out.close();
         long end = System.nanoTime();
         long queryInMs = ((end - start) / 1000000 );
