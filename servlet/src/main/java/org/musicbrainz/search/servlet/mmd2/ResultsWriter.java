@@ -167,6 +167,9 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
             try {
                 Metadata metadata = write(results);
                 JSONMarshaller m = internalJsoncontext.createJSONMarshaller();
+                if(isPretty) {
+                    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                }
                 m.marshallToJSON(metadata, out);
             }
             catch (JAXBException je) {
