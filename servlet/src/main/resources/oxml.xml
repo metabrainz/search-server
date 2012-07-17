@@ -238,7 +238,7 @@
         </java-type>
         <java-type name="LabelInfoList">
             <java-attributes>
-                <xml-element java-attribute="labelInfo" name="labelInfos"/>
+                <xml-element java-attribute="labelInfo" name="label-info"/>
             </java-attributes>
         </java-type>
         <java-type name="Work">

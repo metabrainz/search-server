@@ -807,8 +807,10 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"media\""));
         assertTrue(output.contains("\"disc-count\":1"));
         assertTrue(output.contains("\"track-count\":7"));
-
-
+        assertTrue(output.contains("\"label-info\""));
+        assertTrue(output.contains("\"catalog-number\":\"WRATHCD25\""));
+        assertTrue(output.contains("\"primary-type\":\"Album\""));
+        assertTrue(output.contains(""));
     }
 
     @Test
