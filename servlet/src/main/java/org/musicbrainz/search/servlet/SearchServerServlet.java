@@ -47,6 +47,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Enumeration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -375,10 +376,27 @@ public class SearchServerServlet extends HttpServlet {
         }
 
 
-        // Default to xml if not provided
+        //Response Format, first defined by fmt parameter, if not set defined by accept header, if not set default
+        //to Xml. Note if accept header set to json this will set format to  RESPONSE_JSON_NEW not RESPONSE_JSON (the
+        //old internal format)
         String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
         if (responseFormat == null || responseFormat.isEmpty()) {
-            responseFormat = RESPONSE_XML;
+
+            Enumeration<String> headers = request.getHeaders("Accept");
+            while(headers.hasMoreElements())
+            {
+                String nextHeader = headers.nextElement();
+                if(nextHeader.equals("application/json"))
+                {
+                    responseFormat = RESPONSE_JSON_NEW;
+                    break;
+                }
+            }
+            // Default to xml if not provided
+            if(responseFormat == null)
+            {
+                responseFormat = RESPONSE_XML;
+            }
         }
 
         String responseVersion = request.getParameter(RequestParameter.VERSION.getName());

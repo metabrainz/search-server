@@ -626,7 +626,7 @@ public class FindRecordingTest {
     }
 
     @Test
-    public void testOutputJsonNewIdent() throws Exception {
+    public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
         ResultsWriter writer = new RecordingWriter();
@@ -636,7 +636,7 @@ public class FindRecordingTest {
         pr.close();
 
         String output = sw.toString();
-        System.out.println("Json New Ident is" + output);
+        System.out.println("Json New Pretty is" + output);
         assertTrue(output.contains("\"offset\" : 0"));
     }
 }

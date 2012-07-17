@@ -804,6 +804,10 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"track-count\":17"));
+        assertTrue(output.contains("\"media\""));
+        assertTrue(output.contains("\"disc-count\":1"));
+        assertTrue(output.contains("\"track-count\":7"));
+
 
     }
 

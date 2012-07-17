@@ -81,6 +81,11 @@
                 <xml-element java-attribute="ipi" name="ipis"/>
             </java-attributes>
         </java-type>
+        <java-type name="LabelList">
+            <java-attributes>
+                <xml-element java-attribute="label" name="labels"/>
+            </java-attributes>
+        </java-type>
         <java-type name="Label">
             <java-attributes>
                 <xml-element java-attribute="tagList" xml-path="."/>
@@ -163,7 +168,7 @@
         </java-type>
         <java-type name="MediumList">
             <java-attributes>
-                <xml-element java-attribute="medium" name="mediums"/>
+                <xml-element java-attribute="medium" name="media"/>
             </java-attributes>
         </java-type>
         <java-type name="IsrcList">
@@ -259,6 +264,31 @@
         <java-type name="ReleaseGroup">
             <java-attributes>
                 <xml-element java-attribute="tagList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Medium$TrackList">
+            <java-attributes>
+                <xml-element java-attribute="count" name="track-count"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Medium$TrackList">
+            <java-attributes>
+                <xml-element java-attribute="offset" name="track-offset"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="DiscList">
+            <java-attributes>
+                <xml-element java-attribute="count" name="disc-count"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="DiscList">
+            <java-attributes>
+                <xml-element java-attribute="offset" name="disc-offset"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Medium">
+            <java-attributes>
+                <xml-element java-attribute="discList" xml-path="."/>
             </java-attributes>
         </java-type>
 
