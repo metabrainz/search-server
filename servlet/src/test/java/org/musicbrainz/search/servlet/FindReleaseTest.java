@@ -790,10 +790,9 @@ public class FindReleaseTest {
         pr.close();
 
         String output = sw.toString();
-        System.out.println("Json Nw is" + output);
+        System.out.println("Json New is" + output);
 
         assertTrue(output.contains("id\":\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\""));
-        assertTrue(output.contains("\"type\":\"Compilation\""));
         assertTrue(output.contains("title\":\"Our Glorious 5 Year Plan\""));
         assertTrue(output.contains("\"status\":\"Official\""));
         assertTrue(output.contains("\"language\":\"eng\""));

@@ -530,7 +530,6 @@ public class FindReleaseGroupTest {
         System.out.println("Json New is" + output);
 
         assertTrue(output.contains("id\":\"0011c128-b1f2-300e-88cc-c33c30dce704\""));
-        assertTrue(output.contains("\"type\":\"album\""));
         assertTrue(output.contains("title\":\"Epics\""));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));

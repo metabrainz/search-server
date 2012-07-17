@@ -291,6 +291,10 @@
                 <xml-element java-attribute="discList" xml-path="."/>
             </java-attributes>
         </java-type>
-
+        <java-type name="ReleaseGroup">
+            <java-attributes>
+                <xml-transient java-attribute="type"/>
+            </java-attributes>
+        </java-type>
     </java-types>
 </xml-bindings>
