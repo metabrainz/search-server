@@ -243,7 +243,9 @@
         </java-type>
         <java-type name="Work">
             <java-attributes>
-                <xml-element java-attribute="relationList" name="relations"/>
+                <xml-element java-attribute="relationList" name="relations">
+                    <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.RelationsAdapter"/>
+                </xml-element>
             </java-attributes>
         </java-type>
         <java-type name="Artist">
@@ -294,6 +296,16 @@
         <java-type name="ReleaseGroup">
             <java-attributes>
                 <xml-transient java-attribute="type"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Relation">
+            <java-attributes>
+                <xml-element java-attribute="attributeList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="AttributeList">
+            <java-attributes>
+                <xml-element java-attribute="attribute" name="attributes"/>
             </java-attributes>
         </java-type>
     </java-types>

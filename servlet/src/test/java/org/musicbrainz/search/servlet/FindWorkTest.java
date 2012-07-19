@@ -54,21 +54,37 @@ public class FindWorkTest {
             doc.addField(WorkIndexField.TAG, "classical");
             doc.addField(WorkIndexField.TAGCOUNT, "10");
 
-
             RelationList rl = of.createRelationList();
-            rl.setTargetType("artist");
-            Relation relation = of.createRelation();
-            AttributeList al  = of.createAttributeList();
-            Artist artist = of.createArtist();
-            artist.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
-            artist.setName("Пётр Ильич Чайковский");
-            artist.setSortName("Пётр Ильич Чайковский");
-            relation.setArtist(artist);
-            relation.setType("composer");
-            relation.setDirection(DefDirection.BACKWARD);
-            al.getAttribute().add("additional");
-            relation.setAttributeList(al);
-            rl.getRelation().add(relation);
+            {
+                rl.setTargetType("artist");
+                Relation relation = of.createRelation();
+                AttributeList al  = of.createAttributeList();
+                Artist artist = of.createArtist();
+                artist.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
+                artist.setName("Пётр Ильич Чайковский");
+                artist.setSortName("Пётр Ильич Чайковский");
+                relation.setArtist(artist);
+                relation.setType("composer");
+                relation.setDirection(DefDirection.BACKWARD);
+                al.getAttribute().add("additional");
+                relation.setAttributeList(al);
+                rl.getRelation().add(relation);
+            }
+
+            {
+                rl.setTargetType("artist");
+                Relation relation = of.createRelation();
+                AttributeList al  = of.createAttributeList();
+                Artist artist = of.createArtist();
+                artist.setId("123456-a621-4f54-8850-2c5373b7eac9");
+                artist.setName("fred");
+                artist.setSortName("fred");
+                relation.setArtist(artist);
+                relation.setType("lyricist");
+                relation.setDirection(DefDirection.BACKWARD);
+                relation.setAttributeList(al);
+                rl.getRelation().add(relation);
+            }
             doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
 
             writer.addDocument(doc.getLuceneDocument());
@@ -222,7 +238,7 @@ public class FindWorkTest {
         ResultsWriter writer = new WorkWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        writer.write(pr, res);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_XML, false);
         pr.close();
         String output = sw.toString();
         System.out.println("Xml is" + output);
@@ -312,13 +328,13 @@ public class FindWorkTest {
         assertTrue(output.contains("iswcs\":[\"T-101779304-1\",\"B-101779304-1\"]"));
         assertTrue(output.contains("\"disambiguation\":\"demo\""));
         assertTrue(output.contains("\"aliases\":[\"Symp5\"]"));
-        assertTrue(output.contains("\"relations\":[{\"target-type\":\"artist\""));
+        assertTrue(output.contains("\"relations\":[{\"artist\""));
         assertTrue(output.contains("\"artist\":{\"id\":\"1f9df192-a621-4f54-8850-2c5373b7eac9\""));
         assertTrue(output.contains("\"name\":\"Пётр Ильич Чайковский\""));
         assertTrue(output.contains("\"sort-name\":\"Пётр Ильич Чайковский\""));
         assertTrue(output.contains("\"tags\":[{\"count\":10,\"name\":\"classical\"}"));
         assertTrue(output.contains("\"count\":10"));
-        assertTrue(output.contains(""));
+        assertTrue(output.contains("\"attributes\":[\"additional\"]"));
     }
 
     /**
