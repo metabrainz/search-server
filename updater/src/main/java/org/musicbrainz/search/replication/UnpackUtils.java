@@ -2,12 +2,12 @@ package org.musicbrainz.search.replication;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import jregex.Pattern;
+import jregex.Matcher;
 
 public class UnpackUtils {
 
-	private static Pattern UNPACK_PATTERN = Pattern.compile("\"([^\"]+)\"=('(?:''|[^'])*')? ");
+	private static Pattern UNPACK_PATTERN = new Pattern("\"([^\"]+)\"=('(?:''|[^'])*')? ");
 	
 	static Map<String, String> unpackData(String data) {
 
