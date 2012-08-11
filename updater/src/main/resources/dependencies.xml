@@ -13,6 +13,9 @@
 			<join src_field='id' target_field='artist'>
 				<table name='artist_credit_name' />
 			</join>
+			<join src_field='id' target_field='artist'>
+				<table name='artist_ipi' />
+			</join>
 		</table>
 	</index>
 	
@@ -37,6 +40,9 @@
 			<join src_field='id' target_field='work'>
 				<table name='work_tag' />
 			</join>
+			<join src_field='id' target_field='work'>
+				<table name='iswc' />
+			</join>			
 			<join src_field='id' target_field='entity1'>
 				<table name='l_artist_work'>
 					<join src_field='entity0' target_field='id'>
@@ -62,6 +68,9 @@
 						<table name='artist' used_fields='name,sort_name' />
 					</join>
 				</table>
+			</join>
+			<join src_field='id' target_field='release_group'>
+				<table name='release_group_secondary_type_join' />
 			</join>
 		</table>
 	</index>
