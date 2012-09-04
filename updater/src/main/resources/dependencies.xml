@@ -28,6 +28,9 @@
 			<join src_field='id' target_field='label'>
 				<table name='label_tag' />
 			</join>
+			<join src_field='id' target_field='label'>
+				<table name='label_ipi' />
+			</join>
 		</table>
 	</index>
 	
@@ -47,6 +50,8 @@
 				<table name='l_artist_work'>
 					<join src_field='entity0' target_field='id'>
 						<table name='artist' used_fields='name,sort_name' />
+						<!-- referencing link and link_type table is not necessary since if relationship is edited (attributes or link_type), 
+						the link property in l_artist_work will change -->
 					</join>
 				</table>
 			</join>
@@ -107,7 +112,11 @@
 				<table name='release_meta' />
 			</join>
 			<join src_field='release_group' target_field='id'>
-				<table name='release_group' used_fields='type' />
+				<table name='release_group' used_fields='type'>
+					<join src_field='release_group' target_field='id'>
+						<table name='release_group_secondary_type_join' />
+					</join>
+				</table>
 			</join>
 			<join src_field='artist_credit' target_field='artist_credit'>
 				<table name='artist_credit_name'>
@@ -140,7 +149,11 @@
 									<join src_field='release' target_field='id'>
 										<table name='release'>
 											<join src_field='release_group' target_field='id'>
-												<table name='release_group' used_fields='type' />
+												<table name='release_group' used_fields='type'>
+													<join src_field='release_group' target_field='id'>
+														<table name='release_group_secondary_type_join' />
+													</join>
+												</table>
 											</join>
 										</table>
 									</join>
