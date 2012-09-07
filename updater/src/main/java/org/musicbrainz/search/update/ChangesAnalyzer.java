@@ -38,6 +38,15 @@ public class ChangesAnalyzer {
 		return insertedOrUpdatedIds;
 	}
     
+	public boolean hasChanges() {
+		return !deletedIds.isEmpty() || !insertedOrUpdatedIds.isEmpty();
+	}
+	
+	public void reset() {
+		deletedIds.clear();
+		insertedOrUpdatedIds.clear();
+	}
+	
     public void analyze(ReplicationPacket packet, Integer lastChangeSequence) throws SQLException {
     	
     	Map<String, Set<Integer>> changedTables = new HashMap<String, Set<Integer>>();

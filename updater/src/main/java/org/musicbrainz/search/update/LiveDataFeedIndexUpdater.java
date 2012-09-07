@@ -195,18 +195,13 @@ public class LiveDataFeedIndexUpdater {
         // Step 3: Update the existing indexes from found changes
         for (DatabaseIndex index : indexes) {
 
-        	ChangesAnalyzer changesAnalyzer = indexChangesAnalyzers.get(index);
-        	if (!changesAnalyzer.hasChanges()) {
-        		LOGGER.info("No changes found for index: " + index.getName());
-        		continue;
-        	}
-        	
         	clock.start();
             LOGGER.info("Started updating index: " + index.getName());
             
             IndexWriter indexWriter = indexWriters.get(index);
             ReplicationInformation replicationInfo = indexReplicationInfos.get(index);
-            
+        	ChangesAnalyzer changesAnalyzer = indexChangesAnalyzers.get(index);
+        	
             try {
 				updateDatabaseIndex(index, indexWriter, replicationInfo, changesAnalyzer, itPacket.getCurrentReplicationPosition());
 			} catch (DatabaseSchemaChangedException e) {
