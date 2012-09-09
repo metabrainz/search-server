@@ -57,18 +57,32 @@ public class FindWorkTest {
 
             RelationList rl = of.createRelationList();
             rl.setTargetType("artist");
-            Relation relation = of.createRelation();
-            AttributeList al  = of.createAttributeList();
-            Artist artist = of.createArtist();
-            artist.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
-            artist.setName("Пётр Ильич Чайковский");
-            artist.setSortName("Пётр Ильич Чайковский");
-            relation.setArtist(artist);
-            relation.setType("composer");
-            relation.setDirection(DefDirection.BACKWARD);
-            al.getAttribute().add("additional");
-            relation.setAttributeList(al);
-            rl.getRelation().add(relation);
+            {
+                Relation relation = of.createRelation();
+                AttributeList al  = of.createAttributeList();
+                Artist artist = of.createArtist();
+                artist.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
+                artist.setName("Пётр Ильич Чайковский");
+                artist.setSortName("Пётр Ильич Чайковский");
+                relation.setArtist(artist);
+                relation.setType("composer");
+                relation.setDirection(DefDirection.BACKWARD);
+                al.getAttribute().add("additional");
+                relation.setAttributeList(al);
+                rl.getRelation().add(relation);
+            }
+            {
+                Relation relation = of.createRelation();
+                AttributeList al  = of.createAttributeList();
+                Artist artist = of.createArtist();
+                artist.setId("abcdefgh-a621-4f54-8850-2c5373b7eac9");
+                artist.setName("frank");
+                artist.setSortName("turner");
+                relation.setArtist(artist);
+                relation.setType("writer");
+                relation.setDirection(DefDirection.BACKWARD);
+                rl.getRelation().add(relation);
+            }
             doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
 
             writer.addDocument(doc.getLuceneDocument());
