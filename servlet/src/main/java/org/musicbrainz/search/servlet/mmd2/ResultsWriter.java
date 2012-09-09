@@ -40,7 +40,6 @@ import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.servlet.ErrorMessage;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.SearchServerServlet;
-import org.musicbrainz.search.servlet.moxy.Registry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -53,9 +52,9 @@ import java.util.Map;
 public abstract class ResultsWriter extends org.musicbrainz.search.servlet.ResultsWriter {
 
     static final JAXBContext            context                 = initContext();
+    static final NamespacePrefixMapper  prefixMapper            = new PreferredMapper();
     static final JSONJAXBContext        internalJsoncontext     = initInternalJsonContext();
     static final JAXBContext            jsonContext             = initJsonContext();
-    static final NamespacePrefixMapper  prefixMapper            = new PreferredMapper();
 
     public String getMimeType() {
           return "application/xml; charset=UTF-8";
@@ -93,7 +92,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
             properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, "oxml.xml");
             properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
             properties.put(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
-            return JAXBContextFactory.createContext(new Class[]{Metadata.class, Registry.class}, properties);
+            return JAXBContextFactory.createContext(new Class[]{Metadata.class}, properties);
         }
         catch (JAXBException ex) {
             //Unable to initilize jaxb/Users/paul/code/MusicBrainz/SearchServer/servlet/src/main/resources/oxml.xml context, should never happen
