@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.mmd2.Artist;
@@ -16,6 +17,7 @@ import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
@@ -23,6 +25,7 @@ import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,75 +49,84 @@ public class FindReleaseGroupTest {
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
         ObjectFactory of = new ObjectFactory();
         //Release Group with single artist
-        MbDocument doc = new MbDocument();
-        doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
-        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
-        doc.addField(ReleaseGroupIndexField.RELEASE_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c46");
-        doc.addField(ReleaseGroupIndexField.RELEASESTATUS, "Official");
-        doc.addField(ReleaseGroupIndexField.RELEASE, "secret");
-        doc.addField(ReleaseGroupIndexField.TAG, "indie");
-        doc.addField(ReleaseGroupIndexField.TAGCOUNT, "101");
 
-        doc.addField(ReleaseGroupIndexField.TYPE, "Single");
-        doc.addField(ReleaseGroupIndexField.PRIMARY_TYPE, "Single");
-        doc.addField(ReleaseGroupIndexField.SECONDARY_TYPE, "Live");
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c45");
+            doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Nobody's Twisting Your Arm");
+            doc.addField(ReleaseGroupIndexField.RELEASE_ID, "2c7d81da-8fc3-3157-99c1-e9195ac92c46");
+            doc.addField(ReleaseGroupIndexField.RELEASESTATUS, "Official");
+            doc.addField(ReleaseGroupIndexField.RELEASE, "secret");
+            doc.addField(ReleaseGroupIndexField.TAG, "indie");
+            doc.addField(ReleaseGroupIndexField.TAGCOUNT, "101");
 
-        doc.addField(ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
-        doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
-        doc.addField(ReleaseGroupIndexField.ARTIST, "The Wedding Present");
-        doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "The Wedding Present");
-        doc.addNumericField(ReleaseGroupIndexField.NUM_RELEASES,1);
+            doc.addField(ReleaseGroupIndexField.TYPE, "Single");
+            doc.addField(ReleaseGroupIndexField.PRIMARY_TYPE, "Single");
+            doc.addField(ReleaseGroupIndexField.SECONDARY_TYPE, "Live");
 
-        ArtistCredit ac = of.createArtistCredit();
-        NameCredit nc = of.createNameCredit();
-        Artist artist = of.createArtist();
-        artist.setId("707622da-475f-48e1-905d-248718df6521");
-        artist.setName("The Wedding Present");
-        artist.setSortName("Wedding Present, The");
-        nc.setArtist(artist);
-        ac.getNameCredit().add(nc);
-        doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
-        writer.addDocument(doc.getLuceneDocument());
+            doc.addField(ReleaseGroupIndexField.ARTIST_ID, "707622da-475f-48e1-905d-248718df6521");
+            doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Wedding Present");
+            doc.addField(ReleaseGroupIndexField.ARTIST, "The Wedding Present");
+            doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "The Wedding Present");
+            doc.addNumericField(ReleaseGroupIndexField.NUM_RELEASES,1);
 
-        //Release Group with multiple Artist and different name credit and no releases
-        doc = new MbDocument();
-        doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, "0011c128-b1f2-300e-88cc-c33c30dce704");
-        doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Epics");
+            ArtistCredit ac = of.createArtistCredit();
+            NameCredit nc = of.createNameCredit();
+            Artist artist = of.createArtist();
+            artist.setId("707622da-475f-48e1-905d-248718df6521");
+            artist.setName("The Wedding Present");
+            artist.setSortName("Wedding Present, The");
+            nc.setArtist(artist);
+            ac.getNameCredit().add(nc);
+            doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
+            writer.addDocument(doc.getLuceneDocument());
 
-
-        doc.addField(ReleaseGroupIndexField.TYPE, ReleaseGroupType.ALBUM.getName());
-        doc.addField(ReleaseGroupIndexField.ARTIST_ID, "99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
-        doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "Erich Kunzel");
-        doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Erich Kunzel");
-
-        doc.addField(ReleaseGroupIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
-        doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
-        doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
-        doc.addField(ReleaseGroupIndexField.COMMENT, "demo");
-
-        doc.addField(ReleaseGroupIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
-        ac = of.createArtistCredit();
-        nc = of.createNameCredit();
-        artist = of.createArtist();
-        artist.setId("99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
-        artist.setName("Erich Kunzel");
-        artist.setSortName("Kunzel, Eric");
-        nc.setArtist(artist);
-        nc.setName("Erich Kunzel");
-        nc.setJoinphrase("and");
-        ac.getNameCredit().add(nc);
-        nc = of.createNameCredit();
-        artist = of.createArtist();
-        artist.setId("d8fbd94c-cd06-4e8b-a559-761ad969d07e");
-        artist.setName("The Cincinnati Pops Orchestra");
-        artist.setSortName("Cincinnati Pops Orchestra, The");
-        nc.setArtist(artist);
-        nc.setName("Cincinnati Pops");
-        ac.getNameCredit().add(nc);
-        doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
+            //Release Group with multiple Artist and different name credit and no releases
+            doc = new MbDocument();
+            doc.addField(ReleaseGroupIndexField.RELEASEGROUP_ID, "0011c128-b1f2-300e-88cc-c33c30dce704");
+            doc.addField(ReleaseGroupIndexField.RELEASEGROUP, "Epics");
 
 
-        writer.addDocument(doc.getLuceneDocument());
+            doc.addField(ReleaseGroupIndexField.TYPE, ReleaseGroupType.ALBUM.getName());
+            doc.addField(ReleaseGroupIndexField.ARTIST_ID, "99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
+            doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "Erich Kunzel");
+            doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Erich Kunzel");
+
+            doc.addField(ReleaseGroupIndexField.ARTIST_ID, "d8fbd94c-cd06-4e8b-a559-761ad969d07e");
+            doc.addField(ReleaseGroupIndexField.ARTIST_NAME, "The Cincinnati Pops Orchestra");
+            doc.addField(ReleaseGroupIndexField.ARTIST_NAMECREDIT, "Cincinnati Pops");
+            doc.addField(ReleaseGroupIndexField.COMMENT, "demo");
+
+            doc.addField(ReleaseGroupIndexField.ARTIST, "Erich Kunzel and Cincinnati Pops");
+            ac = of.createArtistCredit();
+            nc = of.createNameCredit();
+            artist = of.createArtist();
+            artist.setId("99845d0c-f239-4051-a6b1-4b5e9f7ede0b");
+            artist.setName("Erich Kunzel");
+            artist.setSortName("Kunzel, Eric");
+            nc.setArtist(artist);
+            nc.setName("Erich Kunzel");
+            nc.setJoinphrase("and");
+            ac.getNameCredit().add(nc);
+            nc = of.createNameCredit();
+            artist = of.createArtist();
+            artist.setId("d8fbd94c-cd06-4e8b-a559-761ad969d07e");
+            artist.setName("The Cincinnati Pops Orchestra");
+            artist.setSortName("Cincinnati Pops Orchestra, The");
+            nc.setArtist(artist);
+            nc.setName("Cincinnati Pops");
+            ac.getNameCredit().add(nc);
+            doc.addField(ReleaseGroupIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
         writer.close();
         ss = new ReleaseGroupSearch(new IndexSearcher(IndexReader.open(ramDir)));
         sd = new ReleaseGroupDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
@@ -392,7 +404,7 @@ public class FindReleaseGroupTest {
     public void testOutputAsAsXml() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
-        ResultsWriter writer = new ReleaseGroupWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -453,7 +465,7 @@ public class FindReleaseGroupTest {
     public void testOutputAsAsXml2() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 1);
-        ResultsWriter writer = new ReleaseGroupWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -483,7 +495,7 @@ public class FindReleaseGroupTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
-        ResultsWriter writer = new ReleaseGroupWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -502,8 +514,7 @@ public class FindReleaseGroupTest {
     @Test
     public void testOutputJsonMultiple() throws Exception {
         Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45  OR artist:kunzel", 0, 10);
-
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new ReleaseGroupWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -520,7 +531,7 @@ public class FindReleaseGroupTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
-        ResultsWriter writer = new ReleaseGroupWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -548,7 +559,7 @@ public class FindReleaseGroupTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
-        ResultsWriter writer = new ReleaseGroupWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);
@@ -564,7 +575,7 @@ public class FindReleaseGroupTest {
     public void testOutputJsonNewPretty2() throws Exception {
 
         Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45", 0, 10);
-        ResultsWriter writer = new ReleaseGroupWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);

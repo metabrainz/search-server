@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -13,7 +14,10 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.RecordingIndexField;
+
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -112,6 +116,13 @@ public class IssueSearch167RecordingTest {
             doc.addField(RecordingIndexField.TAGCOUNT, "5");
             doc.addField(RecordingIndexField.TAG, "güth");
             doc.addField(RecordingIndexField.TAGCOUNT, "11");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
             writer.addDocument(doc.getLuceneDocument());
         }
 

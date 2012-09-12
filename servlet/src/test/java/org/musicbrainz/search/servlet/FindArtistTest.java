@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -14,6 +15,7 @@ import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
 import org.musicbrainz.search.index.DatabaseIndex;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ArtistWriter;
@@ -21,6 +23,7 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import static org.junit.Assert.*;
 /**
@@ -86,6 +89,13 @@ public class FindArtistTest {
             doc.addField(ArtistIndexField.ARTIST, "PJ Harvey");
             doc.addField(ArtistIndexField.TYPE, ArtistType.PERSON.getName());
             doc.addField(ArtistIndexField.GENDER, "unknown");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
             writer.addDocument(doc.getLuceneDocument());
         }
 
@@ -379,7 +389,7 @@ public class FindArtistTest {
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter v1Writer = new ArtistWriter();
+        ResultsWriter v1Writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -412,7 +422,7 @@ public class FindArtistTest {
     public void testOutputXml2() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Echo & the Bunnymen\"", 0, 1);
-        ResultsWriter v1Writer = new ArtistWriter();
+        ResultsWriter v1Writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -438,10 +448,10 @@ public class FindArtistTest {
     public void testOutputXml3() throws Exception {
 
         Results res = ss.searchLucene("artist:\"PJ Harvey\"", 0, 1);
-        ResultsWriter v1Writer = new ArtistWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
-        v1Writer.write(pr, res);
+        writer.write(pr, res);
         pr.close();
         String output = sw.toString();
         System.out.println("Xml3 is" + output);
@@ -461,7 +471,7 @@ public class FindArtistTest {
     public void testOutputAsMmd1XmlSpecialCharacters() throws Exception {
 
         Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 1);
-        Mmd1XmlWriter v1Writer = new ArtistMmd1XmlWriter();
+        Mmd1XmlWriter v1Writer = ss.getXmlV1Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -482,7 +492,7 @@ public class FindArtistTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter writer = new ArtistWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -510,7 +520,7 @@ public class FindArtistTest {
     public void testOutputJsonMultiple() throws Exception {
         Results res = ss.searchLucene("artist:\"Farming Incident\" OR artist:\"Echo & The Bunnymen\"", 0, 2);
 
-        ResultsWriter writer = new ArtistWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -527,7 +537,7 @@ public class FindArtistTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter writer = new ArtistWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -560,7 +570,7 @@ public class FindArtistTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter writer = new ArtistWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
@@ -581,7 +591,7 @@ public class FindArtistTest {
     public void testOutputJsonNewPrettyWithAliases() throws Exception {
 
         Results res = ss.searchLucene("arid:ccd4879c-5e88-4385-b131-bf65296bf245", 0, 1);
-        ResultsWriter writer = new ArtistWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

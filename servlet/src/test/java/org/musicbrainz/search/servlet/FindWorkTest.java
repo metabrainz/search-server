@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.mmd2.*;
@@ -13,11 +14,13 @@ import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd2.WorkWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -84,9 +87,16 @@ public class FindWorkTest {
                 rl.getRelation().add(relation);
             }
             doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
-
             writer.addDocument(doc.getLuceneDocument());
         }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
         writer.close();
         ss = new WorkSearch(new IndexSearcher(IndexReader.open(ramDir)));
         sd = new WorkDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
@@ -233,7 +243,7 @@ public class FindWorkTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = new WorkWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res,SearchServerServlet.RESPONSE_XML, true);
@@ -272,7 +282,7 @@ public class FindWorkTest {
     public void testOutputAsJson() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = new WorkWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -311,7 +321,7 @@ public class FindWorkTest {
     public void testOutputAsJsonNew() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = new WorkWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -348,7 +358,7 @@ public class FindWorkTest {
     public void testOutputAsJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = new WorkWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

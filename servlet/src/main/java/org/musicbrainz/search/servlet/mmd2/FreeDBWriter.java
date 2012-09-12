@@ -70,4 +70,16 @@ public class FreeDBWriter extends ResultsWriter {
         freeDBList.setOffset(BigInteger.valueOf(results.offset));
         metadata.setFreedbDiscList(freeDBList);
     }
+
+    /**
+     * Overridden because freedb doesn't currently write last date to index
+     */
+    @Override
+    public Metadata write(Results results) throws IOException {
+        ObjectFactory of = new ObjectFactory();
+        Metadata metadata = of.createMetadata();
+        write(metadata, results);
+        return metadata;
+    }
+
 }

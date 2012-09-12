@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -13,10 +14,12 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.AnnotationType;
 import org.musicbrainz.search.index.DatabaseIndex;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -94,6 +97,13 @@ public class FindAnnotationTest {
             doc.addField(AnnotationIndexField.NAME, "Song 2");
             doc.addField(AnnotationIndexField.ENTITY, "DDDD24cb5-404b-4f60-bba4-7b730325ae47");
             doc.addField(AnnotationIndexField.TEXT, "There was no Song 1");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
             writer.addDocument(doc.getLuceneDocument());
         }
 
@@ -196,7 +206,7 @@ public class FindAnnotationTest {
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -219,7 +229,7 @@ public class FindAnnotationTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -242,7 +252,7 @@ public class FindAnnotationTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -266,7 +276,7 @@ public class FindAnnotationTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new AnnotationWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

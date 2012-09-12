@@ -33,6 +33,8 @@ public class CDStubSearch extends SearchServer {
     public CDStubSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
     public CDStubSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
@@ -40,6 +42,7 @@ public class CDStubSearch extends SearchServer {
             this.query=query;
             this.offset=offset;
             this.limit=limit;
+
         }
 
      @Override

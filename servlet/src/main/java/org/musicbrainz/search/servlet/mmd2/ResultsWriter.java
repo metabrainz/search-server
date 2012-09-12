@@ -44,8 +44,12 @@ import org.musicbrainz.search.servlet.SearchServerServlet;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,6 +117,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
         ObjectFactory of = new ObjectFactory();
         Metadata metadata = of.createMetadata();
         write(metadata, results);
+        setIndexUpdateDate(metadata);
         return metadata;
     }
 
@@ -196,5 +201,18 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
         }
     }
 
+    public void setIndexUpdateDate(Metadata metadata)
+    {
+        XMLGregorianCalendar today = null;
+        try {
+            GregorianCalendar cal = (GregorianCalendar)GregorianCalendar.getInstance();
+            cal.setTime(serverLastUpdatedDate);
+            today = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+            metadata.setCreated(today);
+        } catch (DatatypeConfigurationException e) {
+
+            e.printStackTrace();
+        }
+    }
 
 }

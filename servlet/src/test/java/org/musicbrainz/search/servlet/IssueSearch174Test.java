@@ -5,6 +5,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -12,7 +13,10 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.Index;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.ReleaseIndexField;
+
+import java.util.Date;
 
 public class IssueSearch174Test extends TestCase {
 
@@ -31,6 +35,13 @@ public class IssueSearch174Test extends TestCase {
             MbDocument doc = new MbDocument();
             doc.addField(ReleaseIndexField.RELEASE_ID, "11111111-1cf0-4d1f-aca7-2a6f89e34b36");
             doc.addField(ReleaseIndexField.CATALOG_NO, Index.NO_VALUE);
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
             writer.addDocument(doc.getLuceneDocument());
         }
 

@@ -38,7 +38,6 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
@@ -60,12 +59,13 @@ public abstract class SearchServer implements Callable<Results> {
     protected Mmd1XmlWriter mmd1XmlWriter;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
-    protected Date          serverLastUpdatedDate;
+    protected Date serverLastUpdatedDate;
     protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm zz",Locale.US);
     protected AtomicInteger    searchCount = new AtomicInteger();
 
 
-    protected SearchServer() {}
+    protected SearchServer() {
+    }
     
     /**
      * Set the last updated date by getting the value from the index
@@ -77,7 +77,9 @@ public abstract class SearchServer implements Callable<Results> {
      */
     protected void setLastServerUpdatedDate() {
 
-    	if (indexSearcher == null) return;
+        if (indexSearcher == null) {
+            return;
+        }
     	
         // Is not a disaster if missing so just log and carry on
         try
@@ -102,8 +104,13 @@ public abstract class SearchServer implements Callable<Results> {
         catch(Exception e) {
             System.out.println(e);
         }
-
     }
+    
+    public Date getServerLastUpdatedDate()
+    {
+        return serverLastUpdatedDate;
+    }
+
 
     public void reloadIndex() throws CorruptIndexException, IOException {
     	

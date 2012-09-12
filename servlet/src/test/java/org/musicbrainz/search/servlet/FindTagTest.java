@@ -6,16 +6,19 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.DatabaseIndex;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.TagIndexField;
 import org.musicbrainz.search.servlet.mmd2.TagWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +34,7 @@ public class FindTagTest {
         Analyzer analyzer = DatabaseIndex.getAnalyzer(TagIndexField.class);
         IndexWriterConfig  writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
+
         {
             MbDocument doc = new MbDocument();
             doc.addField(TagIndexField.TAG, "rock");
@@ -40,6 +44,14 @@ public class FindTagTest {
             doc.addField(TagIndexField.TAG, "classic rock");
             writer.addDocument(doc.getLuceneDocument());
         }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
         writer.close();
         ss = new TagSearch(new IndexSearcher(IndexReader.open(ramDir)));
     }
@@ -63,7 +75,7 @@ public class FindTagTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("tag:rock", 0, 10);
-        ResultsWriter writer = new TagWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -80,7 +92,7 @@ public class FindTagTest {
     public void testOutputAsJson() throws Exception {
 
         Results res = ss.searchLucene("tag:rock", 0, 10);
-        ResultsWriter writer = new TagWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -101,7 +113,7 @@ public class FindTagTest {
     public void testOutputAsJsonNew() throws Exception {
 
         Results res = ss.searchLucene("tag:rock", 0, 10);
-        ResultsWriter writer = new TagWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -122,7 +134,7 @@ public class FindTagTest {
     public void testOutputAsJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("tag:rock", 0, 10);
-        ResultsWriter writer = new TagWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

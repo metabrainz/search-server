@@ -31,6 +31,8 @@ public class AnnotationSearch extends SearchServer {
     public AnnotationSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
 

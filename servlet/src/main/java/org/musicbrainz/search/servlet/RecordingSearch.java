@@ -36,6 +36,8 @@ public class RecordingSearch extends SearchServer {
         if (indexSearcher != null) {
             indexSearcher.setSimilarity(new RecordingSimilarity());
         }
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
     public RecordingSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

@@ -32,6 +32,8 @@ public class ReleaseSearch extends SearchServer {
     public ReleaseSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
     public ReleaseSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

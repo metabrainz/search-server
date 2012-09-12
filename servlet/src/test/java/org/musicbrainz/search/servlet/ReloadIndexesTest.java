@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -14,6 +15,9 @@ import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
 import org.musicbrainz.search.index.DatabaseIndex;
+import org.musicbrainz.search.index.MetaIndexField;
+
+import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -52,6 +56,14 @@ public class ReloadIndexesTest  {
             doc.addField(ArtistIndexField.IPI,"1001");
             writer.addDocument(doc.getLuceneDocument());
         }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
         writer.close();
     }
 
@@ -76,6 +88,9 @@ public class ReloadIndexesTest  {
             doc.addField(ArtistIndexField.ALIAS, "Echo & The Bunymen");
             writer.addDocument(doc.getLuceneDocument());
         }
+
+
+
         writer.commit();
         writer.close();
     }

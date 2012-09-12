@@ -30,6 +30,8 @@ public class TagSearch extends SearchServer {
     public TagSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
     public TagSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

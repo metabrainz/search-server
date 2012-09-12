@@ -37,6 +37,8 @@ public class ReleaseGroupSearch extends SearchServer {
         if (indexSearcher != null) {
             indexSearcher.setSimilarity(new ReleaseGroupSimilarity());
         }
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
     public ReleaseGroupSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

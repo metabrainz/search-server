@@ -38,6 +38,8 @@ public class LabelSearch extends SearchServer {
         if (indexSearcher != null) {
         	indexSearcher.setSimilarity(new MusicbrainzSimilarity());
         }
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
     public LabelSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

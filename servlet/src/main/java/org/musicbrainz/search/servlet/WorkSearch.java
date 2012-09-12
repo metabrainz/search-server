@@ -30,6 +30,8 @@ public class WorkSearch extends SearchServer {
     public WorkSearch(IndexSearcher searcher) throws Exception {
         this();
         indexSearcher = searcher;
+        setLastServerUpdatedDate();
+        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
     public WorkSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {

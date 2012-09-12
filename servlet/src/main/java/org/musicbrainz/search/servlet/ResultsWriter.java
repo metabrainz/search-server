@@ -32,8 +32,11 @@ import org.musicbrainz.search.index.Index;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 
 public abstract class ResultsWriter {
+
+    protected Date serverLastUpdatedDate;
 
     public abstract String getMimeType();
 
@@ -63,5 +66,10 @@ public abstract class ResultsWriter {
      */
     protected boolean isNotNoValue(String value) {
         return ((value != null) && !(value.equalsIgnoreCase(Index.NO_VALUE)));
+    }
+
+    public void setLastServerUpdatedDate(Date date)
+    {
+        this.serverLastUpdatedDate=date;
     }
 }

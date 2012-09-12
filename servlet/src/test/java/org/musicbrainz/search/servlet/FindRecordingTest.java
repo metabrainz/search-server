@@ -12,15 +12,13 @@ import org.junit.Test;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.DatabaseIndex;
-import org.musicbrainz.search.index.MMDSerializer;
-import org.musicbrainz.search.index.RecordingIndexField;
-import org.musicbrainz.search.index.WorkIndexField;
+import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,76 +44,84 @@ public class FindRecordingTest {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
-        MbDocument doc = new MbDocument();
-        doc.addField(RecordingIndexField.RECORDING_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
-        doc.addField(RecordingIndexField.RECORDING, "Gravitational Lenz");
-        doc.addField(RecordingIndexField.RECORDING_OUTPUT, "Gravitational Lenz");
-        doc.addField(RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
-        doc.addField(RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
-        doc.addField(RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        doc.addField(RecordingIndexField.ARTIST, "Farming Incident");
-        doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
-        doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
-        doc.addField(RecordingIndexField.COMMENT, "demo");
-        doc.addField(RecordingIndexField.COUNTRY, "UK");
-        doc.addField(RecordingIndexField.FORMAT, "Vinyl");
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(RecordingIndexField.RECORDING_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
+            doc.addField(RecordingIndexField.RECORDING, "Gravitational Lenz");
+            doc.addField(RecordingIndexField.RECORDING_OUTPUT, "Gravitational Lenz");
+            doc.addField(RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
+            doc.addField(RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
+            doc.addField(RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addField(RecordingIndexField.ARTIST, "Farming Incident");
+            doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
+            doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
+            doc.addField(RecordingIndexField.COMMENT, "demo");
+            doc.addField(RecordingIndexField.COUNTRY, "UK");
+            doc.addField(RecordingIndexField.FORMAT, "Vinyl");
 
 
-        ArtistCredit ac = of.createArtistCredit();
-        NameCredit nc = of.createNameCredit();
-        Artist artist = of.createArtist();
-        artist.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        artist.setName("Farming Incident");
-        artist.setSortName("Incident, Farming");
-        nc.setArtist(artist);
-        ac.getNameCredit().add(nc);
-        doc.addField(RecordingIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
+            ArtistCredit ac = of.createArtistCredit();
+            NameCredit nc = of.createNameCredit();
+            Artist artist = of.createArtist();
+            artist.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            artist.setName("Farming Incident");
+            artist.setSortName("Incident, Farming");
+            nc.setArtist(artist);
+            ac.getNameCredit().add(nc);
+            doc.addField(RecordingIndexField.ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
-        //Track Artist different to Recording Artist
-        ac = of.createArtistCredit();
-        nc = of.createNameCredit();
-        artist = of.createArtist();
-        artist.setId("2302e264-1cf0-4d1f-aca7-2a6f89e34b36");
-        artist.setName("Pig Incident");
-        artist.setSortName("Incident, Pig");
-        nc.setArtist(artist);
-        ac.getNameCredit().add(nc);
-        doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT, MMDSerializer.serialize(ac));
+            //Track Artist different to Recording Artist
+            ac = of.createArtistCredit();
+            nc = of.createNameCredit();
+            artist = of.createArtist();
+            artist.setId("2302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            artist.setName("Pig Incident");
+            artist.setSortName("Incident, Pig");
+            nc.setArtist(artist);
+            ac.getNameCredit().add(nc);
+            doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
-        doc.addNumericField(RecordingIndexField.DURATION, 234000);
-        doc.addNumericField(RecordingIndexField.RECORDING_DURATION_OUTPUT, 234000);
+            doc.addNumericField(RecordingIndexField.DURATION, 234000);
+            doc.addNumericField(RecordingIndexField.RECORDING_DURATION_OUTPUT, 234000);
 
-        doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
-        doc.addNumericField(RecordingIndexField.NUM_TRACKS,10);
-        doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE,10);
-        doc.addNumericField(RecordingIndexField.TRACKNUM, 5);
-        doc.addField(RecordingIndexField.NUMBER, "A4");
-        doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
-        doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
-        doc.addField(RecordingIndexField.RELEASEGROUP_ID, "4444e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
+            doc.addNumericField(RecordingIndexField.NUM_TRACKS,10);
+            doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE,10);
+            doc.addNumericField(RecordingIndexField.TRACKNUM, 5);
+            doc.addField(RecordingIndexField.NUMBER, "A4");
+            doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
+            doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
+            doc.addField(RecordingIndexField.RELEASEGROUP_ID, "4444e264-1cf0-4d1f-aca7-2a6f89e34b36");
 
-        doc.addField(RecordingIndexField.POSITION, "1");
-        doc.addField(RecordingIndexField.RELEASE_TYPE, "Compilation");
-        doc.addField(RecordingIndexField.RELEASE_PRIMARY_TYPE, "Album");
-        doc.addField(RecordingIndexField.RELEASE_SECONDARY_TYPE, "Compilation");
+            doc.addField(RecordingIndexField.POSITION, "1");
+            doc.addField(RecordingIndexField.RELEASE_TYPE, "Compilation");
+            doc.addField(RecordingIndexField.RELEASE_PRIMARY_TYPE, "Album");
+            doc.addField(RecordingIndexField.RELEASE_SECONDARY_TYPE, "Compilation");
 
-        SecondaryTypeList stl = of.createSecondaryTypeList();
-        stl.getSecondaryType().add("Compilation");
-        doc.addField(RecordingIndexField.SECONDARY_TYPE_OUTPUT, MMDSerializer.serialize(stl));
+            SecondaryTypeList stl = of.createSecondaryTypeList();
+            stl.getSecondaryType().add("Compilation");
+            doc.addField(RecordingIndexField.SECONDARY_TYPE_OUTPUT, MMDSerializer.serialize(stl));
 
-        doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
-        doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
-        doc.addField(RecordingIndexField.ISRC, "123456789");
-        doc.addField(RecordingIndexField.ISRC, "abcdefghi");
-        doc.addNumericField(RecordingIndexField.DURATION, 233000);
-        doc.addNumericField(RecordingIndexField.TRACK_DURATION_OUTPUT, 233000);
+            doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
+            doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
+            doc.addField(RecordingIndexField.ISRC, "123456789");
+            doc.addField(RecordingIndexField.ISRC, "abcdefghi");
+            doc.addNumericField(RecordingIndexField.DURATION, 233000);
+            doc.addNumericField(RecordingIndexField.TRACK_DURATION_OUTPUT, 233000);
 
-        doc.addField(RecordingIndexField.TAG, "indie");
-        doc.addField(RecordingIndexField.TAGCOUNT, "101");
-        doc.addField(RecordingIndexField.RELEASE_AC_VA,"1");
+            doc.addField(RecordingIndexField.TAG, "indie");
+            doc.addField(RecordingIndexField.TAGCOUNT, "101");
+            doc.addField(RecordingIndexField.RELEASE_AC_VA,"1");
+            writer.addDocument(doc.getLuceneDocument());
+        }
 
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+            writer.addDocument(doc.getLuceneDocument());
+        }
 
-        writer.addDocument(doc.getLuceneDocument());
         writer.close();
         ss = new RecordingSearch(new IndexSearcher(IndexReader.open(ramDir)));
         sd = new RecordingDismaxSearch(new IndexSearcher(IndexReader.open(ramDir)));
@@ -514,7 +520,7 @@ public class FindRecordingTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = new RecordingWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res,SearchServerServlet.RESPONSE_XML);
@@ -560,7 +566,7 @@ public class FindRecordingTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = new RecordingWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -593,7 +599,7 @@ public class FindRecordingTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = new RecordingWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -628,7 +634,7 @@ public class FindRecordingTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = new RecordingWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);

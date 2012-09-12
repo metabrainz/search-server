@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -14,12 +15,14 @@ import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd1.LabelType;
 import org.musicbrainz.search.servlet.mmd2.LabelWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -89,6 +92,13 @@ public class FindLabelTest {
             doc.addField(LabelIndexField.LABEL, "blob");
             doc.addField(LabelIndexField.SORTNAME, "blob");
             doc.addField(LabelIndexField.TYPE, "unknown");
+            writer.addDocument(doc.getLuceneDocument());
+        }
+
+        {
+            MbDocument doc = new MbDocument();
+            doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
+            doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
             writer.addDocument(doc.getLuceneDocument());
         }
 
@@ -368,7 +378,7 @@ public class FindLabelTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
-        ResultsWriter writer = new LabelWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -396,7 +406,7 @@ public class FindLabelTest {
     public void testOutputAsXmlWithUnknownCountry() throws Exception {
 
         Results res = ss.searchLucene("laid:a539bb1e-f2e1-4b45-9db8-8053841e7503", 0, 1);
-        ResultsWriter writer = new LabelWriter();
+        ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -433,7 +443,7 @@ public class FindLabelTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new LabelWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -462,7 +472,7 @@ public class FindLabelTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new LabelWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -495,7 +505,7 @@ public class FindLabelTest {
     public void testOutputJsonNewIdent() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new LabelWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);
