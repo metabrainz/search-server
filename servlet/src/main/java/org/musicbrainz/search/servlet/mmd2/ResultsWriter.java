@@ -52,6 +52,7 @@ import java.io.PrintWriter;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 public abstract class ResultsWriter extends org.musicbrainz.search.servlet.ResultsWriter {
 
@@ -203,12 +204,12 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
 
     public void setIndexUpdateDate(Metadata metadata)
     {
-        XMLGregorianCalendar today = null;
+        XMLGregorianCalendar indexLastUpdatedTime;
         try {
-            GregorianCalendar cal = (GregorianCalendar)GregorianCalendar.getInstance();
+            GregorianCalendar cal = (GregorianCalendar)GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
             cal.setTime(serverLastUpdatedDate);
-            today = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
-            metadata.setCreated(today);
+            indexLastUpdatedTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+            metadata.setCreated(indexLastUpdatedTime);
         } catch (DatatypeConfigurationException e) {
 
             e.printStackTrace();
