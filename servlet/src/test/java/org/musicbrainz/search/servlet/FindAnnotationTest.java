@@ -15,7 +15,6 @@ import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.index.AnnotationType;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MetaIndexField;
-import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -206,7 +205,7 @@ public class FindAnnotationTest {
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -229,7 +228,7 @@ public class FindAnnotationTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -252,7 +251,7 @@ public class FindAnnotationTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -276,7 +275,7 @@ public class FindAnnotationTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

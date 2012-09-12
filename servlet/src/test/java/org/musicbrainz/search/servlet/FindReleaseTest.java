@@ -18,7 +18,6 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -723,7 +722,7 @@ public class FindReleaseTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_XML);
@@ -763,7 +762,7 @@ public class FindReleaseTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -791,7 +790,7 @@ public class FindReleaseTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -824,7 +823,7 @@ public class FindReleaseTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

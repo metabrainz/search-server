@@ -16,7 +16,6 @@ import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
-import org.musicbrainz.search.servlet.mmd2.WorkWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -243,7 +242,7 @@ public class FindWorkTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res,SearchServerServlet.RESPONSE_XML, true);
@@ -282,7 +281,7 @@ public class FindWorkTest {
     public void testOutputAsJson() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -321,7 +320,7 @@ public class FindWorkTest {
     public void testOutputAsJsonNew() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -358,7 +357,7 @@ public class FindWorkTest {
     public void testOutputAsJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

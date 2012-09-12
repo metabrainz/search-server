@@ -378,7 +378,7 @@ public class FindLabelTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -406,7 +406,7 @@ public class FindLabelTest {
     public void testOutputAsXmlWithUnknownCountry() throws Exception {
 
         Results res = ss.searchLucene("laid:a539bb1e-f2e1-4b45-9db8-8053841e7503", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -443,7 +443,7 @@ public class FindLabelTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -472,7 +472,7 @@ public class FindLabelTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -505,7 +505,7 @@ public class FindLabelTest {
     public void testOutputJsonNewIdent() throws Exception {
 
         Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);

@@ -5,7 +5,6 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
@@ -26,7 +25,7 @@ public class LabelSearch extends SearchServer {
     public LabelSearch() throws Exception {
     
         resultsWriter = new LabelWriter();
-        mmd1XmlWriter = new LabelMmd1XmlWriter();
+        mmd1Writer = new LabelMmd1XmlWriter();
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(LabelIndexField.class);
 

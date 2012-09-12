@@ -5,7 +5,6 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
@@ -26,7 +25,7 @@ public class ReleaseGroupSearch extends SearchServer {
     public ReleaseGroupSearch() throws Exception {
 
         resultsWriter = new ReleaseGroupWriter();
-        mmd1XmlWriter = new ReleaseGroupMmd1XmlWriter();
+        mmd1Writer = new ReleaseGroupMmd1XmlWriter();
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(ReleaseGroupIndexField.class);
     }

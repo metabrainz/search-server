@@ -515,7 +515,7 @@ public class SearchServerServlet extends HttpServlet {
         }
                 
         Results results = searchServer.search(query, offset, limit);
-        org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseFormat, responseVersion);
+        org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseVersion);
 
         if (writer == null) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));

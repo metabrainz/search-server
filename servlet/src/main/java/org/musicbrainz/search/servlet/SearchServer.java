@@ -56,7 +56,7 @@ public abstract class SearchServer implements Callable<Results> {
 
     protected Analyzer analyzer;
     protected ResultsWriter resultsWriter;
-    protected Mmd1XmlWriter mmd1XmlWriter;
+    protected Mmd1XmlWriter mmd1Writer;
     protected List<String> defaultFields;
     protected IndexSearcher indexSearcher;
     protected Date serverLastUpdatedDate;
@@ -133,12 +133,12 @@ public abstract class SearchServer implements Callable<Results> {
     	}
     }
 
-    public org.musicbrainz.search.servlet.mmd2.ResultsWriter getXmlWriter() {
+    public org.musicbrainz.search.servlet.mmd2.ResultsWriter getMmd2Writer() {
         return resultsWriter;
     }
 
-    public Mmd1XmlWriter getXmlV1Writer() {
-        return mmd1XmlWriter;
+    public Mmd1XmlWriter getMmd1Writer() {
+        return mmd1Writer;
     }
 
     public List<String> getSearchFields() {
@@ -150,12 +150,12 @@ public abstract class SearchServer implements Callable<Results> {
     }
 
 
-    public org.musicbrainz.search.servlet.ResultsWriter getWriter(String fmt, String version) {
+    public org.musicbrainz.search.servlet.ResultsWriter getWriter(String version) {
         if(SearchServerServlet.WS_VERSION_1.equals(version)) {
-            return getXmlV1Writer();
+            return getMmd1Writer();
         }
         else {
-            return getXmlWriter();
+            return getMmd2Writer();
         }
     }
 

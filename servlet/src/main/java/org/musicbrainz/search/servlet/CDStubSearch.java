@@ -8,7 +8,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
-import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd2.CDStubWriter;
 
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class CDStubSearch extends SearchServer {
 
     private CDStubSearch() throws Exception {
         resultsWriter = new CDStubWriter();
-        mmd1XmlWriter = null;
+        mmd1Writer = null;
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(CDStubIndexField.class);
     }

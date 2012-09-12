@@ -18,7 +18,6 @@ import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.ArtistWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.PrintWriter;
@@ -389,7 +388,7 @@ public class FindArtistTest {
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter v1Writer = ss.getXmlWriter();
+        ResultsWriter v1Writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -422,7 +421,7 @@ public class FindArtistTest {
     public void testOutputXml2() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Echo & the Bunnymen\"", 0, 1);
-        ResultsWriter v1Writer = ss.getXmlWriter();
+        ResultsWriter v1Writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -448,7 +447,7 @@ public class FindArtistTest {
     public void testOutputXml3() throws Exception {
 
         Results res = ss.searchLucene("artist:\"PJ Harvey\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -471,7 +470,7 @@ public class FindArtistTest {
     public void testOutputAsMmd1XmlSpecialCharacters() throws Exception {
 
         Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 1);
-        Mmd1XmlWriter v1Writer = ss.getXmlV1Writer();
+        Mmd1XmlWriter v1Writer = ss.getMmd1Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         v1Writer.write(pr, res);
@@ -492,7 +491,7 @@ public class FindArtistTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -520,7 +519,7 @@ public class FindArtistTest {
     public void testOutputJsonMultiple() throws Exception {
         Results res = ss.searchLucene("artist:\"Farming Incident\" OR artist:\"Echo & The Bunnymen\"", 0, 2);
 
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -537,7 +536,7 @@ public class FindArtistTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -570,7 +569,7 @@ public class FindArtistTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
@@ -591,7 +590,7 @@ public class FindArtistTest {
     public void testOutputJsonNewPrettyWithAliases() throws Exception {
 
         Results res = ss.searchLucene("arid:ccd4879c-5e88-4385-b131-bf65296bf245", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);

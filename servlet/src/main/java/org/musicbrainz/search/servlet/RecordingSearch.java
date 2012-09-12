@@ -5,7 +5,6 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.analysis.RecordingSimilarity;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
@@ -25,7 +24,7 @@ public class RecordingSearch extends SearchServer {
     public RecordingSearch() throws Exception {
     
         resultsWriter = new RecordingWriter();
-        mmd1XmlWriter = new TrackMmd1XmlWriter();
+        mmd1Writer = new TrackMmd1XmlWriter();
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(RecordingIndexField.class);
     }

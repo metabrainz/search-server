@@ -6,7 +6,6 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.AnnotationIndexField;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd2.AnnotationWriter;
 
@@ -23,7 +22,7 @@ public class AnnotationSearch extends SearchServer {
 
     private AnnotationSearch() throws Exception {
         resultsWriter = new AnnotationWriter();
-        mmd1XmlWriter = null;
+        mmd1Writer = null;
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(AnnotationIndexField.class);
     }

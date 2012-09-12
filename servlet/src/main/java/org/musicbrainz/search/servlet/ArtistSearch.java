@@ -4,7 +4,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.ScoreDoc;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
@@ -27,7 +26,7 @@ public class ArtistSearch extends SearchServer {
 
     private ArtistSearch() throws Exception {
         resultsWriter = new ArtistWriter();
-        mmd1XmlWriter = new ArtistMmd1XmlWriter();
+        mmd1Writer = new ArtistMmd1XmlWriter();
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
     }

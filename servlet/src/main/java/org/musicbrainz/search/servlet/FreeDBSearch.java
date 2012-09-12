@@ -6,7 +6,6 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.musicbrainz.search.LuceneVersion;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.FreeDBIndexField;
 import org.musicbrainz.search.servlet.mmd2.FreeDBWriter;
@@ -25,7 +24,7 @@ public class FreeDBSearch extends SearchServer {
 
     private FreeDBSearch() throws Exception {
         resultsWriter = new FreeDBWriter();
-        mmd1XmlWriter = null;
+        mmd1Writer = null;
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(FreeDBIndexField.class);
     }

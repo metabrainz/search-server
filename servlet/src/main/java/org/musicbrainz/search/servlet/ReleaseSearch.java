@@ -4,7 +4,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
@@ -24,7 +23,7 @@ public class ReleaseSearch extends SearchServer {
     public ReleaseSearch() throws Exception {
     
         resultsWriter = new ReleaseWriter();
-        mmd1XmlWriter = new ReleaseMmd1XmlWriter();
+        mmd1Writer = new ReleaseMmd1XmlWriter();
         setupDefaultFields();
         analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
     }

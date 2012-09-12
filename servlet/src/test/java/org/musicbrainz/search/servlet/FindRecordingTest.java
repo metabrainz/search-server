@@ -14,7 +14,6 @@ import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
-import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -520,7 +519,7 @@ public class FindRecordingTest {
     public void testOutputAsXml() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res,SearchServerServlet.RESPONSE_XML);
@@ -566,7 +565,7 @@ public class FindRecordingTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -599,7 +598,7 @@ public class FindRecordingTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -634,7 +633,7 @@ public class FindRecordingTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);

@@ -21,7 +21,6 @@ import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
-import org.musicbrainz.search.servlet.mmd2.ReleaseGroupWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -404,7 +403,7 @@ public class FindReleaseGroupTest {
     public void testOutputAsAsXml() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -465,7 +464,7 @@ public class FindReleaseGroupTest {
     public void testOutputAsAsXml2() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -495,7 +494,7 @@ public class FindReleaseGroupTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -514,7 +513,7 @@ public class FindReleaseGroupTest {
     @Test
     public void testOutputJsonMultiple() throws Exception {
         Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45  OR artist:kunzel", 0, 10);
-        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getXmlWriter();
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -531,7 +530,7 @@ public class FindReleaseGroupTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -559,7 +558,7 @@ public class FindReleaseGroupTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);
@@ -575,7 +574,7 @@ public class FindReleaseGroupTest {
     public void testOutputJsonNewPretty2() throws Exception {
 
         Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45", 0, 10);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW,true);

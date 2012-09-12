@@ -14,7 +14,6 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MetaIndexField;
-import org.musicbrainz.search.servlet.mmd2.CDStubWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
 
 import java.io.PrintWriter;
@@ -140,7 +139,7 @@ public class FindCDStubTest {
     public void testOutputXml() throws Exception {
 
         Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -168,7 +167,7 @@ public class FindCDStubTest {
     public void testOutputXmlNoArtist() throws Exception {
 
         Results res = ss.searchLucene("title:fred", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res);
@@ -192,7 +191,7 @@ public class FindCDStubTest {
     public void testOutputJson() throws Exception {
 
         Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
@@ -217,7 +216,7 @@ public class FindCDStubTest {
     public void testOutputJsonNew() throws Exception {
 
         Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW);
@@ -242,7 +241,7 @@ public class FindCDStubTest {
     public void testOutputJsonNewPretty() throws Exception {
 
         Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
-        ResultsWriter writer = ss.getXmlWriter();
+        ResultsWriter writer = ss.getMmd2Writer();
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON_NEW, true);
