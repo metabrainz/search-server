@@ -76,11 +76,6 @@
                 <xml-element java-attribute="artistCredit" xml-path="."/>
             </java-attributes>
         </java-type>
-        <java-type name="Work">
-            <java-attributes>
-                <xml-element java-attribute="relationList" name="relationList"/>
-            </java-attributes>
-        </java-type>
         <java-type name="IpiList">
             <java-attributes>
                 <xml-element java-attribute="ipi" name="ipis"/>
@@ -306,15 +301,17 @@
                 <xml-element java-attribute="attribute" name="attributes"/>
             </java-attributes>
         </java-type>
-        <java-type name="RelationList">
+        <java-type name="WorkList">
             <java-attributes>
-                <xml-element java-attribute="relation" name="relations"/>
-                <xml-transient java-attribute="targetType"/>
+                <xml-element java-attribute="work">
+                    <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.WorkAdapter"/>
+                </xml-element>
             </java-attributes>
         </java-type>
-        <java-type name="Relation">
+        <java-type name="RelationList">
             <java-attributes>
-                <xml-transient java-element="attributes"/>
+                <xml-transient java-attribute="targetType"/>
+                <xml-element java-attribute="relation" name="relations"/>
             </java-attributes>
         </java-type>
     </java-types>
