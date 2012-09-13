@@ -72,4 +72,9 @@ public abstract class ResultsWriter {
     {
         this.serverLastUpdatedDate=date;
     }
+    
+    public Date getLastUpdateDate()
+    {
+        return serverLastUpdatedDate;
+    }
 }

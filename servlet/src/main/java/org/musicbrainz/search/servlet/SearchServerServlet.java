@@ -525,7 +525,10 @@ public class SearchServerServlet extends HttpServlet {
             response.setContentType(((ResultsWriter) writer).getJsonMimeType());
         }
 
-        response.setDateHeader("Last-Modified", new Date().getTime());
+        if(writer.getLastUpdateDate()!=null)
+        {
+            response.setDateHeader("Last-Modified", writer.getLastUpdateDate().getTime());
+        }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
         writer.write(out, results, responseFormat, isPretty);
@@ -596,6 +599,11 @@ public class SearchServerServlet extends HttpServlet {
             response.setContentType(writer.getMimeType());
         } else {
             response.setContentType(writer.getJsonMimeType());
+        }
+
+        if(writer.getLastUpdateDate()!=null)
+        {
+            response.setDateHeader("Last-Modified", writer.getLastUpdateDate().getTime());
         }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
