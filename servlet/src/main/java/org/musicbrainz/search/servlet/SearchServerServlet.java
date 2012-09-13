@@ -44,10 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -527,6 +524,8 @@ public class SearchServerServlet extends HttpServlet {
         } else {
             response.setContentType(((ResultsWriter) writer).getJsonMimeType());
         }
+
+        response.setDateHeader("Last-Modified", new Date().getTime());
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
         writer.write(out, results, responseFormat, isPretty);
