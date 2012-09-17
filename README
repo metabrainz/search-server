@@ -133,12 +133,23 @@ In Ubuntu:
 
     chown -R tomcat6:tomcat6 /home/search
 
+Update Indexes using the Live Data Feed
+-------------
 
+It's possible to update search indexes using replication packets, the same way your slave MusicBrainz database is updated.
+
+You need to edit the updateindex.sh and adapt the SETTINGS section to fit your setup:
+	vi /home/search/searchserver/index/updater/updateindex.sh
+
+Once you're done, you can launch the indexes updating:
+	/home/search/searchserver/index/updater/updateindex.sh
+
+You can run this script hourly using cron. 
 
 Tuning Tomcat
 -------------
 
-Ubunto enables the Java security manager by default, this will prevent the search server working.
+Ubuntu enables the Java security manager by default, this will prevent the search server working.
 For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat6 to no:
 
     # Use the Java security manager? (yes/no)
@@ -270,11 +281,10 @@ Updating Test Server
     cd /home/username
     cd /home/username/mmd-schema
     svn update
-    cd /home/username/search_server
-    svn update
     cd /home/username/mmd-schema/brainz-mmd2-jaxb
     mvn install
     cd /home/username/search_server
+    svn update
     mvn package
     cd index/target
     java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -d musicbrainz_db_20110716 -u musicbrainz_user --indexes-dir /home/username/indexdata
