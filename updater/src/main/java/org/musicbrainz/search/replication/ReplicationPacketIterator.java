@@ -56,7 +56,7 @@ public class ReplicationPacketIterator implements Iterator<ReplicationPacket> {
 		nextPacket = ReplicationPacket.loadFromRepository(packetNo, LiveDataFeedIndexUpdaterOptions.getInstance().getRepositoryPath());
 		
 		// No packet in repository: let's try with pending changes from database 
-		if (nextPacket == null) {
+		if (nextPacket == null && currentReplicationPosition.changeSequence != null) {
 			nextPacket = ReplicationPacket.loadFromDatabase(LiveDataFeedIndexUpdaterOptions.getInstance().getMainDatabaseConnection(), currentReplicationPosition.changeSequence);
 		}
 		

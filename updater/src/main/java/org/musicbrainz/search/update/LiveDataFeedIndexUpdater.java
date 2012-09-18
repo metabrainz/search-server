@@ -49,7 +49,6 @@ import org.musicbrainz.search.update.dependencies.DatabaseIndexDependencies;
 
 public class LiveDataFeedIndexUpdater {
 
-//	private Map<String, DatabaseIndexDependencies> dependencyTrees;
 	private final Logger LOGGER = Logger.getLogger(LiveDataFeedIndexUpdater.class.getName());
 	
 	private Connection mainDbConn;
@@ -76,7 +75,6 @@ public class LiveDataFeedIndexUpdater {
 	    LOGGER.setLevel(logLevel);
 	    conHdlr.setLevel(logLevel);
 	    
-//	    dependencyTrees = initDependencyTrees();
 	}
 	
 	public void init() throws SQLException, IOException {
@@ -168,7 +166,12 @@ public class LiveDataFeedIndexUpdater {
         		// Otherwise process the packet to find changes
             	} else {
             		LOGGER.fine("Analyzing packet #" + packet.getReplicationSequence() + " for index " + index.getName());
-            		indexChangesAnalyzers.get(index).analyze(packet, lastChangeSequence);	
+            		try {
+            			indexChangesAnalyzers.get(index).analyze(packet, lastChangeSequence);
+            		} catch (InvalidReplicationChangeException e) {
+            			LOGGER.severe("Aborting: " + e.getMessage());
+            			return;
+            		}
             	}
         	}
         	

@@ -47,7 +47,7 @@ public class ChangesAnalyzer {
 		insertedOrUpdatedIds.clear();
 	}
 	
-    public void analyze(ReplicationPacket packet, Integer lastChangeSequence) throws SQLException {
+    public void analyze(ReplicationPacket packet, Integer lastChangeSequence) throws SQLException, InvalidReplicationChangeException {
     	
     	Map<String, Set<Integer>> changedTables = new HashMap<String, Set<Integer>>();
     	
@@ -82,6 +82,11 @@ public class ChangesAnalyzer {
         				if (lt.isHead()) {
         					insertedOrUpdatedIds.add( Integer.parseInt(values.get("id")) );
         				} else {
+        					// Check that the replication packet has all the info (in case the table doesn't have a verbose replication trigger
+        		    		if ( values.get(lt.getSourceJoinField()) == null ) {
+        		    			String errMsg = "Replication packet doesn't have verbose information for table '" + change.getTableName() + "': field '" + lt.getSourceJoinField() + "' is missing (change #" + change.getId() +")";
+        		    			throw new InvalidReplicationChangeException(errMsg);
+        		    		}
         					changedTables.get(change.getTableName()).add( 
         							Integer.parseInt( values.get(lt.getSourceJoinField()) )); 
         				}
@@ -112,8 +117,19 @@ public class ChangesAnalyzer {
         						LOGGER.finer("Skipping change #" + change.getId() + " on table " + change.getTableName().toUpperCase()
         								+ " because none of the fields used for indexing has been changed");
         					} else {
+            					// Check that the replication packet has all the info (in case the table doesn't have a verbose replication trigger
+            		    		if ( newValues.get(lt.getSourceJoinField()) == null ) {
+            		    			String errMsg = "Replication packet doesn't have verbose information for table '" + change.getTableName() + "': field '" + lt.getSourceJoinField() + "' is missing (change #" + change.getId() +")";
+            		    			throw new InvalidReplicationChangeException(errMsg);
+            		    		}
 	        					changedTables.get(change.getTableName()).add( 
 	        							Integer.parseInt(newValues.get(lt.getSourceJoinField()) ));
+	        					
+	          					// Check that the replication packet has all the info (in case the table doesn't have a verbose replication trigger
+            		    		if ( oldValues.get(lt.getSourceJoinField()) == null ) {
+            		    			String errMsg = "Replication packet doesn't have verbose information for table '" + change.getTableName() + "': field '" + lt.getSourceJoinField() + "' is missing (change #" + change.getId() +")";
+            		    			throw new InvalidReplicationChangeException(errMsg);
+            		    		}
 	        					changedTables.get(change.getTableName()).add( 
 	        							Integer.parseInt(oldValues.get(lt.getSourceJoinField()) ));
         					}
