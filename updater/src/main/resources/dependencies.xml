@@ -113,7 +113,7 @@
 			</join>
 			<join src_field='release_group' target_field='id'>
 				<table name='release_group' used_fields='type'>
-					<join src_field='release_group' target_field='id'>
+					<join src_field='id' target_field='release_group'>
 						<table name='release_group_secondary_type_join' />
 					</join>
 				</table>
@@ -150,7 +150,7 @@
 										<table name='release'>
 											<join src_field='release_group' target_field='id'>
 												<table name='release_group' used_fields='type'>
-													<join src_field='release_group' target_field='id'>
+													<join src_field='id' target_field='release_group'>
 														<table name='release_group_secondary_type_join' />
 													</join>
 												</table>
