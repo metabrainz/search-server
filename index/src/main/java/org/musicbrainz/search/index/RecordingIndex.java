@@ -127,7 +127,7 @@ public class RecordingIndex extends DatabaseIndex {
                             " AND   recording between ? AND ?");
 
             addPreparedStatement("TRACKS",
-                    "SELECT id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, tl.track_count, " +
+                    "SELECT t.id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, tl.track_count, " +
                             "  m.release as release_id, m.position as medium_position,mf.name as format " +
                             " FROM track t " +
                             "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +

@@ -17,13 +17,16 @@ import static org.junit.Assert.assertNotNull;
 
 public class ReleaseIndexTest extends AbstractIndexTest {
 
-    private void createIndex(RAMDirectory ramDir) throws Exception {
+	private void createIndex(RAMDirectory ramDir) throws Exception {
+		createIndex(ramDir, true);
+	}
+	
+    private void createIndex(RAMDirectory ramDir, boolean useTemporaryTables) throws Exception {
         IndexWriter writer = createIndexWriter(ramDir,ReleaseIndexField.class);
         ReleaseIndex ri = new ReleaseIndex(conn);
         CommonTables ct = new CommonTables(conn, ri.getName());
-        ct.createTemporaryTables(false);
-
-        ri.init(writer, false);
+        ct.createTemporaryTables(!useTemporaryTables);
+        ri.init(writer, !useTemporaryTables);
         ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
         ri.destroy();
@@ -803,6 +806,24 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", tr.term().text());
     }
 
+    /**
+     * Tets Puid Indexed (not stored)
+     * @throws Exception
+     */
+    @Test
+    public void testIndexPuidWithoutTemporaryTables() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir, false);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        TermEnum tr = ir.terms(new Term(ReleaseIndexField.PUID.getName(), ""));
+        assertEquals(ReleaseIndexField.PUID.getName(), tr.term().field());
+        assertEquals(1, tr.docFreq());
+        assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", tr.term().text());
+    }
+    
     /**
      * @throws Exception exception
      */

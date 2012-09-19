@@ -14,12 +14,16 @@ import static org.junit.Assert.*;
 
 public class RecordingIndexTest extends AbstractIndexTest {
 
-    private void createIndex(RAMDirectory ramDir) throws Exception {
+	private void createIndex(RAMDirectory ramDir) throws Exception {
+		createIndex(ramDir, true);
+	}
+	
+    private void createIndex(RAMDirectory ramDir, boolean useTemporaryTables) throws Exception {
         IndexWriter writer = createIndexWriter(ramDir, RecordingIndexField.class);
         RecordingIndex ri = new RecordingIndex(conn);
         CommonTables ct = new CommonTables(conn, ri.getName());
-        ct.createTemporaryTables(false);
-        ri.init(writer, false);
+        ct.createTemporaryTables(!useTemporaryTables);
+        ri.init(writer, !useTemporaryTables);
         ri.addMetaInformation(writer);
         ri.indexData(writer, 0, Integer.MAX_VALUE);
         ri.destroy();
@@ -224,7 +228,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         addTrackOne();
         RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
+        createIndex(ramDir, true);
 
         IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
@@ -251,6 +255,43 @@ public class RecordingIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    /**
+     * Basic test of all fields
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testIndexRecordingWithoutTemporaryTables() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir, false);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.TRACK_OUTPUT.getName()).length);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.RECORDING_ID.getName()).length);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.RELEASE_TYPE.getName()).length);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.RELEASE_STATUS.getName()).length);
+            assertEquals(2, doc.getFieldables(RecordingIndexField.ISRC.getName()).length);
+            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getFieldable(RecordingIndexField.RECORDING_ID.getName()).stringValue());
+            assertEquals("Crocodiles (bonus disc)", doc.getFieldable(RecordingIndexField.RELEASE.getName()).stringValue());
+            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getFieldable(RecordingIndexField.RELEASE_ID.getName()).stringValue());
+            assertEquals(2, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
+            assertEquals(4, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.TRACKNUM.getName()).stringValue()));
+            assertEquals(2, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
+            assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getFieldable(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
+            assertEquals("Compilation", doc.getFieldable(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            assertEquals("Official", doc.getFieldable(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
+            assertEquals("FRAAA9000038", doc.getFieldable(RecordingIndexField.ISRC.getName()).stringValue());
+            assertEquals("1", doc.getFieldable(RecordingIndexField.POSITION.getName()).stringValue());
+        }
+        ir.close();
+    }
+    
     /**
      * Basic test of all fields
      *
@@ -663,6 +704,28 @@ public class RecordingIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    /**
+     * Test gives puid
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testPuidWithoutTemporaryTables() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir, false);
+
+        IndexReader ir = IndexReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFieldables(RecordingIndexField.PUID.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", doc.getFieldable(RecordingIndexField.PUID.getName()).stringValue());
+        }
+        ir.close();
+    }
+    
     /**
      * Test gives puid
      *
