@@ -485,7 +485,11 @@ public class RecordingIndex extends DatabaseIndex {
         Map<Integer, Release> releases = new HashMap<Integer, Release>();
         ObjectFactory of = new ObjectFactory();
 
-        releaseClock.resume();
+    	try {
+    		releaseClock.resume();
+    	} catch (IllegalStateException e) {
+    		System.out.println("Warning: IllegalStateException during StopWatch.resume");
+    	}
 
         // Add all the releaseKeys to a set to prevent duplicates
         Set<Integer> releaseKeys = new HashSet<Integer>();
@@ -555,7 +559,12 @@ public class RecordingIndex extends DatabaseIndex {
             }
             rg.getSecondaryTypeList().getSecondaryType().add(rs.getString("type"));
         }
-        releaseClock.suspend();
+        
+    	try {
+    		releaseClock.suspend();
+    	} catch (IllegalStateException e) {
+    		System.out.println("Warning: IllegalStateException during StopWatch.resume");
+    	}
         return releases;
     }
 
