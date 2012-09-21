@@ -134,17 +134,32 @@ In Ubuntu:
     chown -R tomcat6:tomcat6 /home/search
 
 Update Indexes using the Live Data Feed
--------------
+---------------------------------------
 
 It's possible to update search indexes using replication packets, the same way your slave MusicBrainz database is updated.
 
 You need to edit the updateindex.sh and adapt the SETTINGS section to fit your setup:
-	vi /home/search/searchserver/index/updater/updateindex.sh
+	vi /home/search/searchserver/updater/updateindex.cfg
 
 Once you're done, you can launch the indexes updating:
-	/home/search/searchserver/index/updater/updateindex.sh
+	/home/search/searchserver/updater/updateindex.sh
 
-You can run this script hourly using cron. 
+You can run this script hourly using cron.
+
+Advanced options:
+
+* You can get more verbose log by using the --verbose parameter:
+	/home/search/searchserver/updater/updateindex.sh --verbose
+
+* The default settings allow you update most of the indexes excepted recording ones. 
+If you want to choose specifically the indexes to be updated, either update the INDEXES variable in updateindex.cfg,
+or comment the INDEXES variable in updateindex.cfg and run the script using the --indexes args:
+	/home/search/searchserver/updater/updateindex.sh --indexes artist,label
+
+* A lock file is created to ensure you're not running concurrently the script.
+You can provide the lock file by setting the LOCK_FILE env variable. This can be useful if you can to update concurrently different indexes:
+	LOCK_FILE=/tmp/lock_updating_release /home/search/searchserver/updater/updateindex.sh --indexes release
+	LOCK_FILE=/tmp/lock_updating_label /home/search/searchserver/updater/updateindex.sh --indexes label
 
 Tuning Tomcat
 -------------

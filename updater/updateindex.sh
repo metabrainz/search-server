@@ -4,33 +4,26 @@
 #                       SETTINGS                           #
 ############################################################
 
-# Local slave database settings
-DB_HOST=localhost
-DB_NAME=musicbrainz
-DB_USER=musicbrainz
-DB_PASSWORD=musicbrainz
-
-# Location of search indexes
-INDEXES_DIR=/home/search/indexdata
-
-# URL of the search server that need to be notified once indexes has been updated
-#SERVLET_HOST=localhost:8080
-
-# Indexes that will be updated
-INDEXES=artist,releasegroup,label,tag,annotation,work,release,recording
+source `dirname "$0"`/updateindex.cfg
 
 ############################################################
 #                       SCRIPT                             #
 ############################################################
 
 SEARCH_UPDATER_JAR=`dirname "$0"`/target/updater-2.0-SNAPSHOT-jar-with-dependencies.jar
-LOCK_FILE=/tmp/.mb-search-updater.lock
 
+# If lock file is not provided through env variable LOCK_FILE, set it to a default value
+if [ -z "$LOCK_FILE" ]; then
+    LOCK_FILE=/tmp/.mb-search-updater.lock
+fi
+
+# Check that thre's no concurrent run
 if [ -e $LOCK_FILE ]; then
     echo "Index updater is already running, existing..."
     exit
 fi
 
+# Check presence of the updater jar
 if [ ! -e $SEARCH_UPDATER_JAR ]; then
     echo "JAR '$SEARCH_UPDATER_JAR' not found..."
     echo "You should maybe run 'mvn package'..."
@@ -38,10 +31,18 @@ if [ ! -e $SEARCH_UPDATER_JAR ]; then
 fi
 
 touch $LOCK_FILE
-java -Xmx512M -jar $SEARCH_UPDATER_JAR --indexes $INDEXES --db-host $DB_HOST --db-name $DB_NAME --db-user $DB_USER --db-password $DB_PASSWORD --indexes-dir $INDEXES_DIR "$@"
 
+# Run the updater: if $INDEXES is set, use for specifying indexes to update
+if [ -z "$INDEXES" ]; then
+    java -Xmx512M -jar $SEARCH_UPDATER_JAR --db-host $DB_HOST --db-name $DB_NAME --db-user $DB_USER --db-password $DB_PASSWORD --indexes-dir $INDEXES_DIR "$@"
+else
+    java -Xmx512M -jar $SEARCH_UPDATER_JAR --indexes $INDEXES --db-host $DB_HOST --db-name $DB_NAME --db-user $DB_USER --db-password $DB_PASSWORD --indexes-dir $INDEXES_DIR "$@"
+fi
+
+# Notify the search servlet that indexes have changed
 if [ -n "$SERVLET_HOST" ] ; then
     wget --quiet --spider http://$SERVLET_HOST/?reload
 fi
+
 rm $LOCK_FILE
 
