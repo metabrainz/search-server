@@ -1,17 +1,17 @@
 package org.musicbrainz.search.servlet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd2.CDStubWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class CDStubSearch extends SearchServer {
@@ -29,15 +29,15 @@ public class CDStubSearch extends SearchServer {
         analyzer = DatabaseIndex.getAnalyzer(CDStubIndexField.class);
     }
 
-    public CDStubSearch(IndexSearcher searcher) throws Exception {
+    public CDStubSearch(SearcherManager searcherManager) throws Exception {
         this();
-        indexSearcher = searcher;
+        this.searcherManager = searcherManager;
         setLastServerUpdatedDate();
         resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
-    public CDStubSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
-            this(searcher);
+    public CDStubSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
+            this(searcherManager);
             this.query=query;
             this.offset=offset;
             this.limit=limit;

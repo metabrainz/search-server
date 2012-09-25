@@ -1,17 +1,16 @@
 package org.musicbrainz.search.servlet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd1.ArtistMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ArtistWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class ArtistSearch extends SearchServer {
@@ -37,12 +36,9 @@ public class ArtistSearch extends SearchServer {
      * @param searcher
      * @throws Exception
      */
-    public ArtistSearch(IndexSearcher searcher) throws Exception {
+    public ArtistSearch(SearcherManager searcherManager) throws Exception {
         this();
-        indexSearcher = searcher;
-        if (indexSearcher != null) {
-        	indexSearcher.setSimilarity(new MusicbrainzSimilarity());
-        }
+        this.searcherManager = searcherManager;
         setLastServerUpdatedDate();
         resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
 
@@ -57,8 +53,8 @@ public class ArtistSearch extends SearchServer {
      * @param limit
      * @throws Exception
      */
-    public ArtistSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
-        this(searcher);
+    public ArtistSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
+        this(searcherManager);
         this.query=query;
         this.offset=offset;
         this.limit=limit;

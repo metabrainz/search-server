@@ -1,12 +1,12 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.musicbrainz.search.index.ArtistIndexField;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SearcherManager;
+import org.musicbrainz.search.index.ArtistIndexField;
 
 public class ArtistDismaxSearch extends ArtistSearch {
 
@@ -30,8 +30,8 @@ public class ArtistDismaxSearch extends ArtistSearch {
      * @param searcher
      * @throws Exception
      */
-    public ArtistDismaxSearch(IndexSearcher searcher) throws Exception {
-        super(searcher);
+    public ArtistDismaxSearch(SearcherManager searcherManager) throws Exception {
+        super(searcherManager);
         initDismaxSearcher();
     }
 
@@ -44,8 +44,8 @@ public class ArtistDismaxSearch extends ArtistSearch {
      * @param limit
      * @throws Exception
      */
-    public ArtistDismaxSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
-        super(searcher, query, offset, limit);
+    public ArtistDismaxSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
+        super(searcherManager, query, offset, limit);
         initDismaxSearcher();
     }
 

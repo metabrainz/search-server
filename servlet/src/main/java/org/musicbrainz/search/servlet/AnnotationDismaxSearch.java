@@ -1,12 +1,12 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.musicbrainz.search.index.AnnotationIndexField;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SearcherManager;
+import org.musicbrainz.search.index.AnnotationIndexField;
 
 public class AnnotationDismaxSearch extends AnnotationSearch {
 
@@ -28,8 +28,8 @@ public class AnnotationDismaxSearch extends AnnotationSearch {
      * @param searcher
      * @throws Exception
      */
-    public AnnotationDismaxSearch(IndexSearcher searcher) throws Exception {
-        super(searcher);
+  public AnnotationDismaxSearch(SearcherManager searcherManager) throws Exception {
+    super(searcherManager);
         initDismaxSearcher();
     }
 

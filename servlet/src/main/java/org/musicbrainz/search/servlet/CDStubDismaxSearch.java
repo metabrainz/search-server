@@ -1,12 +1,12 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.musicbrainz.search.index.CDStubIndexField;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SearcherManager;
+import org.musicbrainz.search.index.CDStubIndexField;
 
 public class CDStubDismaxSearch extends CDStubSearch {
 
@@ -30,8 +30,8 @@ public class CDStubDismaxSearch extends CDStubSearch {
      * @param searcher
      * @throws Exception
      */
-    public CDStubDismaxSearch(IndexSearcher searcher) throws Exception {
-        super(searcher);
+  public CDStubDismaxSearch(SearcherManager searcherManager) throws Exception {
+    super(searcherManager);
         initDismaxSearcher();
     }
 
@@ -44,8 +44,8 @@ public class CDStubDismaxSearch extends CDStubSearch {
      * @param limit
      * @throws Exception
      */
-    public CDStubDismaxSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
-        super(searcher, query, offset, limit);
+  public CDStubDismaxSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
+    super(searcherManager, query, offset, limit);
         initDismaxSearcher();
     }
 

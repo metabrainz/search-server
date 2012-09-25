@@ -1,17 +1,17 @@
 package org.musicbrainz.search.servlet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.FreeDBIndexField;
 import org.musicbrainz.search.servlet.mmd2.FreeDBWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class FreeDBSearch extends SearchServer {
@@ -29,9 +29,9 @@ public class FreeDBSearch extends SearchServer {
         analyzer = DatabaseIndex.getAnalyzer(FreeDBIndexField.class);
     }
 
-    public FreeDBSearch(IndexSearcher searcher) throws Exception {
+    public FreeDBSearch(SearcherManager searcherManager) throws Exception {
         this();
-        indexSearcher = searcher;
+        this.searcherManager = searcherManager;
     }
 
 

@@ -31,8 +31,8 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SearcherManager;
 
 public class FreeDBDismaxSearch extends FreeDBSearch {
 
@@ -42,8 +42,8 @@ public class FreeDBDismaxSearch extends FreeDBSearch {
      * @param searcher
      * @throws Exception
      */
-    public FreeDBDismaxSearch(IndexSearcher searcher) throws Exception {
-        super(searcher);
+    public FreeDBDismaxSearch(SearcherManager searcherManager) throws Exception {
+        super(searcherManager);
     }
 
     protected Query parseQuery(String query) throws ParseException

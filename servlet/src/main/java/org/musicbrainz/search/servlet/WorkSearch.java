@@ -1,16 +1,15 @@
 package org.musicbrainz.search.servlet;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.musicbrainz.search.index.ArtistIndexField;
+import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd2.WorkWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class WorkSearch extends SearchServer {
@@ -27,15 +26,15 @@ public class WorkSearch extends SearchServer {
         analyzer = DatabaseIndex.getAnalyzer(WorkIndexField.class);
     }
 
-    public WorkSearch(IndexSearcher searcher) throws Exception {
+    public WorkSearch(SearcherManager searcherManager) throws Exception {
         this();
-        indexSearcher = searcher;
+        this.searcherManager = searcherManager;
         setLastServerUpdatedDate();
         resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
     }
 
-    public WorkSearch(IndexSearcher searcher, String query, int offset, int limit) throws Exception {
-        this(searcher);
+    public WorkSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
+        this(searcherManager);
         this.query=query;
         this.offset=offset;
         this.limit=limit;
