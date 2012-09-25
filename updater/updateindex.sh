@@ -41,7 +41,7 @@ fi
 
 # Notify the search servlet that indexes have changed
 if [ -n "$SERVLET_HOST" ] ; then
-    wget --quiet --spider http://$SERVLET_HOST/?reload
+    wget --quiet --spider $SERVLET_HOST/?reload
 fi
 
 rm $LOCK_FILE
