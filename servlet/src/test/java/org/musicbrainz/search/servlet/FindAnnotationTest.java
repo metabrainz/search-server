@@ -27,8 +27,8 @@ import org.musicbrainz.search.index.MetaIndexField;
  */
 public class FindAnnotationTest {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
 
   @Before
@@ -109,93 +109,93 @@ public class FindAnnotationTest {
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(
         ResourceType.ANNOTATION));
     ss = new AnnotationSearch(searcherManager);
-    sd = new AnnotationDismaxSearch(searcherManager);
+    sd = new AnnotationDismaxSearch(ss);
 
   }
 
   @Test
   public void testSearchByTypeRelease() throws Exception {
-    Results res = ss.searchLucene("type:release", 0, 10);
+    Results res = ss.search("type:release", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByTypeArtist() throws Exception {
-    Results res = ss.searchLucene("type:artist", 0, 10);
+    Results res = ss.search("type:artist", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByDismax1() throws Exception {
-    Results res = sd.searchLucene("Pieds nus", 0, 10);
+    Results res = sd.search("Pieds nus", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByDismax2() throws Exception {
-    Results res = sd.searchLucene("0828768226629", 0, 10);
+    Results res = sd.search("0828768226629", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByTypeReleaseGroup() throws Exception {
-    Results res = ss.searchLucene("type:release-group", 0, 10);
+    Results res = ss.search("type:release-group", 0, 10);
     assertEquals("3 Songs", res.results.get(0).getDoc().get(AnnotationIndexField.NAME));
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByTypeRecording() throws Exception {
-    Results res = ss.searchLucene("type:recording", 0, 10);
+    Results res = ss.search("type:recording", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByTypeWork() throws Exception {
-    Results res = ss.searchLucene("type:work", 0, 10);
+    Results res = ss.search("type:work", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByName() throws Exception {
-    Results res = ss.searchLucene("name:Pieds nus sur la braise", 0, 10);
+    Results res = ss.search("name:Pieds nus sur la braise", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByNameNoMatch() throws Exception {
-    Results res = ss.searchLucene("name:fred", 0, 10);
+    Results res = ss.search("name:fred", 0, 10);
     assertEquals(0, res.totalHits);
   }
 
   @Test
   public void testSearchByEntity() throws Exception {
-    Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
+    Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByEntitydNoMatch() throws Exception {
-    Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
+    Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
     assertEquals(0, res.totalHits);
   }
 
   @Test
   public void testSearchByText() throws Exception {
-    Results res = ss.searchLucene("text:DiscID", 0, 10);
+    Results res = ss.search("text:DiscID", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByTextNoMatch() throws Exception {
-    Results res = ss.searchLucene("text:fred", 0, 10);
+    Results res = ss.search("text:fred", 0, 10);
     assertEquals(0, res.totalHits);
   }
 
   @Test
   public void testSearchByDefaultField() throws Exception {
 
-    Results res = ss.searchLucene("DiscID", 0, 10);
+    Results res = ss.search("DiscID", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
@@ -205,7 +205,7 @@ public class FindAnnotationTest {
   @Test
   public void testOutputXml() throws Exception {
 
-    Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+    Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -228,7 +228,7 @@ public class FindAnnotationTest {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+    Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -251,7 +251,7 @@ public class FindAnnotationTest {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+    Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -275,7 +275,7 @@ public class FindAnnotationTest {
   @Test
   public void testOutputJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
+    Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 1);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

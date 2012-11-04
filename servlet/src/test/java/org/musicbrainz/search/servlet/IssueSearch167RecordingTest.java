@@ -27,7 +27,7 @@ import org.musicbrainz.search.index.RecordingIndexField;
 
 public class IssueSearch167RecordingTest {
 
-  private SearchServer sd;
+  private AbstractDismaxSearchServer sd;
 
   @Before
   public void setUp() throws Exception {
@@ -131,7 +131,7 @@ public class IssueSearch167RecordingTest {
     writer.close();
     SearcherManager searcherManager = new SearcherManager(ramDir,
         new MusicBrainzSearcherFactory(ResourceType.RECORDING));
-    sd = new RecordingDismaxSearch(searcherManager);
+    sd = new RecordingDismaxSearch(new RecordingSearch(searcherManager));
   }
 
   /**

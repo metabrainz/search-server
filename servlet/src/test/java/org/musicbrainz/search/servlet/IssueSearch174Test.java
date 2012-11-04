@@ -30,7 +30,7 @@ import org.musicbrainz.search.index.ReleaseIndexField;
 
 public class IssueSearch174Test extends TestCase {
 
-  private SearchServer ss;
+  private AbstractSearchServer ss;
 
   @Override
   @Before

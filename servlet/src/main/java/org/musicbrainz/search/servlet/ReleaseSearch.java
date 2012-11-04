@@ -12,7 +12,7 @@ import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ReleaseWriter;
 
-public class ReleaseSearch extends SearchServer {
+public class ReleaseSearch extends AbstractSearchServer {
 
   protected void setupDefaultFields() {
     defaultFields = new ArrayList<String>();
@@ -34,15 +34,8 @@ public class ReleaseSearch extends SearchServer {
     resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
   }
 
-  public ReleaseSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
-    this(searcherManager);
-    this.query = query;
-    this.offset = offset;
-    this.limit = limit;
-  }
-
   @Override
-  protected QueryParser getParser() {
+  public QueryParser getParser() {
     return new ReleaseQueryParser(defaultFields.toArray(new String[0]), analyzer);
   }
 

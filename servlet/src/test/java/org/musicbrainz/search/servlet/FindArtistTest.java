@@ -32,8 +32,8 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
  */
 public class FindArtistTest {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
 
   @Before
@@ -103,13 +103,13 @@ public class FindArtistTest {
     writer.close();
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.ARTIST));
     ss = new ArtistSearch(searcherManager);
-    sd = new ArtistDismaxSearch(searcherManager);
+    sd = new ArtistDismaxSearch(ss);
 
   }
 
   @Test
   public void testFindArtistById() throws Exception {
-    Results res = ss.searchLucene("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
+    Results res = ss.search("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -125,7 +125,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByName() throws Exception {
-    Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
+    Results res = ss.search("artist:\"Farming Incident\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -134,7 +134,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistDismaxSingleTerm() throws Exception {
-    Results res = sd.searchLucene("Farming", 0, 10);
+    Results res = sd.search("Farming", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -143,7 +143,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistDismaxPhrase() throws Exception {
-    Results res = sd.searchLucene("Farming Incident", 0, 10);
+    Results res = sd.search("Farming Incident", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -152,7 +152,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistDismaxFuzzy() throws Exception {
-    Results res = sd.searchLucene("Farmin", 0, 10);
+    Results res = sd.search("Farmin", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -161,7 +161,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistBySortName() throws Exception {
-    Results res = ss.searchLucene("sortname:\"Incident, Farming\"", 0, 10);
+    Results res = ss.search("sortname:\"Incident, Farming\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -171,7 +171,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByType() throws Exception {
-    Results res = ss.searchLucene("type:\"group\"", 0, 10);
+    Results res = ss.search("type:\"group\"", 0, 10);
     assertEquals(2, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -180,7 +180,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByIpi() throws Exception {
-    Results res = ss.searchLucene("ipi:1001", 0, 10);
+    Results res = ss.search("ipi:1001", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -189,7 +189,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByNumericType() throws Exception {
-    Results res = ss.searchLucene("type:2", 0, 10);
+    Results res = ss.search("type:2", 0, 10);
     assertEquals(2, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -198,7 +198,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByBeginDate() throws Exception {
-    Results res = ss.searchLucene("begin:\"1999-04\"", 0, 10);
+    Results res = ss.search("begin:\"1999-04\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -207,7 +207,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByEnded() throws Exception {
-    Results res = ss.searchLucene("ended:\"true\"", 0, 10);
+    Results res = ss.search("ended:\"true\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -217,19 +217,19 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByEndDate() throws Exception {
-    Results res = ss.searchLucene("end:\"1999-04\"", 0, 10);
+    Results res = ss.search("end:\"1999-04\"", 0, 10);
     assertEquals(0, res.totalHits);
   }
 
   @Test
   public void testFindArtistByTypePerson() throws Exception {
-    Results res = ss.searchLucene("type:\"person\"", 0, 10);
+    Results res = ss.search("type:\"person\"", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testFindArtistByAlias() throws Exception {
-    Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 10);
+    Results res = ss.search("alias:\"Echo And The Bunnymen\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -239,7 +239,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByCountry() throws Exception {
-    Results res = ss.searchLucene("country:\"af\"", 0, 10);
+    Results res = ss.search("country:\"af\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -249,7 +249,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistWithNoCountry() throws Exception {
-    Results res = ss.searchLucene("country:unknown", 0, 10);
+    Results res = ss.search("country:unknown", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -258,7 +258,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistWithNoGender() throws Exception {
-    Results res = ss.searchLucene("gender:unknown", 0, 10);
+    Results res = ss.search("gender:unknown", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -268,7 +268,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByCountryUppercase() throws Exception {
-    Results res = ss.searchLucene("country:\"AF\"", 0, 10);
+    Results res = ss.search("country:\"AF\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -278,7 +278,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByGenderLowercase() throws Exception {
-    Results res = ss.searchLucene("gender:\"male\"", 0, 10);
+    Results res = ss.search("gender:\"male\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -288,7 +288,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByGenderTitlecase() throws Exception {
-    Results res = ss.searchLucene("gender:\"Male\"", 0, 10);
+    Results res = ss.search("gender:\"Male\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -298,7 +298,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByTag() throws Exception {
-    Results res = ss.searchLucene("tag:Thrash", 0, 10);
+    Results res = ss.search("tag:Thrash", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -311,7 +311,7 @@ public class FindArtistTest {
 
     //Matches on name field without it being specified
     {
-      Results res = ss.searchLucene("\"Echo & The Bunnymen\"", 0, 10);
+      Results res = ss.search("\"Echo & The Bunnymen\"", 0, 10);
       assertEquals(1, res.totalHits);
       Result result = res.results.get(0);
       MbDocument doc = result.doc;
@@ -324,7 +324,7 @@ public class FindArtistTest {
 
     //and alias field  field without it being specified
     {
-      Results res = ss.searchLucene("\"Echo & The Bunnyman\"", 0, 10);
+      Results res = ss.search("\"Echo & The Bunnyman\"", 0, 10);
       assertEquals(1, res.totalHits);
       Result result = res.results.get(0);
       MbDocument doc = result.doc;
@@ -337,7 +337,7 @@ public class FindArtistTest {
 
     //but doesn't search default fields if a field is specified
     {
-      Results res = ss.searchLucene("type:\"Echo & The Bunnyman\"", 0, 10);
+      Results res = ss.search("type:\"Echo & The Bunnyman\"", 0, 10);
       assertEquals(0, res.totalHits);
 
     }
@@ -345,7 +345,7 @@ public class FindArtistTest {
 
   @Test
   public void testFindArtistByExcalamation() throws Exception {
-    Results res = ss.searchLucene("Farming\\!", 0, 10);
+    Results res = ss.search("Farming\\!", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -361,7 +361,7 @@ public class FindArtistTest {
   @Test
   public void testOutputAsMmd1Xml() throws Exception {
 
-    Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+    Results res = ss.search("artist:\"Farming Incident\"", 0, 1);
     Mmd1XmlWriter v1Writer = new ArtistMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -390,7 +390,7 @@ public class FindArtistTest {
   @Test
   public void testOutputXml() throws Exception {
 
-    Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+    Results res = ss.search("artist:\"Farming Incident\"", 0, 1);
     ResultsWriter v1Writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -423,7 +423,7 @@ public class FindArtistTest {
   @Test
   public void testOutputXml2() throws Exception {
 
-    Results res = ss.searchLucene("artist:\"Echo & the Bunnymen\"", 0, 1);
+    Results res = ss.search("artist:\"Echo & the Bunnymen\"", 0, 1);
     ResultsWriter v1Writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -449,7 +449,7 @@ public class FindArtistTest {
   @Test
   public void testOutputXml3() throws Exception {
 
-    Results res = ss.searchLucene("artist:\"PJ Harvey\"", 0, 1);
+    Results res = ss.search("artist:\"PJ Harvey\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -472,7 +472,7 @@ public class FindArtistTest {
   @Test
   public void testOutputAsMmd1XmlSpecialCharacters() throws Exception {
 
-    Results res = ss.searchLucene("alias:\"Echo And The Bunnymen\"", 0, 1);
+    Results res = ss.search("alias:\"Echo And The Bunnymen\"", 0, 1);
     Mmd1XmlWriter v1Writer = ss.getMmd1Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -493,7 +493,7 @@ public class FindArtistTest {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+    Results res = ss.search("artist:\"Farming Incident\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -520,7 +520,7 @@ public class FindArtistTest {
 
   @Test
   public void testOutputJsonMultiple() throws Exception {
-    Results res = ss.searchLucene("artist:\"Farming Incident\" OR artist:\"Echo & The Bunnymen\"", 0, 2);
+    Results res = ss.search("artist:\"Farming Incident\" OR artist:\"Echo & The Bunnymen\"", 0, 2);
 
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
@@ -538,7 +538,7 @@ public class FindArtistTest {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+    Results res = ss.search("artist:\"Farming Incident\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -571,7 +571,7 @@ public class FindArtistTest {
   @Test
   public void testOutputJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 1);
+    Results res = ss.search("artist:\"Farming Incident\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -592,7 +592,7 @@ public class FindArtistTest {
   @Test
   public void testOutputJsonNewPrettyWithAliases() throws Exception {
 
-    Results res = ss.searchLucene("arid:ccd4879c-5e88-4385-b131-bf65296bf245", 0, 1);
+    Results res = ss.search("arid:ccd4879c-5e88-4385-b131-bf65296bf245", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

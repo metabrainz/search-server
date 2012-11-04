@@ -41,8 +41,8 @@ import org.musicbrainz.search.servlet.mmd1.ReleaseMmd1XmlWriter;
  */
 public class FindReleaseTest {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
   @Before
   public void setUp() throws Exception {
@@ -180,7 +180,7 @@ public class FindReleaseTest {
 
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.RELEASE));
     ss = new ReleaseSearch(searcherManager);
-    sd = new ReleaseDismaxSearch(searcherManager);
+    sd = new ReleaseDismaxSearch(ss);
   }
 
   @Test
@@ -532,7 +532,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByTypeLowercase() throws Exception {
-    Results res = ss.searchLucene("type:\"compilation\"", 0, 10);
+    Results res = ss.search("type:\"compilation\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -543,7 +543,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseBySecondaryTypeFirst() throws Exception {
-    Results res = ss.searchLucene("secondarytype:\"Live\"", 0, 10);
+    Results res = ss.search("secondarytype:\"Live\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -555,7 +555,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseBySecondaryTypeSecond() throws Exception {
-    Results res = ss.searchLucene("secondarytype:\"Compilation\"", 0, 10);
+    Results res = ss.search("secondarytype:\"Compilation\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -567,7 +567,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByTypeTitleCase() throws Exception {
-    Results res = ss.searchLucene("type:\"Compilation\"", 0, 10);
+    Results res = ss.search("type:\"Compilation\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -579,7 +579,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByRgid() throws Exception {
-    Results res = ss.searchLucene("rgid:1d9e8ed6-3893-4d3b-aa7d-6cd79609e333", 0, 10);
+    Results res = ss.search("rgid:1d9e8ed6-3893-4d3b-aa7d-6cd79609e333", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -591,7 +591,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByNumericType() throws Exception {
-    Results res = ss.searchLucene("type:4", 0, 10);
+    Results res = ss.search("type:4", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -603,7 +603,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByStatusLowercase() throws Exception {
-    Results res = ss.searchLucene("status:\"official\"", 0, 10);
+    Results res = ss.search("status:\"official\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -615,7 +615,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByStatusTitleCase() throws Exception {
-    Results res = ss.searchLucene("status:\"Official\"", 0, 10);
+    Results res = ss.search("status:\"Official\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -627,7 +627,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByNumericstatus() throws Exception {
-    Results res = ss.searchLucene("status:1", 0, 10);
+    Results res = ss.search("status:1", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -639,7 +639,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseGroupByArtist2() throws Exception {
-    Results res = ss.searchLucene("artist:\"Erich Kunzel\"", 0, 10);
+    Results res = ss.search("artist:\"Erich Kunzel\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -650,7 +650,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseGroupByAllArtist2() throws Exception {
-    Results res = ss.searchLucene("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
+    Results res = ss.search("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -660,25 +660,25 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByNumberofMediums() throws Exception {
-    Results res = ss.searchLucene("mediums:2", 0, 10);
+    Results res = ss.search("mediums:2", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testFindReleaseByLabelId() throws Exception {
-    Results res = ss.searchLucene("laid:c1dfaf9c-d498-4f6c-b040-f7714315fcea", 0, 10);
+    Results res = ss.search("laid:c1dfaf9c-d498-4f6c-b040-f7714315fcea", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testNumericRangeQuery() throws Exception {
-    Results res = ss.searchLucene("tracksmedium:[7 TO 17]", 0, 10);
+    Results res = ss.search("tracksmedium:[7 TO 17]", 0, 10);
     assertEquals(2, res.totalHits);
   }
 
   @Test
   public void testFindReleaseByPuid() throws Exception {
-    Results res = ss.searchLucene("puid:668f3a22-03e8-e3cd-55e4-2e9a0906419a", 0, 10);
+    Results res = ss.search("puid:668f3a22-03e8-e3cd-55e4-2e9a0906419a", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
@@ -691,7 +691,7 @@ public class FindReleaseTest {
   @Test
   public void testOutputAsMmdv1Xml() throws Exception {
 
-    Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
+    Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 1);
     ResultsWriter writer = new ReleaseMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -730,7 +730,7 @@ public class FindReleaseTest {
   @Test
   public void testOutputAsXml() throws Exception {
 
-    Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 1);
+    Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -770,7 +770,7 @@ public class FindReleaseTest {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
+    Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -798,7 +798,7 @@ public class FindReleaseTest {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
+    Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -831,7 +831,7 @@ public class FindReleaseTest {
   @Test
   public void testOutputJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("release:\"Our Glorious 5 Year Plan\"", 0, 10);
+    Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

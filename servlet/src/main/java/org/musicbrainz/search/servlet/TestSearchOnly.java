@@ -68,7 +68,7 @@ public class TestSearchOnly {
     final static int MAX_MATCHES_LIMIT = 100;
 
     final static String CHARSET = "UTF-8";
-    private static EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
+    private static EnumMap<ResourceType, AbstractSearchServer> searchers = new EnumMap<ResourceType, AbstractSearchServer>(ResourceType.class);
     private String initMessage = null;
     static long totalQueryTime = 0;
     static Map<URL, Integer> map = new LinkedHashMap<URL, Integer>();
@@ -105,7 +105,7 @@ public class TestSearchOnly {
 
             File indexFileDir = new File(indexDir + System.getProperty("file.separator") + resourceType.getIndexName() + "_index");
 
-            SearchServer searchServer = null;
+            AbstractSearchServer searchServer = null;
             try {
 
                 Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);

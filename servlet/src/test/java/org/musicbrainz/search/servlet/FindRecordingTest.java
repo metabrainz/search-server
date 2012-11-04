@@ -35,8 +35,8 @@ import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 public class FindRecordingTest {
 
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
 
 
@@ -131,12 +131,12 @@ public class FindRecordingTest {
     SearcherManager searcherManager = new SearcherManager(ramDir,
         new MusicBrainzSearcherFactory(ResourceType.RECORDING));
     ss = new RecordingSearch(searcherManager);
-    sd = new RecordingDismaxSearch(searcherManager);
+    sd = new RecordingDismaxSearch(ss);
   }
 
   @Test
   public void testFindRecordingByV1TrackField() throws Exception {
-    Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("track:\"Gravitational Lenz\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -151,7 +151,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecording() throws Exception {
-    Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("recording:\"Gravitational Lenz\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -167,7 +167,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingDismax1() throws Exception {
-    Results res = sd.searchLucene("Gravitational", 0, 10);
+    Results res = sd.search("Gravitational", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -176,7 +176,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingDismax2() throws Exception {
-    Results res = sd.searchLucene("Glorious", 0, 10);
+    Results res = sd.search("Glorious", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -185,7 +185,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingDismax3() throws Exception {
-    Results res = sd.searchLucene("Farming Incident", 0, 10);
+    Results res = sd.search("Farming Incident", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -194,7 +194,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByV1TrackId() throws Exception {
-    Results res = ss.searchLucene("trid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
+    Results res = ss.search("trid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -203,7 +203,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingById() throws Exception {
-    Results res = ss.searchLucene("rid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
+    Results res = ss.search("rid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -212,7 +212,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseId() throws Exception {
-    Results res = ss.searchLucene("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
+    Results res = ss.search("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -221,7 +221,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByDemo() throws Exception {
-    Results res = ss.searchLucene("comment:\"demo\"", 0, 10);
+    Results res = ss.search("comment:\"demo\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -230,7 +230,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByArtistId() throws Exception {
-    Results res = ss.searchLucene("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
+    Results res = ss.search("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -238,7 +238,7 @@ public class FindRecordingTest {
   }
 
   public void testFindRecordingByArtistName() throws Exception {
-    Results res = ss.searchLucene("artist:\"Farming Incident\"", 0, 10);
+    Results res = ss.search("artist:\"Farming Incident\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -248,7 +248,7 @@ public class FindRecordingTest {
   /** Searches recording field, which should include names of associated tracks) */
   @Test
   public void testFindRecordingByTrackName() throws Exception {
-    Results res = ss.searchLucene("recording:\"Gravitational Lens\"", 0, 10);
+    Results res = ss.search("recording:\"Gravitational Lens\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -257,7 +257,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseType() throws Exception {
-    Results res = ss.searchLucene("type:\"compilation\"", 0, 10);
+    Results res = ss.search("type:\"compilation\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -266,7 +266,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByPrimaryReleaseType() throws Exception {
-    Results res = ss.searchLucene("primarytype:\"album\"", 0, 10);
+    Results res = ss.search("primarytype:\"album\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -275,7 +275,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingBySecondaryReleaseType() throws Exception {
-    Results res = ss.searchLucene("secondarytype:\"compilation\"", 0, 10);
+    Results res = ss.search("secondarytype:\"compilation\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -284,7 +284,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseGroupId() throws Exception {
-    Results res = ss.searchLucene("rgid:\"4444e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
+    Results res = ss.search("rgid:\"4444e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -293,7 +293,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseCountry() throws Exception {
-    Results res = ss.searchLucene("country:UK", 0, 10);
+    Results res = ss.search("country:UK", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -302,7 +302,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseFormat() throws Exception {
-    Results res = ss.searchLucene("format:Vinyl", 0, 10);
+    Results res = ss.search("format:Vinyl", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -311,7 +311,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseTypeNumeric() throws Exception {
-    Results res = ss.searchLucene("type:\"4\"", 0, 10);
+    Results res = ss.search("type:\"4\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -320,7 +320,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByNumberOfTracksOnMediumOnRelease() throws Exception {
-    Results res = ss.searchLucene("tracks:10", 0, 10);
+    Results res = ss.search("tracks:10", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -329,7 +329,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByNumberOfTracksOnRelease() throws Exception {
-    Results res = ss.searchLucene("tracksrelease:10", 0, 10);
+    Results res = ss.search("tracksrelease:10", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -338,7 +338,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByDuration() throws Exception {
-    Results res = ss.searchLucene("dur:234000", 0, 10);
+    Results res = ss.search("dur:234000", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -347,7 +347,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByDuration2() throws Exception {
-    Results res = ss.searchLucene("dur:234000", 0, 10);
+    Results res = ss.search("dur:234000", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -356,7 +356,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByISRC() throws Exception {
-    Results res = ss.searchLucene("isrc:123456789", 0, 10);
+    Results res = ss.search("isrc:123456789", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -365,13 +365,13 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByNonNumericDuration() throws Exception {
-    Results res = ss.searchLucene("dur:fred", 0, 10);
+    Results res = ss.search("dur:fred", 0, 10);
     assertEquals(0, res.totalHits);
   }
 
   @Test
   public void testFindRecordingByTag() throws Exception {
-    Results res = ss.searchLucene("tag:indie", 0, 10);
+    Results res = ss.search("tag:indie", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -380,7 +380,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByDurationRange() throws Exception {
-    Results res = ss.searchLucene("dur:[87 TO 240000]", 0, 10);
+    Results res = ss.search("dur:[87 TO 240000]", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -393,7 +393,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByQdur() throws Exception {
-    Results res = ss.searchLucene("qdur:117", 0, 10);
+    Results res = ss.search("qdur:117", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -407,7 +407,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByTrackPosition() throws Exception {
-    Results res = ss.searchLucene("tnum:5", 0, 10);
+    Results res = ss.search("tnum:5", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -420,7 +420,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByTrackNumber() throws Exception {
-    Results res = ss.searchLucene("number:A4", 0, 10);
+    Results res = ss.search("number:A4", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -433,7 +433,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByPosition() throws Exception {
-    Results res = ss.searchLucene("position:1", 0, 10);
+    Results res = ss.search("position:1", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -446,7 +446,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseStatus() throws Exception {
-    Results res = ss.searchLucene("status:Official", 0, 10);
+    Results res = ss.search("status:Official", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -459,7 +459,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByReleaseDate() throws Exception {
-    Results res = ss.searchLucene("date:1970-01-01", 0, 10);
+    Results res = ss.search("date:1970-01-01", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -472,7 +472,7 @@ public class FindRecordingTest {
 
   @Test
   public void testFindRecordingByDefault() throws Exception {
-    Results res = ss.searchLucene("\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("\"Gravitational Lenz\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -486,13 +486,13 @@ public class FindRecordingTest {
 
   @Test
   public void testNumericRangeQuery() throws Exception {
-    Results res = ss.searchLucene("tracks:[1 TO 10]", 0, 10);
+    Results res = ss.search("tracks:[1 TO 10]", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testFindRecordingByPuid() throws Exception {
-    Results res = ss.searchLucene("puid:1d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
+    Results res = ss.search("puid:1d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
@@ -500,7 +500,7 @@ public class FindRecordingTest {
   @Test
   public void testOutputAsMmd1Xml() throws Exception {
 
-    Results res = ss.searchLucene("track:\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("track:\"Gravitational Lenz\"", 0, 10);
     ResultsWriter writer = new TrackMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -526,7 +526,7 @@ public class FindRecordingTest {
   @Test
   public void testOutputAsXml() throws Exception {
 
-    Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("recording:\"Gravitational Lenz\"", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -572,7 +572,7 @@ public class FindRecordingTest {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("recording:\"Gravitational Lenz\"", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -605,7 +605,7 @@ public class FindRecordingTest {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("recording:\"Gravitational Lenz\"", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -640,7 +640,7 @@ public class FindRecordingTest {
   @Test
   public void testOutputJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("recording:\"Gravitational Lenz\"", 0, 10);
+    Results res = ss.search("recording:\"Gravitational Lenz\"", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

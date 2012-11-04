@@ -38,8 +38,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -130,16 +133,15 @@ public class SearchServerServlet extends HttpServlet {
       File indexFileDir = new File(indexDir + System.getProperty("file.separator") + resourceType.getIndexName()
           + "_index");
 
-      SearchServer searchServer = null;
-      SearchServer dismaxSearchServer = null;
+      AbstractSearchServer searchServer = null;
+      AbstractDismaxSearchServer dismaxSearchServer = null;
 
       try {
         Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
         SearcherManager searcherManager = new SearcherManager(directory, new MusicBrainzSearcherFactory(resourceType));
-        searchServer = resourceType.getSearchServerClass().getConstructor(SearcherManager.class)
-            .newInstance(searcherManager);
-        dismaxSearchServer = resourceType.getDismaxSearchServerClass().getConstructor(SearcherManager.class)
-            .newInstance(searcherManager);
+        searchServer = resourceType.getSearchServerClass().getConstructor(SearcherManager.class).newInstance(searcherManager);
+        dismaxSearchServer = resourceType.getDismaxSearchServerClass().getConstructor(AbstractSearchServer.class)
+            .newInstance(searchServer);
 
       } catch (CorruptIndexException e) {
         log.warning("Could not load " + resourceType.getIndexName() + " index, index is corrupted: " + e.getMessage());
@@ -556,32 +558,29 @@ public class SearchServerServlet extends HttpServlet {
   private void doAllSearch(HttpServletResponse response, String query, boolean isDismax, Integer offset, Integer limit,
       String responseFormat, boolean isPretty) throws Exception {
 
-    SearchServer artistSearch = searchers.get(ResourceType.ARTIST);
-    SearchServer releaseSearch = searchers.get(ResourceType.RELEASE);
-    SearchServer releaseGroupSearch = searchers.get(ResourceType.RELEASE_GROUP);
-    SearchServer labelSearch = searchers.get(ResourceType.LABEL);
-    SearchServer recordingSearch = searchers.get(ResourceType.RECORDING);
-    SearchServer workSearch = searchers.get(ResourceType.WORK);
+    SearchServer artistSearch = isDismax ? dismaxSearchers.get(ResourceType.ARTIST) : searchers
+        .get(ResourceType.ARTIST);
+    SearchServer releaseSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE) : searchers
+        .get(ResourceType.RELEASE);
+    SearchServer releaseGroupSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE_GROUP) : searchers
+        .get(ResourceType.RELEASE_GROUP);
+    SearchServer labelSearch = isDismax ? dismaxSearchers.get(ResourceType.LABEL) : searchers
+        .get(ResourceType.LABEL);
+    SearchServer recordingSearch = isDismax ? dismaxSearchers.get(ResourceType.RECORDING) : searchers
+        .get(ResourceType.RECORDING);
+    SearchServer workSearch = isDismax ? dismaxSearchers.get(ResourceType.WORK) : searchers
+        .get(ResourceType.WORK);
 
-    Collection<SearchServer> searches = new ArrayList<SearchServer>();
-    if (isDismax) {
-      searches.add(new ArtistDismaxSearch(artistSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new ReleaseDismaxSearch(releaseSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new ReleaseGroupDismaxSearch(releaseGroupSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new LabelDismaxSearch(labelSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new RecordingDismaxSearch(recordingSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new WorkDismaxSearch(workSearch.getSearcherManager(), query, offset, limit));
-    } else {
-      searches.add(new ArtistSearch(artistSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new ReleaseSearch(releaseSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new ReleaseGroupSearch(releaseGroupSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new LabelSearch(labelSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new RecordingSearch(recordingSearch.getSearcherManager(), query, offset, limit));
-      searches.add(new WorkSearch(workSearch.getSearcherManager(), query, offset, limit));
-    }
+    Collection<Callable<Results>> searches = new ArrayList<Callable<Results>>();
+    searches.add(new CallableSearch(artistSearch, query, offset, limit));
+    searches.add(new CallableSearch(releaseSearch, query, offset, limit));
+    searches.add(new CallableSearch(releaseGroupSearch, query, offset, limit));
+    searches.add(new CallableSearch(labelSearch, query, offset, limit));
+    searches.add(new CallableSearch(recordingSearch, query, offset, limit));
+    searches.add(new CallableSearch(workSearch, query, offset, limit));
 
     // Run each search in parallel then merge results
-    java.util.List<java.util.concurrent.Future<Results>> results = es.invokeAll(searches);
+    List<Future<Results>> results = es.invokeAll(searches);
     Results allResults = new Results();
     // Results are returned in same order as they were submitted
     Results artistResults = results.get(0).get();
@@ -608,5 +607,27 @@ public class SearchServerServlet extends HttpServlet {
     PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
     writer.write(out, allResults, responseFormat, isPretty);
     out.close();
+  }
+
+  // Used by doAllSearch()
+  class CallableSearch implements Callable<Results> {
+
+    private final SearchServer searchServer;
+    private final String query;
+    private final Integer offset;
+    private final Integer limit;
+
+    public CallableSearch(SearchServer searchServer, String query, Integer offset, Integer limit) {
+      this.searchServer = searchServer;
+      this.query = query;
+      this.offset = offset;
+      this.limit = limit;
+    }
+
+    @Override
+    public Results call() throws Exception {
+      return searchServer.search(query, offset, limit);
+    }
+
   }
 }

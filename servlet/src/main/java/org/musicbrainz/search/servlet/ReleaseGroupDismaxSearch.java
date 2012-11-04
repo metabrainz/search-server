@@ -32,16 +32,12 @@ package org.musicbrainz.search.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 
-public class ReleaseGroupDismaxSearch extends ReleaseGroupSearch {
+public class ReleaseGroupDismaxSearch extends AbstractDismaxSearchServer {
 
-  private DismaxSearcher dismaxSearcher;
-
-  protected void initDismaxSearcher() {
+  @Override
+  protected DismaxSearcher initDismaxSearcher() {
 
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(4);
     fieldBoosts.put(ReleaseGroupIndexField.RELEASEGROUP_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.6f));
@@ -52,7 +48,7 @@ public class ReleaseGroupDismaxSearch extends ReleaseGroupSearch {
     DismaxAlias dismaxAlias = new DismaxAlias();
     dismaxAlias.setFields(fieldBoosts);
     dismaxAlias.setTie(0.1f);
-    dismaxSearcher = new DismaxSearcher(dismaxAlias);
+    return new DismaxSearcher(dismaxAlias);
   }
 
   /**
@@ -61,27 +57,8 @@ public class ReleaseGroupDismaxSearch extends ReleaseGroupSearch {
    * @param searcher
    * @throws Exception
    */
-  public ReleaseGroupDismaxSearch(SearcherManager searcherManager) throws Exception {
-    super(searcherManager);
-    initDismaxSearcher();
+  public ReleaseGroupDismaxSearch(AbstractSearchServer searchServer) throws Exception {
+    super(searchServer);
   }
 
-  /**
-   * User By Search All
-   * 
-   * @param searcher
-   * @param query
-   * @param offset
-   * @param limit
-   * @throws Exception
-   */
-  public ReleaseGroupDismaxSearch(SearcherManager searcherManager, String query, int offset, int limit)
-      throws Exception {
-    super(searcherManager, query, offset, limit);
-    initDismaxSearcher();
-  }
-
-  protected Query parseQuery(String userQuery) throws ParseException {
-    return dismaxSearcher.parseQuery(userQuery, analyzer);
-  }
 }

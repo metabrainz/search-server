@@ -11,7 +11,7 @@ import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.TagIndexField;
 import org.musicbrainz.search.servlet.mmd2.TagWriter;
 
-public class TagSearch extends SearchServer {
+public class TagSearch extends AbstractSearchServer {
 
   protected void setupDefaultFields() {
     defaultFields = new ArrayList<String>();
@@ -40,7 +40,7 @@ public class TagSearch extends SearchServer {
   }
 
   @Override
-  protected QueryParser getParser() {
+  public QueryParser getParser() {
     return new TagQueryParser(defaultFields.get(0), analyzer);
   }
 

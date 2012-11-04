@@ -24,7 +24,7 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
  */
 public class FindFreeDBTest  {
 
-  private SearchServer ss;
+  private AbstractSearchServer ss;
 
   @Before
   public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class FindFreeDBTest  {
 
   @Test
   public void testSearchFreeDBByArtist() throws Exception {
-    Results res = ss.searchLucene("artist:\"Ska-P\"", 0, 10);
+    Results res = ss.search("artist:\"Ska-P\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -66,7 +66,7 @@ public class FindFreeDBTest  {
 
   @Test
   public void testSearchFreeDBByTitle() throws Exception {
-    Results res = ss.searchLucene("title:\"L\u00e1grimas & Gozos\"", 0, 10);
+    Results res = ss.search("title:\"L\u00e1grimas & Gozos\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -80,7 +80,7 @@ public class FindFreeDBTest  {
 
   @Test
   public void testSearchFreeDBByDiscId() throws Exception {
-    Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+    Results res = ss.search("discid:\"c20c4b0d\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -94,7 +94,7 @@ public class FindFreeDBTest  {
 
   @Test
   public void testSearchFreeDBByYear() throws Exception {
-    Results res = ss.searchLucene("year:\"2008\"", 0, 10);
+    Results res = ss.search("year:\"2008\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -111,7 +111,7 @@ public class FindFreeDBTest  {
 
     //by artist
     {
-      Results res = ss.searchLucene("\"Ska-P\"", 0, 10);
+      Results res = ss.search("\"Ska-P\"", 0, 10);
       assertEquals(1, res.totalHits);
       Result result = res.results.get(0);
       MbDocument doc = result.doc;
@@ -125,7 +125,7 @@ public class FindFreeDBTest  {
 
     //by title
     {
-      Results res = ss.searchLucene("\"L\u00e1grimas & Gozos\"", 0, 10);
+      Results res = ss.search("\"L\u00e1grimas & Gozos\"", 0, 10);
       assertEquals(1, res.totalHits);
       Result result = res.results.get(0);
       MbDocument doc = result.doc;
@@ -145,7 +145,7 @@ public class FindFreeDBTest  {
   @Test
   public void testOutputXml() throws Exception {
 
-    Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+    Results res = ss.search("discid:\"c20c4b0d\"", 0, 10);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = new FreeDBWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -169,7 +169,7 @@ public class FindFreeDBTest  {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+    Results res = ss.search("discid:\"c20c4b0d\"", 0, 10);
     ResultsWriter writer = new FreeDBWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -194,7 +194,7 @@ public class FindFreeDBTest  {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+    Results res = ss.search("discid:\"c20c4b0d\"", 0, 10);
     ResultsWriter writer = new FreeDBWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -219,7 +219,7 @@ public class FindFreeDBTest  {
   @Test
   public void testOutputJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("discid:\"c20c4b0d\"", 0, 10);
+    Results res = ss.search("discid:\"c20c4b0d\"", 0, 10);
     ResultsWriter writer = new FreeDBWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

@@ -33,16 +33,12 @@ package org.musicbrainz.search.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.index.RecordingIndexField;
 
-public class RecordingDismaxSearch extends RecordingSearch {
+public class RecordingDismaxSearch extends AbstractDismaxSearchServer {
 
-  private DismaxSearcher dismaxSearcher;
-
-  protected void initDismaxSearcher() {
+  @Override
+  protected DismaxSearcher initDismaxSearcher() {
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(4);
     fieldBoosts.put(RecordingIndexField.RECORDING_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.8f));
     fieldBoosts.put(RecordingIndexField.RECORDING.getName(), new DismaxAlias.AliasField(true, 1.6f));
@@ -52,7 +48,7 @@ public class RecordingDismaxSearch extends RecordingSearch {
     DismaxAlias dismaxAlias = new DismaxAlias();
     dismaxAlias.setFields(fieldBoosts);
     dismaxAlias.setTie(0.1f);
-    dismaxSearcher = new DismaxSearcher(dismaxAlias);
+    return new DismaxSearcher(dismaxAlias);
   }
 
   /**
@@ -61,26 +57,8 @@ public class RecordingDismaxSearch extends RecordingSearch {
    * @param searcher
    * @throws Exception
    */
-  public RecordingDismaxSearch(SearcherManager searcherManager) throws Exception {
-    super(searcherManager);
-    initDismaxSearcher();
+  public RecordingDismaxSearch(AbstractSearchServer searchServer) throws Exception {
+    super(searchServer);
   }
 
-  /**
-   * User By Search All
-   * 
-   * @param searcher
-   * @param query
-   * @param offset
-   * @param limit
-   * @throws Exception
-   */
-  public RecordingDismaxSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
-    super(searcherManager, query, offset, limit);
-    initDismaxSearcher();
-  }
-
-  protected Query parseQuery(String userQuery) throws ParseException {
-    return dismaxSearcher.parseQuery(userQuery, analyzer);
-  }
 }

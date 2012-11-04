@@ -34,8 +34,8 @@ public enum ResourceType {
 
   private String name;
   private String indexName = null;
-  private Class<SearchServer> searchServerClass;
-  private Class<SearchServer> dismaxSearchServerClass;
+  private Class<AbstractSearchServer> searchServerClass;
+  private Class<AbstractDismaxSearchServer> dismaxSearchServerClass;
   private Class<Similarity> similarityClass = null;
   private boolean isUsedBySearchAll;
 
@@ -70,11 +70,11 @@ public enum ResourceType {
     return indexName;
   }
 
-  public Class<SearchServer> getSearchServerClass() {
+  public Class<AbstractSearchServer> getSearchServerClass() {
     return searchServerClass;
   }
 
-  public Class<SearchServer> getDismaxSearchServerClass() {
+  public Class<AbstractDismaxSearchServer> getDismaxSearchServerClass() {
     return dismaxSearchServerClass;
   }
 

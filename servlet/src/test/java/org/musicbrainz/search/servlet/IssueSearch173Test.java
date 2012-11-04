@@ -30,8 +30,8 @@ import org.musicbrainz.search.index.ReleaseIndexField;
 
 public class IssueSearch173Test  {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
   @Before
   public void setUp() throws Exception {
@@ -69,10 +69,8 @@ public class IssueSearch173Test  {
     assertEquals("ad17t", tr.term().text());
 
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.RELEASE));
-    sd = new ReleaseDismaxSearch(searcherManager);
     ss = new ReleaseSearch(searcherManager);
-
-
+    sd = new ReleaseDismaxSearch(ss);
   }
 
   @Test

@@ -12,45 +12,38 @@ import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.mmd2.WorkWriter;
 
 
-public class WorkSearch extends SearchServer {
+public class WorkSearch extends AbstractSearchServer {
 
-    protected void setupDefaultFields() {
-        defaultFields = new ArrayList<String>();
-        defaultFields.add(WorkIndexField.WORK.getName());
-        defaultFields.add(WorkIndexField.ALIAS.getName());
-    }
+  protected void setupDefaultFields() {
+    defaultFields = new ArrayList<String>();
+    defaultFields.add(WorkIndexField.WORK.getName());
+    defaultFields.add(WorkIndexField.ALIAS.getName());
+  }
 
-    public WorkSearch() throws Exception {
-        resultsWriter = new WorkWriter();
-        setupDefaultFields();
-        analyzer = DatabaseIndex.getAnalyzer(WorkIndexField.class);
-    }
+  public WorkSearch() throws Exception {
+    resultsWriter = new WorkWriter();
+    setupDefaultFields();
+    analyzer = DatabaseIndex.getAnalyzer(WorkIndexField.class);
+  }
 
-    public WorkSearch(SearcherManager searcherManager) throws Exception {
-        this();
-        this.searcherManager = searcherManager;
-        setLastServerUpdatedDate();
-        resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
-    }
+  public WorkSearch(SearcherManager searcherManager) throws Exception {
+    this();
+    this.searcherManager = searcherManager;
+    setLastServerUpdatedDate();
+    resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
+  }
 
-    public WorkSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
-        this(searcherManager);
-        this.query=query;
-        this.offset=offset;
-        this.limit=limit;
-    }
+  @Override
+  public QueryParser getParser() {
+    return new WorkQueryParser(defaultFields.toArray(new String[0]), analyzer);
+  }
 
-     @Override
-    protected QueryParser getParser() {
-       return new WorkQueryParser(defaultFields.toArray(new String[0]), analyzer);
-    }
-
-    @Override
-    protected  String printExplainHeader(Document doc)
-            throws IOException, ParseException {
-        return doc.get(WorkIndexField.WORK_ID.getName()) +':'
-                + doc.get(WorkIndexField.WORK.getName())
-                + '\n';
-    }
+  @Override
+  protected  String printExplainHeader(Document doc)
+      throws IOException, ParseException {
+    return doc.get(WorkIndexField.WORK_ID.getName()) +':'
+        + doc.get(WorkIndexField.WORK.getName())
+        + '\n';
+  }
 
 }

@@ -32,9 +32,8 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SearcherManager;
 
-public class TagDismaxSearch extends TagSearch {
+public class TagDismaxSearch extends AbstractDismaxSearchServer {
 
   /**
    * Standard Search
@@ -42,15 +41,20 @@ public class TagDismaxSearch extends TagSearch {
    * @param searcher
    * @throws Exception
    */
-  public TagDismaxSearch(SearcherManager searcherManager) throws Exception {
-    super(searcherManager);
+  public TagDismaxSearch(AbstractSearchServer searchServer) throws Exception {
+    super(searchServer);
   }
 
   @Override
   protected Query parseQuery(String query) throws ParseException {
     // Treat all as text
     query = QueryParser.escape(query);
-    QueryParser parser = getParser();
+    QueryParser parser = realSearchServer.getParser();
     return parser.parse(query);
+  }
+
+  @Override
+  protected DismaxSearcher initDismaxSearcher() {
+    return null;
   }
 }

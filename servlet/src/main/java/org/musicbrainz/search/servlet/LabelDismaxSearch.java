@@ -32,16 +32,12 @@ package org.musicbrainz.search.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.index.LabelIndexField;
 
-public class LabelDismaxSearch extends LabelSearch {
+public class LabelDismaxSearch extends AbstractDismaxSearchServer {
 
-  private DismaxSearcher dismaxSearcher;
-
-  protected void initDismaxSearcher() {
+  @Override
+  protected DismaxSearcher initDismaxSearcher() {
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(3);
     fieldBoosts.put(LabelIndexField.LABEL_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.4f));
     fieldBoosts.put(LabelIndexField.LABEL.getName(), new DismaxAlias.AliasField(true, 1.3f));
@@ -50,7 +46,7 @@ public class LabelDismaxSearch extends LabelSearch {
     DismaxAlias dismaxAlias = new DismaxAlias();
     dismaxAlias.setFields(fieldBoosts);
     dismaxAlias.setTie(0.1f);
-    dismaxSearcher = new DismaxSearcher(dismaxAlias);
+    return new DismaxSearcher(dismaxAlias);
   }
 
   /**
@@ -59,26 +55,8 @@ public class LabelDismaxSearch extends LabelSearch {
    * @param searcher
    * @throws Exception
    */
-  public LabelDismaxSearch(SearcherManager searcherManager) throws Exception {
-    super(searcherManager);
-    initDismaxSearcher();
+  public LabelDismaxSearch(AbstractSearchServer searchServer) throws Exception {
+    super(searchServer);
   }
 
-  /**
-   * User By Search All
-   * 
-   * @param searcher
-   * @param query
-   * @param offset
-   * @param limit
-   * @throws Exception
-   */
-  public LabelDismaxSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
-    super(searcherManager, query, offset, limit);
-    initDismaxSearcher();
-  }
-
-  protected Query parseQuery(String userQuery) throws ParseException {
-    return dismaxSearcher.parseQuery(userQuery, analyzer);
-  }
 }

@@ -34,8 +34,8 @@ import org.musicbrainz.search.servlet.mmd2.LabelWriter;
  */
 public class FindLabelTest {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
 
   @Before
@@ -108,12 +108,12 @@ public class FindLabelTest {
     writer.close();
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.LABEL));
     ss = new LabelSearch(searcherManager);
-    sd = new LabelDismaxSearch(searcherManager);
+    sd = new LabelDismaxSearch(ss);
   }
 
   @Test
   public void testFindLabelById() throws Exception {
-    Results res = ss.searchLucene("laid:\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\"", 0, 10);
+    Results res = ss.search("laid:\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -129,7 +129,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByName() throws Exception {
-    Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+    Results res = ss.search("label:\"Jockey Slut\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -139,7 +139,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByDismax1() throws Exception {
-    Results res = sd.searchLucene("Jockey Slut", 0, 10);
+    Results res = sd.search("Jockey Slut", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -149,7 +149,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByDismax2() throws Exception {
-    Results res = sd.searchLucene("Jockey", 0, 10);
+    Results res = sd.search("Jockey", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -161,7 +161,7 @@ public class FindLabelTest {
   public void testFindLabelByDefault() throws Exception {
 
     {
-      Results res = ss.searchLucene("\"Jockey Slut\"", 0, 10);
+      Results res = ss.search("\"Jockey Slut\"", 0, 10);
       assertEquals(1, res.totalHits);
       Result result = res.results.get(0);
       MbDocument doc = result.doc;
@@ -170,7 +170,7 @@ public class FindLabelTest {
     }
 
     {
-      Results res = ss.searchLucene("\"Slut Jockey\"", 0, 10);
+      Results res = ss.search("\"Slut Jockey\"", 0, 10);
       assertEquals(1, res.totalHits);
       Result result = res.results.get(0);
       MbDocument doc = result.doc;
@@ -179,7 +179,7 @@ public class FindLabelTest {
     }
 
     {
-      Results res = ss.searchLucene("\"Jockeys\"", 0, 10);
+      Results res = ss.search("\"Jockeys\"", 0, 10);
       assertEquals(1, res.totalHits);
       Result result = res.results.get(0);
       MbDocument doc = result.doc;
@@ -190,7 +190,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByType() throws Exception {
-    Results res = ss.searchLucene("type:\"production\"", 0, 10);
+    Results res = ss.search("type:\"production\"", 0, 10);
     assertEquals(2, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -202,7 +202,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByIpi() throws Exception {
-    Results res = ss.searchLucene("ipi:1001", 0, 10);
+    Results res = ss.search("ipi:1001", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -214,7 +214,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByNumericType() throws Exception {
-    Results res = ss.searchLucene("type:3", 0, 10);
+    Results res = ss.search("type:3", 0, 10);
     assertEquals(2, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -226,7 +226,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelBySortname() throws Exception {
-    Results res = ss.searchLucene("sortname:\"Slut, Jockey\"", 0, 10);
+    Results res = ss.search("sortname:\"Slut, Jockey\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -236,7 +236,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByCountry() throws Exception {
-    Results res = ss.searchLucene("country:\"gb\"", 0, 10);
+    Results res = ss.search("country:\"gb\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -246,7 +246,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByUnknownCountry() throws Exception {
-    Results res = ss.searchLucene("country:\"unknown\"", 0, 10);
+    Results res = ss.search("country:\"unknown\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -255,7 +255,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByCountryUpercase() throws Exception {
-    Results res = ss.searchLucene("country:\"GB\"", 0, 10);
+    Results res = ss.search("country:\"GB\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -265,7 +265,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByCode() throws Exception {
-    Results res = ss.searchLucene("code:5807", 0, 10);
+    Results res = ss.search("code:5807", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -275,7 +275,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByCode2() throws Exception {
-    Results res = ss.searchLucene("code:005807", 0, 10);
+    Results res = ss.search("code:005807", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -285,7 +285,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByCodeRange() throws Exception {
-    Results res = ss.searchLucene("code:[5806 TO 5807]", 0, 10);
+    Results res = ss.search("code:[5806 TO 5807]", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -295,7 +295,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByZeroedCode() throws Exception {
-    Results res = ss.searchLucene("code:\"05807\"", 0, 10);
+    Results res = ss.search("code:\"05807\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -305,7 +305,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByTag() throws Exception {
-    Results res = ss.searchLucene("tag:dance", 0, 10);
+    Results res = ss.search("tag:dance", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -315,7 +315,7 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByEnded() throws Exception {
-    Results res = ss.searchLucene("ended:\"true\"", 0, 10);
+    Results res = ss.search("ended:\"true\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -324,7 +324,7 @@ public class FindLabelTest {
 
 
   public void testIssue66() throws Exception {
-    Results res = ss.searchLucene("dark", 0, 10);
+    Results res = ss.search("dark", 0, 10);
     assertEquals(1, res.totalHits);
     ResultsWriter writer = new LabelMmd1XmlWriter();
     StringWriter sw = new StringWriter();
@@ -353,7 +353,7 @@ public class FindLabelTest {
   @Test
   public void testOutputAsMmd1Xml() throws Exception {
 
-    Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
+    Results res = ss.search("label:\"Jockey Slut\"", 0, 1);
     ResultsWriter writer = new LabelMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -380,7 +380,7 @@ public class FindLabelTest {
   @Test
   public void testOutputAsXml() throws Exception {
 
-    Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 1);
+    Results res = ss.search("label:\"Jockey Slut\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -408,7 +408,7 @@ public class FindLabelTest {
   @Test
   public void testOutputAsXmlWithUnknownCountry() throws Exception {
 
-    Results res = ss.searchLucene("laid:a539bb1e-f2e1-4b45-9db8-8053841e7503", 0, 1);
+    Results res = ss.search("laid:a539bb1e-f2e1-4b45-9db8-8053841e7503", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -426,7 +426,7 @@ public class FindLabelTest {
   @Test
   public void testOutputAsMMd1XmlWithUnknownType() throws Exception {
 
-    Results res = ss.searchLucene("blob", 0, 1);
+    Results res = ss.search("blob", 0, 1);
     ResultsWriter writer = new LabelMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -445,7 +445,7 @@ public class FindLabelTest {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+    Results res = ss.search("label:\"Jockey Slut\"", 0, 10);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -474,7 +474,7 @@ public class FindLabelTest {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+    Results res = ss.search("label:\"Jockey Slut\"", 0, 10);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -507,7 +507,7 @@ public class FindLabelTest {
   @Test
   public void testOutputJsonNewIdent() throws Exception {
 
-    Results res = ss.searchLucene("label:\"Jockey Slut\"", 0, 10);
+    Results res = ss.search("label:\"Jockey Slut\"", 0, 10);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

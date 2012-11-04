@@ -29,7 +29,7 @@ import org.musicbrainz.search.index.MetaIndexField;
  */
 public class IssueSearch167Test {
 
-  private SearchServer sd;
+  private AbstractDismaxSearchServer sd;
 
   @Before
   public void setUp() throws Exception {
@@ -175,7 +175,7 @@ public class IssueSearch167Test {
 
     writer.close();
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.ARTIST));
-    sd = new ArtistDismaxSearch(searcherManager);
+    sd = new ArtistDismaxSearch(new ArtistSearch(searcherManager));
   }
 
   @Test

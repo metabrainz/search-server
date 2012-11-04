@@ -12,7 +12,7 @@ import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.LabelWriter;
 
-public class LabelSearch extends SearchServer {
+public class LabelSearch extends AbstractSearchServer {
 
   protected void setupDefaultFields() {
     defaultFields = new ArrayList<String>();
@@ -35,15 +35,8 @@ public class LabelSearch extends SearchServer {
     resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
   }
 
-  public LabelSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
-    this(searcherManager);
-    this.query = query;
-    this.offset = offset;
-    this.limit = limit;
-  }
-
   @Override
-  protected QueryParser getParser() {
+  public QueryParser getParser() {
     return new LabelQueryParser(defaultFields.toArray(new String[0]), analyzer);
   }
 

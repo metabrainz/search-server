@@ -34,8 +34,8 @@ import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
  */
 public class FindReleaseGroupTest {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
 
 
@@ -129,12 +129,12 @@ public class FindReleaseGroupTest {
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(
         ResourceType.RELEASE_GROUP));
     ss = new ReleaseGroupSearch(searcherManager);
-    sd = new ReleaseGroupDismaxSearch(searcherManager);
+    sd = new ReleaseGroupDismaxSearch(ss);
   }
 
   @Test
   public void testFindReleaseGroupById() throws Exception {
-    Results res = ss.searchLucene("rgid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\"", 0, 10);
+    Results res = ss.search("rgid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -146,7 +146,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByName() throws Exception {
-    Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 10);
+    Results res = ss.search("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -157,7 +157,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByReleaseStatus() throws Exception {
-    Results res = ss.searchLucene("status:official", 0, 10);
+    Results res = ss.search("status:official", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -167,7 +167,7 @@ public class FindReleaseGroupTest {
   }
   @Test
   public void testFindReleaseGroupByDismax1() throws Exception {
-    Results res = sd.searchLucene("Twisting", 0, 10);
+    Results res = sd.search("Twisting", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -178,7 +178,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByDismax2() throws Exception {
-    Results res = sd.searchLucene("secret", 0, 10);
+    Results res = sd.search("secret", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -189,7 +189,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByDismax3() throws Exception {
-    Results res = sd.searchLucene("wedding", 0, 10);
+    Results res = sd.search("wedding", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -200,9 +200,9 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByRelease() throws Exception {
-    Results res = ss.searchLucene("releasegroup:\"secret\"", 0, 10);
+    Results res = ss.search("releasegroup:\"secret\"", 0, 10);
     assertEquals(0, res.totalHits);
-    res = ss.searchLucene("release:secret", 0, 10);
+    res = ss.search("release:secret", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -213,15 +213,15 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseByNumberofReleases() throws Exception {
-    Results res = ss.searchLucene("releases:1", 0, 10);
+    Results res = ss.search("releases:1", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testFindReleaseGroupByReleaseId() throws Exception {
-    Results res = ss.searchLucene("releaseid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"", 0, 10);
+    Results res = ss.search("releaseid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"", 0, 10);
     assertEquals(0, res.totalHits);
-    res = ss.searchLucene("release:secret", 0, 10);
+    res = ss.search("release:secret", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -232,7 +232,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByArtist() throws Exception {
-    Results res = ss.searchLucene("artist:\"The Wedding Present\"", 0, 10);
+    Results res = ss.search("artist:\"The Wedding Present\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -245,7 +245,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByType() throws Exception {
-    Results res = ss.searchLucene("type:\"single\"", 0, 10);
+    Results res = ss.search("type:\"single\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -256,7 +256,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByPrimaryType() throws Exception {
-    Results res = ss.searchLucene("primarytype:\"single\"", 0, 10);
+    Results res = ss.search("primarytype:\"single\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -267,7 +267,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupBySecondaryType() throws Exception {
-    Results res = ss.searchLucene("secondarytype:\"live\"", 0, 10);
+    Results res = ss.search("secondarytype:\"live\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -278,7 +278,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByNumericType() throws Exception {
-    Results res = ss.searchLucene("type:2", 0, 10);
+    Results res = ss.search("type:2", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -289,9 +289,9 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByDefault() throws Exception {
-    Results res = ss.searchLucene("\"secret\"", 0, 10);
+    Results res = ss.search("\"secret\"", 0, 10);
     assertEquals(0, res.totalHits);
-    res = ss.searchLucene("\"Nobody's Twisting Your Arm\"", 0, 10);
+    res = ss.search("\"Nobody's Twisting Your Arm\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -305,7 +305,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByArtist2() throws Exception {
-    Results res = ss.searchLucene("artist:\"Erich Kunzel\"", 0, 10);
+    Results res = ss.search("artist:\"Erich Kunzel\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -315,7 +315,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByAllArtist2() throws Exception {
-    Results res = ss.searchLucene("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
+    Results res = ss.search("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -325,7 +325,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByArtistName() throws Exception {
-    Results res = ss.searchLucene("artistname:\"Erich Kunzel\"", 0, 10);
+    Results res = ss.search("artistname:\"Erich Kunzel\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -335,7 +335,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByAllArtistName() throws Exception {
-    Results res = ss.searchLucene("artistname:\"Erich Kunzel\" AND artistname:\"Cincinnati Pops\"", 0, 10);
+    Results res = ss.search("artistname:\"Erich Kunzel\" AND artistname:\"Cincinnati Pops\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -346,7 +346,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByTag() throws Exception {
-    Results res = ss.searchLucene("tag:indie", 0, 10);
+    Results res = ss.search("tag:indie", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -356,7 +356,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testFindReleaseGroupByComment() throws Exception {
-    Results res = ss.searchLucene("comment:demo", 0, 10);
+    Results res = ss.search("comment:demo", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -374,7 +374,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputAsAsMmd1Xml() throws Exception {
 
-    Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
+    Results res = ss.search("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
     ResultsWriter writer = new ReleaseGroupMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -403,7 +403,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputAsAsXml() throws Exception {
 
-    Results res = ss.searchLucene("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
+    Results res = ss.search("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -438,7 +438,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputAsAsMmd1Xml2() throws Exception {
 
-    Results res = ss.searchLucene("releasegroup:Epics", 0, 1);
+    Results res = ss.search("releasegroup:Epics", 0, 1);
     ResultsWriter writer = new ReleaseGroupMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -464,7 +464,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputAsAsXml2() throws Exception {
 
-    Results res = ss.searchLucene("releasegroup:Epics", 0, 1);
+    Results res = ss.search("releasegroup:Epics", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -494,7 +494,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
+    Results res = ss.search("releasegroup:Epics", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -513,7 +513,7 @@ public class FindReleaseGroupTest {
 
   @Test
   public void testOutputJsonMultiple() throws Exception {
-    Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45  OR artist:kunzel", 0, 10);
+    Results res = ss.search("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45  OR artist:kunzel", 0, 10);
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -530,7 +530,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
+    Results res = ss.search("releasegroup:Epics", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -558,7 +558,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("releasegroup:Epics", 0, 10);
+    Results res = ss.search("releasegroup:Epics", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -574,7 +574,7 @@ public class FindReleaseGroupTest {
   @Test
   public void testOutputJsonNewPretty2() throws Exception {
 
-    Results res = ss.searchLucene("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45", 0, 10);
+    Results res = ss.search("rgid:2c7d81da-8fc3-3157-99c1-e9195ac92c45", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

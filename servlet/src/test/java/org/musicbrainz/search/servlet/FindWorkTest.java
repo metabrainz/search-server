@@ -34,8 +34,8 @@ import org.musicbrainz.search.index.WorkIndexField;
  */
 public class FindWorkTest {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
   @Before
   public void setUp() throws Exception {
@@ -103,12 +103,12 @@ public class FindWorkTest {
     writer.close();
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.WORK));
     ss = new WorkSearch(searcherManager);
-    sd = new WorkDismaxSearch(searcherManager);
+    sd = new WorkDismaxSearch(ss);
   }
 
   @Test
   public void testFindWorkById() throws Exception {
-    Results res = ss.searchLucene("wid:\"4ff89cf0-86af-11de-90ed-001fc6f176ff\"", 0, 10);
+    Results res = ss.search("wid:\"4ff89cf0-86af-11de-90ed-001fc6f176ff\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -118,7 +118,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByName() throws Exception {
-    Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 10);
+    Results res = ss.search("work:\"Symphony No. 5\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -128,7 +128,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByLyricsLang() throws Exception {
-    Results res = ss.searchLucene("lang:eng", 0, 10);
+    Results res = ss.search("lang:eng", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -138,7 +138,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByDismax1() throws Exception {
-    Results res = sd.searchLucene("Symphony No. 5", 0, 10);
+    Results res = sd.search("Symphony No. 5", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -148,7 +148,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByDismax2() throws Exception {
-    Results res = sd.searchLucene("Symphony", 0, 10);
+    Results res = sd.search("Symphony", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -158,7 +158,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByComment() throws Exception {
-    Results res = ss.searchLucene("comment:demo", 0, 10);
+    Results res = ss.search("comment:demo", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -168,7 +168,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByArtist() throws Exception {
-    Results res = ss.searchLucene("artist:\"Пётр Ильич Чайковский\"", 0, 10);
+    Results res = ss.search("artist:\"Пётр Ильич Чайковский\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -179,7 +179,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByISWC() throws Exception {
-    Results res = ss.searchLucene("iswc:\"T-101779304-1\"", 0, 10);
+    Results res = ss.search("iswc:\"T-101779304-1\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -189,7 +189,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByType() throws Exception {
-    Results res = ss.searchLucene("type:\"opera\"", 0, 10);
+    Results res = ss.search("type:\"opera\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -199,7 +199,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByAlias() throws Exception {
-    Results res = ss.searchLucene("alias:symp5", 0, 10);
+    Results res = ss.search("alias:symp5", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -209,7 +209,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByTag() throws Exception {
-    Results res = ss.searchLucene("tag:classical", 0, 10);
+    Results res = ss.search("tag:classical", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -219,7 +219,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByDefaultUsingName() throws Exception {
-    Results res = ss.searchLucene("\"Symphony No. 5\"", 0, 10);
+    Results res = ss.search("\"Symphony No. 5\"", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -229,7 +229,7 @@ public class FindWorkTest {
 
   @Test
   public void testFindWorkByDefaultUsingAlias() throws Exception {
-    Results res = ss.searchLucene("symp5", 0, 10);
+    Results res = ss.search("symp5", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
@@ -246,7 +246,7 @@ public class FindWorkTest {
   @Test
   public void testOutputAsXml() throws Exception {
 
-    Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
+    Results res = ss.search("work:\"Symphony No. 5\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -285,7 +285,7 @@ public class FindWorkTest {
   @Test
   public void testOutputAsJson() throws Exception {
 
-    Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
+    Results res = ss.search("work:\"Symphony No. 5\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -324,7 +324,7 @@ public class FindWorkTest {
   @Test
   public void testOutputAsJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
+    Results res = ss.search("work:\"Symphony No. 5\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -361,7 +361,7 @@ public class FindWorkTest {
   @Test
   public void testOutputAsJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("work:\"Symphony No. 5\"", 0, 1);
+    Results res = ss.search("work:\"Symphony No. 5\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

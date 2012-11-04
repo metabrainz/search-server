@@ -13,7 +13,7 @@ import org.musicbrainz.search.servlet.mmd1.TrackMmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.RecordingWriter;
 
 
-public class RecordingSearch extends SearchServer {
+public class RecordingSearch extends AbstractSearchServer {
 
   protected void setupDefaultFields() {
     defaultFields = new ArrayList<String>();
@@ -35,15 +35,8 @@ public class RecordingSearch extends SearchServer {
     resultsWriter.setLastServerUpdatedDate(this.getServerLastUpdatedDate());
   }
 
-  public RecordingSearch(SearcherManager searcherManager, String query, int offset, int limit) throws Exception {
-    this(searcherManager);
-    this.query = query;
-    this.offset = offset;
-    this.limit = limit;
-  }
-
   @Override
-  protected QueryParser getParser() {
+  public QueryParser getParser() {
     return new RecordingQueryParser(defaultFields.toArray(new String[0]), analyzer);
   }
 

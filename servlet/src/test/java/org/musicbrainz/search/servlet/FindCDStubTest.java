@@ -27,8 +27,8 @@ import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
  */
 public class FindCDStubTest {
 
-  private SearchServer ss;
-  private SearchServer sd;
+  private AbstractSearchServer ss;
+  private AbstractDismaxSearchServer sd;
 
 
   @Before
@@ -68,66 +68,66 @@ public class FindCDStubTest {
     writer.close();
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.CDSTUB));
     ss = new CDStubSearch(searcherManager);
-    sd = new CDStubDismaxSearch(searcherManager);
+    sd = new CDStubDismaxSearch(ss);
   }
 
   @Test
   public void testSearchByArtist() throws Exception {
-    Results res = ss.searchLucene("artist:\"Doo Doo\"", 0, 10);
+    Results res = ss.search("artist:\"Doo Doo\"", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByDismax1() throws Exception {
-    Results res = sd.searchLucene("First", 0, 10);
+    Results res = sd.search("First", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByDismax2() throws Exception {
-    Results res = sd.searchLucene("Doo Doo", 0, 10);
+    Results res = sd.search("Doo Doo", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByDismax3() throws Exception {
-    Results res = sd.searchLucene("837101029193", 0, 10);
+    Results res = sd.search("837101029193", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByDismax4() throws Exception {
-    Results res = sd.searchLucene("CD Baby", 0, 10);
+    Results res = sd.search("CD Baby", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByTitle() throws Exception {
-    Results res = ss.searchLucene("title:\"Doo Doo First\"", 0, 10);
+    Results res = ss.search("title:\"Doo Doo First\"", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByBarcode() throws Exception {
-    Results res = ss.searchLucene("barcode:\"837101029193\"", 0, 10);
+    Results res = ss.search("barcode:\"837101029193\"", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByComment() throws Exception {
-    Results res = ss.searchLucene("comment:\"CD Baby id:vozzolo\"", 0, 10);
+    Results res = ss.search("comment:\"CD Baby id:vozzolo\"", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByDiscId() throws Exception {
-    Results res = ss.searchLucene("discid:qA87dKURKperVfmckD5b_xo8BO8-", 0, 10);
+    Results res = ss.search("discid:qA87dKURKperVfmckD5b_xo8BO8-", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
   @Test
   public void testSearchByNumTracks() throws Exception {
-    Results res = ss.searchLucene("tracks:2", 0, 10);
+    Results res = ss.search("tracks:2", 0, 10);
     assertEquals(1, res.totalHits);
   }
 
@@ -138,7 +138,7 @@ public class FindCDStubTest {
   @Test
   public void testOutputXml() throws Exception {
 
-    Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
+    Results res = ss.search("title:\"Doo Doo\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -166,7 +166,7 @@ public class FindCDStubTest {
   @Test
   public void testOutputXmlNoArtist() throws Exception {
 
-    Results res = ss.searchLucene("title:fred", 0, 1);
+    Results res = ss.search("title:fred", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -190,7 +190,7 @@ public class FindCDStubTest {
   @Test
   public void testOutputJson() throws Exception {
 
-    Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
+    Results res = ss.search("title:\"Doo Doo\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -215,7 +215,7 @@ public class FindCDStubTest {
   @Test
   public void testOutputJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
+    Results res = ss.search("title:\"Doo Doo\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -240,7 +240,7 @@ public class FindCDStubTest {
   @Test
   public void testOutputJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("title:\"Doo Doo\"", 0, 1);
+    Results res = ss.search("title:\"Doo Doo\"", 0, 1);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

@@ -23,7 +23,7 @@ import org.musicbrainz.search.index.TagIndexField;
 
 public class FindTagTest {
 
-  private SearchServer ss;
+  private AbstractSearchServer ss;
 
   @Before
   public void setUp() throws Exception {
@@ -58,7 +58,7 @@ public class FindTagTest {
 
   @Test
   public void testFindTagByName() throws Exception {
-    Results res = ss.searchLucene("tag:rock", 0, 10);
+    Results res = ss.search("tag:rock", 0, 10);
     assertEquals(2, res.totalHits);
     Result result = res.results.get(0);
 
@@ -73,7 +73,7 @@ public class FindTagTest {
   @Test
   public void testOutputAsXml() throws Exception {
 
-    Results res = ss.searchLucene("tag:rock", 0, 10);
+    Results res = ss.search("tag:rock", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -90,7 +90,7 @@ public class FindTagTest {
   @Test
   public void testOutputAsJson() throws Exception {
 
-    Results res = ss.searchLucene("tag:rock", 0, 10);
+    Results res = ss.search("tag:rock", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -111,7 +111,7 @@ public class FindTagTest {
   @Test
   public void testOutputAsJsonNew() throws Exception {
 
-    Results res = ss.searchLucene("tag:rock", 0, 10);
+    Results res = ss.search("tag:rock", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
@@ -132,7 +132,7 @@ public class FindTagTest {
   @Test
   public void testOutputAsJsonNewPretty() throws Exception {
 
-    Results res = ss.searchLucene("tag:rock", 0, 10);
+    Results res = ss.search("tag:rock", 0, 10);
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

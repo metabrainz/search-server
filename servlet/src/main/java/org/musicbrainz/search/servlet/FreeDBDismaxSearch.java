@@ -32,25 +32,30 @@ package org.musicbrainz.search.servlet;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SearcherManager;
 
-public class FreeDBDismaxSearch extends FreeDBSearch {
+public class FreeDBDismaxSearch extends AbstractDismaxSearchServer {
 
-    /**
-     * Standard Search
-     *
-     * @param searcher
-     * @throws Exception
-     */
-    public FreeDBDismaxSearch(SearcherManager searcherManager) throws Exception {
-        super(searcherManager);
-    }
+  /**
+   * Standard Search
+   *
+   * @param searcher
+   * @throws Exception
+   */
+  public FreeDBDismaxSearch(AbstractSearchServer searchServer) throws Exception {
+    super(searchServer);
+  }
 
-    protected Query parseQuery(String query) throws ParseException
-    {
-        //Treat all as text
-        query=QueryParser.escape(query);
-        QueryParser parser = getParser();
-        return parser.parse(query);
-    }
+  @Override
+  protected Query parseQuery(String query) throws ParseException
+  {
+    //Treat all as text
+    query=QueryParser.escape(query);
+    QueryParser parser = realSearchServer.getParser();
+    return parser.parse(query);
+  }
+
+  @Override
+  protected DismaxSearcher initDismaxSearcher() {
+    return null;
+  }
 }
