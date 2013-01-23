@@ -188,6 +188,7 @@ public class IndexBuilder
             }
         }
         es.shutdown();
+        mainDbConn.close();
         System.out.println("Index Builder Finished:"+ Utils.formatCurrentTimeForOutput());
     }
 

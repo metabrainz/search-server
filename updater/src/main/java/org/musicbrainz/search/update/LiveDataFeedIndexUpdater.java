@@ -128,10 +128,11 @@ public class LiveDataFeedIndexUpdater {
         }
 	}
 	
-	public void destroy() throws CorruptIndexException, IOException {
+	public void destroy() throws CorruptIndexException, IOException, SQLException {
         for(DatabaseIndex index : indexes) {
         	indexWriters.get(index).close();
         }
+        mainDbConn.close();
 	}
 	
 	public void update() throws SQLException, IOException {
