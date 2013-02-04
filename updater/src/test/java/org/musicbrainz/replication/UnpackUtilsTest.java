@@ -1,8 +1,8 @@
-package org.musicbrainz.search.replication;
+package org.musicbrainz.replication;
 
 import java.util.Map;
 
-import org.musicbrainz.search.replication.UnpackUtils;
+import org.musicbrainz.replication.UnpackUtils;
 
 import junit.framework.TestCase;
 

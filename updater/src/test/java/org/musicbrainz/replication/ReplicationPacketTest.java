@@ -1,6 +1,7 @@
-package org.musicbrainz.search.replication;
+package org.musicbrainz.replication;
 
-import org.musicbrainz.search.replication.ReplicationPacket;
+import org.musicbrainz.replication.DatabaseOperation;
+import org.musicbrainz.replication.ReplicationPacket;
 
 import junit.framework.TestCase;
 

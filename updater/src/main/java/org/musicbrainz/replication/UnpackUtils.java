@@ -1,4 +1,4 @@
-package org.musicbrainz.search.replication;
+package org.musicbrainz.replication;
 
 import java.util.HashMap;
 import java.util.Map;

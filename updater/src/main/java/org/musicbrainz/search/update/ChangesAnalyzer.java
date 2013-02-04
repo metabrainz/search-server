@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.musicbrainz.replication.ReplicationChange;
+import org.musicbrainz.replication.ReplicationPacket;
 import org.musicbrainz.search.index.DatabaseIndex;
-import org.musicbrainz.search.replication.ReplicationChange;
-import org.musicbrainz.search.replication.ReplicationPacket;
 import org.musicbrainz.search.update.dependencies.DatabaseIndexDependencies;
 import org.musicbrainz.search.update.dependencies.DatabaseTableRelation;
 
