@@ -1,6 +1,6 @@
 package org.musicbrainz.search.servlet;
 
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.RecordingSimilarity;
 import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;

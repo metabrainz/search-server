@@ -18,7 +18,7 @@ package  org.musicbrainz.search.analysis;
  */
 
 import com.ibm.icu.text.Normalizer;
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;

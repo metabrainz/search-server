@@ -169,7 +169,7 @@ public class IssueSearch167Test {
     {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-      doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+        doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -189,7 +189,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue());
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue());
         System.out.println(explain);
       }
       assertEquals(4, topdocs.scoreDocs.length);
@@ -214,7 +214,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue());
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue());
         System.out.println(explain);
       }
       assertEquals(4, topdocs.scoreDocs.length);
@@ -244,7 +244,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue()+":"+explain);
       }
 
       org.apache.lucene.document.Document doc  = searcher.doc(topdocs.scoreDocs[0].doc);
@@ -265,7 +265,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue()+":"+explain);
       }
     } finally {
       searcherManager.release(searcher);
@@ -297,7 +297,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue()+":"+explain);
       }
 
       org.apache.lucene.document.Document doc  = searcher.doc(topdocs.scoreDocs[0].doc);
@@ -322,7 +322,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue()+":"+explain);
       }
 
       org.apache.lucene.document.Document doc  = searcher.doc(topdocs.scoreDocs[0].doc);
@@ -347,7 +347,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue()+":"+explain);
       }
 
       org.apache.lucene.document.Document doc  = searcher.doc(topdocs.scoreDocs[0].doc);
@@ -372,7 +372,7 @@ public class IssueSearch167Test {
       for(ScoreDoc match:topdocs.scoreDocs)
       {
         Explanation explain = searcher.explain(q, match.doc);
-        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getFieldable("arid").stringValue()+":"+explain);
+        System.out.println("DocNo:"+match.doc+":"+match.score+":"+searcher.doc(match.doc).getField("arid").stringValue()+":"+explain);
       }
     } finally {
       searcherManager.release(searcher);

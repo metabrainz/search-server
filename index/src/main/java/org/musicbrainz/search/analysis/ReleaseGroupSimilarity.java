@@ -30,14 +30,16 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.index.FieldInvertState;
-import org.apache.lucene.search.DefaultSimilarity;
+import org.apache.lucene.search.similarities.DefaultSimilarity;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 
 /**
  * Calculates a score for a match, overridden to deal with problems with releasegroup linked to many releases
  */
-public class ReleaseGroupSimilarity extends DefaultSimilarity {
-
+//TODO in Lucene 4.1 we can now use PerFieldSimailrityWrapper so that we only oerform this on fields that need it, with
+//current code tf() is performed on every field because we are not passed fieldname
+public class ReleaseGroupSimilarity extends DefaultSimilarity
+{
     /**
      * Calculates a value which is inversely proportional to the number of terms in the field. When multiple
      * releases are added to a release group it is seen as one field, so release groups  with many releases can be
@@ -46,22 +48,27 @@ public class ReleaseGroupSimilarity extends DefaultSimilarity {
      * But we don't want to just disable norms for release field as the number of terms in a release name
      * should effect scoring
      *
-     * @return score component
+     * @param state
+     * @return
      */
-    public float computeNorm(String field, FieldInvertState state) {
-        if (field.equals(ReleaseGroupIndexField.RELEASE)) {
+    @Override
+    public float lengthNorm(FieldInvertState state) {
+
+        if (state.getName().equals(ReleaseGroupIndexField.RELEASE.getName()))
+        {
             if(state.getLength()>=6) {
                 //Same result as normal calc if field had six terms, based on the view that most common release title
                 //is 5 terms
                 return state.getBoost() * 0.408f;
             }
-            else {
-                return super.computeNorm(field,state);
+            else
+            {
+                return super.lengthNorm(state);
             }
         }
         else
         {
-            return super.computeNorm(field,state);
+            return super.lengthNorm(state);
         }
     }
 

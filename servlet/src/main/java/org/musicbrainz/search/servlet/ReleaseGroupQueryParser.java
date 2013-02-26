@@ -31,12 +31,14 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.LuceneVersion;
+import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
 
@@ -52,7 +54,7 @@ public class ReleaseGroupQueryParser extends MultiFieldQueryParser {
     }
 
     protected Query newTermQuery(Term term) {
-        if (term.field() == ReleaseGroupIndexField.TYPE.getName()) {
+        if (term.field().equals(ReleaseGroupIndexField.TYPE.getName())) {
             try {
                 int typeId = Integer.parseInt(term.text());
                 if (typeId >= ReleaseGroupType.getMinSearchId() && typeId <= ReleaseGroupType.getMaxSearchId()) {
@@ -65,10 +67,12 @@ public class ReleaseGroupQueryParser extends MultiFieldQueryParser {
                 return super.newTermQuery(term);
 
             }
-        } else if (term.field() == ReleaseGroupIndexField.NUM_RELEASES.getName()) {
+        } else if (term.field().equals(ReleaseGroupIndexField.NUM_RELEASES.getName())) {
             try {
                 int number = Integer.parseInt(term.text());
-                TermQuery tq = new TermQuery(new Term(term.field(), NumericUtils.intToPrefixCoded(number)));
+                BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
+                NumericUtils.intToPrefixCoded(number, 0, bytes);
+                TermQuery tq = new TermQuery(new Term(term.field(), bytes.utf8ToString()));
                 return tq;
             } catch (NumberFormatException nfe) {
                 //If not provided numeric argument just leave as is, won't give matches
@@ -80,31 +84,25 @@ public class ReleaseGroupQueryParser extends MultiFieldQueryParser {
         }
     }
 
-     /**
-     *
-     * Convert Numeric Fields
-     *
-     * @param field
-     * @param part1
-     * @param part2
-     * @param inclusive
-     * @return
-     */
     @Override
     public Query newRangeQuery(String field,
                                String part1,
                                String part2,
-                               boolean inclusive) {
-
-        if (
-                (field.equals(ReleaseGroupIndexField.NUM_RELEASES.getName()))
-            )
+                               boolean startInclusive,
+                               boolean endInclusive)
+    {
+        if (field.equals(ReleaseGroupIndexField.NUM_RELEASES.getName()))
         {
-            part1 = NumericUtils.intToPrefixCoded(Integer.parseInt(part1));
-            part2 = NumericUtils.intToPrefixCoded(Integer.parseInt(part2));
+            BytesRef bytes1 = new BytesRef(NumericUtils.BUF_SIZE_INT);
+            BytesRef bytes2 = new BytesRef(NumericUtils.BUF_SIZE_INT);
+            NumericUtils.intToPrefixCoded(Integer.parseInt(part1), 0, bytes1);
+            NumericUtils.intToPrefixCoded(Integer.parseInt(part2), 0, bytes2);
+            part1 = bytes1.utf8ToString();
+            part2 = bytes2.utf8ToString();
         }
         TermRangeQuery query = (TermRangeQuery)
-                super.newRangeQuery(field, part1, part2,inclusive);
+                super.newRangeQuery(field, part1, part2, startInclusive, endInclusive);
         return query;
+
     }
 }

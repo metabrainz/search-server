@@ -6,11 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Date;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -52,7 +48,7 @@ public class IssueSearch173Test  {
     {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-      doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+        doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -60,13 +56,12 @@ public class IssueSearch173Test  {
     writer.close();
 
     IndexReader ir = IndexReader.open(ramDir);
-    TermEnum tr = ir.terms(new Term("catno",""));
-    assertNotNull(tr);
-    assertNotNull(tr.term());
-    assertEquals("catno", tr.term().field());
-    assertEquals(1, tr.docFreq());
-    assertEquals("catno", tr.term().field());
-    assertEquals("ad17t", tr.term().text());
+    Fields fields = MultiFields.getFields(ir);
+    Terms terms = fields.terms("catno");
+    TermsEnum termsEnum = terms.iterator(null);
+    termsEnum.next();
+    assertEquals(1, termsEnum.docFreq());
+    assertEquals("ad17t", termsEnum.term().utf8ToString());
 
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.RELEASE));
     ss = new ReleaseSearch(searcherManager);

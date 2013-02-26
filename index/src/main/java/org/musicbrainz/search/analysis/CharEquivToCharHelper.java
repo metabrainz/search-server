@@ -28,7 +28,7 @@
 
 package org.musicbrainz.search.analysis;
 
-import org.apache.lucene.analysis.NormalizeCharMap;
+import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
 
 /**
  * The characters in the first column are not treated as punctuation by lucenes analyzer but we want them to be
@@ -36,7 +36,7 @@ import org.apache.lucene.analysis.NormalizeCharMap;
  */
 public class CharEquivToCharHelper {
 
-    public static void addToMap(NormalizeCharMap charConvertMap)
+    public static void addToMap(NormalizeCharMap.Builder charConvertMap)
     {
 
         charConvertMap.add("’","'");

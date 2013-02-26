@@ -1,7 +1,7 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
 import org.musicbrainz.search.analysis.*;
 
@@ -10,7 +10,7 @@ import org.musicbrainz.search.analysis.*;
  */
 public enum ReleaseIndexField implements IndexField {
 	
-    ID				    ("_id",		    	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),	
+    ID				    ("_id",		    	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     AMAZON_ID		    ("asin",		    Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ARTIST_ID		    ("arid",			Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST              ("artist",          Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),

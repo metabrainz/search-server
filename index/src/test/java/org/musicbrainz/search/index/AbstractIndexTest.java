@@ -53,31 +53,38 @@ public abstract class AbstractIndexTest {
      * @throws java.io.IOException
      */
     protected void checkTerm(IndexReader ir, IndexField field, String value) throws IOException {
-        TermEnum tr = ir.terms(new Term(field.getName(), ""));
-        //Check it managed to find one (we have to do this because if it doesn't find any would return the next field)
-        assertEquals(field.getName(), tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals(value, tr.term().text());
 
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms(field.getName());
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(value,termsEnum.term().utf8ToString());
     }
 
     /** Check first term of given field, terms are listed lexigrahically
      *  Use when field is indexed. but not stored
      *
      * @param ir
-     * @param field
-     * @param value
+     * @param field the field
+     * @param value the value of the term
+     * @param index the index in the terms of the term you want to check
      * @throws IOException
      */
     protected void checkTermX(IndexReader ir, IndexField field, String value,int index) throws IOException {
-        TermEnum tr = ir.terms(new Term(field.getName(), ""));
-        //Check it managed to find one (we have to do this because if it doesn't find any would return the next field)
-        assertEquals(field.getName(), tr.term().field());
-        assertEquals(1, tr.docFreq());
-        for(int i=0;i<index;i++) {
-            tr.next();
+
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms(field.getName());
+        TermsEnum termsEnum = terms.iterator(null);
+        int count=0;
+        while(termsEnum.next()!=null)
+        {
+            if(count==index)
+            {
+                break;
+            }
+            count++;
         }
-        assertEquals(value, tr.term().text());
+        assertEquals(value,termsEnum.term().utf8ToString());
     }
 
     @Before

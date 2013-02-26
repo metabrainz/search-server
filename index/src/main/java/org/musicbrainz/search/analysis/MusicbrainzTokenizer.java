@@ -102,7 +102,7 @@ public final class MusicbrainzTokenizer extends Tokenizer {
    * See http://issues.apache.org/jira/browse/LUCENE-1068
    */
   public MusicbrainzTokenizer(Version matchVersion, Reader input) {
-    super();
+    super(input);
     this.scanner = new MusicbrainzTokenizerImpl(input);
     init(input, matchVersion);
   }
@@ -111,7 +111,7 @@ public final class MusicbrainzTokenizer extends Tokenizer {
    * Creates a new MusicbrainzTokenizer with a given {@link AttributeSource}.
    */
   public MusicbrainzTokenizer(Version matchVersion, AttributeSource source, Reader input) {
-    super(source);
+    super(source, input);
     this.scanner = new MusicbrainzTokenizerImpl(input);
     init(input, matchVersion);
   }
@@ -120,13 +120,12 @@ public final class MusicbrainzTokenizer extends Tokenizer {
    * Creates a new MusicbrainzTokenizer with a given {@link org.apache.lucene.util.AttributeSource.AttributeFactory}
    */
   public MusicbrainzTokenizer(Version matchVersion, AttributeFactory factory, Reader input) {
-    super(factory);
+    super(factory, input);
     this.scanner = new MusicbrainzTokenizerImpl(input);
     init(input, matchVersion);
   }
 
   private void init(Reader input, Version matchVersion) {
-    this.input = input;
     termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     offsetAtt = addAttribute(OffsetAttribute.class);
     posIncrAtt = addAttribute(PositionIncrementAttribute.class);
@@ -188,11 +187,5 @@ public final class MusicbrainzTokenizer extends Tokenizer {
   public void reset() throws IOException {
     super.reset();
     scanner.yyreset(input);
-  }
-
-  @Override
-  public void reset(Reader reader) throws IOException {
-    super.reset(reader);
-    reset();
   }
 }

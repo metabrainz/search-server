@@ -28,14 +28,14 @@
 
 package org.musicbrainz.search.analysis;
 
-import org.apache.lucene.analysis.NormalizeCharMap;
+import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
 
 /**
  * Certain Hebrew chars converted to western cases so matches both
  */
 public class HebrewCharMappingHelper {
 
-    public static void addToMap(NormalizeCharMap charConvertMap)
+    public static void addToMap(NormalizeCharMap.Builder charConvertMap)
     {
 
         charConvertMap.add("\u05f3","'");

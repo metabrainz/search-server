@@ -1,8 +1,10 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.KeywordTokenizer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.charfilter.MappingCharFilter;
+import org.apache.lucene.analysis.core.KeywordTokenizer;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -18,31 +20,11 @@ public class CaseInsensitiveKeywordAnalyzer extends Analyzer {
 
     }
 
-    public final TokenStream tokenStream(String fieldName,
-                                   final Reader reader) {
-        TokenStream result = new KeywordTokenizer(reader);
-        result = new LowercaseFilter(result);
-        return result;
-    }
-
-    private static final class SavedStreams {
-        KeywordTokenizer tokenStream;
-        TokenStream filteredTokenStream;
-    }
-
-    public final TokenStream reusableTokenStream(String fieldName,
-                                           final Reader reader) throws IOException {
-
-        SavedStreams streams = (SavedStreams) getPreviousTokenStream();
-        if (streams == null) {
-            streams = new SavedStreams();
-            setPreviousTokenStream(streams);
-            streams.tokenStream = new KeywordTokenizer(reader);
-            streams.filteredTokenStream = new LowercaseFilter(streams.tokenStream);
-        } else  {
-            streams.tokenStream.reset(reader);
-        }
-        return streams.filteredTokenStream;
+    @Override
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+        Tokenizer source = new KeywordTokenizer(reader);
+        TokenStream filter = new LowercaseFilter(source);
+        return new TokenStreamComponents(source, filter);
     }
 
 }

@@ -99,7 +99,7 @@ public class CDStubIndex extends DatabaseIndex {
         doc.addNonEmptyField(CDStubIndexField.DISCID, rs.getString("discid"));
         if(rs.getTimestamp("added")!=null)
         {
-            doc.addField(CDStubIndexField.ADDED, NumericUtils.longToPrefixCoded(rs.getTimestamp("added").getTime()));
+            doc.addNumericField(CDStubIndexField.ADDED, rs.getTimestamp("added").getTime());
         }
         doc.addNonEmptyField(CDStubIndexField.NUM_TRACKS, rs.getString("tracks"));
         doc.addNonEmptyField(CDStubIndexField.BARCODE, rs.getString("barcode"));

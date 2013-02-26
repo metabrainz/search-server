@@ -30,6 +30,7 @@ package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
@@ -67,7 +68,7 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
 
             String duration = doc.get(RecordingIndexField.DURATION);
             if (isNotNoValue(duration)) {
-                track.setDuration(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
+                track.setDuration(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(duration))));
             }
 
             if(doc.get(RecordingIndexField.ARTIST_CREDIT)!=null) {
@@ -105,9 +106,9 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
                     String tracks  = numTracks[i];
                     if (trackNo != null) {
                         TrackList releaseTrackList = of.createTrackList();
-                        releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackNo) - 1));
+                        releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(trackNo)) - 1));
                         if (tracks != null) {
-                            releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(tracks)));
+                            releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(tracks))));
                         }
                         release.setTrackList(releaseTrackList);
                     }

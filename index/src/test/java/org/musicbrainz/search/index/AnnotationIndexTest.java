@@ -1,18 +1,14 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
 
 import java.sql.Statement;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class AnnotationIndexTest extends AbstractIndexTest {
 
@@ -190,14 +186,14 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.ENTITY.getName()).length);
-            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getFieldable(AnnotationIndexField.ENTITY.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.NAME.getName()).length);
-            assertEquals("Crocodiles (bonus disc)", doc.getFieldable(AnnotationIndexField.NAME.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TEXT.getName()).length);
-            assertEquals("release annotation", doc.getFieldable(AnnotationIndexField.TEXT.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TYPE.getName()).length);
-            assertEquals("release", doc.getFieldable(AnnotationIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Crocodiles (bonus disc)", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("release annotation", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("release", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -218,14 +214,14 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.ENTITY.getName()).length);
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFieldable(AnnotationIndexField.ENTITY.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.NAME.getName()).length);
-            assertEquals("Crocodiles", doc.getFieldable(AnnotationIndexField.NAME.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TEXT.getName()).length);
-            assertEquals("release group annotation", doc.getFieldable(AnnotationIndexField.TEXT.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TYPE.getName()).length);
-            assertEquals("release-group", doc.getFieldable(AnnotationIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Crocodiles", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("release group annotation", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("release-group", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -245,18 +241,18 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.ENTITY.getName()).length);
-            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.getFieldable(AnnotationIndexField.ENTITY.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.NAME.getName()).length);
-            assertEquals("Farming Incident", doc.getFieldable(AnnotationIndexField.NAME.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TEXT.getName()).length);
-            assertEquals("artist annotation newer", doc.getFieldable(AnnotationIndexField.TEXT.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TYPE.getName()).length);
-            assertEquals("artist", doc.getFieldable(AnnotationIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Farming Incident", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("artist annotation newer", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("artist", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
 
             doc = ir.document(0);
             assertNotNull(doc);
-            assertEquals("1", doc.getFieldable(MetaIndexField.META.getName()).stringValue());
+            assertEquals("1", doc.getField(MetaIndexField.META.getName()).stringValue());
         }
         ir.close();
     }
@@ -276,7 +272,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         Document doc = ir.document(0);
         assertNotNull(doc);
-        assertEquals("1", doc.getFieldable(MetaIndexField.META.getName()).stringValue());
+        assertEquals("1", doc.getField(MetaIndexField.META.getName()).stringValue());
         ir.close();
     }
 
@@ -295,7 +291,7 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         Document doc = ir.document(0);
         assertNotNull(doc);
-        assertEquals("1", doc.getFieldable(MetaIndexField.META.getName()).stringValue());
+        assertEquals("1", doc.getField(MetaIndexField.META.getName()).stringValue());
         ir.close();
     }
 
@@ -314,14 +310,14 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.ENTITY.getName()).length);
-            assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getFieldable(AnnotationIndexField.ENTITY.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.NAME.getName()).length);
-            assertEquals("4AD", doc.getFieldable(AnnotationIndexField.NAME.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TEXT.getName()).length);
-            assertEquals("label annotation newer", doc.getFieldable(AnnotationIndexField.TEXT.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TYPE.getName()).length);
-            assertEquals("label", doc.getFieldable(AnnotationIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("4AD", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("label annotation newer", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("label", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -341,14 +337,14 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.ENTITY.getName()).length);
-            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getFieldable(AnnotationIndexField.ENTITY.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.NAME.getName()).length);
-            assertEquals("Do It Clean", doc.getFieldable(AnnotationIndexField.NAME.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TEXT.getName()).length);
-            assertEquals("recording annotation newer", doc.getFieldable(AnnotationIndexField.TEXT.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(AnnotationIndexField.TYPE.getName()).length);
-            assertEquals("recording", doc.getFieldable(AnnotationIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Do It Clean", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("recording annotation newer", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("recording", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }

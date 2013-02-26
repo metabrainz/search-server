@@ -28,6 +28,7 @@
 
 package org.musicbrainz.search.servlet.mmd2;
 
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
@@ -88,7 +89,7 @@ public class RecordingWriter extends ResultsWriter {
 
             String duration = doc.get(RecordingIndexField.RECORDING_DURATION_OUTPUT);
             if (duration != null) {
-                recording.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(duration)));
+                recording.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(duration))));
             }
 
             String[] isrcs              = doc.getValues(RecordingIndexField.ISRC);
@@ -191,7 +192,7 @@ public class RecordingWriter extends ResultsWriter {
                     }
 
                     if (isNotNoValue(trackDurations[i])) {
-                        track.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackDurations[i])));
+                        track.setLength(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(trackDurations[i]))));
                     }
 
                     if (isNotNoValue(trackArtistCredits[i])) {
@@ -200,8 +201,8 @@ public class RecordingWriter extends ResultsWriter {
                     }
 
                     org.musicbrainz.mmd2.Medium.TrackList releaseTrackList = of.createMediumTrackList();
-                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(trackPos[i]) - 1));
-                    releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
+                    releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(trackPos[i])) - 1));
+                    releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(numTracks[i]))));
                     releaseTrackList.getDefTrack().add(track);
                     Medium medium = of.createMedium();
                     medium.setPosition(new BigInteger(mediumPos[i]));
@@ -211,7 +212,7 @@ public class RecordingWriter extends ResultsWriter {
                         medium.setFormat(mediumFormat[i]);
                     }
                     MediumList mediumList = of.createMediumList();
-                    mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracksRelease[i])));
+                    mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(numTracksRelease[i]))));
                     mediumList.getMedium().add(medium);
                     release.setMediumList(mediumList);
                     releaseList.getRelease().add(release);

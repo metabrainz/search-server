@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
-public class ReleaseIndex extends DatabaseIndex {
+public class  ReleaseIndex extends DatabaseIndex {
 
 
     public  static final String BARCODE_NONE = "none";

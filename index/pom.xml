@@ -8,10 +8,6 @@
   <name>MusicBrainz Search Server's Index</name>
   <repositories>
     <repository>
-      <id>maven-snapshot-repository</id>
-      <url>http://people.apache.org/maven-snapshot-repository/</url>
-    </repository>
-    <repository>
       <id>juniversalchardet-repository</id>
       <url>http://projects.iplantc.org/archiva/repository/internal/</url>
     </repository>
@@ -30,8 +26,18 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <version>3.6.0</version>
+      <version>4.1.0</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers-common</artifactId>
+      <version>4.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <version>4.1.0</version>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>

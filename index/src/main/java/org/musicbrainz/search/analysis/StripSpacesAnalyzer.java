@@ -1,6 +1,12 @@
 package org.musicbrainz.search.analysis;
 
-import org.apache.lucene.analysis.*;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharFilter;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.charfilter.MappingCharFilter;
+import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
+import org.apache.lucene.analysis.core.KeywordTokenizer;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -14,41 +20,27 @@ public class StripSpacesAnalyzer extends Analyzer {
     protected NormalizeCharMap charConvertMap;
 
     protected void setCharConvertMap() {
-        charConvertMap = new NormalizeCharMap();
-        charConvertMap.add(" ","");
 
+        NormalizeCharMap.Builder builder = new NormalizeCharMap.Builder();
+        builder.add(" ","");
+        charConvertMap = builder.build();
     }
 
     public StripSpacesAnalyzer() {
         setCharConvertMap();
     }
 
-    public final TokenStream tokenStream(String fieldName,
-                                   final Reader reader) {
-        CharFilter mappingCharFilter = new MappingCharFilter(charConvertMap,reader);
-        TokenStream result = new KeywordTokenizer(mappingCharFilter);
-        result = new LowercaseFilter(result);
-        return result;
+    @Override
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+        Tokenizer source = new KeywordTokenizer(reader);
+        TokenStream filter = new LowercaseFilter(source);
+        return new TokenStreamComponents(source, filter);
     }
 
-    private static final class SavedStreams {
-        KeywordTokenizer tokenStream;
-        TokenStream filteredTokenStream;
-    }
-
-    public final TokenStream reusableTokenStream(String fieldName,
-                                           final Reader reader) throws IOException {
-
-        SavedStreams streams = (SavedStreams) getPreviousTokenStream();
-        if (streams == null) {
-            streams = new SavedStreams();
-            setPreviousTokenStream(streams);
-            streams.tokenStream = new KeywordTokenizer(new MappingCharFilter(charConvertMap, reader));
-            streams.filteredTokenStream = new LowercaseFilter(streams.tokenStream);
-        }
-        else {
-            streams.tokenStream.reset(new MappingCharFilter(charConvertMap,reader));
-        }
-        return streams.filteredTokenStream;
+    @Override
+    protected Reader initReader(String fieldName,
+                                Reader reader)
+    {
+        return new MappingCharFilter(charConvertMap, reader);
     }
 }

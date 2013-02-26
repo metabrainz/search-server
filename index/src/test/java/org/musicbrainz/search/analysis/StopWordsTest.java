@@ -2,12 +2,13 @@ package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
@@ -47,7 +48,7 @@ public class StopWordsTest
     @Test
     public void testAbleToFindStopWordsWithStandardAnalyserIfNoStopWords() throws Exception {
 
-        Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION, new HashSet());
+        Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_VERSION, CharArraySet.EMPTY_SET);
         RAMDirectory dir = new RAMDirectory();
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);

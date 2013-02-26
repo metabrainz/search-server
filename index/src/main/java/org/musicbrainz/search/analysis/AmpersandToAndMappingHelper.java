@@ -28,14 +28,15 @@
 
 package org.musicbrainz.search.analysis;
 
-import org.apache.lucene.analysis.NormalizeCharMap;
+
+import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
 
 /**
  * Treat '&' and 'and' interchangeably
  */
 public class AmpersandToAndMappingHelper {
 
-    public static void addToMap(NormalizeCharMap charConvertMap)
+    public static void addToMap(NormalizeCharMap.Builder charConvertMap)
     {
 
         charConvertMap.add("&","and");

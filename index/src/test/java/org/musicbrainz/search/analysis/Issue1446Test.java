@@ -6,7 +6,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -40,7 +40,7 @@ public class Issue1446Test {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ァ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
+        assertEquals("ァ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
 	
 
@@ -60,7 +60,7 @@ public class Issue1446Test {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ヨ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
+        assertEquals("ヨ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class Issue1446Test {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ぇ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
+        assertEquals("ぇ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class Issue1446Test {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("つ", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
+        assertEquals("つ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
 
 }

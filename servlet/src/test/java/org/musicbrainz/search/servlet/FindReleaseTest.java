@@ -16,6 +16,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -170,7 +171,7 @@ public class FindReleaseTest {
     {
       doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-      doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+      doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -203,7 +204,7 @@ public class FindReleaseTest {
     assertEquals(1, doc.getFields(ReleaseIndexField.DATE).length);
     assertEquals("2005", doc.get(ReleaseIndexField.DATE));
     assertEquals(2, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM).length);
-    assertEquals(1, NumericUtils.prefixCodedToInt(doc.get(ReleaseIndexField.NUM_DISCIDS_MEDIUM)));
+    assertEquals(1, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(ReleaseIndexField.NUM_DISCIDS_MEDIUM))));
     assertEquals("eng", doc.get(ReleaseIndexField.LANGUAGE));
     assertEquals("Latn", doc.get(ReleaseIndexField.SCRIPT));
     assertEquals("Official", doc.get(ReleaseIndexField.STATUS));

@@ -6,7 +6,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -69,8 +69,8 @@ public class AccentFilterTest  {
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
-        assertEquals("test", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
-        assertEquals("tést", searcher.doc(scoredocs[1].doc).getFieldable("name").stringValue());
+        assertEquals("test", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("tést", searcher.doc(scoredocs[1].doc).getField("name").stringValue());
     }
 
     @Test
@@ -80,8 +80,8 @@ public class AccentFilterTest  {
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
-        assertEquals("test", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
-        assertEquals("tést", searcher.doc(scoredocs[1].doc).getFieldable("name").stringValue());
+        assertEquals("test", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
+        assertEquals("tést", searcher.doc(scoredocs[1].doc).getField("name").stringValue());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class AccentFilterTest  {
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
-        assertEquals("ábcáef", searcher.doc(scoredocs[0].doc).getFieldable("name").stringValue());
+        assertEquals("ábcáef", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
                 /*
     public void testSearchAccented3() throws Exception {

@@ -20,25 +20,20 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Similarity;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -152,7 +147,7 @@ public abstract class DatabaseIndex implements Index {
 		
     	MbDocument doc = new MbDocument();
     	doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-        doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+        doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
         doc.addField(MetaIndexField.SCHEMA_SEQUENCE, info.schemaSequence);
         doc.addField(MetaIndexField.REPLICATION_SEQUENCE, info.replicationSequence);
         if (info.changeSequence != null) {

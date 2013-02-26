@@ -1,7 +1,7 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.musicbrainz.search.LuceneVersion;
@@ -20,7 +20,7 @@ public class ArtistQueryParser extends MultiFieldQueryParser {
     }
 
     protected Query newTermQuery(Term term) {
-        if (term.field() == ArtistIndexField.TYPE.getName()) {
+        if (term.field().equals(ArtistIndexField.TYPE.getName())) {
             try {
                 int typeId = Integer.parseInt(term.text());
                 if (typeId >= ArtistType.getMinSearchId() && typeId <= ArtistType.getMaxSearchId()) {

@@ -12,6 +12,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -123,7 +124,7 @@ public class FindRecordingTest {
     {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-      doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+      doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -143,9 +144,9 @@ public class FindRecordingTest {
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
 
@@ -158,9 +159,9 @@ public class FindRecordingTest {
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
     assertEquals("Gravitational Lens", doc.get(RecordingIndexField.TRACK_OUTPUT));
     assertEquals("123456789", doc.get(RecordingIndexField.ISRC));
   }
@@ -386,9 +387,9 @@ public class FindRecordingTest {
     MbDocument doc = result.doc;
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test
@@ -400,9 +401,9 @@ public class FindRecordingTest {
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test
@@ -413,9 +414,9 @@ public class FindRecordingTest {
     MbDocument doc = result.doc;
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test
@@ -426,9 +427,9 @@ public class FindRecordingTest {
     MbDocument doc = result.doc;
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test
@@ -439,9 +440,9 @@ public class FindRecordingTest {
     MbDocument doc = result.doc;
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test
@@ -452,9 +453,9 @@ public class FindRecordingTest {
     MbDocument doc = result.doc;
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test
@@ -465,9 +466,9 @@ public class FindRecordingTest {
     MbDocument doc = result.doc;
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test
@@ -479,9 +480,9 @@ public class FindRecordingTest {
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(5, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.TRACKNUM)));
+    assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
-    assertEquals(234000, NumericUtils.prefixCodedToInt(doc.get(RecordingIndexField.DURATION)));
+    assertEquals(234000, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.DURATION))));
   }
 
   @Test

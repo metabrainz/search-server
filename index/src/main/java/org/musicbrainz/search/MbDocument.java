@@ -28,12 +28,15 @@
 
 package org.musicbrainz.search;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.Index;
 import org.musicbrainz.search.index.IndexField;
+import org.musicbrainz.search.index.MetaIndexField;
+
+import java.util.Date;
 
 /** 
  * A wrapper around Lucene Document
@@ -66,6 +69,12 @@ public class MbDocument {
         doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
     }
 
+    /**
+     * Used to add database ids, just added as string because range searches ectera make no sense for them
+     *
+     * @param field
+     * @param value
+     */
     public void addField(IndexField field, int value) {
         addField(field, Integer.toString(value));
     }
@@ -77,9 +86,32 @@ public class MbDocument {
      * @param value
      */
     public void addNumericField(IndexField field, Integer value) {
-        addField(field, NumericUtils.intToPrefixCoded(value));
+
+        try
+        {
+        FieldType fieldType = new FieldType();
+        fieldType.setStored(true);
+        fieldType.setIndexed(true);
+        BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
+        NumericUtils.intToPrefixCoded(value, 0, bytes);
+        doc.add(new Field(field.getName(),bytes.utf8ToString(), fieldType));
     }
-    
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    public void addNumericField(IndexField field, Long value) {
+
+        FieldType fieldType = new FieldType();
+        fieldType.setStored(true);
+        fieldType.setIndexed(true);
+        BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_LONG);
+        NumericUtils.longToPrefixCoded(value, 0, bytes);
+        doc.add(new Field(field.getName(),bytes.utf8ToString(), fieldType));
+    }
+
     /**
      * Add field if not empty
      *
@@ -131,13 +163,18 @@ public class MbDocument {
     public String get(IndexField indexField) {
         return doc.get(indexField.getName());
     }
-    
+
+    public Number getNumericField(IndexField indexField) {
+        return doc.getField(indexField.getName()).numericValue();
+    }
+
     /** This is required to retrieve numeric data that has been encoded so that it works correctly in
      * duration ranges
      *
      * @param indexField
      * @return
      */
+    /*
     public String getAsText(IndexField indexField) {
         return String.valueOf(NumericUtils.prefixCodedToInt(doc.get(indexField.getName())));
     }
@@ -145,12 +182,13 @@ public class MbDocument {
     public Integer getAsNumber(IndexField indexField) {
         return NumericUtils.prefixCodedToInt(doc.get(indexField.getName()));
     }
+    */
 
     public String[] getValues(IndexField indexField) {
         return doc.getValues(indexField.getName());
     }
 
-    public Fieldable[] getFields(IndexField indexField) {
-        return doc.getFieldables(indexField.getName());
+    public IndexableField[] getFields(IndexField indexField) {
+        return doc.getFields(indexField.getName());
     }
 }

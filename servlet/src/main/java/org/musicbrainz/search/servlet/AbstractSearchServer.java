@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -38,18 +39,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
@@ -101,7 +105,10 @@ public abstract class AbstractSearchServer implements SearchServer {
 
       int docId = hits.scoreDocs[0].doc;
       MbDocument doc = new MbDocument(searcher.doc(docId));
-      serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(doc.get(MetaIndexField.LAST_UPDATED)));
+
+
+      String lastUpdated = doc.get(MetaIndexField.LAST_UPDATED);
+      serverLastUpdatedDate = new Date(NumericUtils.prefixCodedToLong(new BytesRef(lastUpdated)));
       dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     } catch (Exception e) {
       System.out.println(e);
@@ -198,7 +205,8 @@ public abstract class AbstractSearchServer implements SearchServer {
    * @return
    * @throws ParseException
    */
-  protected Query parseQuery(String query) throws ParseException {
+  protected Query parseQuery(String query) throws ParseException
+  {
     QueryParser parser = getParser();
     return parser.parse(query);
   }

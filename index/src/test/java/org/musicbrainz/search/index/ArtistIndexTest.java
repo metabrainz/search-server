@@ -121,20 +121,20 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(ArtistIndexField.ALIAS.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST_ID.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.SORTNAME.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.BEGIN.getName()).length);
-            assertEquals(0, doc.getFieldables(ArtistIndexField.END.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.TYPE.getName()).length);
+            assertEquals(0, doc.getFields(ArtistIndexField.ALIAS.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST_ID.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.BEGIN.getName()).length);
+            assertEquals(0, doc.getFields(ArtistIndexField.END.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
 
-            assertEquals("Farming Incident", doc.getFieldable(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.getFieldable(ArtistIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("Farming Incident", doc.getFieldable(ArtistIndexField.SORTNAME.getName()).stringValue());
-            assertEquals("1999-04", doc.getFieldable(ArtistIndexField.BEGIN.getName()).stringValue());
-            assertEquals("Group", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
+            assertEquals("Farming Incident", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
+            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.getField(ArtistIndexField.ARTIST_ID.getName()).stringValue());
+            assertEquals("Farming Incident", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
+            assertEquals("1999-04", doc.getField(ArtistIndexField.BEGIN.getName()).stringValue());
+            assertEquals("Group", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
 
@@ -151,8 +151,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.TYPE.getName()).length);
-            assertEquals("Group", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
+            assertEquals("Group", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -168,8 +168,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals("a comment", doc.getFieldable(ArtistIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
+            assertEquals("a comment", doc.getField(ArtistIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }
@@ -185,8 +185,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals(2, ir.numDocs());
             {
                 Document doc = ir.document(1);
-                assertEquals(1, doc.getFieldables(ArtistIndexField.COUNTRY.getName()).length);
-                assertEquals("af", doc.getFieldable(ArtistIndexField.COUNTRY.getName()).stringValue());
+                assertEquals(1, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
+                assertEquals("af", doc.getField(ArtistIndexField.COUNTRY.getName()).stringValue());
             }
             ir.close();
         }
@@ -203,8 +203,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
                 assertEquals(2, ir.numDocs());
                 {
                     Document doc = ir.document(1);
-                    assertEquals(1, doc.getFieldables(ArtistIndexField.IPI.getName()).length);
-                    assertEquals("10001", doc.getFieldable(ArtistIndexField.IPI.getName()).stringValue());
+                    assertEquals(1, doc.getFields(ArtistIndexField.IPI.getName()).length);
+                    assertEquals("10001", doc.getField(ArtistIndexField.IPI.getName()).stringValue());
                 }
                 ir.close();
             }
@@ -220,8 +220,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals(2, ir.numDocs());
             {
                 Document doc = ir.document(1);
-                assertEquals(1, doc.getFieldables(ArtistIndexField.COUNTRY.getName()).length);
-                assertEquals("unknown", doc.getFieldable(ArtistIndexField.COUNTRY.getName()).stringValue());
+                assertEquals(1, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
+                assertEquals("unknown", doc.getField(ArtistIndexField.COUNTRY.getName()).stringValue());
             }
             ir.close();
         }
@@ -237,8 +237,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.GENDER.getName()).length);
-            assertEquals("male", doc.getFieldable(ArtistIndexField.GENDER.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.GENDER.getName()).length);
+            assertEquals("male", doc.getField(ArtistIndexField.GENDER.getName()).stringValue());
         }
         ir.close();
     }
@@ -254,8 +254,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.GENDER.getName()).length);
-            assertEquals("unknown", doc.getFieldable(ArtistIndexField.GENDER.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.GENDER.getName()).length);
+            assertEquals("unknown", doc.getField(ArtistIndexField.GENDER.getName()).stringValue());
         }
         ir.close();
     }
@@ -271,7 +271,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(ArtistIndexField.GENDER.getName()).length);
+            assertEquals(0, doc.getFields(ArtistIndexField.GENDER.getName()).length);
         }
         ir.close();
     }
@@ -294,21 +294,21 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(4, doc.getFieldables(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST_ID.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.SORTNAME.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.BEGIN.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.END.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.TYPE.getName()).length);
+            assertEquals(4, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST_ID.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.BEGIN.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.END.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
 
-            assertEquals("Echo & The Bunnymen", doc.getFieldable(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getFieldable(ArtistIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("Echo & The Bunnymen", doc.getFieldable(ArtistIndexField.SORTNAME.getName()).stringValue());
-            assertEquals("1978", doc.getFieldable(ArtistIndexField.BEGIN.getName()).stringValue());
-            assertEquals("Group", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
-            assertEquals("a comment", doc.getFieldable(ArtistIndexField.COMMENT.getName()).stringValue());
+            assertEquals("Echo & The Bunnymen", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
+            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(ArtistIndexField.ARTIST_ID.getName()).stringValue());
+            assertEquals("Echo & The Bunnymen", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
+            assertEquals("1978", doc.getField(ArtistIndexField.BEGIN.getName()).stringValue());
+            assertEquals("Group", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
+            assertEquals("a comment", doc.getField(ArtistIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }
@@ -329,8 +329,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.BEGIN.getName()).length);
-            assertEquals("1978", doc.getFieldable(ArtistIndexField.BEGIN.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.BEGIN.getName()).length);
+            assertEquals("1978", doc.getField(ArtistIndexField.BEGIN.getName()).stringValue());
         }
         ir.close();
     }
@@ -351,8 +351,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ENDED.getName()).length);
-            assertEquals("true", doc.getFieldable(ArtistIndexField.ENDED.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.ENDED.getName()).length);
+            assertEquals("true", doc.getField(ArtistIndexField.ENDED.getName()).stringValue());
         }
         ir.close();
     }
@@ -374,8 +374,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ENDED.getName()).length);
-            assertEquals("false", doc.getFieldable(ArtistIndexField.ENDED.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.ENDED.getName()).length);
+            assertEquals("false", doc.getField(ArtistIndexField.ENDED.getName()).stringValue());
         }
         ir.close();
     }
@@ -398,8 +398,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.END.getName()).length);
-            assertEquals("1995", doc.getFieldable(ArtistIndexField.END.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.END.getName()).length);
+            assertEquals("1995", doc.getField(ArtistIndexField.END.getName()).stringValue());
         }
         ir.close();
     }
@@ -420,8 +420,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.TYPE.getName()).length);
-            assertEquals("Person", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
+            assertEquals("Person", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -443,8 +443,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals("-", doc.getFieldable(ArtistIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
+            assertEquals("-", doc.getField(ArtistIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }
@@ -466,7 +466,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(ArtistIndexField.BEGIN.getName()).length);
+            assertEquals(0, doc.getFields(ArtistIndexField.BEGIN.getName()).length);
         }
         ir.close();
     }
@@ -488,14 +488,14 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(ArtistIndexField.END.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.TYPE.getName()).length);
+            assertEquals(0, doc.getFields(ArtistIndexField.END.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
 
-            assertEquals("Siobhan Lynch", doc.getFieldable(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("ae8707b6-684c-4d4a-95c5-d117970a6dfe", doc.getFieldable(ArtistIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("Lynch, Siobhan", doc.getFieldable(ArtistIndexField.SORTNAME.getName()).stringValue());
-            assertEquals("Person", doc.getFieldable(ArtistIndexField.TYPE.getName()).stringValue());
+            assertEquals("Siobhan Lynch", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
+            assertEquals("ae8707b6-684c-4d4a-95c5-d117970a6dfe", doc.getField(ArtistIndexField.ARTIST_ID.getName()).stringValue());
+            assertEquals("Lynch, Siobhan", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
+            assertEquals("Person", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -516,10 +516,10 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.SORTNAME.getName()).length);
-            assertEquals("Siobhan Lynch", doc.getFieldable(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("Lynch, Siobhan", doc.getFieldable(ArtistIndexField.SORTNAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
+            assertEquals("Siobhan Lynch", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
+            assertEquals("Lynch, Siobhan", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
         }
         ir.close();
     }
@@ -541,11 +541,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.TAG.getName()).length);
-            assertEquals("Goth", doc.getFieldable(ArtistIndexField.TAG.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(ArtistIndexField.TAGCOUNT.getName()).length);
-            assertEquals("10", doc.getFieldable(ArtistIndexField.TAGCOUNT.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.TAG.getName()).length);
+            assertEquals("Goth", doc.getField(ArtistIndexField.TAG.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.TAGCOUNT.getName()).length);
+            assertEquals("10", doc.getField(ArtistIndexField.TAGCOUNT.getName()).stringValue());
         }
         ir.close();
     }
@@ -566,9 +566,9 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ALIAS.getName()).length);
-            assertEquals("S Lynch", doc.getFieldable(ArtistIndexField.ALIAS.getName()).stringValue());
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.ALIAS.getName()).length);
+            assertEquals("S Lynch", doc.getField(ArtistIndexField.ALIAS.getName()).stringValue());
 
         }
         ir.close();
@@ -590,8 +590,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(0, doc.getFieldables(ArtistIndexField.ALIAS.getName()).length);
+            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
+            assertEquals(0, doc.getFields(ArtistIndexField.ALIAS.getName()).length);
         }
         ir.close();
     }
@@ -611,8 +611,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(1, ir.numDocs());
         {
             Document doc = ir.document(0);
-            assertEquals("42459", doc.getFieldable(MetaIndexField.REPLICATION_SEQUENCE.getName()).stringValue());
-            assertEquals("12", doc.getFieldable(MetaIndexField.SCHEMA_SEQUENCE.getName()).stringValue());
+            assertEquals("42459", doc.getField(MetaIndexField.REPLICATION_SEQUENCE.getName()).stringValue());
+            assertEquals("12", doc.getField(MetaIndexField.SCHEMA_SEQUENCE.getName()).stringValue());
         }
     }
 }

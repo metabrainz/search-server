@@ -29,6 +29,7 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.index.IndexableField;
 import org.musicbrainz.search.MbDocument;
 
 import java.util.HashSet;
@@ -56,7 +57,10 @@ public class LabelBoostDoc {
 
     public static void boost(String labelGuid, MbDocument doc) {
         if(labelGuIdSet.contains(labelGuid)) {
-            doc.getLuceneDocument().setBoost(DOC_BOOST);
+            for(IndexableField field:doc.getLuceneDocument().getFields())
+            {
+                //TODO FIXME Doc Boost: field.boost()
+            }
         }
     }
 

@@ -30,39 +30,42 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.index.FieldInvertState;
-import org.apache.lucene.search.DefaultSimilarity;
+import org.apache.lucene.index.Norm;
+import org.apache.lucene.search.similarities.DefaultSimilarity;
 
 /**
  * Calculates a score for a match, overridden to deal with problems with alias fields in artist and label indexes
  */
-public class MusicbrainzSimilarity extends DefaultSimilarity {
-
-    /**
+//TODO in Lucene 4.1 we can now use PerFieldSimailrityWrapper so that we only oerform this on fields that need it, with
+//current code tf() is performed on every field because we are not passed fieldname
+public class MusicbrainzSimilarity extends DefaultSimilarity
+{
+   /**
      * Calculates a value which is inversely proportional to the number of terms in the field. When multiple
      * aliases are added to an artist (or label) it is seen as one field, so artists with many aliases can be
      * disadvantaged against when the matching alias is radically different to other aliases.
      *
-     * @return score component
+     * @param state
+     * @return
      */
-    public float computeNorm(String field, FieldInvertState state) {
+    @Override
+    public float lengthNorm(FieldInvertState state) {
 
-        //This will match both artist and label aliases and is applicable to both, didn't use the constant
-        //ArtistIndexField.ALIAS because that would be confusing
-        if (field.equals("alias")) {
-            if(state.getLength()>=3)
-            {
+        if (state.getName().equals("alias"))
+        {
+            if(state.getLength()>=3) {
                 return state.getBoost() * 0.578f; //Same result as normal calc if field had three terms the most common scenario
             }
-            else {
-                return super.computeNorm(field,state);
+            else
+            {
+                return super.lengthNorm(state);
             }
         }
         else
         {
-            return super.computeNorm(field,state);
+            return super.lengthNorm(state);
         }
     }
-
 
     /**
      * This method calculates a value based on how many times the search term was found in the field. Because

@@ -121,7 +121,7 @@ public class FindReleaseGroupTest {
     {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-      doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+      doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
       writer.addDocument(doc.getLuceneDocument());
     }
 

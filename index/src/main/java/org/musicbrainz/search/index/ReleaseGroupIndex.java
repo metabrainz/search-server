@@ -31,14 +31,17 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class ReleaseGroupIndex extends DatabaseIndex {
 

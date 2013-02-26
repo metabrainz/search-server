@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.SearcherManager;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.TagIndexField;
@@ -45,7 +45,8 @@ public class TagSearch extends AbstractSearchServer {
   }
 
   @Override
-  protected String printExplainHeader(Document doc) throws IOException, ParseException {
+  protected String printExplainHeader(Document doc) throws IOException, ParseException
+  {
     return doc.get(TagIndexField.ID.getName()) + ':' + doc.get(TagIndexField.TAG.getName()) + '\n';
   }
 

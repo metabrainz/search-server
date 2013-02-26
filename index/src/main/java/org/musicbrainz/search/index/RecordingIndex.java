@@ -23,7 +23,7 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.RecordingSimilarity;

@@ -213,15 +213,7 @@ public class IndexBuilder
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
 
-        FSDirectory fsDir;
-        if(options.isDebug())
-        {
-            fsDir = new TrackingFSDirectory(new File(path));
-        }
-        else
-        {
-            fsDir = FSDirectory.open(new File(path), NoLockFactory.getNoLockFactory() );
-        }
+        FSDirectory fsDir = FSDirectory.open(new File(path), NoLockFactory.getNoLockFactory() );
 
         IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -281,14 +273,7 @@ public class IndexBuilder
         }
         finally
         {
-            if(options.isDebug())
-            {
-                if(indexWriter.getDirectory() instanceof TrackingFSDirectory)
-                {
-                    System.out.println(index.getName()+":Max File Descriptors:"+((TrackingFSDirectory)indexWriter.getDirectory()).getMaxFilesDescriptorsOpen());
-                }
 
-            }
         }
     }
 
@@ -320,8 +305,6 @@ public class IndexBuilder
 
         index.addMetaInformation(indexWriter);
         index.indexData(indexWriter);
-
-        indexWriter.optimize();
         indexWriter.close();
         System.out.println(index.getName()+":Finished:" + Utils.formatClock(clock));
 
@@ -365,8 +348,6 @@ public class IndexBuilder
                 clock.start();
                 String path = options.getIndexesDir() + index.getFilename();
                 System.out.println(index.getName()+":Started Optimization at "+Utils.formatCurrentTimeForOutput());
-
-                indexWriter.optimize();
                 indexWriter.close();
                 clock.stop();
                 // For debugging to check sql is not creating too few/many rows

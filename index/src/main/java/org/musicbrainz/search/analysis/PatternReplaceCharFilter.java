@@ -20,8 +20,9 @@
 
 package org.musicbrainz.search.analysis;
 
-import org.apache.lucene.analysis.BaseCharFilter;
-import org.apache.lucene.analysis.CharStream;
+
+import org.apache.lucene.analysis.charfilter.BaseCharFilter;
+import org.apache.lucene.analysis.charfilter.MappingCharFilter;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -51,7 +52,8 @@ import java.util.regex.Pattern;
  * @version $Id$
  * @since Solr 1.5
  */
-public class PatternReplaceCharFilter extends BaseCharFilter {
+public class PatternReplaceCharFilter extends BaseCharFilter
+{
 
   private final Pattern pattern;
   private final String replacement;
@@ -66,26 +68,26 @@ public class PatternReplaceCharFilter extends BaseCharFilter {
   private String replaceBlockBuffer;
   private int replaceBlockBufferOffset;
 
-  public PatternReplaceCharFilter( String pattern, String replacement, CharStream in ){
+  public PatternReplaceCharFilter( String pattern, String replacement, MappingCharFilter in ){
     this( Pattern.compile(pattern), replacement, DEFAULT_MAX_BLOCK_CHARS, null, in );
   }
 
-  public PatternReplaceCharFilter( Pattern pattern, String replacement, CharStream in ){
+  public PatternReplaceCharFilter( Pattern pattern, String replacement, MappingCharFilter in ){
     this( pattern, replacement, DEFAULT_MAX_BLOCK_CHARS, null, in );
   }
 
   public PatternReplaceCharFilter(Pattern pattern, String replacement,
-      int maxBlockChars, CharStream in ){
+      int maxBlockChars, MappingCharFilter in ){
     this( pattern, replacement, maxBlockChars, null, in );
   }
 
   public PatternReplaceCharFilter( Pattern pattern, String replacement,
-      String blockDelimiters, CharStream in ){
+      String blockDelimiters, MappingCharFilter in ){
     this( pattern, replacement, DEFAULT_MAX_BLOCK_CHARS, blockDelimiters, in );
   }
 
   public PatternReplaceCharFilter( Pattern pattern, String replacement,
-      int maxBlockChars, String blockDelimiters, CharStream in ){
+      int maxBlockChars, String blockDelimiters, MappingCharFilter in ){
     super( in );
     this.pattern = pattern;
     this.replacement = replacement;

@@ -66,18 +66,18 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(CDStubIndexField.ARTIST.getName()).length);
-            assertEquals("artist",doc.getFieldable(CDStubIndexField.ARTIST.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(CDStubIndexField.TITLE.getName()).length);
-            assertEquals("title",doc.getFieldable(CDStubIndexField.TITLE.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(CDStubIndexField.BARCODE.getName()).length);
-            assertEquals("123456789",doc.getFieldable(CDStubIndexField.BARCODE.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(CDStubIndexField.COMMENT.getName()).length);
-            assertEquals("a comment",doc.getFieldable(CDStubIndexField.COMMENT.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(CDStubIndexField.NUM_TRACKS.getName()).length);
-            assertEquals(1, doc.getFieldables(CDStubIndexField.DISCID.getName()).length);
-            assertEquals("1",doc.getFieldable(CDStubIndexField.NUM_TRACKS.getName()).stringValue());
-            assertEquals("discid",doc.getFieldable(CDStubIndexField.DISCID.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.ARTIST.getName()).length);
+            assertEquals("artist",doc.getField(CDStubIndexField.ARTIST.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.TITLE.getName()).length);
+            assertEquals("title",doc.getField(CDStubIndexField.TITLE.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.BARCODE.getName()).length);
+            assertEquals("123456789",doc.getField(CDStubIndexField.BARCODE.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals("a comment",doc.getField(CDStubIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.NUM_TRACKS.getName()).length);
+            assertEquals(1, doc.getFields(CDStubIndexField.DISCID.getName()).length);
+            assertEquals("1",doc.getField(CDStubIndexField.NUM_TRACKS.getName()).stringValue());
+            assertEquals("discid",doc.getField(CDStubIndexField.DISCID.getName()).stringValue());
 
         }
         ir.close();
@@ -95,8 +95,8 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(CDStubIndexField.ARTIST.getName()).length);
-            assertEquals("artist",doc.getFieldable(CDStubIndexField.ARTIST.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.ARTIST.getName()).length);
+            assertEquals("artist",doc.getField(CDStubIndexField.ARTIST.getName()).stringValue());
         }
         ir.close();
 
@@ -113,7 +113,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(CDStubIndexField.ARTIST.getName()).length);
+            assertEquals(0, doc.getFields(CDStubIndexField.ARTIST.getName()).length);
         }
         ir.close();
 
@@ -130,8 +130,8 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(CDStubIndexField.BARCODE.getName()).length);
-            assertEquals("123456789",doc.getFieldable(CDStubIndexField.BARCODE.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.BARCODE.getName()).length);
+            assertEquals("123456789",doc.getField(CDStubIndexField.BARCODE.getName()).stringValue());
         }
         ir.close();
 
@@ -148,7 +148,7 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(CDStubIndexField.BARCODE.getName()).length);
+            assertEquals(0, doc.getFields(CDStubIndexField.BARCODE.getName()).length);
         }
         ir.close();
 
@@ -165,8 +165,8 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(CDStubIndexField.COMMENT.getName()).length);
-            assertEquals("a comment",doc.getFieldable(CDStubIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals("a comment",doc.getField(CDStubIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
 
@@ -183,8 +183,8 @@ public class CDStubIndexTest extends AbstractIndexTest{
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(CDStubIndexField.COMMENT.getName()).length);
-            assertEquals("-",doc.getFieldable(CDStubIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFields(CDStubIndexField.COMMENT.getName()).length);
+            assertEquals("-",doc.getField(CDStubIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
 

@@ -2,11 +2,12 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.RecordingIndexField;
@@ -24,26 +25,22 @@ public class RecordingQueryParser extends MultiFieldQueryParser {
         super(LuceneVersion.LUCENE_VERSION, strings, a);
     }
 
-    /**
-     * Convert Numeric Fields
-     *
-     * @param term
-     * @return
-     */
     @Override
     protected Query newTermQuery(Term term) {
         if (
-                (term.field() == RecordingIndexField.DURATION.getName()) ||
-                        (term.field() == RecordingIndexField.QUANTIZED_DURATION.getName()) ||
-                        (term.field() == RecordingIndexField.TRACKNUM.getName()) ||
-                        (term.field() == RecordingIndexField.NUM_TRACKS.getName()) ||
-                        (term.field() == RecordingIndexField.NUM_TRACKS_RELEASE.getName())
+                (term.field().equals(RecordingIndexField.DURATION.getName())) ||
+                        (term.field().equals(RecordingIndexField.QUANTIZED_DURATION.getName())) ||
+                        (term.field().equals(RecordingIndexField.TRACKNUM.getName())) ||
+                        (term.field().equals(RecordingIndexField.NUM_TRACKS.getName())) ||
+                        (term.field().equals(RecordingIndexField.NUM_TRACKS_RELEASE.getName()))
                                                 )
                 {
             try
             {
                 int number = Integer.parseInt(term.text());
-                TermQuery tq = new TermQuery(new Term(term.field(), NumericUtils.intToPrefixCoded(number)));
+                BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
+                NumericUtils.intToPrefixCoded(number, 0, bytes);
+                TermQuery tq = new TermQuery(new Term(term.field(), bytes.utf8ToString()));
                 return tq;
             }
             catch (NumberFormatException nfe) {
@@ -51,7 +48,7 @@ public class RecordingQueryParser extends MultiFieldQueryParser {
                 return super.newTermQuery(term);
             }
 
-        } else if( term.field() == RecordingIndexField.RELEASE_TYPE.getName()) {
+        } else if( term.field().equals(RecordingIndexField.RELEASE_TYPE.getName())) {
             try {
                 int typeId = Integer.parseInt(term.text());
                 if (typeId >= ReleaseGroupType.getMinSearchId() && typeId <= ReleaseGroupType.getMaxSearchId()) {
@@ -72,14 +69,6 @@ public class RecordingQueryParser extends MultiFieldQueryParser {
         }
     }
 
-    /**
-     * In V1 would search by track field, now been changed to recording, but need to support the old field
-     *
-     * @param field
-     * @param queryText
-     * @return
-     * @throws ParseException
-     */
     @Override
     protected Query getFieldQuery(String field, String queryText,boolean quoted)  throws ParseException {
         if(field!=null) {
@@ -106,35 +95,34 @@ public class RecordingQueryParser extends MultiFieldQueryParser {
         return super.getFieldQuery(field,queryText, slop);
     }
 
-    /**
-     *
-     * Convert Numeric Fields
-     *
-     * @param field
-     * @param part1
-     * @param part2
-     * @param inclusive
-     * @return
-     */
+
     @Override
     public Query newRangeQuery(String field,
                                String part1,
                                String part2,
-                               boolean inclusive) {
-
+                               boolean startInclusive,
+                               boolean endInclusive)
+    {
         if (
                 (field.equals(RecordingIndexField.DURATION.getName())) ||
                 (field.equals(RecordingIndexField.QUANTIZED_DURATION.getName())) ||
                 (field.equals(RecordingIndexField.TRACKNUM.getName())) ||
                 (field.equals(RecordingIndexField.NUM_TRACKS.getName())) ||
                 (field.equals(RecordingIndexField.NUM_TRACKS_RELEASE.getName()))
-            )
+                )
         {
-            part1 = NumericUtils.intToPrefixCoded(Integer.parseInt(part1));
-            part2 = NumericUtils.intToPrefixCoded(Integer.parseInt(part2));
+            BytesRef bytes1 = new BytesRef(NumericUtils.BUF_SIZE_INT);
+            BytesRef bytes2 = new BytesRef(NumericUtils.BUF_SIZE_INT);
+            NumericUtils.intToPrefixCoded(Integer.parseInt(part1), 0, bytes1);
+            NumericUtils.intToPrefixCoded(Integer.parseInt(part2), 0, bytes2);
+            part1 = bytes1.utf8ToString();
+            part2 = bytes2.utf8ToString();
         }
         TermRangeQuery query = (TermRangeQuery)
-                super.newRangeQuery(field, part1, part2,inclusive);
+                super.newRangeQuery(field, part1, part2, startInclusive, endInclusive);
         return query;
+
     }
+
 }
+

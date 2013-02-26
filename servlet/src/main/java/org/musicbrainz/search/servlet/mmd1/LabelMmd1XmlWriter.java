@@ -30,6 +30,7 @@ package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.LabelIndexField;
@@ -65,7 +66,7 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
 
             String code = doc.get(LabelIndexField.CODE);
             if (isNotNoValue(code)) {
-                label.setLabelCode(BigInteger.valueOf(NumericUtils.prefixCodedToInt(code)));
+                label.setLabelCode(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(code))));
             }
 
             String sortname = doc.get(LabelIndexField.SORTNAME);

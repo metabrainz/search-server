@@ -35,7 +35,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
@@ -267,8 +267,8 @@ public class Issue24Test {
                 System.out.println(topDocs.scoreDocs[1].score+":"+topDocs.scoreDocs[1].doc);
                 System.out.println(searcher.explain(q,topDocs.scoreDocs[0].doc));
                 System.out.println(searcher.explain(q,topDocs.scoreDocs[1].doc));
-                assertTrue(((topDocs.scoreDocs[0].score / topDocs.scoreDocs[1].score) * 100 - 100) < 50);
                 System.out.println("With Fix: Diff "+((topDocs.scoreDocs[0].score / topDocs.scoreDocs[1].score) * 100 - 100) +"%");
+                assertTrue(((topDocs.scoreDocs[0].score / topDocs.scoreDocs[1].score) * 100 - 100) < 50);
 
 
             }

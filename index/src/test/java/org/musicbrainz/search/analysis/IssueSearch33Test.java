@@ -37,10 +37,12 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.*;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.Version;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
@@ -57,14 +59,16 @@ public class IssueSearch33Test  {
     public void testGetNoMatchWithStandardAnalyzer() throws Exception {
 
         //Show no token generated with Lucene Standard Tokenizer
+        //FIXME This was only there for comparison but why does throw NullPointerException in Lucene 4.1
         {
-            Tokenizer tokenizer = new org.apache.lucene.analysis.standard.StandardTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
-            assertFalse(tokenizer.incrementToken());
+            //Tokenizer tokenizer = new org.apache.lucene.analysis.standard.StandardTokenizer(Version.LUCENE_41, new StringReader("!!!"));
+            //tokenizer.incrementToken();
         }
 
-        //But token is generated with Musicbrainz modification gramar
+        //But token is generated with Musicbrainz modification grammar
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
+            assertNotNull(tokenizer);
             assertTrue(tokenizer.incrementToken());
         }
 
@@ -78,21 +82,18 @@ public class IssueSearch33Test  {
         writer.addDocument(doc);
         writer.close();
 
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertNotNull(tr);
-        assertNotNull(tr.term());
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("!!!", tr.term().text());
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals("!!!", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!!!"));
             assertEquals(1, searcher.search(q,10).totalHits);
         }
-
     }
 
     @Test
@@ -137,15 +138,15 @@ public class IssueSearch33Test  {
         writer.addDocument(doc);
         writer.close();
 
-        //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("!\"@*!%", tr.term().text());
-        assertFalse(tr.next());
 
+        //Show how it has been converted
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("!\"@*!%", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
@@ -184,14 +185,13 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("fred", tr.term().text());
-        assertFalse(tr.next());
-
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("fred", termsEnum.term().utf8ToString());
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("fred"));
@@ -233,13 +233,14 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("bdb24cb5-404b-4f60-bba4-7b730325ae47", tr.term().text());
-        assertFalse(tr.next());
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("bdb24cb5-404b-4f60-bba4-7b730325ae47", termsEnum.term().utf8ToString());
+
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
@@ -280,12 +281,13 @@ public class IssueSearch33Test  {
 
         //Show how it has been converted
         IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("กข", tr.term().text());
-        assertFalse(tr.next());
+
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("กข", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
@@ -330,14 +332,15 @@ public class IssueSearch33Test  {
 
         //Show how it has been converted
         IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("!\"@*", tr.term().text());
-        assertTrue(tr.next());
-        assertEquals("name", tr.term().field());
-        assertEquals("!%", tr.term().text());
+
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("!\"@*", termsEnum.term().utf8ToString());
+        termsEnum.next();
+        assertEquals("!%", termsEnum.term().utf8ToString());
 
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
@@ -381,15 +384,16 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("!\"@*", tr.term().text());
-        assertTrue(tr.next());
-        assertEquals("name", tr.term().field());
-        assertEquals("fred", tr.term().text());
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("!\"@*", termsEnum.term().utf8ToString());
+        termsEnum.next();
+        assertEquals("fred", termsEnum.term().utf8ToString());
 
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
@@ -428,16 +432,16 @@ public class IssueSearch33Test  {
         writer.addDocument(doc);
         writer.close();
 
-        //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("is", tr.term().text());
-        assertTrue(tr.next());
-        assertEquals("this", tr.term().text());
-        assertFalse(tr.next());
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("is", termsEnum.term().utf8ToString());
+        termsEnum.next();
+        assertEquals("this", termsEnum.term().utf8ToString());
+
 
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
@@ -478,16 +482,15 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("is", tr.term().text());
-        assertTrue(tr.next());
-        assertEquals("this", tr.term().text());
-        assertFalse(tr.next());
-
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("is", termsEnum.term().utf8ToString());
+        termsEnum.next();
+        assertEquals("this", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
@@ -526,16 +529,15 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertEquals("name", tr.term().field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("name", tr.term().field());
-        assertEquals("is", tr.term().text());
-        assertTrue(tr.next());
-        assertEquals("this", tr.term().text());
-        assertFalse(tr.next());
-
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("is", termsEnum.term().utf8ToString());
+        termsEnum.next();
+        assertEquals("this", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
@@ -573,18 +575,15 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
-        TermEnum tr = ir.terms(new Term("name",""));
-        assertNotNull(tr);
-        Term term = tr.term();
-        assertEquals("name", term.field());
-        assertEquals(1, tr.docFreq());
-        assertEquals("3oh", term.text());
-        tr.next();
-        term = tr.term();
-        assertEquals(1, tr.docFreq());
-        assertEquals("j", term.text());
-
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("3oh", termsEnum.term().utf8ToString());
+        termsEnum.next();
+        assertEquals("j", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {

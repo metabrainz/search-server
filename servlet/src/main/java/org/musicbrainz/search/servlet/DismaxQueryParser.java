@@ -31,8 +31,12 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.similarities.DefaultSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
@@ -50,7 +54,8 @@ public class DismaxQueryParser {
 
     public DismaxQueryParser(org.apache.lucene.analysis.Analyzer analyzer) {
         dqp = new DisjunctionQueryParser(IMPOSSIBLE_FIELD_NAME, analyzer);
-        dqp.setMultiTermRewriteMethod(new MultiTermUseIdfOfSearchTerm(100));
+        //TODO FIXME
+        //dqp.setMultiTermRewriteMethod(new MultiTermUseIdfOfSearchTerm(100));
     }
 
     /**
@@ -59,10 +64,9 @@ public class DismaxQueryParser {
      *
      * @param query
      * @return
-     * @throws org.apache.lucene.queryParser.ParseException
      *
      */
-    public Query parse(String query) throws org.apache.lucene.queryParser.ParseException {
+    public Query parse(String query) throws org.apache.lucene.queryparser.classic.ParseException {
 
         Query term = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":(" + query + ")");
         Query phrase = dqp.parse(DismaxQueryParser.IMPOSSIBLE_FIELD_NAME + ":\"" + query + "\"");
@@ -119,9 +123,10 @@ public class DismaxQueryParser {
             aliases.put(field, dismaxAlias);
         }
 
-        //Rewrite Method used by Prefix Search and Fuzzy Search, use idf of the original term
-        MultiTermQuery.RewriteMethod fuzzyAndPrefixQueryRewriteMethod
-                = new MultiTermUseIdfOfSearchTerm(200);
+        // TODO FIXME _ Unable to create rewrite using original idf
+        // Rewrite Method used by Prefix Search and Fuzzy Search, use idf of the original term
+        //MultiTermQuery.RewriteMethod fuzzyAndPrefixQueryRewriteMethod
+        //        = new MultiTermUseIdfOfSearchTerm(200);
 
         protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
             if (querySub != null) {
@@ -141,16 +146,19 @@ public class DismaxQueryParser {
         }
 
         @Override
+        //TODO FIXME was using a FLOAT similarity value of 0.5 but now chnaged to integral
         protected Query getFuzzyQuery(String field, String termStr, float minSimilarity) {
             Term t = new Term(field, termStr);
-            FuzzyQuery fq = new FuzzyQuery(t, minSimilarity, MIN_FIELD_LENGTH_TO_MAKE_FUZZY);
-            fq.setRewriteMethod(fuzzyAndPrefixQueryRewriteMethod);
+            FuzzyQuery fq = new FuzzyQuery(t,  2, MIN_FIELD_LENGTH_TO_MAKE_FUZZY);
+            //TODO FIXME
+            //fq.setRewriteMethod(fuzzyAndPrefixQueryRewriteMethod);
             return fq;
         }
 
 
         protected Query getFieldQuery(String field, String queryText, boolean quoted)
-                throws org.apache.lucene.queryParser.ParseException {
+                throws ParseException
+        {
             //If field is an alias
             if (aliases.containsKey(field)) {
 
@@ -208,23 +216,19 @@ public class DismaxQueryParser {
          */
         protected Query newPrefixQuery(Term prefix){
             PrefixQuery query = new PrefixQuery(prefix);
-            query.setRewriteMethod(fuzzyAndPrefixQueryRewriteMethod);
+            //TODO FIXME
+            //query.setRewriteMethod(fuzzyAndPrefixQueryRewriteMethod);
             return query;
         }
     }
 
+    /*
+    TODO FIXME WAS Overriding methods that are now final
     public static class MultiTermUseIdfOfSearchTerm<Q extends DisjunctionMaxQuery> extends TopTermsRewrite<Query> {
 
     //public static final class MultiTermUseIdfOfSearchTerm extends TopTermsRewrite<BooleanQuery> {
-        private final Similarity similarity;
+        private final TFIDFSimilarity similarity;
 
-        /**
-         * Create a TopTermsScoringBooleanQueryRewrite for
-         * at most <code>size</code> terms.
-         * <p>
-         * NOTE: if {@link BooleanQuery#getMaxClauseCount} is smaller than
-         * <code>size</code>, then it will be used instead.
-         */
         public MultiTermUseIdfOfSearchTerm(int size) {
             super(size);
             this.similarity = new DefaultSimilarity();
@@ -280,4 +284,5 @@ public class DismaxQueryParser {
         }
 
     }
+    */
 }

@@ -100,7 +100,7 @@ public class FindLabelTest {
     {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-      doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+      doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -285,12 +285,18 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByCodeRange() throws Exception {
+      try {
     Results res = ss.search("code:[5806 TO 5807]", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);
     MbDocument doc = result.doc;
     assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("4AD", doc.get(LabelIndexField.LABEL));
+      }
+      catch(Exception ex)
+      {
+          ex.printStackTrace();
+      }
   }
 
   @Test

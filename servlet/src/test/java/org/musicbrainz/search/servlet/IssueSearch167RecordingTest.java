@@ -124,7 +124,7 @@ public class IssueSearch167RecordingTest {
     {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
-      doc.addField(MetaIndexField.LAST_UPDATED, NumericUtils.longToPrefixCoded(new Date().getTime()));
+      doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -152,7 +152,7 @@ public class IssueSearch167RecordingTest {
       for (ScoreDoc match : topdocs.scoreDocs) {
         Explanation explain = searcher.explain(q, match.doc);
         System.out.println("DocNo:" + match.doc + ":" + match.score + ":"
-            + searcher.doc(match.doc).getFieldable("rid").stringValue());
+            + searcher.doc(match.doc).getField("rid").stringValue());
         System.out.println(explain);
       }
       assertEquals(3, topdocs.scoreDocs.length);

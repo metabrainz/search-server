@@ -20,10 +20,7 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.index.*;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
@@ -32,6 +29,7 @@ import org.musicbrainz.mmd2.ArtistCredit;
 import java.sql.Statement;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
@@ -202,11 +200,11 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
-            assertEquals("Crocodiles", doc.getFieldable(ReleaseGroupIndexField.RELEASEGROUP.getName()).stringValue());
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFieldable(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASE.getName()).length);
-            assertEquals("Crocodiles (bonus disc)", doc.getFieldable(ReleaseGroupIndexField.RELEASE.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
+            assertEquals("Crocodiles", doc.getField(ReleaseGroupIndexField.RELEASEGROUP.getName()).stringValue());
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseGroupIndexField.RELEASEGROUP_ID.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASE.getName()).length);
+            assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseGroupIndexField.RELEASE.getName()).stringValue());
             checkTerm(ir,ReleaseGroupIndexField.ARTIST_ID,"ccd4879c-5e88-4385-b131-bf65296bf245");
 
 
@@ -232,7 +230,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
             checkTerm(ir,ReleaseGroupIndexField.ARTIST_NAME,"aliastest");
             checkTermX(ir,ReleaseGroupIndexField.ARTIST_NAME,"and", 1);
             checkTermX(ir,ReleaseGroupIndexField.ARTIST_NAME,"bunnymen", 2);
@@ -255,12 +253,12 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals("Album", doc.getFieldable(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
-            assertEquals("Album", doc.getFieldable(ReleaseGroupIndexField.TYPE.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TYPE.getName()).length);
+            assertEquals("Album", doc.getField(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
+            assertEquals("Album", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
 
-            assertEquals("Album", doc.getFieldable(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).stringValue());
+            assertEquals("Album", doc.getField(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -276,8 +274,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.COMMENT.getName()).length);
-            assertEquals("demo", doc.getFieldable(ReleaseGroupIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.COMMENT.getName()).length);
+            assertEquals("demo", doc.getField(ReleaseGroupIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }
@@ -292,16 +290,12 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         IndexReader ir = IndexReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            TermEnum tr = ir.terms(new Term(ReleaseGroupIndexField.NUM_RELEASES.getName(), ""));
-            assertEquals(ReleaseGroupIndexField.NUM_RELEASES.getName(), tr.term().field());
-            assertEquals(1, tr.docFreq());
-            assertEquals(1, NumericUtils.prefixCodedToInt(tr.term().text()));
-            tr.next();
+            Fields fields = MultiFields.getFields(ir);
+            Terms terms = fields.terms(ReleaseGroupIndexField.NUM_RELEASES.getName());
+            TermsEnum termsEnum = terms.iterator(null);
+            termsEnum.next();
+            assertEquals(1, NumericUtils.prefixCodedToInt(termsEnum.term()));
         }
-        ir.close();
-
-
     }
 
     @Test
@@ -342,8 +336,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TYPE.getName()).length);
-            assertEquals("nat", doc.getFieldable(ReleaseGroupIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
+            assertEquals("nat", doc.getField(ReleaseGroupIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -365,9 +359,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(2, doc.getFieldables(ReleaseGroupIndexField.RELEASE.getName()).length);
-            String val1 = doc.getFieldables(ReleaseGroupIndexField.RELEASE.getName())[0].stringValue();
-            String val2 = doc.getFieldables(ReleaseGroupIndexField.RELEASE.getName())[1].stringValue();
+            assertEquals(2, doc.getFields(ReleaseGroupIndexField.RELEASE.getName()).length);
+            String val1 = doc.getFields(ReleaseGroupIndexField.RELEASE.getName())[0].stringValue();
+            String val2 = doc.getFields(ReleaseGroupIndexField.RELEASE.getName())[1].stringValue();
 
             assertTrue("Crocodiles (Bonus disc)".equals(val1) || "Crocodiles (Bonus disc)".equals(val2));
             assertTrue("Crocodiles (Special disc)".equals(val1) || "Crocodiles (Special disc)".equals(val2));
@@ -387,42 +381,47 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
 
-            TermEnum tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_NAME.getName(), ""));
-            assertEquals(ReleaseGroupIndexField.ARTIST_NAME.getName(), tr.term().field());
+
+            Fields fields = MultiFields.getFields(ir);
+            Terms terms = fields.terms(ReleaseGroupIndexField.ARTIST_NAME.getName());
+            TermsEnum tr = terms.iterator(null);
+            tr.next();
             assertEquals(1, tr.docFreq());
-            assertEquals("cincinnati", tr.term().text());
+            assertEquals("cincinnati", tr.term().utf8ToString());
             tr.next();
-            assertEquals("erich", tr.term().text());
+            assertEquals("erich", tr.term().utf8ToString());
             tr.next();
-            assertEquals("kunzel", tr.term().text());
+            assertEquals("kunzel", tr.term().utf8ToString());
             tr.next();
-            assertEquals("orchestra", tr.term().text());
+            assertEquals("orchestra", tr.term().utf8ToString());
             tr.next();
-            assertEquals("pops", tr.term().text());
+            assertEquals("pops", tr.term().utf8ToString());
             tr.next();
-            assertEquals("the", tr.term().text());
-            
-            tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_ID.getName(), ""));
-            assertEquals(ReleaseGroupIndexField.ARTIST_ID.getName(), tr.term().field());
+            assertEquals("the", tr.term().utf8ToString());
+
+            terms = fields.terms(ReleaseGroupIndexField.ARTIST_ID.getName());
+            tr = terms.iterator(null);
+            tr.next();
             assertEquals(1, tr.docFreq());
-            assertEquals("99845d0c-f239-4051-a6b1-4b5e9f7ede0b", tr.term().text());
+            assertEquals("99845d0c-f239-4051-a6b1-4b5e9f7ede0b", tr.term().utf8ToString());
             tr.next();
-            assertEquals("d8fbd94c-cd06-4e8b-a559-761ad969d07e", tr.term().text());
+            assertEquals("d8fbd94c-cd06-4e8b-a559-761ad969d07e", tr.term().utf8ToString());
             tr.next();
 
-            tr = ir.terms(new Term(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName(), ""));
-            assertEquals(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName(), tr.term().field());
+            terms = fields.terms(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName());
+            tr = terms.iterator(null);
+            tr.next();
             assertEquals(1, tr.docFreq());
-            assertEquals("cincinnati", tr.term().text());
+            assertEquals("cincinnati", tr.term().utf8ToString());
             tr.next();
-            assertEquals("erich", tr.term().text());
+            assertEquals("erich", tr.term().utf8ToString());
             tr.next();
-            assertEquals("kunzel", tr.term().text());
+            assertEquals("kunzel", tr.term().utf8ToString());
             tr.next();
-            assertEquals("pops", tr.term().text());
+            assertEquals("pops", tr.term().utf8ToString());
 
-            assertEquals("Epics", doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName())[0].stringValue());
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP_ID.getName())[0].stringValue());
+            assertEquals("Epics", doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName())[0].stringValue());
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getFields(ReleaseGroupIndexField.RELEASEGROUP_ID.getName())[0].stringValue());
 
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
@@ -446,9 +445,9 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TAG.getName()).length);
-            assertEquals("punk", doc.getFieldable(ReleaseGroupIndexField.TAG.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.TAG.getName()).length);
+            assertEquals("punk", doc.getField(ReleaseGroupIndexField.TAG.getName()).stringValue());
         }
         ir.close();
     }
@@ -464,8 +463,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASESTATUS.getName()).length);
-            assertEquals("Official", doc.getFieldable(ReleaseGroupIndexField.RELEASESTATUS.getName()).stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASESTATUS.getName()).length);
+            assertEquals("Official", doc.getField(ReleaseGroupIndexField.RELEASESTATUS.getName()).stringValue());
         }
         ir.close();
     }
@@ -481,17 +480,17 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
-            assertEquals("Album", doc.getFieldables(ReleaseGroupIndexField.PRIMARY_TYPE.getName())[0].stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
+            assertEquals("Album", doc.getFields(ReleaseGroupIndexField.PRIMARY_TYPE.getName())[0].stringValue());
 
             //NOte old type field maps secondary type to compilation
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.TYPE.getName()).length);
-            assertEquals("Compilation", doc.getFieldables(ReleaseGroupIndexField.TYPE.getName())[0].stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
+            assertEquals("Compilation", doc.getFields(ReleaseGroupIndexField.TYPE.getName())[0].stringValue());
 
-            assertEquals(1, doc.getFieldables(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
-            assertEquals(2, doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName()).length);
-            assertEquals("Compilation", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[0].stringValue());
-            assertEquals("Interview", doc.getFieldables(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[1].stringValue());
+            assertEquals(1, doc.getFields(ReleaseGroupIndexField.RELEASEGROUP.getName()).length);
+            assertEquals(2, doc.getFields(ReleaseGroupIndexField.SECONDARY_TYPE.getName()).length);
+            assertEquals("Compilation", doc.getFields(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[0].stringValue());
+            assertEquals("Interview", doc.getFields(ReleaseGroupIndexField.SECONDARY_TYPE.getName())[1].stringValue());
 
         }
         ir.close();

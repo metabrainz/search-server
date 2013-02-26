@@ -110,13 +110,13 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(WorkIndexField.WORK.getName()).length);
-            assertEquals("Work", doc.getFieldable(WorkIndexField.WORK.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(WorkIndexField.ISWC.getName()).length);
-            assertEquals("T-101779304-1", doc.getFieldable(WorkIndexField.ISWC.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(WorkIndexField.TYPE.getName()).length);
-            assertEquals("-", doc.getFieldable(WorkIndexField.TYPE.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(WorkIndexField.ARTIST_RELATION.getName()).length);
+            assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
+            assertEquals("Work", doc.getField(WorkIndexField.WORK.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.ISWC.getName()).length);
+            assertEquals("T-101779304-1", doc.getField(WorkIndexField.ISWC.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
+            assertEquals("-", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.ARTIST_RELATION.getName()).length);
             ir.close();
         }
     }
@@ -131,8 +131,8 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(WorkIndexField.TYPE.getName()).length);
-            assertEquals("-", doc.getFieldable(WorkIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
+            assertEquals("-", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
             ir.close();
         }
     }
@@ -147,8 +147,8 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(WorkIndexField.TYPE.getName()).length);
-            assertEquals("Opera", doc.getFieldable(WorkIndexField.TYPE.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
+            assertEquals("Opera", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
             ir.close();
         }
     }
@@ -163,8 +163,8 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(WorkIndexField.COMMENT.getName()).length);
-            assertEquals("demo", doc.getFieldable(WorkIndexField.COMMENT.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.COMMENT.getName()).length);
+            assertEquals("demo", doc.getField(WorkIndexField.COMMENT.getName()).stringValue());
             ir.close();
         }
     }
@@ -179,8 +179,8 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(WorkIndexField.LYRICS_LANG.getName()).length);
-            assertEquals("eng", doc.getFieldable(WorkIndexField.LYRICS_LANG.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.LYRICS_LANG.getName()).length);
+            assertEquals("eng", doc.getField(WorkIndexField.LYRICS_LANG.getName()).stringValue());
             ir.close();
         }
     }
@@ -195,9 +195,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(2, doc.getFieldables(WorkIndexField.ISWC.getName()).length);
-            assertEquals("T-101779304-1", doc.getFieldables(WorkIndexField.ISWC.getName())[0].stringValue());
-            assertEquals("B-101779304-1", doc.getFieldables(WorkIndexField.ISWC.getName())[1].stringValue());
+            assertEquals(2, doc.getFields(WorkIndexField.ISWC.getName()).length);
+            assertEquals("T-101779304-1", doc.getFields(WorkIndexField.ISWC.getName())[0].stringValue());
+            assertEquals("B-101779304-1", doc.getFields(WorkIndexField.ISWC.getName())[1].stringValue());
             ir.close();
         }
     }
@@ -255,8 +255,8 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(WorkIndexField.ALIAS.getName()).length);
-            assertEquals("Play", doc.getFieldable(WorkIndexField.ALIAS.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.ALIAS.getName()).length);
+            assertEquals("Play", doc.getField(WorkIndexField.ALIAS.getName()).stringValue());
             ir.close();
         }
     }
@@ -271,7 +271,7 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFieldables(WorkIndexField.ALIAS.getName()).length);
+            assertEquals(0, doc.getFields(WorkIndexField.ALIAS.getName()).length);
             ir.close();
         }
     }
@@ -292,11 +292,11 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFieldables(WorkIndexField.WORK.getName()).length);
-            assertEquals(1, doc.getFieldables(WorkIndexField.TAG.getName()).length);
-            assertEquals("Classical", doc.getFieldable(WorkIndexField.TAG.getName()).stringValue());
-            assertEquals(1, doc.getFieldables(WorkIndexField.TAGCOUNT.getName()).length);
-            assertEquals("10", doc.getFieldable(LabelIndexField.TAGCOUNT.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
+            assertEquals(1, doc.getFields(WorkIndexField.TAG.getName()).length);
+            assertEquals("Classical", doc.getField(WorkIndexField.TAG.getName()).stringValue());
+            assertEquals(1, doc.getFields(WorkIndexField.TAGCOUNT.getName()).length);
+            assertEquals("10", doc.getField(LabelIndexField.TAGCOUNT.getName()).stringValue());
         }
         ir.close();
     }

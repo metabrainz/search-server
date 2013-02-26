@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
@@ -173,7 +174,7 @@ public class ReleaseWriter extends ResultsWriter {
             if(numTracksOnRelease!=null)
             {
                 MediumList mediumList = of.createMediumList();
-                mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracksOnRelease)));
+                mediumList.setTrackCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(numTracksOnRelease))));
 
                 String[] formats          = doc.getValues(ReleaseIndexField.FORMAT);
                 String[] numTracks        = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
@@ -186,11 +187,11 @@ public class ReleaseWriter extends ResultsWriter {
                         medium.setFormat(formats[i]);
                     }
                     org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
-                    trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numTracks[i])));
+                    trackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(numTracks[i]))));
                     medium.setTrackList(trackList);
 
                     DiscList discList = of.createDiscList();
-                    discList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(numDiscIds[i])));
+                    discList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(numDiscIds[i]))));
                     medium.setDiscList(discList);
 
                     mediumList.getMedium().add(medium);

@@ -30,6 +30,7 @@ package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
@@ -189,7 +190,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             {
                 int numDiscs = 0;
                 for(int i=0;i<numDiscsIdsOnMedium.length;i++) {
-                    numDiscs+=NumericUtils.prefixCodedToInt(numDiscsIdsOnMedium[i]);
+                    numDiscs+=NumericUtils.prefixCodedToInt(new BytesRef(numDiscsIdsOnMedium[i]));
                 }
 
                 DiscList discList = of.createDiscList();
@@ -202,7 +203,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             {
                 int numTracks = 0;
                 for(int i=0;i<numTracksOnMedium.length;i++) {
-                    numTracks+=NumericUtils.prefixCodedToInt(numTracksOnMedium[i]);
+                    numTracks+=NumericUtils.prefixCodedToInt(new BytesRef(numTracksOnMedium[i]));
                 }
 
                 TrackList trackList = of.createTrackList();
