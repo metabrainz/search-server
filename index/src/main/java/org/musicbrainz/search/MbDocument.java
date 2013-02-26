@@ -81,35 +81,29 @@ public class MbDocument {
     
     
     /**
-     * Add numeric field, handled specially so that ranges searches work properly
+     * Add integral numeric field, handled specially so that ranges searches work properly
+     *
      * @param field
      * @param value
      */
     public void addNumericField(IndexField field, Integer value) {
 
-        try
-        {
-        FieldType fieldType = new FieldType();
-        fieldType.setStored(true);
-        fieldType.setIndexed(true);
         BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
         NumericUtils.intToPrefixCoded(value, 0, bytes);
-        doc.add(new Field(field.getName(),bytes.utf8ToString(), fieldType));
-    }
-        catch(Exception ex)
-        {
-            ex.printStackTrace();
-        }
+        doc.add(new Field(field.getName(),bytes.utf8ToString(), field.getFieldType()));
     }
 
+    /**
+     * Add long numeric field, handled specially so that ranges searches work properly
+     *
+     * @param field
+     * @param value
+     */
     public void addNumericField(IndexField field, Long value) {
 
-        FieldType fieldType = new FieldType();
-        fieldType.setStored(true);
-        fieldType.setIndexed(true);
         BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_LONG);
         NumericUtils.longToPrefixCoded(value, 0, bytes);
-        doc.add(new Field(field.getName(),bytes.utf8ToString(), fieldType));
+        doc.add(new Field(field.getName(),bytes.utf8ToString(), field.getFieldType()));
     }
 
     /**
