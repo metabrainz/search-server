@@ -22,51 +22,46 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 
 /**
  * Fields created in Lucene Search Index
  */
 public enum AnnotationIndexField implements IndexField {
 
-	ID		("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-	ENTITY	("entity",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-	NAME	("name",	Field.Store.YES,	Field.Index.ANALYZED),
-	TYPE	("type",	Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-	TEXT	("text",	Field.Store.YES,	Field.Index.ANALYZED);
+	ID		("_id",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	ENTITY	("entity",	MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	NAME	("name",	MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
+	TYPE	("type",	MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	TEXT	("text",	MusicBrainzFieldTypes.TEXT_STORED_ANALYZED);
 
-	private String name;
-	private Field.Store store;
-	private Field.Index index;
+    private FieldType fieldType;
+
+    private String name;
     private Analyzer analyzer;
 
-	private AnnotationIndexField(String name, Field.Store store, Field.Index index) {
-		this.name = name;
-		this.store = store;
-		this.index = index;
-	}
+    private AnnotationIndexField(String name, FieldType fieldType) {
+        this.name = name;
+        this.fieldType=fieldType;
+    }
 
-    private AnnotationIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
-        this(name, store, index);
+    private AnnotationIndexField(String name, FieldType fieldType, Analyzer analyzer) {
+        this(name, fieldType);
         this.analyzer = analyzer;
     }
 
-
-	public String getName() {
+    public String getName() {
 		return name;
 	}
-
-	public Field.Store getStore() {
-		return store;
-	}
-
-	public Field.Index getIndex() {
-		return index;
-	}
-
 
     public Analyzer getAnalyzer()
     {
         return analyzer;
+    }
+
+    public FieldType getFieldType()
+    {
+        return fieldType;
     }
 
 }

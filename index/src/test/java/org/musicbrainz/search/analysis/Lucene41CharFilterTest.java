@@ -8,6 +8,7 @@ import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -65,7 +66,7 @@ public class Lucene41CharFilterTest
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         {
             Document doc = new Document();
-            doc.add(new Field("name", "Platinum & Gold", Field.Store.YES, Field.Index.ANALYZED));
+            doc.add(new Field("name", "Platinum & Gold", TextField.TYPE_STORED));
             writer.addDocument(doc);
         }
         writer.close();

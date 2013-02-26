@@ -2,6 +2,7 @@ package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 
 /**
  * Fields created in Lucene Search Index
@@ -9,8 +10,8 @@ import org.apache.lucene.document.Field;
 public interface IndexField {
 
     public String getName();
-    public Field.Store getStore();
-	public Field.Index getIndex();
     public Analyzer getAnalyzer();
+    public FieldType getFieldType();
+
 
 }

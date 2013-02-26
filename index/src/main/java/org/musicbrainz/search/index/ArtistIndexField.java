@@ -31,6 +31,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
 import org.musicbrainz.search.analysis.MusicbrainzKeepAccentsAnalyzer;
@@ -41,38 +42,36 @@ import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
  */
 public enum ArtistIndexField implements IndexField {
 
-	ID			    ("_id",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ALIAS		    ("alias",		Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    ARTIST_ID	    ("arid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST		    ("artist",		Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzAnalyzer()),
-    ARTIST_ACCENT   ("artistaccent",Field.Store.NO,	    Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
-    BEGIN		    ("begin",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    COMMENT		    ("comment",		Field.Store.YES,	Field.Index.ANALYZED),
-    COUNTRY         ("country",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    END			    ("end",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ENDED           ("ended",       Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    GENDER          ("gender",      Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    IPI             ("ipi",         Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    SORTNAME	    ("sortname",	Field.Store.YES,	Field.Index.ANALYZED),
-    TAG		        ("tag",		    Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    TAGCOUNT        ("tagcount",	Field.Store.YES,	Field.Index.NO),
-    TYPE		    ("type",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+	ID			    ("_id",			MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ALIAS		    ("alias",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_ID	    ("arid",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ARTIST		    ("artist",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
+    ARTIST_ACCENT   ("artistaccent",MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
+    BEGIN		    ("begin",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    COMMENT		    ("comment",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
+    COUNTRY         ("country",     MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    END			    ("end",			MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ENDED           ("ended",       MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    GENDER          ("gender",      MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    IPI             ("ipi",         MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    SORTNAME	    ("sortname",	MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
+    TAG		        ("tag",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    TAGCOUNT        ("tagcount",	MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
+    TYPE		    ("type",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ;
 
 
     private String name;
-	private Field.Store store;
-    private Field.Index index;
     private Analyzer analyzer;
+    private FieldType fieldType;
 
-    private ArtistIndexField(String name, Field.Store store, Field.Index index) {
+    private ArtistIndexField(String name, FieldType fieldType) {
         this.name = name;
-        this.store = store;
-        this.index = index;
+        this.fieldType=fieldType;
     }
 
-    private ArtistIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
-        this(name, store, index);
+    private ArtistIndexField(String name, FieldType fieldType, Analyzer analyzer) {
+        this(name, fieldType);
         this.analyzer = analyzer;
     }
 
@@ -81,18 +80,13 @@ public enum ArtistIndexField implements IndexField {
         return name;
     }
 
-    public Field.Store getStore() {
-		return store;
-	}
-
-	public Field.Index getIndex() {
-		return index;
-	}
-
-
     public Analyzer getAnalyzer() {
         return analyzer;
     }
 
+    public FieldType getFieldType()
+    {
+        return fieldType;
+    }
 
 }

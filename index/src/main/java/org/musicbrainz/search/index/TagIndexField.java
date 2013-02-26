@@ -3,6 +3,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
 
 /**
@@ -10,23 +11,21 @@ import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
  */
 public enum TagIndexField implements IndexField {
 	
-	ID		("_id",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    TAG		("tag",		Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzAnalyzer()),
+	ID		("_id",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    TAG		("tag",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     ;
 
     private String name;
-	private Field.Store store;
-    private Field.Index index;
     private Analyzer analyzer;
+    private FieldType fieldType;
 
-    private TagIndexField(String name, Field.Store store, Field.Index index) {
+    private TagIndexField(String name, FieldType fieldType) {
         this.name = name;
-        this.store = store;
-        this.index = index;
+        this.fieldType=fieldType;
     }
 
-     private TagIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
-        this(name, store, index);
+    private TagIndexField(String name, FieldType fieldType, Analyzer analyzer) {
+        this(name, fieldType);
         this.analyzer = analyzer;
     }
 
@@ -34,16 +33,13 @@ public enum TagIndexField implements IndexField {
         return name;
     }
 
-    public Field.Store getStore() {
-		return store;
-	}
-
-	public Field.Index getIndex() {
-		return index;
-	}
-
     public Analyzer getAnalyzer() {
         return analyzer;
+    }
+
+    public FieldType getFieldType()
+    {
+        return fieldType;
     }
 
 

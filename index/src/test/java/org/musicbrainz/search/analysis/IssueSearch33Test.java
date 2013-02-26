@@ -36,6 +36,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -78,7 +79,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "!!!", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "!!!", TextField.TYPE_STORED));
 
         writer.addDocument(doc);
         writer.close();
@@ -135,7 +136,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "!\"@*!%", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "!\"@*!%", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -181,7 +182,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "fred!!", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "fred!!", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -229,7 +230,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "bdb24cb5-404b-4f60-bba4-7b730325ae47", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "bdb24cb5-404b-4f60-bba4-7b730325ae47", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -276,7 +277,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "กข!!", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "กข!!", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -327,7 +328,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "!\"@* !%", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "!\"@* !%", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -380,7 +381,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "!\"@* fred", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "!\"@* fred", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -429,7 +430,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "This_is", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "This_is", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -478,7 +479,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "This_is", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "This_is", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -525,7 +526,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "This_is", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "This_is", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -571,7 +572,7 @@ public class IssueSearch33Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "3Oh!j", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "3Oh!j", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 

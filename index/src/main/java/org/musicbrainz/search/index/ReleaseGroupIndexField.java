@@ -31,6 +31,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.musicbrainz.search.analysis.*;
 
 /**
@@ -38,40 +39,38 @@ import org.musicbrainz.search.analysis.*;
  */
 public enum ReleaseGroupIndexField implements IndexField {
 
-	ID		    		("_id",				Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-	ARTIST_ID		    ("arid",			Field.Store.NO,		Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST              ("artist",          Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    ARTIST_CREDIT       ("artistcredit",    Field.Store.YES,    Field.Index.NO),
-    ARTIST_NAME         ("artistname",		Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    ARTIST_NAMECREDIT   ("creditname",	    Field.Store.NO,		Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    COMMENT		        ("comment",		    Field.Store.YES,	Field.Index.ANALYZED),
-    NUM_RELEASES        ("releases",	    Field.Store.NO,	    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    PRIMARY_TYPE        ("primarytype",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    RELEASE             ("release", 		Field.Store.YES,	Field.Index.ANALYZED, new TitleWithPosGapAnalyzer()),
-    RELEASE_ID		    ("reid",		    Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    RELEASEGROUP_ID	    ("rgid",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-	RELEASEGROUP	    ("releasegroup",	Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
-    RELEASEGROUP_ACCENT ("releasegroupaccent",Field.Store.NO,   Field.Index.ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
-    RELEASESTATUS       ("status",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    SECONDARY_TYPE      ("secondarytype",   Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    TAG		            ("tag",		        Field.Store.YES,	Field.Index.ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    TAGCOUNT            ("tagcount",	    Field.Store.YES,	Field.Index.NO),
-    TYPE			    ("type",			Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+	ID		    		("_id",				    MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	ARTIST_ID		    ("arid",			    MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ARTIST              ("artist",              MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_CREDIT       ("artistcredit",        MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
+    ARTIST_NAME         ("artistname",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ARTIST_NAMECREDIT   ("creditname",	        MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    COMMENT		        ("comment",		        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
+    NUM_RELEASES        ("releases",	        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    PRIMARY_TYPE        ("primarytype",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    RELEASE             ("release", 		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new TitleWithPosGapAnalyzer()),
+    RELEASE_ID		    ("reid",		        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    RELEASEGROUP_ID	    ("rgid",			    MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    RELEASEGROUP	    ("releasegroup",	    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new TitleAnalyzer()),
+    RELEASEGROUP_ACCENT ("releasegroupaccent",  MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
+    RELEASESTATUS       ("status",			    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    SECONDARY_TYPE      ("secondarytype",       MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    TAG		            ("tag",		            MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    TAGCOUNT            ("tagcount",	        MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
+    TYPE			    ("type",			    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ;
 
     private String name;
-	private Field.Store store;
-	private Field.Index index;
     private Analyzer analyzer;
+    private FieldType fieldType;
 
-	private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index) {
-		this.name = name;
-		this.store = store;
-		this.index = index;
-	}
+    private ReleaseGroupIndexField(String name, FieldType fieldType) {
+        this.name = name;
+        this.fieldType=fieldType;
+    }
 
-    private ReleaseGroupIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
-        this(name, store, index);
+    private ReleaseGroupIndexField(String name, FieldType fieldType, Analyzer analyzer) {
+        this(name, fieldType);
         this.analyzer = analyzer;
     }
 
@@ -79,17 +78,13 @@ public enum ReleaseGroupIndexField implements IndexField {
 		return name;
 	}
 
-	public Field.Store getStore() {
-		return store;
-	}
-
-	public Field.Index getIndex() {
-		return index;
-	}
-
     public Analyzer getAnalyzer() {
         return analyzer;
     }
 
+    public FieldType getFieldType()
+    {
+        return fieldType;
+    }
 
 }

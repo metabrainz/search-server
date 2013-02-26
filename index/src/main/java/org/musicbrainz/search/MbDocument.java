@@ -66,7 +66,7 @@ public class MbDocument {
      * @param value
      */
     public void addField(IndexField field, String value) {
-        doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
+        doc.add(new Field(field.getName(), value, field.getFieldType()));
     }
 
     /**
@@ -132,10 +132,10 @@ public class MbDocument {
      */
     public void addFieldOrUnknown(IndexField field, String value) {
         if (value != null && !value.isEmpty()) {
-                doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
+                doc.add(new Field(field.getName(), value, field.getFieldType()));
         }
         else {
-           doc.add(new Field(field.getName(), Index.UNKNOWN, field.getStore(), field.getIndex()));
+           doc.add(new Field(field.getName(), Index.UNKNOWN, field.getFieldType()));
         }
 
     }
@@ -151,10 +151,10 @@ public class MbDocument {
      */
     public void addFieldOrNoValue(IndexField field, String value) {
         if (value != null && !value.isEmpty()) {
-                doc.add(new Field(field.getName(), value, field.getStore(), field.getIndex()));
+                doc.add(new Field(field.getName(), value, field.getFieldType()));
         }
         else {
-           doc.add(new Field(field.getName(), Index.NO_VALUE, field.getStore(), field.getIndex()));
+           doc.add(new Field(field.getName(), Index.NO_VALUE, field.getFieldType()));
         }
     }
 

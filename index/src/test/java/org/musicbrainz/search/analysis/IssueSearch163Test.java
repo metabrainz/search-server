@@ -32,6 +32,7 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -60,7 +61,7 @@ public class IssueSearch163Test {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "Európa", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "Európa", TextField.TYPE_STORED));
 
         writer.addDocument(doc);
         writer.close();

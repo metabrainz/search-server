@@ -32,6 +32,7 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -68,18 +69,18 @@ public class LabelBoostTest
 
         //THis field has anid that means it gets doc boost
         Document doc = new Document();
-        doc.add(new Field(LabelIndexField.LABEL_ID.getName(), "022fe361-596c-43a0-8e22-bad712bb9548", Field.Store.YES,	Field.Index.ANALYZED));
-        doc.add(new Field(LabelIndexField.LABEL.getName(), "Emi Records", Field.Store.YES,	Field.Index.ANALYZED));
-        doc.add(new Field(LabelIndexField.ALIAS.getName(), "Emi", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(LabelIndexField.LABEL_ID.getName(), "022fe361-596c-43a0-8e22-bad712bb9548", TextField.TYPE_STORED));
+        doc.add(new Field(LabelIndexField.LABEL.getName(), "Emi Records", TextField.TYPE_STORED));
+        doc.add(new Field(LabelIndexField.ALIAS.getName(), "Emi", TextField.TYPE_STORED));
 
         LabelBoostDoc.boost("022fe361-596c-43a0-8e22-bad712bb9548", doc);
         writer.addDocument(doc);
 
         //this does not
         doc = new Document();
-        doc.add(new Field(LabelIndexField.LABEL_ID.getName(), "245345-9635-4d58-a4d4-9413f9f98a4c", Field.Store.YES,	Field.Index.ANALYZED));
-        doc.add(new Field(LabelIndexField.LABEL.getName(), "Emi", Field.Store.YES,	Field.Index.ANALYZED));
-        doc.add(new Field(LabelIndexField.ALIAS.getName(), "Emi", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(LabelIndexField.LABEL_ID.getName(), "245345-9635-4d58-a4d4-9413f9f98a4c", TextField.TYPE_STORED));
+        doc.add(new Field(LabelIndexField.LABEL.getName(), "Emi", TextField.TYPE_STORED));
+        doc.add(new Field(LabelIndexField.ALIAS.getName(), "Emi", TextField.TYPE_STORED));
         LabelBoostDoc.boost("245345-9635-4d58-a4d4-9413f9f98a4c",doc);
         writer.addDocument(doc);
 

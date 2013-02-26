@@ -9,6 +9,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -160,17 +161,17 @@ public class Issue1006Test {
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         {
             Document doc = new Document();
-            doc.add(new Field("name", "ゲーム", Field.Store.YES, Field.Index.ANALYZED));
+            doc.add(new Field("name", "ゲーム", TextField.TYPE_STORED));
             writer.addDocument(doc);
         }
         {
             Document doc = new Document();
-            doc.add(new Field("name", "ゲエム", Field.Store.YES, Field.Index.ANALYZED));
+            doc.add(new Field("name", "ゲエム", TextField.TYPE_STORED));
             writer.addDocument(doc);
         }
         {
             Document doc = new Document();
-            doc.add(new Field("name", "げえむ", Field.Store.YES, Field.Index.ANALYZED));
+            doc.add(new Field("name", "げえむ", TextField.TYPE_STORED));
             writer.addDocument(doc);
         }
         writer.close();

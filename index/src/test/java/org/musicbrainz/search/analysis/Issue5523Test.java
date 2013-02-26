@@ -32,6 +32,7 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -58,7 +59,7 @@ public class Issue5523Test {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "寧夏", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "寧夏", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -82,7 +83,7 @@ public class Issue5523Test {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "宁夏", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "宁夏", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -106,7 +107,7 @@ public class Issue5523Test {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "麯", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "麯", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 

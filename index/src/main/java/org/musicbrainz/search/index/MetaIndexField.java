@@ -21,47 +21,48 @@ package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 
 /**
  * Fields common to all Lucene Search Index
  */
 public enum MetaIndexField implements IndexField {
 
-    LAST_UPDATED			("index_lastupdate",	Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    REPLICATION_SEQUENCE	("index_repseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    SCHEMA_SEQUENCE			("index_schseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),
-    LAST_CHANGE_SEQUENCE	("index_changeseq",		Field.Store.YES,	Field.Index.NOT_ANALYZED),    
+    LAST_UPDATED			("index_lastupdate",	MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED),
+    REPLICATION_SEQUENCE	("index_repseq",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED),
+    SCHEMA_SEQUENCE			("index_schseq",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED),
+    LAST_CHANGE_SEQUENCE	("index_changeseq",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED),
     // Dumb field always filled with '1', but that easily allow to find the meta document
-    META					("index_meta",			Field.Store.YES,	Field.Index.NOT_ANALYZED),    
+    META					("index_meta",			MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED),
     ;
 
     private String name;
-	private Field.Store store;
-    private Field.Index index;
     private Analyzer analyzer;
+    private FieldType fieldType;
 
     public static final String META_VALUE = "1";
 
-    private MetaIndexField(String name, Field.Store store, Field.Index index) {
+    private MetaIndexField(String name, FieldType fieldType) {
         this.name = name;
-        this.store = store;
-        this.index = index;
+        this.fieldType=fieldType;
+    }
+
+    private MetaIndexField(String name, FieldType fieldType, Analyzer analyzer) {
+        this(name, fieldType);
+        this.analyzer = analyzer;
     }
 
     public String getName() {
         return name;
     }
 
-    public Field.Store getStore() {
-		return store;
-	}
-
-	public Field.Index getIndex() {
-		return index;
-	}
-
     public Analyzer getAnalyzer() {
         return analyzer;
+    }
+
+    public FieldType getFieldType()
+    {
+        return fieldType;
     }
 }
 

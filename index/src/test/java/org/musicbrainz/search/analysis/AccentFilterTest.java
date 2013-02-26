@@ -3,6 +3,7 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -32,30 +33,30 @@ public class AccentFilterTest  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "test", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "test", TextField.TYPE_STORED));
         writer.addDocument(doc);
 
         doc = new Document();
-        doc.add(new Field("name", "ŃåᴊıÃšņ", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "ŃåᴊıÃšņ", TextField.TYPE_STORED));
         writer.addDocument(doc);
 
         doc = new Document();
-        doc.add(new Field("name", "tést", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "tést", TextField.TYPE_STORED));
         writer.addDocument(doc);
 
         doc = new Document();
-        doc.add(new Field("name", "ábcáef", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "ábcáef", TextField.TYPE_STORED));
         writer.addDocument(doc);
 
         doc = new Document();
-        doc.add(new Field("name", "qwe 1", Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("name", "qwe 2", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "qwe 1", TextField.TYPE_STORED));
+        doc.add(new Field("name", "qwe 2", TextField.TYPE_STORED));
         writer.addDocument(doc);
 
         doc = new Document();
-        doc.add(new Field("name", "qwee 2", Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("name", "aaa", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "qwee 2", TextField.TYPE_STORED));
+        doc.add(new Field("name", "aaa", TextField.TYPE_STORED));
+        doc.add(new Field("name", "aaa", TextField.TYPE_STORED));
         writer.addDocument(doc);
 
 

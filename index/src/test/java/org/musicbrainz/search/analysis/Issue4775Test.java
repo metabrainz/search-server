@@ -7,6 +7,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -32,10 +33,10 @@ public class Issue4775Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "O'reilly", Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("name", "There's", Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("name", "its", Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("name", "John’s", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "O'reilly", TextField.TYPE_STORED));
+        doc.add(new Field("name", "There's", TextField.TYPE_STORED));
+        doc.add(new Field("name", "its", TextField.TYPE_STORED));
+        doc.add(new Field("name", "John’s", TextField.TYPE_STORED));
 
         writer.addDocument(doc);
         writer.close();
@@ -142,11 +143,11 @@ public class Issue4775Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "1999-2000", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "1999-2000", TextField.TYPE_STORED));
         writer.addDocument(doc);
 
         doc = new Document();
-        doc.add(new Field("name", "1999–2000", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "1999–2000", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
 
@@ -174,7 +175,7 @@ public class Issue4775Test  {
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
-        doc.add(new Field("name", "R.E.S.", Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("name", "R.E.S.", TextField.TYPE_STORED));
 
         writer.addDocument(doc);
         writer.close();

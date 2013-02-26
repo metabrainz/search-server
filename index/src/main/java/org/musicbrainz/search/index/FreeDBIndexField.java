@@ -31,6 +31,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
 
 /**
@@ -38,26 +39,25 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
  */
 public enum FreeDBIndexField implements IndexField {
 
-	ARTIST		("artist",		Field.Store.YES,	Field.Index.ANALYZED),
-	TITLE		("title",		Field.Store.YES,	Field.Index.ANALYZED, new TitleAnalyzer()),
-	DISCID		("discid",		Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-	CATEGORY	("cat",			Field.Store.YES,	Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-	YEAR		("year",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS),
-	TRACKS		("tracks",		Field.Store.YES,	Field.Index.ANALYZED_NO_NORMS),;
+	ARTIST		("artist",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
+	TITLE		("title",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new TitleAnalyzer()),
+	DISCID		("discid",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	CATEGORY	("cat",			MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+	YEAR		("year",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS),
+	TRACKS		("tracks",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS),;
 
 	private String name;
-	private Field.Store store;
-	private Field.Index index;
     private Analyzer analyzer;
 
-	private FreeDBIndexField(String name, Field.Store store, Field.Index index) {
-		this.name = name;
-		this.store = store;
-		this.index = index;
-	}
+    private FieldType fieldType;
 
-    private FreeDBIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
-        this(name, store, index);
+    private FreeDBIndexField(String name, FieldType fieldType) {
+        this.name = name;
+        this.fieldType=fieldType;
+    }
+
+    private FreeDBIndexField(String name, FieldType fieldType, Analyzer analyzer) {
+        this(name, fieldType);
         this.analyzer = analyzer;
     }
 
@@ -65,17 +65,13 @@ public enum FreeDBIndexField implements IndexField {
 		return name;
 	}
 
-	public Field.Store getStore() {
-		return store;
-	}
-
-	public Field.Index getIndex() {
-		return index;
-	}
-
-
     public Analyzer getAnalyzer() {
         return analyzer;
+    }
+
+    public FieldType getFieldType()
+    {
+        return fieldType;
     }
 
 

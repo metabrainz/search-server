@@ -22,6 +22,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
 import org.musicbrainz.search.analysis.StripLeadingZeroAnalyzer;
 import org.musicbrainz.search.analysis.TitleAnalyzer;
 
@@ -30,29 +31,28 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
  */
 public enum CDStubIndexField implements IndexField {
 
-	ID              ("_id",         Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ARTIST          ("artist",      Field.Store.YES,    Field.Index.ANALYZED),
-    TITLE           ("title",       Field.Store.YES,    Field.Index.ANALYZED, new TitleAnalyzer()),
-    BARCODE         ("barcode",     Field.Store.YES,    Field.Index.ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
-    COMMENT         ("comment",     Field.Store.YES,    Field.Index.ANALYZED),
-    NUM_TRACKS      ("tracks",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    DISCID          ("discid",      Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ADDED           ("added",       Field.Store.YES,    Field.Index.NOT_ANALYZED_NO_NORMS),    
+	ID              ("_id",         MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ARTIST          ("artist",      MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
+    TITLE           ("title",       MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new TitleAnalyzer()),
+    BARCODE         ("barcode",     MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
+    COMMENT         ("comment",     MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
+    NUM_TRACKS      ("tracks",      MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    DISCID          ("discid",      MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ADDED           ("added",       MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS),
     ;
 
     private String name;
-    private Field.Store store;
-    private Field.Index index;
     private Analyzer analyzer;
 
-    private CDStubIndexField(String name, Field.Store store, Field.Index index) {
+    private FieldType fieldType;
+
+    private CDStubIndexField(String name, FieldType fieldType) {
         this.name = name;
-        this.store = store;
-        this.index = index;
+        this.fieldType=fieldType;
     }
-    
-    private CDStubIndexField(String name, Field.Store store, Field.Index index, Analyzer analyzer) {
-        this(name, store, index);
+
+    private CDStubIndexField(String name, FieldType fieldType, Analyzer analyzer) {
+        this(name, fieldType);
         this.analyzer = analyzer;
     }
 
@@ -60,18 +60,13 @@ public enum CDStubIndexField implements IndexField {
         return name;
     }
 
-    public Field.Store getStore() {
-        return store;
-    }
-
-    public Field.Index getIndex() {
-        return index;
-    }
-
-
     public Analyzer getAnalyzer() {
         return analyzer;
     }
 
 
+    public FieldType getFieldType()
+    {
+        return fieldType;
+    }
 }
