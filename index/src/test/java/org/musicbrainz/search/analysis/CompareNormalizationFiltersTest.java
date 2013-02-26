@@ -18,7 +18,6 @@ import java.io.StringReader;
  */
 public class CompareNormalizationFiltersTest {
 
-    //FIXME Broken in 4.1
     @Test
     public void testTokenization() throws IOException
     {
