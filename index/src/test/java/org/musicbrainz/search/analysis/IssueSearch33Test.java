@@ -59,16 +59,17 @@ public class IssueSearch33Test  {
     public void testGetNoMatchWithStandardAnalyzer() throws Exception {
 
         //Show no token generated with Lucene Standard Tokenizer
-        //FIXME This was only there for comparison but why does throw NullPointerException in Lucene 4.1
         {
-            //Tokenizer tokenizer = new org.apache.lucene.analysis.standard.StandardTokenizer(Version.LUCENE_41, new StringReader("!!!"));
-            //tokenizer.incrementToken();
+            Tokenizer tokenizer = new org.apache.lucene.analysis.standard.StandardTokenizer(Version.LUCENE_41, new StringReader("!!!"));
+            tokenizer.reset();
+            tokenizer.incrementToken();
         }
 
         //But token is generated with Musicbrainz modification grammar
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
             assertNotNull(tokenizer);
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
         }
 
