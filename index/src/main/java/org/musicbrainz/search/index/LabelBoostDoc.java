@@ -29,6 +29,8 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexableField;
 import org.musicbrainz.search.MbDocument;
 
@@ -55,11 +57,18 @@ public class LabelBoostDoc {
         labelGuIdSet.add("f9ada3ae-3081-44df-8581-ca27a3462b68"); //Sony BMG Music Entertainment
     }
 
+
     public static void boost(String labelGuid, MbDocument doc) {
+
+        boost(labelGuid,doc.getLuceneDocument());
+    }
+
+    public static void boost(String labelGuid, Document doc) {
         if(labelGuIdSet.contains(labelGuid)) {
-            for(IndexableField field:doc.getLuceneDocument().getFields())
+            for(IndexableField indexablefield:doc.getFields())
             {
-                //TODO FIXME Doc Boost: field.boost()
+                Field field = (Field)indexablefield;
+                field.setBoost(DOC_BOOST);
             }
         }
     }

@@ -29,6 +29,8 @@
 
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexableField;
 import org.musicbrainz.search.MbDocument;
 
@@ -65,12 +67,17 @@ public class ArtistBoostDoc {
     }
 
     public static void boost(String artistGuid, MbDocument doc) {
+
+        boost(artistGuid,doc.getLuceneDocument());
+    }
+
+    public static void boost(String artistGuid, Document doc) {
         if(artistGuIdSet.contains(artistGuid)) {
-            for(IndexableField field:doc.getLuceneDocument().getFields())
+            for(IndexableField indexablefield:doc.getFields())
             {
-                //TODO FIXME Doc Boost: field.boost()
+                Field field = (Field)indexablefield;
+                field.setBoost(ARTIST_DOC_BOOST);
             }
         }
     }
-
 }

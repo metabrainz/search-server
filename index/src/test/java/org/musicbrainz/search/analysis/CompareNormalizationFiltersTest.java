@@ -19,7 +19,6 @@ import java.io.StringReader;
 public class CompareNormalizationFiltersTest {
 
     //FIXME Broken in 4.1
-    /*
     @Test
     public void testTokenization() throws IOException
     {
@@ -35,16 +34,12 @@ public class CompareNormalizationFiltersTest {
         }
         System.out.println(sb.toString());
         Tokenizer tokenizer = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
+        tokenizer.reset();
         while(tokenizer.incrementToken())
         {
-            System.out.println("inctoken");
-
         }
     }
-    */
 
-    //FIXME Broken in 4.1
-    /*
     @Test
     public void testFilters() throws IOException
     {
@@ -89,9 +84,14 @@ public class CompareNormalizationFiltersTest {
         CharTermAttribute term3 = result3.addAttribute(CharTermAttribute.class);
         CharTermAttribute term4 = result4.addAttribute(CharTermAttribute.class);
 
+        tokenizer0.reset();
+        result1.reset();
+        result2.reset();
+        result3.reset();
+        result4.reset();
+
         while(tokenizer0.incrementToken())
         {
-            System.out.println("inctoken");
             result1.incrementToken();
             result2.incrementToken();
             result3.incrementToken();
@@ -135,7 +135,6 @@ public class CompareNormalizationFiltersTest {
         System.out.println("ICU         Filter changed "+ changedByNFKC   + " chars");
         System.out.println("ASCIIICU    Filter changed "+ changedByASCIIAndNFKC   + " chars");
     }
-    */
 
     private void printAsHexAndValue(String term)
     {
