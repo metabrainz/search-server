@@ -30,7 +30,7 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.index.FieldInvertState;
-import org.apache.lucene.search.DefaultSimilarity;
+import org.apache.lucene.search.similarities.DefaultSimilarity;
 import org.musicbrainz.search.index.RecordingIndex;
 import org.musicbrainz.search.index.RecordingIndexField;
 
@@ -49,21 +49,35 @@ public class RecordingSimilarity extends DefaultSimilarity {
      *
      * @return score component
      */
-    public float computeNorm(String field, FieldInvertState state) {
-        if (field.equals(RecordingIndexField.RELEASE)) {
+    /**
+     * Calculates a value which is inversely proportional to the number of terms in the field. When multiple
+     * releases are added to a release group it is seen as one field, so release groups  with many releases can be
+     * disadvantaged against.
+     *
+     * But we don't want to just disable norms for release field as the number of terms in a release name
+     * should effect scoring
+     *
+     * @param state
+     * @return
+     */
+    @Override
+    public float lengthNorm(FieldInvertState state) {
 
+        if (state.getName().equals(RecordingIndexField.RELEASE.getName()))
+        {
             if(state.getLength()>=6) {
                 //Same result as normal calc if field had six terms, based on the view that most common release title
                 //is 5 terms
                 return state.getBoost() * 0.408f;
             }
-            else {
-                return super.computeNorm(field,state);
+            else
+            {
+                return super.lengthNorm(state);
             }
         }
         else
         {
-            return super.computeNorm(field,state);
+            return super.lengthNorm(state);
         }
     }
 
