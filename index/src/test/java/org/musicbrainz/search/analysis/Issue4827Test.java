@@ -32,6 +32,7 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -62,7 +63,7 @@ public class Issue4827Test  {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
 
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"\u05f3"+"צ");
@@ -90,7 +91,7 @@ public class Issue4827Test  {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
 
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"\u05f3"+"צ");

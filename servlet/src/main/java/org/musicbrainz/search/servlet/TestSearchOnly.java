@@ -29,6 +29,7 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
@@ -109,7 +110,7 @@ public class TestSearchOnly {
             try {
 
                 Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
-                IndexSearcher indexSearcher = new IndexSearcher(IndexReader.open(directory));
+                IndexSearcher indexSearcher = new IndexSearcher(DirectoryReader.open(directory));
                 searchServer = resourceType.getSearchServerClass().getConstructor(IndexSearcher.class).newInstance(indexSearcher);
 
             } catch (CorruptIndexException e) {

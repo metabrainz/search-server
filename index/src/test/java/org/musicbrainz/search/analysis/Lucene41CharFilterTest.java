@@ -17,6 +17,8 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Version;
 import org.junit.Test;
+import org.musicbrainz.search.LuceneVersion;
+
 import java.io.Reader;
 
 import static org.junit.Assert.assertEquals;
@@ -40,9 +42,9 @@ public class Lucene41CharFilterTest
 
         @Override
         protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-            Tokenizer source = new MusicbrainzTokenizer(Version.LUCENE_35,
+            Tokenizer source = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION,
                     reader);
-            TokenStream filter = new LowerCaseFilter(Version.LUCENE_35,source);
+            TokenStream filter = new LowerCaseFilter(LuceneVersion.LUCENE_VERSION,source);
             return new TokenStreamComponents(source, filter);
         }
 
@@ -59,7 +61,7 @@ public class Lucene41CharFilterTest
 
         Analyzer analyzer = new SimpleAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_35,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         {
             Document doc = new Document();
@@ -78,18 +80,18 @@ public class Lucene41CharFilterTest
         }
         ir.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(Version.LUCENE_35, "name", analyzer).parse("\"Platinum and Gold\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"Platinum and Gold\"");
             System.out.println(q);
             TopDocs td = searcher.search(q, 10);
             System.out.println("Size"+td.scoreDocs.length);
             assertEquals(1, searcher.search(q, 10).totalHits);
         }
 
-        searcher = new IndexSearcher(IndexReader.open(dir));
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(Version.LUCENE_35, "name", analyzer).parse("\"Platinum & Gold\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"Platinum & Gold\"");
             TopDocs td = searcher.search(q, 10);
             System.out.println("Size"+td.scoreDocs.length);
             assertEquals(1, searcher.search(q, 10).totalHits);

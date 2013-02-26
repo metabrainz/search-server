@@ -3,6 +3,7 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -30,14 +31,14 @@ public class IssueSearch220Test {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u0020直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
 
-        searcher = new IndexSearcher(IndexReader.open(dir));
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u3000直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -57,14 +58,14 @@ public class IssueSearch220Test {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u0020直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
 
-        searcher = new IndexSearcher(IndexReader.open(dir));
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u3000直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -84,14 +85,14 @@ public class IssueSearch220Test {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"fred\u0020james\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
 
-        searcher = new IndexSearcher(IndexReader.open(dir));
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"fred\u3000james\"");
             assertEquals(1, searcher.search(q,10).totalHits);

@@ -90,7 +90,7 @@ public class IssueSearch33Test  {
         termsEnum.next();
         assertEquals("!!!", termsEnum.term().utf8ToString());
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!!!"));
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -149,7 +149,7 @@ public class IssueSearch33Test  {
         assertEquals(1, termsEnum.docFreq());
         assertEquals("!\"@*!%", termsEnum.term().utf8ToString());
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@*!%"));
             System.out.println(q.toString());
@@ -193,7 +193,7 @@ public class IssueSearch33Test  {
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("fred", termsEnum.term().utf8ToString());
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("fred"));
             System.out.println(q.toString());
@@ -243,7 +243,7 @@ public class IssueSearch33Test  {
         assertEquals("bdb24cb5-404b-4f60-bba4-7b730325ae47", termsEnum.term().utf8ToString());
 
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer)
                     .parse(QueryParser.escape("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
@@ -281,7 +281,7 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
+        IndexReader ir = DirectoryReader.open(dir);
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
@@ -290,7 +290,7 @@ public class IssueSearch33Test  {
         assertEquals(1, termsEnum.docFreq());
         assertEquals("กข", termsEnum.term().utf8ToString());
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("กข"));
             System.out.println(q.toString());
@@ -332,7 +332,7 @@ public class IssueSearch33Test  {
         writer.close();
 
         //Show how it has been converted
-        IndexReader ir = IndexReader.open(dir);
+        IndexReader ir = DirectoryReader.open(dir);
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
@@ -344,7 +344,7 @@ public class IssueSearch33Test  {
         assertEquals("!%", termsEnum.term().utf8ToString());
 
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
             System.out.println(q.toString());
@@ -397,7 +397,7 @@ public class IssueSearch33Test  {
         assertEquals("fred", termsEnum.term().utf8ToString());
 
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
             System.out.println(q.toString());
@@ -445,7 +445,7 @@ public class IssueSearch33Test  {
 
 
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
@@ -493,7 +493,7 @@ public class IssueSearch33Test  {
         termsEnum.next();
         assertEquals("this", termsEnum.term().utf8ToString());
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
@@ -540,7 +540,7 @@ public class IssueSearch33Test  {
         termsEnum.next();
         assertEquals("this", termsEnum.term().utf8ToString());
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
@@ -586,7 +586,7 @@ public class IssueSearch33Test  {
         termsEnum.next();
         assertEquals("j", termsEnum.term().utf8ToString());
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("j"));
             System.out.println(q.toString());

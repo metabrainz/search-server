@@ -30,6 +30,7 @@
 package org.musicbrainz.search.index;
 
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -353,7 +354,7 @@ public class IndexBuilder
                 // For debugging to check sql is not creating too few/many rows
                 if(true) {
                     int dbRows = index.getNoOfRows(maxId);
-                    reader = IndexReader.open(FSDirectory.open(new File(path)));
+                    reader = DirectoryReader.open(FSDirectory.open(new File(path)));
                     System.out.println(index.getName()+":"+dbRows+" db rows:"+(reader.maxDoc() - 1)+" lucene docs");
                 }
                 System.out.println(index.getName()+":Finished Optimization:" + Utils.formatClock(clock));

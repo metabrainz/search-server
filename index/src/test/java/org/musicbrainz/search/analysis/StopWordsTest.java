@@ -5,6 +5,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -38,7 +39,7 @@ public class StopWordsTest
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("that");
         TopDocs docs = searcher.search(q,null,100);
         assertEquals(0, docs.totalHits);
@@ -57,7 +58,7 @@ public class StopWordsTest
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("that");
         TopDocs docs = searcher.search(q,null,100);
         assertEquals(1, docs.totalHits);
@@ -75,7 +76,7 @@ public class StopWordsTest
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("that");
         TopDocs docs = searcher.search(q,null,100);
         assertEquals(1, docs.totalHits);

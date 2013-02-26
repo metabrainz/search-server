@@ -19,11 +19,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.FSDirectory;
 import org.jdom.JDOMException;
@@ -113,7 +109,7 @@ public class LiveDataFeedIndexUpdater {
 			indexWriters.put(index, indexWriter);
 
 			// Load replication information
-			IndexReader indexReader = IndexReader.open(indexWriter, true);
+			IndexReader indexReader = DirectoryReader.open(indexWriter, true);
 			ReplicationInformation replicationInfo = index.readReplicationInformationFromIndex(indexReader);
 			indexReplicationInfos.put(index, replicationInfo);
 
@@ -289,7 +285,7 @@ public class LiveDataFeedIndexUpdater {
 
 			// Check to we have as much Lucene documents as Database rows
 			int dbRows = index.getNoOfRows(Integer.MAX_VALUE);
-			IndexReader indexReader = IndexReader.open(indexWriter, true);
+			IndexReader indexReader = DirectoryReader.open(indexWriter, true);
 			LOGGER.info(dbRows + " rows in database, " + (indexReader.maxDoc() - 1) + " lucene documents");
 		} else {
 			LOGGER.info("No changes found");

@@ -32,6 +32,7 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -92,7 +93,7 @@ public class Issue24Test {
             writer.addDocument(doc);
             writer.close();
 
-            IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+            IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             {
                 Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod");
 
@@ -144,7 +145,7 @@ public class Issue24Test {
             writer.addDocument(doc);
             writer.close();
 
-            IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+            IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             searcher.setSimilarity(new MusicbrainzSimilarity());
             {
                 Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod");
@@ -219,7 +220,7 @@ public class Issue24Test {
             writer.addDocument(doc);
             writer.close();
 
-            IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+            IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             {
                 Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:queen OR alias:queen");
                 
@@ -257,7 +258,7 @@ public class Issue24Test {
             writer.addDocument(doc);
             writer.close();
 
-            IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+            IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             searcher.setSimilarity(new MusicbrainzSimilarity());
             {
                 Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:queen OR alias:queen");

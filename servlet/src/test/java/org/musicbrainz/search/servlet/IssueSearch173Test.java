@@ -55,7 +55,7 @@ public class IssueSearch173Test  {
 
     writer.close();
 
-    IndexReader ir = IndexReader.open(ramDir);
+    IndexReader ir = DirectoryReader.open(ramDir);
     Fields fields = MultiFields.getFields(ir);
     Terms terms = fields.terms("catno");
     TermsEnum termsEnum = terms.iterator(null);

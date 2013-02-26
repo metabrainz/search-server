@@ -1,9 +1,11 @@
 package org.musicbrainz.search.index;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
 import org.musicbrainz.mmd2.ArtistCredit;
@@ -230,7 +232,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir, true);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -243,10 +245,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
             assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(RecordingIndexField.RELEASE_ID.getName()).stringValue());
-            //assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
-            //assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
-            //assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
-            //assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
+            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue())));
+            assertEquals(4, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue())));
+            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue())));
+            assertEquals(33000, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue())));
             assertEquals("Compilation", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
             assertEquals("Official", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
             assertEquals("FRAAA9000038", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
@@ -267,7 +269,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir, false);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -280,10 +282,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
             assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(RecordingIndexField.RELEASE_ID.getName()).stringValue());
-            //assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
-            //assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
-            //assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
-            //assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
+            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue())));
+            assertEquals(4, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue())));
+            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue())));
+            assertEquals(33000, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue())));
             assertEquals("Compilation", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
             assertEquals("Official", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
             assertEquals("FRAAA9000038", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
@@ -304,7 +306,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -331,7 +333,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -354,7 +356,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -377,7 +379,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -399,7 +401,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -422,7 +424,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -446,7 +448,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -470,7 +472,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -493,7 +495,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -514,7 +516,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -536,7 +538,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -558,7 +560,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -581,7 +583,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -608,7 +610,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -627,7 +629,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -652,7 +654,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -673,7 +675,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -694,7 +696,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -716,7 +718,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir, false);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -738,7 +740,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -760,7 +762,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -782,7 +784,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -803,7 +805,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -826,7 +828,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
@@ -847,7 +849,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
-        IndexReader ir = IndexReader.open(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);

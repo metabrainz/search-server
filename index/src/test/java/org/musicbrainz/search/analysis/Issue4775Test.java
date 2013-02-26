@@ -7,6 +7,7 @@ import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -39,7 +40,7 @@ public class Issue4775Test  {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Oreilly");
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -149,7 +150,7 @@ public class Issue4775Test  {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("1999-2000");
             assertEquals(2, searcher.search(q,10).totalHits);
@@ -178,7 +179,7 @@ public class Issue4775Test  {
         writer.addDocument(doc);
         writer.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("res");
             assertEquals(1, searcher.search(q,10).totalHits);

@@ -82,7 +82,7 @@ public class AmpersandTest  {
         }
         ir.close();
 
-        IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"platinum & gold\"");
             System.out.println(q);

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -177,7 +178,7 @@ public class FindReleaseTest {
 
     writer.close();
     Map<ResourceType, IndexSearcher> searchers = new HashMap<ResourceType, IndexSearcher>();
-    searchers.put(ResourceType.RELEASE, new IndexSearcher(IndexReader.open(ramDir)));
+    searchers.put(ResourceType.RELEASE, new IndexSearcher(DirectoryReader.open(ramDir)));
 
     SearcherManager searcherManager = new SearcherManager(ramDir, new MusicBrainzSearcherFactory(ResourceType.RELEASE));
     ss = new ReleaseSearch(searcherManager);
