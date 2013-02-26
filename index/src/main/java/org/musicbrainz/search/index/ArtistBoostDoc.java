@@ -75,8 +75,11 @@ public class ArtistBoostDoc {
         if(artistGuIdSet.contains(artistGuid)) {
             for(IndexableField indexablefield:doc.getFields())
             {
-                Field field = (Field)indexablefield;
-                field.setBoost(ARTIST_DOC_BOOST);
+                if(indexablefield.name().equals(ArtistIndexField.ALIAS.getName()))
+                {
+                    Field field = (Field)indexablefield;
+                    field.setBoost(ARTIST_DOC_BOOST);
+                }
             }
         }
     }

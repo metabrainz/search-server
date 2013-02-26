@@ -68,22 +68,24 @@ public class ArtistBoostTest
         //THis field has anid that means it gets doc boost
         Document doc = new Document();
         doc.add(new Field(ArtistIndexField.ARTIST_ID.getName(), "24f1766e-9635-4d58-a4d4-9413f9f98a4c", Field.Store.YES,	Field.Index.ANALYZED));
-        doc.add(new Field(ArtistIndexField.ARTIST.getName(), "Bach", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(ArtistIndexField.ARTIST.getName(), "Johann Sebastian Bach", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "Bach", Field.Store.YES,	Field.Index.ANALYZED));
         ArtistBoostDoc.boost("24f1766e-9635-4d58-a4d4-9413f9f98a4c",doc);
         writer.addDocument(doc);
 
         //this does not
         doc = new Document();
-        doc.add(new Field(ArtistIndexField.ARTIST_ID.getName(), "245345-9635-4d58-a4d4-9413f9f98a4c", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(ArtistIndexField.ARTIST_ID.getName(), "9cefb3f2-763c-47a3-bc1e-86f1f35206f0", Field.Store.YES,	Field.Index.ANALYZED));
         doc.add(new Field(ArtistIndexField.ARTIST.getName(), "bach", Field.Store.YES,	Field.Index.ANALYZED));
-        ArtistBoostDoc.boost("245345-9635-4d58-a4d4-9413f9f98a4c",doc);
+        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "bach", Field.Store.YES,	Field.Index.ANALYZED));
+        ArtistBoostDoc.boost("9cefb3f2-763c-47a3-bc1e-86f1f35206f0",doc);
         writer.addDocument(doc);
 
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, ArtistIndexField.ARTIST.getName(), analyzer).parse("Bach");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, ArtistIndexField.ALIAS.getName(), analyzer).parse("Bach");
             TopDocs td = searcher.search(q,10);
             assertEquals(2, td.totalHits);
             for(ScoreDoc sd:td.scoreDocs)

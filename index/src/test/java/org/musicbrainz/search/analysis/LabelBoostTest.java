@@ -68,7 +68,9 @@ public class LabelBoostTest
         //THis field has anid that means it gets doc boost
         Document doc = new Document();
         doc.add(new Field(LabelIndexField.LABEL_ID.getName(), "022fe361-596c-43a0-8e22-bad712bb9548", Field.Store.YES,	Field.Index.ANALYZED));
-        doc.add(new Field(LabelIndexField.LABEL.getName(), "Emi", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(LabelIndexField.LABEL.getName(), "Emi Records", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(LabelIndexField.ALIAS.getName(), "Emi", Field.Store.YES,	Field.Index.ANALYZED));
+
         LabelBoostDoc.boost("022fe361-596c-43a0-8e22-bad712bb9548", doc);
         writer.addDocument(doc);
 
@@ -76,6 +78,7 @@ public class LabelBoostTest
         doc = new Document();
         doc.add(new Field(LabelIndexField.LABEL_ID.getName(), "245345-9635-4d58-a4d4-9413f9f98a4c", Field.Store.YES,	Field.Index.ANALYZED));
         doc.add(new Field(LabelIndexField.LABEL.getName(), "Emi", Field.Store.YES,	Field.Index.ANALYZED));
+        doc.add(new Field(LabelIndexField.ALIAS.getName(), "Emi", Field.Store.YES,	Field.Index.ANALYZED));
         LabelBoostDoc.boost("245345-9635-4d58-a4d4-9413f9f98a4c",doc);
         writer.addDocument(doc);
 
@@ -83,7 +86,7 @@ public class LabelBoostTest
 
         IndexSearcher searcher = new IndexSearcher(IndexReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, LabelIndexField.LABEL.getName(), analyzer).parse("Emi");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, LabelIndexField.ALIAS.getName(), analyzer).parse("Emi");
             TopDocs td = searcher.search(q,10);
             assertEquals(2, td.totalHits);
             for(ScoreDoc sd:td.scoreDocs)

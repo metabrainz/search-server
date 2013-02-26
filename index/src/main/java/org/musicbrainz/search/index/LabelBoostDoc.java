@@ -67,8 +67,11 @@ public class LabelBoostDoc {
         if(labelGuIdSet.contains(labelGuid)) {
             for(IndexableField indexablefield:doc.getFields())
             {
-                Field field = (Field)indexablefield;
-                field.setBoost(DOC_BOOST);
+                if(indexablefield.name().equals(LabelIndexField.ALIAS.getName()))
+                {
+                    Field field = (Field)indexablefield;
+                    field.setBoost(DOC_BOOST);
+                }
             }
         }
     }
