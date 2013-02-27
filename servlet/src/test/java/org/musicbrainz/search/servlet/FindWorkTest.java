@@ -374,4 +374,20 @@ public class FindWorkTest {
     assertTrue(output.contains("\"count\" : 1"));
     assertTrue(output.contains(""));
   }
+
+
+    @Test
+    public void testOutputAsXmlIsPretty() throws Exception {
+
+        Results res = ss.search("work:\"Symphony No. 5\"", 0, 1);
+        ResultsWriter writer = ss.getMmd2Writer();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res,SearchServerServlet.RESPONSE_XML, true);
+        pr.close();
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(output.split("\n").length>20);
+
+    }
 }
