@@ -199,6 +199,21 @@ public class ReleaseWriter extends ResultsWriter {
                 mediumList.setCount(BigInteger.valueOf(formats.length));
                 release.setMediumList(mediumList);
             }
+
+            String[] tags       = doc.getValues(ReleaseIndexField.TAG);
+            String[] tagCounts  = doc.getValues(ReleaseIndexField.TAGCOUNT);
+            if(tags.length>0)
+            {
+                TagList tagList = of.createTagList();
+                for(int i = 0;i<tags.length;i++) {
+                    Tag tag = of.createTag();
+                    tag.setName(tags[i]);
+                    tag.setCount(new BigInteger(tagCounts[i]));
+                    tagList.getTag().add(tag);
+                }
+                release.setTagList(tagList);
+            }
+
             releaseList.getRelease().add(release);
         }
         releaseList.setCount(BigInteger.valueOf(results.totalHits));

@@ -40,6 +40,8 @@ public enum ReleaseIndexField implements IndexField {
     SCRIPT			    ("script",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new CaseInsensitiveKeywordAnalyzer()),
     SECONDARY_TYPE      ("secondarytype",   MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     STATUS		        ("status",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    TAG		            ("tag",		        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    TAGCOUNT            ("tagcount",	    MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     TYPE		        ("type",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     ;
 

@@ -69,9 +69,11 @@ public class FindReleaseTest {
     doc.addField(ReleaseIndexField.COMMENT, "demo");
     doc.addField(ReleaseIndexField.SECONDARY_TYPE, "Live");
     doc.addField(ReleaseIndexField.SECONDARY_TYPE, "Compilation");
+    doc.addField(ReleaseIndexField.TAG, "punk");
+    doc.addField(ReleaseIndexField.TAGCOUNT, "10");
 
 
-    ArtistCredit ac = of.createArtistCredit();
+      ArtistCredit ac = of.createArtistCredit();
     NameCredit nc = of.createNameCredit();
     Artist artist = of.createArtist();
     artist.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
@@ -777,6 +779,7 @@ public class FindReleaseTest {
     assertTrue(output.contains("<catalog-number>WRATHCD25</catalog-number>"));
     assertTrue(output.contains("<medium-list count=\"2\">"));
     assertTrue(output.contains("<secondary-type-list><secondary-type>Live</secondary-type><secondary-type>Compilation</secondary-type></secondary-type-list>"));
+    assertTrue(output.contains("<tag-list><tag count=\"10\"><name>punk</name></tag></tag-list>"));
   }
 
   @Test
@@ -853,6 +856,19 @@ public class FindReleaseTest {
     String output = sw.toString();
     System.out.println("Json New  Pretty is" + output);
     assertTrue(output.contains("\"count\" : 1"));
+  }
+
+
+  @Test
+  public void testFindReleaseByTag() throws Exception {
+        Results res = ss.search("tag:punk", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(ReleaseIndexField.RELEASE_ID));
+        assertEquals("punk", doc.get(ReleaseIndexField.TAG));
+        assertEquals("10", doc.get(ReleaseIndexField.TAGCOUNT));
 
   }
+
 }

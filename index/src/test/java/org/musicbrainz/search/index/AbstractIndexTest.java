@@ -128,6 +128,8 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE tracklist");
                 stmt.addBatch("DROP TABLE language");
                 stmt.addBatch("DROP TABLE script");
+                stmt.addBatch("DROP TABLE release_tag");
+
 
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE release_group_primary_type");
@@ -491,6 +493,14 @@ public abstract class AbstractIndexTest {
                 "  iso_number character(3) NOT NULL," +
                 "  name character varying(100) NOT NULL," +
                 "  frequency integer NOT NULL DEFAULT 0" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_tag" +
+                "(" +
+                "  release integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
                 ")");
     }
 

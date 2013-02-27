@@ -32,6 +32,7 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 
 import java.io.IOException;
@@ -163,6 +164,11 @@ public class  ReleaseIndex extends DatabaseIndex {
                 " FROM tmp_release rl " +
                 " WHERE id BETWEEN ? AND ? ");
 
+        addPreparedStatement("TAGS",
+                "SELECT release_tag.release, tag.name as tag, release_tag.count as count " +
+                        " FROM release_tag " +
+                        "  INNER JOIN tag ON tag=id " +
+                        " WHERE release between ? AND ?");
 
     }
 
@@ -216,8 +222,32 @@ public class  ReleaseIndex extends DatabaseIndex {
         return secondaryTypes;
     }
 
+    /**
+     * Load Tags
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<Tag>> loadTags(int min, int max) throws SQLException, IOException {
+
+        // Get Tags
+        PreparedStatement st = getPreparedStatement("TAGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release");
+        rs.close();
+        return tags;
+
+    }
+
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+
+        Map<Integer, List<Tag>> tags                        = loadTags(min, max);
 
         //A particular release can have multiple catalog nos, labels when released as an imprint, typically used
         //by major labels
@@ -327,13 +357,14 @@ public class  ReleaseIndex extends DatabaseIndex {
         rs = st.executeQuery();
         releaseClock.suspend();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, labelInfo, mediums, puidWrapper, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, tags, labelInfo, mediums, puidWrapper, artistCredits));
         }
         rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<String>> secondaryTypes,
+                                          Map<Integer,List<Tag>> tags,
                                           Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<String>> puids,
@@ -452,6 +483,13 @@ public class  ReleaseIndex extends DatabaseIndex {
         }
         else {
             System.out.println("\nNo artist credit found for release:"+rs.getString("gid"));
+        }
+
+        if (tags.containsKey(id)) {
+            for (Tag tag : tags.get(id)) {
+                doc.addField(ReleaseIndexField.TAG, tag.getName());
+                doc.addField(ReleaseIndexField.TAGCOUNT, tag.getCount().toString());
+            }
         }
 
         return doc.getLuceneDocument();

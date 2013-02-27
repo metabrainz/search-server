@@ -168,6 +168,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'punk', 2)");
+        stmt.addBatch("INSERT INTO release_tag (release, tag, count) VALUES (491240, 1, 10)");
+
 
         stmt.executeBatch();
         stmt.close();
@@ -870,6 +873,24 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("Compilation", doc.getFields(ReleaseIndexField.SECONDARY_TYPE.getName())[0].stringValue());
             assertEquals("Interview", doc.getFields(ReleaseIndexField.SECONDARY_TYPE.getName())[1].stringValue());
 
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexReleaseWithTag() throws Exception {
+
+        addReleaseFour();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseIndexField.TAG.getName()).length);
+            assertEquals("punk", doc.getField(ReleaseGroupIndexField.TAG.getName()).stringValue());
         }
         ir.close();
     }

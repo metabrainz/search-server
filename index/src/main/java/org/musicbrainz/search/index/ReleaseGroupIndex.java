@@ -216,7 +216,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
     }
 
     /**
-     * Load Tags
+     * Load Artist Credits
      *
      * @param min
      * @param max
@@ -337,8 +337,8 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
          if (tags.containsKey(id)) {
             for (Tag tag : tags.get(id)) {
-                doc.addField(LabelIndexField.TAG, tag.getName());
-                doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
+                doc.addField(ReleaseGroupIndexField.TAG, tag.getName());
+                doc.addField(ReleaseGroupIndexField.TAGCOUNT, tag.getCount().toString());
             }
         }
 
