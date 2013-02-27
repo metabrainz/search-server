@@ -45,11 +45,11 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
 
-        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2)");
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2,'')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1, '')");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
@@ -100,8 +100,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1,'')");
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Pixies')");
 
@@ -146,11 +146,11 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
 
-        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2)");
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2,'')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1, '')");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
@@ -203,11 +203,11 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
 
-        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2)");
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2,'')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1, '')");
 
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length)"
                 + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");

@@ -106,7 +106,11 @@ public class ArtistCreditHelper {
             artist.setId(rs.getString(artistId));
             artist.setName(rs.getString(artistName));
             artist.setSortName(rs.getString(artistSortName));
-            artist.setDisambiguation(rs.getString(comment));
+
+            String disamb = rs.getString(comment);
+            if(disamb!=null && !disamb.isEmpty()) {
+                artist.setDisambiguation(disamb);
+            }
 
             String engAlias = rs.getString(aliasName);
             if(engAlias!=null && engAlias.length()>0)
@@ -118,7 +122,10 @@ public class ArtistCreditHelper {
                 artist.setAliasList(al);
             }
             nc.setArtist(artist);
-            nc.setJoinphrase(rs.getString(joinPhrase));
+            String jp=rs.getString(joinPhrase);
+            if(jp!=null && !jp.isEmpty()) {
+                nc.setJoinphrase(jp);
+            }
             String nameCredit = rs.getString(artistCreditName);
             if (!nameCredit.equals(artist.getName())) {
                 nc.setName(nameCredit);

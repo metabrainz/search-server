@@ -45,8 +45,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2, 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1, '')");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
@@ -85,8 +85,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name,join_phrase) " +
+                " VALUES (1, 0, 16153, 1, '')");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
@@ -116,8 +116,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment,)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1,'')");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
@@ -149,8 +149,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1,'')");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
@@ -188,8 +188,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
-                " VALUES (1, 0, 16153, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 1, '')");
 
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
@@ -266,6 +266,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT.getName()));
             assertNotNull(ac);
             assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
+            assertEquals(null, ac.getNameCredit().get(0).getJoinphrase());
+
         }
         ir.close();
     }
