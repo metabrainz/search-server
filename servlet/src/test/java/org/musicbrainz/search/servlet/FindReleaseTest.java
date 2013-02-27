@@ -110,7 +110,7 @@ public class FindReleaseTest {
     doc.addField(ReleaseIndexField.LABEL, "Wrath Records");
     doc.addField(ReleaseIndexField.LABEL_ID, Index.NO_VALUE);
 
-    doc.addField(ReleaseIndexField.CATALOG_NO, "LP001");
+    doc.addField(ReleaseIndexField.CATALOG_NO, "LP-001");
     doc.addField(ReleaseIndexField.LABEL, "Major Records");
     doc.addField(ReleaseIndexField.LABEL_ID, "c1dfaf9c-d498-4f6c-b040-f7714315fcea");
 
@@ -309,6 +309,16 @@ public class FindReleaseTest {
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
 
+
+    @Test
+    public void testFindReleaseByCatNoIgnoreHypens() throws Exception {
+        Results res = ss.search("catno:LP001", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
   @Test
   public void testFindReleaseByBarcodeWithoutZero() throws Exception {
     Results res = ss.search("barcode:7599273202", 0, 10);

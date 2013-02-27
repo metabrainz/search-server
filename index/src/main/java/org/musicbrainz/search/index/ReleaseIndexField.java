@@ -18,7 +18,7 @@ public enum ReleaseIndexField implements IndexField {
     ARTIST_NAME         ("artistname",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_NAMECREDIT   ("creditname",	    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     BARCODE			    ("barcode",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new StripLeadingZeroesAnalyzer()),
-    CATALOG_NO		    ("catno",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new StripSpacesAnalyzer()),
+    CATALOG_NO		    ("catno",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new StripSpacesAndSeparatorsAnalyzer()),
     COMMENT		        ("comment",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
     COUNTRY			    ("country",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     DATE			    ("date",		    MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),

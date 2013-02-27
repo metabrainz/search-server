@@ -393,7 +393,7 @@ public class  ReleaseIndex extends DatabaseIndex {
             for (List<String> entry : labelInfo.get(id)) {
                 doc.addFieldOrNoValue(ReleaseIndexField.LABEL_ID, entry.get(0));
                 doc.addFieldOrNoValue(ReleaseIndexField.LABEL, entry.get(1));
-                doc.addFieldOrNoValue(ReleaseIndexField.CATALOG_NO, entry.get(2));
+                doc.addFieldOrUnknown(ReleaseIndexField.CATALOG_NO, entry.get(2));
             }
         }
 

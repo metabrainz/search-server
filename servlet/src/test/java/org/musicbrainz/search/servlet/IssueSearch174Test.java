@@ -43,7 +43,7 @@ public class IssueSearch174Test extends TestCase {
     {
       MbDocument doc = new MbDocument();
       doc.addField(ReleaseIndexField.RELEASE_ID, "11111111-1cf0-4d1f-aca7-2a6f89e34b36");
-      doc.addField(ReleaseIndexField.CATALOG_NO, Index.NO_VALUE);
+      doc.addField(ReleaseIndexField.STATUS, Index.NO_VALUE);
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -58,7 +58,7 @@ public class IssueSearch174Test extends TestCase {
 
     IndexReader ir = DirectoryReader.open(ramDir);
     Fields fields = MultiFields.getFields(ir);
-    Terms terms = fields.terms("catno");
+    Terms terms = fields.terms("status");
     TermsEnum termsEnum = terms.iterator(null);
     termsEnum.next();
     assertEquals(1, termsEnum.docFreq());
@@ -75,7 +75,7 @@ public class IssueSearch174Test extends TestCase {
     SearcherManager searcherManager = ss.getSearcherManager();
     IndexSearcher searcher = searcherManager.acquire();
     try {
-      Query q = ss.parseQuery("catno:\\-");
+      Query q = ss.parseQuery("status:\\-");
       System.out.println(q);
       TopDocs topdocs = searcher.search(q, 10);
       assertEquals(1, topdocs.scoreDocs.length);

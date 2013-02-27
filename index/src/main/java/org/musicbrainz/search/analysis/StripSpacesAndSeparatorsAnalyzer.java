@@ -13,9 +13,9 @@ import java.io.Reader;
 
 /**
  * For analyzing catalogno so can compare values containing spaces with values that do not
- * Removes any spaces and lowercases the remaining text
+ * Removes any spaces and common seperators such as hyphens and lowercases the remaining text
  */
-public class StripSpacesAnalyzer extends Analyzer {
+public class StripSpacesAndSeparatorsAnalyzer extends Analyzer {
 
     protected NormalizeCharMap charConvertMap;
 
@@ -23,10 +23,13 @@ public class StripSpacesAnalyzer extends Analyzer {
 
         NormalizeCharMap.Builder builder = new NormalizeCharMap.Builder();
         builder.add(" ","");
+        builder.add("-","");
+        builder.add("_","");
+        builder.add(":","");
         charConvertMap = builder.build();
     }
 
-    public StripSpacesAnalyzer() {
+    public StripSpacesAndSeparatorsAnalyzer() {
         setCharConvertMap();
     }
 
