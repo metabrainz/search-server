@@ -43,53 +43,10 @@ public class LabelQueryParser extends MultiFieldQueryParser
 
             }
         }
-        else if (term.field().equals(LabelIndexField.CODE.getName()))
-        {
-            try
-            {
-
-                int number = Integer.parseInt(term.text());
-                BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
-                NumericUtils.intToPrefixCoded(number, 0, bytes);
-                TermQuery tq = new TermQuery(new Term(term.field(), bytes.utf8ToString()));
-                return tq;
-            }
-            catch (NumberFormatException nfe)
-            {
-                //If not provided numeric argument just leave as is, won't give matches
-                return super.newTermQuery(term);
-            }
-        }
         else
         {
             return super.newTermQuery(term);
 
         }
     }
-
-
-    @Override
-    public Query newRangeQuery(String field,
-                               String part1,
-                               String part2,
-                               boolean startInclusive,
-                               boolean endInclusive)
-    {
-        if (
-                (field.equals(LabelIndexField.CODE.getName()))
-                )
-        {
-            BytesRef bytes1 = new BytesRef(NumericUtils.BUF_SIZE_INT);
-            BytesRef bytes2 = new BytesRef(NumericUtils.BUF_SIZE_INT);
-            NumericUtils.intToPrefixCoded(Integer.parseInt(part1), 0, bytes1);
-            NumericUtils.intToPrefixCoded(Integer.parseInt(part2), 0, bytes2);
-            part1 = bytes1.utf8ToString();
-            part2 = bytes2.utf8ToString();
-        }
-        TermRangeQuery query = (TermRangeQuery)
-                super.newRangeQuery(field, part1, part2, startInclusive, endInclusive);
-        return query;
-
-    }
-
 }

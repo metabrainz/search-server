@@ -237,7 +237,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals(5807, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(LabelIndexField.CODE.getName()))));
+            assertEquals("5807", doc.get(LabelIndexField.CODE.getName()));
         }
         ir.close();
     }
@@ -254,7 +254,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals(99998, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(LabelIndexField.CODE.getName()))));
+            assertEquals("99998", doc.get(LabelIndexField.CODE.getName()));
         }
         ir.close();
     }

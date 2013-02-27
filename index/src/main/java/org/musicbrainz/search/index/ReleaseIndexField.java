@@ -2,7 +2,6 @@ package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.musicbrainz.search.analysis.*;
 
@@ -18,7 +17,7 @@ public enum ReleaseIndexField implements IndexField {
     ARTIST_CREDIT       ("artistcredit",    MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ARTIST_NAME         ("artistname",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_NAMECREDIT   ("creditname",	    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    BARCODE			    ("barcode",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new StripLeadingZeroAnalyzer()),
+    BARCODE			    ("barcode",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new StripLeadingZeroesAnalyzer()),
     CATALOG_NO		    ("catno",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new StripSpacesAnalyzer()),
     COMMENT		        ("comment",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
     COUNTRY			    ("country",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),

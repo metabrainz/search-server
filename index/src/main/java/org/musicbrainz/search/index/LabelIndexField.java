@@ -30,12 +30,8 @@ package org.musicbrainz.search.index;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
-import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
-import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
-import org.musicbrainz.search.analysis.MusicbrainzKeepAccentsAnalyzer;
-import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
+import org.musicbrainz.search.analysis.*;
 
 /**
  * Fields created in Lucene Search Index
@@ -46,7 +42,7 @@ public enum LabelIndexField implements IndexField {
     ALIAS		("alias",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     BEGIN		("begin",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     COMMENT		("comment",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
-    CODE		("code",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new KeywordAnalyzer()),
+    CODE		("code",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new StripLeadingZeroesAnalyzer()),
     COUNTRY		("country",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
     END			("end",			MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ENDED       ("ended",       MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),

@@ -23,7 +23,7 @@ public class ArtistDismaxSearch extends AbstractDismaxSearchServer {
   /**
    * Standard Search
    *
-   * @param searcher
+   * @param searchServer
    * @throws Exception
    */
   public ArtistDismaxSearch(AbstractSearchServer searchServer) throws Exception {

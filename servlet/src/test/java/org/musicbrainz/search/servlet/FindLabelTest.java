@@ -52,7 +52,7 @@ public class FindLabelTest {
       doc.addField(LabelIndexField.LABEL, "Jockey Slut");
       doc.addField(LabelIndexField.SORTNAME, "Slut, Jockey");
       doc.addField(LabelIndexField.ALIAS, "Jockeys");
-      doc.addNumericField(LabelIndexField.CODE, 1234);
+      doc.addField(LabelIndexField.CODE, 1234);
       doc.addField(LabelIndexField.BEGIN, "1993");
       doc.addField(LabelIndexField.END, "2004");
       doc.addField(LabelIndexField.ENDED, "true");
@@ -71,7 +71,7 @@ public class FindLabelTest {
       doc.addField(LabelIndexField.LABEL, "4AD");
       doc.addField(LabelIndexField.SORTNAME, "4AD");
       doc.addField(LabelIndexField.BEGIN, "1979");
-      doc.addNumericField(LabelIndexField.CODE, 5807);
+      doc.addField(LabelIndexField.CODE, 5807);
       doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
       doc.addField(LabelIndexField.COUNTRY, "unknown");
 
@@ -156,6 +156,16 @@ public class FindLabelTest {
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
+
+    @Test
+    public void testFindLabelByDismax3() throws Exception {
+        Results res = sd.search("1234", 0, 10);
+        assertEquals(1, res.totalHits);
+        Result result = res.results.get(0);
+        MbDocument doc = result.doc;
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+    }
 
   @Test
   public void testFindLabelByDefault() throws Exception {
@@ -275,6 +285,16 @@ public class FindLabelTest {
 
   @Test
   public void testFindLabelByCode2() throws Exception {
+    Results res = ss.search("code:05807", 0, 10);
+    assertEquals(1, res.totalHits);
+    Result result = res.results.get(0);
+    MbDocument doc = result.doc;
+    assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
+    assertEquals("4AD", doc.get(LabelIndexField.LABEL));
+  }
+
+  @Test
+  public void testFindLabelByCode3() throws Exception {
     Results res = ss.search("code:005807", 0, 10);
     assertEquals(1, res.totalHits);
     Result result = res.results.get(0);

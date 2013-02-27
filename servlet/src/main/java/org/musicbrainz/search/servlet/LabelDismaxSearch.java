@@ -41,6 +41,7 @@ public class LabelDismaxSearch extends AbstractDismaxSearchServer {
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(3);
     fieldBoosts.put(LabelIndexField.LABEL_ACCENT.getName(), new DismaxAlias.AliasField(false, 1.4f));
     fieldBoosts.put(LabelIndexField.LABEL.getName(), new DismaxAlias.AliasField(true, 1.3f));
+    fieldBoosts.put(LabelIndexField.CODE.getName(), new DismaxAlias.AliasField(true, 1.3f));
     fieldBoosts.put(LabelIndexField.SORTNAME.getName(), new DismaxAlias.AliasField(true, 1.1f));
     fieldBoosts.put(LabelIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
     DismaxAlias dismaxAlias = new DismaxAlias();
@@ -52,7 +53,7 @@ public class LabelDismaxSearch extends AbstractDismaxSearchServer {
   /**
    * Standard Search
    * 
-   * @param searcher
+   * @param searchServer
    * @throws Exception
    */
   public LabelDismaxSearch(AbstractSearchServer searchServer) throws Exception {

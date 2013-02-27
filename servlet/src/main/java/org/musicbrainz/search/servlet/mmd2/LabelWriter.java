@@ -74,7 +74,7 @@ public class LabelWriter extends ResultsWriter {
 
             String code = doc.get(LabelIndexField.CODE);
             if (isNotNoValue(code)) {
-                label.setLabelCode(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(code))));
+                label.setLabelCode(new BigInteger(code));
 
             }
 

@@ -40,7 +40,7 @@ public class ReleaseDismaxQueryParser extends DismaxQueryParser {
 
     /**
      * A catalogno may have been entered with spaces, this will incorrectly be treated as two separate tokens
-     * by the term query wheresas the phrase query will correctly analyse it into one term. So in this case
+     * by the term query whereas the phrase query will correctly analyse it into one term. So in this case
      * the term query could return no matches whereas the phrase query could get a match.
      *
      * @param term

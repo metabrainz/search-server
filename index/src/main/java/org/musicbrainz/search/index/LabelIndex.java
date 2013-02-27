@@ -230,7 +230,7 @@ public class LabelIndex extends DatabaseIndex {
 
         int labelcode = rs.getInt("label_code");
         if (labelcode > 0) {
-            doc.addNumericField(LabelIndexField.CODE, labelcode);
+            doc.addField(LabelIndexField.CODE, labelcode);
         }
         else {
             doc.addField(LabelIndexField.CODE,Index.NO_VALUE);

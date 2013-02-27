@@ -5,20 +5,21 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 
-public class StripLeadingZeroFilter extends TokenFilter {
+public class StripLeadingZeroesFilter extends TokenFilter {
+
     /**
      * Construct filtering <i>in</i>.
      */
-    public StripLeadingZeroFilter(TokenStream in) {
+    public StripLeadingZeroesFilter(TokenStream in) {
         super(in);
-        termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
+        termAtt = addAttribute(CharTermAttribute.class);
     }
 
     private CharTermAttribute termAtt;
 
     /**
      *
-     * <p>Removes zeroes if first char in token
+     * <p>Removes zeroes if at start of token
      */
     public final boolean incrementToken() throws java.io.IOException {
         if (!input.incrementToken()) {
@@ -28,16 +29,22 @@ public class StripLeadingZeroFilter extends TokenFilter {
         char[] buffer = termAtt.buffer();
         final int bufferLength = termAtt.length();
 
-        if (buffer[0] == '0') {
-            for (int i = 1; i < bufferLength; i++) {
-                char c = buffer[i];
-                buffer[i - 1] = c;
+        int countZeroes;
+        for (countZeroes = 0; countZeroes < bufferLength; countZeroes++) {
+            if(buffer[countZeroes]!='0') {
+                break;
             }
-            termAtt.setLength(bufferLength - 1);
-            return true;
-        } else {
+        }
+        if(countZeroes>0) {
+            for (int i = countZeroes; i < bufferLength; i++) {
+                char c = buffer[i];
+                buffer[i - countZeroes] = c;
+            }
+            termAtt.setLength(bufferLength - countZeroes);
             return true;
         }
+        return true;
+
     }
 
 }
