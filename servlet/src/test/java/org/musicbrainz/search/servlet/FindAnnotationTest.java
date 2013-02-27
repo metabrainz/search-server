@@ -209,7 +209,7 @@ public class FindAnnotationTest {
     org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
-    writer.write(pr, res);
+    writer.write(pr, res, SearchServerServlet.RESPONSE_XML, true);
     pr.close();
 
     String output = sw.toString();
