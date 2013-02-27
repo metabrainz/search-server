@@ -38,6 +38,7 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.musicbrainz.mmd2.Metadata;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.servlet.ErrorMessage;
+import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.SearchServerServlet;
 
@@ -215,5 +216,8 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
             e.printStackTrace();
         }
     }
+
+
+
 
 }

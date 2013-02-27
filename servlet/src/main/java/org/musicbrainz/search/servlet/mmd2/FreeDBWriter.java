@@ -58,7 +58,7 @@ public class FreeDBWriter extends ResultsWriter {
             freeDB.setId(doc.get(FreeDBIndexField.DISCID));
             freeDB.setCategory(doc.get(FreeDBIndexField.CATEGORY));
             freeDB.setYear(doc.get(FreeDBIndexField.YEAR));
-            freeDB.setScore(String.valueOf((int)(result.score * 100)));
+            freeDB.setScore(calculateNormalizedScore(result, results.maxScore));
 
             org.musicbrainz.mmd2.FreedbDisc.TrackList trackList = of.createFreedbDiscTrackList();
             trackList.setCount(new BigInteger(doc.get(FreeDBIndexField.TRACKS)));

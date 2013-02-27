@@ -51,7 +51,7 @@ public class ArtistWriter extends ResultsWriter {
             Artist artist = of.createArtist();
 
             artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
-            artist.setScore(String.valueOf((int) (result.score * 100)));
+            artist.setScore(calculateNormalizedScore(result, results.maxScore));
 
             String artype = doc.get(ArtistIndexField.TYPE);
             if (isNotUnknown(artype)) {

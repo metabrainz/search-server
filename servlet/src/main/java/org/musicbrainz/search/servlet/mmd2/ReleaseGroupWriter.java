@@ -49,7 +49,7 @@ public class ReleaseGroupWriter extends ResultsWriter {
             MbDocument doc = result.doc;
             ReleaseGroup releaseGroup = of.createReleaseGroup();
             releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
-            releaseGroup.setScore(String.valueOf((int)(result.score * 100)));
+            releaseGroup.setScore(calculateNormalizedScore(result, results.maxScore));
             String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
             if (name != null) {
                 releaseGroup.setTitle(name);

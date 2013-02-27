@@ -31,14 +31,23 @@ package org.musicbrainz.search.servlet;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Results {
+/**
+ * Store the results of a search
+ */
+public class Results implements Comparable<Results>{
 
+    public float maxScore;
     public int offset;
     public int totalHits;
     public List<Result> results;
 
     public Results() {
         results = new LinkedList<Result>();
+    }
+
+    public int compareTo(Results results)
+    {
+        return Float.compare(maxScore,results.maxScore);
     }
 
 }

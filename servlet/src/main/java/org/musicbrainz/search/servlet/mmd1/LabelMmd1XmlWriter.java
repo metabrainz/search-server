@@ -57,7 +57,7 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
                 label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
             }
 
-            label.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
+            label.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
 
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {

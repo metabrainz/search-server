@@ -241,11 +241,11 @@ public abstract class AbstractSearchServer implements SearchServer {
     results.offset = offset;
     results.totalHits = topDocs.totalHits;
     ScoreDoc docs[] = topDocs.scoreDocs;
-    float maxScore = topDocs.getMaxScore();
+    results.maxScore=topDocs.getMaxScore();
     for (int i = offset; i < docs.length; i++) {
-      Result result = new Result();
-      result.score = docs[i].score / maxScore;
-      result.doc = new MbDocument(searcher.doc(docs[i].doc));
+      Result result     = new Result();
+      result.score      = docs[i].score;
+      result.doc        = new MbDocument(searcher.doc(docs[i].doc));
       results.results.add(result);
     }
     return results;

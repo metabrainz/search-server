@@ -5,6 +5,9 @@ import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Take the output from multiple results sets and merged into single output
@@ -37,7 +40,24 @@ public class AllWriter extends ResultsWriter {
     public void write(Metadata metadata, Results results) throws IOException {
     }
 
+
     public Metadata write(Results results) throws IOException {
+
+        //Sort by best max score, then set this as the max score for each entity
+        List<Results> resultsList = new ArrayList<Results>();
+        resultsList.add(artistResults);
+        resultsList.add(releaseResults);
+        resultsList.add(releaseGroupResults);
+        resultsList.add(labelResults);
+        resultsList.add(recordingResults);
+        resultsList.add(workResults);
+        Collections.sort(resultsList);
+        Collections.reverse(resultsList);
+        float bestMaxScore=resultsList.get(0).maxScore;
+        for(Results next:resultsList)
+        {
+            next.maxScore=bestMaxScore;
+        }
         ObjectFactory of  = new ObjectFactory();
         Metadata metadata = of.createMetadata();
 

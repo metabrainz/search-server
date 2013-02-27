@@ -49,7 +49,7 @@ public class WorkWriter extends ResultsWriter {
             MbDocument doc = result.doc;
             Work work = of.createWork();
             work.setId(doc.get(WorkIndexField.WORK_ID));
-            work.setScore(String.valueOf((int)(result.score * 100)));
+            work.setScore(calculateNormalizedScore(result, results.maxScore));
 
             String name = doc.get(WorkIndexField.WORK);
             if (name != null) {

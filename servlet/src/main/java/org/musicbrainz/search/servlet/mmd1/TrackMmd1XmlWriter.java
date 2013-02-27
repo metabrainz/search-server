@@ -58,7 +58,7 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
 
             track.setId(doc.get(RecordingIndexField.RECORDING_ID));
             
-            track.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
+            track.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
 
             String name = doc.get(RecordingIndexField.RECORDING_OUTPUT);
 

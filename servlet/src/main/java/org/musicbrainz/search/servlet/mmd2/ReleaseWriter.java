@@ -56,7 +56,7 @@ public class ReleaseWriter extends ResultsWriter {
             MbDocument doc = result.doc;
             Release release = of.createRelease();
             release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
-            release.setScore(String.valueOf((int)(result.score * 100)));
+            release.setScore(calculateNormalizedScore(result, results.maxScore));
 
             String name = doc.get(ReleaseIndexField.RELEASE);
             if (name != null) {

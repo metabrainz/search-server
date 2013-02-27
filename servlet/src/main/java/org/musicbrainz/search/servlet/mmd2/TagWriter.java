@@ -50,7 +50,7 @@ public class TagWriter extends ResultsWriter {
             MbDocument doc = result.doc;
             Tag tag = of.createTag();
             tag.setName(doc.get(TagIndexField.TAG));;
-            tag.setScore(String.valueOf((int)(result.score * 100)));
+            tag.setScore(calculateNormalizedScore(result, results.maxScore));
             tagList.getTag().add(tag);
         }
         tagList.setCount(BigInteger.valueOf(results.totalHits));

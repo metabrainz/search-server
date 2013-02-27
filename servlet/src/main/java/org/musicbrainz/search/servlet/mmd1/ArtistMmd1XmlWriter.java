@@ -60,7 +60,8 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
                 artist.setType(StringUtils.capitalize(artype));
             }
 
-            artist.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
+
+            artist.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
 
             String name = doc.get(ArtistIndexField.ARTIST);
             if (name != null) {

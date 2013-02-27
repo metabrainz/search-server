@@ -69,7 +69,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                 }
             }
 
-            release.getOtherAttributes().put(getScore(), String.valueOf((int) (result.score * 100)));
+            release.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
 
             String name = doc.get(ReleaseIndexField.RELEASE);
             if (name != null) {

@@ -57,11 +57,11 @@ public class LabelWriter extends ResultsWriter {
             if (isNotUnknown(type)){
                 label.setType(type);
             }
-            label.setScore(String.valueOf((int)(result.score * 100)));
+            label.setScore(calculateNormalizedScore(result, results.maxScore));
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {
                 label.setName(name);
-}
+            }
 
             String[] ipiCodes = doc.getValues(LabelIndexField.IPI);
             if (ipiCodes.length > 0) {

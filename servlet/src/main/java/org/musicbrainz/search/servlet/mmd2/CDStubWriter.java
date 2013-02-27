@@ -103,8 +103,8 @@ public class CDStubWriter extends ResultsWriter {
                 cdstub.setTrackList(trackList);
             }
 
-            cdstub.setScore(String.valueOf((int)(result.score * 100)));
 
+            cdstub.setScore(calculateNormalizedScore(result, results.maxScore));
             cdstubList.getCdstub().add(cdstub);
 
         }

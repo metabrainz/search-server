@@ -75,7 +75,7 @@ public class RecordingWriter extends ResultsWriter {
             Recording recording = of.createRecording();
 
             recording.setId(doc.get(RecordingIndexField.RECORDING_ID));
-            recording.setScore(String.valueOf((int)(result.score * 100)));
+            recording.setScore(calculateNormalizedScore(result, results.maxScore));
             String name = doc.get(RecordingIndexField.RECORDING_OUTPUT);
 
             if (name != null) {
