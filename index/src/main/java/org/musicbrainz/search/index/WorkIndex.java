@@ -335,6 +335,9 @@ public class WorkIndex extends DatabaseIndex {
                 doc.addField(WorkIndexField.ISWC, iswc);
             }
         }
+        else {
+            doc.addFieldOrNoValue(WorkIndexField.ISWC, null);
+        }
 
         if (tags.containsKey(id)) {
             for (Tag tag : tags.get(id)) {

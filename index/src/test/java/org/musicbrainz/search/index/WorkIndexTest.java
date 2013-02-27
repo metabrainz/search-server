@@ -53,7 +53,6 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
                 " VALUES (1, 'eng', 'eng', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 2)");
-        stmt.addBatch("INSERT INTO iswc(work,iswc) VALUES(1,'T-101779304-1')");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Classical', 2);");
         stmt.addBatch("INSERT INTO work_tag (work, tag, count) VALUES (1, 1, 10)");
@@ -114,7 +113,6 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
             assertEquals("Work", doc.getField(WorkIndexField.WORK.getName()).stringValue());
             assertEquals(1, doc.getFields(WorkIndexField.ISWC.getName()).length);
-            assertEquals("T-101779304-1", doc.getField(WorkIndexField.ISWC.getName()).stringValue());
             assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
             assertEquals("-", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
             assertEquals(1, doc.getFields(WorkIndexField.ARTIST_RELATION.getName()).length);
@@ -203,6 +201,22 @@ public class WorkIndexTest extends AbstractIndexTest {
         }
     }
 
+
+    @Test
+    public void testIndexWorkWithNoIswc() throws Exception {
+
+        addWorkOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(WorkIndexField.ISWC.getName()).length);
+            assertEquals("-", doc.getFields(WorkIndexField.ISWC.getName())[0].stringValue());
+            ir.close();
+        }
+    }
     @Test
     public void testIndexWorkWithArtistRelation() throws Exception {
 

@@ -679,7 +679,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFields(RecordingIndexField.ISRC.getName()).length);
+            assertEquals(1, doc.getFields(RecordingIndexField.ISRC.getName()).length);
+            assertEquals("-", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
         }
         ir.close();
     }

@@ -638,6 +638,9 @@ public class RecordingIndex extends DatabaseIndex {
                 doc.addField(RecordingIndexField.ISRC, isrc);
             }
         }
+        else {
+            doc.addFieldOrNoValue(RecordingIndexField.ISRC, null);
+        }
 
         //Recording Artist Credit
         ArtistCreditWrapper ac = artistCredits.get(id);
