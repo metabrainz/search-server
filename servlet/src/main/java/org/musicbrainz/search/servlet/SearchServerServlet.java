@@ -636,17 +636,9 @@ public class SearchServerServlet extends HttpServlet
             response.setDateHeader("Last-Modified", writer.getLastUpdateDate().getTime());
         }
 
-        try
-        {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-            writer.write(out, results, responseFormat, isPretty);
-            out.close();
-        }
-        catch(RuntimeException ex)
-        {
-            ex.printStackTrace();
-            throw ex;
-        }
+        PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
+        writer.write(out, results, responseFormat, isPretty);
+        out.close();
     }
 
     /**
