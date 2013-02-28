@@ -36,7 +36,7 @@ import java.util.List;
  */
 public class Results implements Comparable<Results>{
 
-    public float maxScore;
+    public float maxScore=0.0f;
     public int offset;
     public int totalHits;
     public List<Result> results;
@@ -47,7 +47,26 @@ public class Results implements Comparable<Results>{
 
     public int compareTo(Results results)
     {
-        return Float.compare(maxScore,results.maxScore);
+        //If I don't explicity check for Nan behaviour is inconsistent test fails under maven, possibly a fix in java version
+        //As we are only ever comparing 6 numbers not a big deal
+        if(Float.isNaN(maxScore))
+        {
+            if(Float.isNaN(results.maxScore))
+            {
+                return 0;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+        if(Float.isNaN(results.maxScore))
+        {
+            return 1;
+        }
+        int result =  (maxScore<results.maxScore ? -1 : (maxScore==results.maxScore ? 0 : 1));
+        return result;
+
     }
 
 }

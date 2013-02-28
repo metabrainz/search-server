@@ -56,6 +56,7 @@ public class AllWriter extends ResultsWriter {
         float bestMaxScore=resultsList.get(0).maxScore;
         for(Results next:resultsList)
         {
+            System.out.println(next.maxScore);
             next.maxScore=bestMaxScore;
         }
         ObjectFactory of  = new ObjectFactory();
