@@ -18,19 +18,25 @@ import java.util.List;
  */
 public class AllWriter extends ResultsWriter {
 
-    Results artistResults;
-    Results releaseResults;
-    Results releaseGroupResults;
-    Results labelResults;
-    Results recordingResults;
-    Results workResults;
+    private int     limit;
+    private int     offset;
+    private Results artistResults;
+    private Results releaseResults;
+    private Results releaseGroupResults;
+    private Results labelResults;
+    private Results recordingResults;
+    private Results workResults;
 
-    public AllWriter(Results artistResults,
+    public AllWriter(int offset,
+                     int limit,
+                     Results artistResults,
                      Results releaseResults,
                      Results releaseGroupResults,
                      Results labelResults,
                      Results recordingResults,
                      Results workResults) {
+        this.offset =offset;
+        this.limit=limit;
         this.artistResults=artistResults;
         this.releaseResults=releaseResults;
         this.releaseGroupResults=releaseGroupResults;
@@ -89,6 +95,11 @@ public class AllWriter extends ResultsWriter {
         RecordingWriter recordingWriter = new RecordingWriter();
         WorkWriter workWriter = new WorkWriter();
 
+        //Limit results returned to the limit
+        if(allResults.size()>limit)
+        {
+            allResults = allResults.subList(0,limit);
+        }
         //Now use the correct writer to write the result
         for(Result result:allResults)
         {

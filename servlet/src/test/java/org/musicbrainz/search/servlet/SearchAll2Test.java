@@ -261,7 +261,7 @@ public class SearchAll2Test
 
 
 
-        AllWriter writer = new AllWriter(artistResults, releaseResults, releaseGroupResults, labelResults,
+        AllWriter writer = new AllWriter(0, 10, artistResults, releaseResults, releaseGroupResults, labelResults,
                 recordingResults, workResults);
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);
@@ -303,7 +303,7 @@ public class SearchAll2Test
 
 
 
-        AllWriter writer = new AllWriter(artistResults, releaseResults, releaseGroupResults, labelResults,
+        AllWriter writer = new AllWriter(0, 10, artistResults, releaseResults, releaseGroupResults, labelResults,
                 recordingResults, workResults);
         StringWriter sw = new StringWriter();
         PrintWriter pr = new PrintWriter(sw);

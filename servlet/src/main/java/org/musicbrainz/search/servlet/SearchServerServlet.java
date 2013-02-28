@@ -689,7 +689,7 @@ public class SearchServerServlet extends HttpServlet
         Results recordingResults = results.get(4).get();
         Results workResults = results.get(5).get();
 
-        AllWriter writer = new AllWriter(artistResults, releaseResults, releaseGroupResults, labelResults,
+        AllWriter writer = new AllWriter(0, 10, artistResults, releaseResults, releaseGroupResults, labelResults,
                 recordingResults, workResults);
         response.setCharacterEncoding(CHARSET);
 
