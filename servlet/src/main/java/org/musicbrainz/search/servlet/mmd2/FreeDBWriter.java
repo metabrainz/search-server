@@ -50,7 +50,7 @@ public class FreeDBWriter extends ResultsWriter {
         FreedbDiscList freeDBList = of.createFreedbDiscList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             FreedbDisc freeDB = of.createFreedbDisc();
 
             freeDB.setArtist(doc.get(FreeDBIndexField.ARTIST));
@@ -58,16 +58,17 @@ public class FreeDBWriter extends ResultsWriter {
             freeDB.setId(doc.get(FreeDBIndexField.DISCID));
             freeDB.setCategory(doc.get(FreeDBIndexField.CATEGORY));
             freeDB.setYear(doc.get(FreeDBIndexField.YEAR));
-            freeDB.setScore(calculateNormalizedScore(result, results.maxScore));
 
+            result.setNormalizedScore(results.getMaxScore());
+            freeDB.setScore(String.valueOf(result.getNormalizedScore()));
             org.musicbrainz.mmd2.FreedbDisc.TrackList trackList = of.createFreedbDiscTrackList();
             trackList.setCount(new BigInteger(doc.get(FreeDBIndexField.TRACKS)));
             freeDB.setTrackList(trackList);
             freeDBList.getFreedbDisc().add(freeDB);
 
         }
-        freeDBList.setCount(BigInteger.valueOf(results.totalHits));
-        freeDBList.setOffset(BigInteger.valueOf(results.offset));
+        freeDBList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        freeDBList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setFreedbDiscList(freeDBList);
     }
 

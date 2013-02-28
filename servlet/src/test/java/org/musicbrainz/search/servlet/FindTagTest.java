@@ -12,7 +12,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -59,14 +58,14 @@ public class FindTagTest {
   @Test
   public void testFindTagByName() throws Exception {
     Results res = ss.search("tag:rock", 0, 10);
-    assertEquals(2, res.totalHits);
+    assertEquals(2, res.getTotalHits());
     Result result = res.results.get(0);
 
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("rock", doc.get(TagIndexField.TAG));
 
     result = res.results.get(1);
-    doc = result.doc;
+    doc = result.getDoc();
     assertEquals("classic rock", doc.get(TagIndexField.TAG));
   }
 

@@ -36,9 +36,11 @@ import java.util.List;
  */
 public class Results implements Comparable<Results>{
 
-    public float maxScore=0.0f;
-    public int offset;
-    public int totalHits;
+    private float maxScore=0.0f;
+    private int offset;
+    private int totalHits;
+    private ResourceType resourceType;
+
     public List<Result> results;
 
     public Results() {
@@ -49,9 +51,9 @@ public class Results implements Comparable<Results>{
     {
         //If I don't explicity check for Nan behaviour is inconsistent test fails under maven, possibly a fix in java version
         //As we are only ever comparing 6 numbers not a big deal
-        if(Float.isNaN(maxScore))
+        if(Float.isNaN(getMaxScore()))
         {
-            if(Float.isNaN(results.maxScore))
+            if(Float.isNaN(results.getMaxScore()))
             {
                 return 0;
             }
@@ -60,13 +62,52 @@ public class Results implements Comparable<Results>{
                 return -1;
             }
         }
-        if(Float.isNaN(results.maxScore))
+        if(Float.isNaN(results.getMaxScore()))
         {
             return 1;
         }
-        int result =  (maxScore<results.maxScore ? -1 : (maxScore==results.maxScore ? 0 : 1));
+        int result =  (getMaxScore() < results.getMaxScore() ? -1 : (getMaxScore() == results.getMaxScore() ? 0 : 1));
         return result;
 
     }
 
+    public float getMaxScore()
+    {
+        return maxScore;
+    }
+
+    public void setMaxScore(float maxScore)
+    {
+        this.maxScore = maxScore;
+    }
+
+    public int getOffset()
+    {
+        return offset;
+    }
+
+    public void setOffset(int offset)
+    {
+        this.offset = offset;
+    }
+
+    public int getTotalHits()
+    {
+        return totalHits;
+    }
+
+    public void setTotalHits(int totalHits)
+    {
+        this.totalHits = totalHits;
+    }
+
+    public ResourceType getResourceType()
+    {
+        return resourceType;
+    }
+
+    public void setResourceType(ResourceType resourceType)
+    {
+        this.resourceType = resourceType;
+    }
 }

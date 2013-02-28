@@ -29,7 +29,6 @@
 package org.musicbrainz.search.servlet;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.LongField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -53,7 +51,6 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
@@ -236,16 +233,16 @@ public abstract class AbstractSearchServer implements SearchServer {
    * @return
    * @throws IOException
    */
-  private Results processResults(IndexSearcher searcher, TopDocs topDocs, int offset) throws IOException {
+  protected Results processResults(IndexSearcher searcher, TopDocs topDocs, int offset) throws IOException {
     Results results = new Results();
-    results.offset = offset;
-    results.totalHits = topDocs.totalHits;
+    results.setOffset(offset);
+    results.setTotalHits(topDocs.totalHits);
     ScoreDoc docs[] = topDocs.scoreDocs;
-    results.maxScore=topDocs.getMaxScore();
+    results.setMaxScore(topDocs.getMaxScore());
     for (int i = offset; i < docs.length; i++) {
       Result result     = new Result();
-      result.score      = docs[i].score;
-      result.doc        = new MbDocument(searcher.doc(docs[i].doc));
+      result.setScore(docs[i].score);
+      result.setDoc(new MbDocument(searcher.doc(docs[i].doc)));
       results.results.add(result);
     }
     return results;

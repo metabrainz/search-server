@@ -51,11 +51,12 @@ public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
         ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             ReleaseGroup releaseGroup = of.createReleaseGroup();
             releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
 
-            releaseGroup.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
+            result.setNormalizedScore(results.getMaxScore());
+            releaseGroup.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
             String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
             if (name != null) {
@@ -82,8 +83,8 @@ public class ReleaseGroupMmd1XmlWriter extends Mmd1XmlWriter {
             }
             releaseGroupList.getReleaseGroup().add(releaseGroup);
         }
-        releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));
-        releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
+        releaseGroupList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        releaseGroupList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setReleaseGroupList(releaseGroupList);
         return metadata;
     }

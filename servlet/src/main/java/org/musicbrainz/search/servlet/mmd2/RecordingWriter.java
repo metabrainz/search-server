@@ -40,6 +40,7 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Locale;
 
 public class RecordingWriter extends ResultsWriter {
@@ -65,17 +66,40 @@ public class RecordingWriter extends ResultsWriter {
         return vaCredit;
     }
 
-    public void write(Metadata metadata, Results results) throws IOException {
 
+    public void write(Metadata metadata, Results results) throws IOException
+    {
         ObjectFactory of = new ObjectFactory();
         RecordingList recordingList = of.createRecordingList();
 
-        for (Result result : results.results) {
-            MbDocument doc = result.doc;
+        for(Result result:results.results)
+        {
+            result.setNormalizedScore(results.getMaxScore());
+        }
+        write(recordingList.getRecording(), results);
+
+        recordingList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        recordingList.setOffset(BigInteger.valueOf(results.getOffset()));
+        metadata.setRecordingList(recordingList);
+    }
+    public void write(List list, Results results) throws IOException
+    {
+        for (Result result : results.results)
+        {
+            write(list, result);
+        }
+    }
+
+    public void write(List list, Result result) throws IOException
+    {
+        ObjectFactory of = new ObjectFactory();
+        RecordingList recordingList = of.createRecordingList();
+
+            MbDocument doc = result.getDoc();
             Recording recording = of.createRecording();
 
             recording.setId(doc.get(RecordingIndexField.RECORDING_ID));
-            recording.setScore(calculateNormalizedScore(result, results.maxScore));
+            recording.setScore(String.valueOf(result.getNormalizedScore()));
             String name = doc.get(RecordingIndexField.RECORDING_OUTPUT);
 
             if (name != null) {
@@ -234,10 +258,6 @@ public class RecordingWriter extends ResultsWriter {
                 recording.setTagList(tagList);
             }
 
-            recordingList.getRecording().add(recording);
-        }
-        recordingList.setCount(BigInteger.valueOf(results.totalHits));
-        recordingList.setOffset(BigInteger.valueOf(results.offset));
-        metadata.setRecordingList(recordingList);
+            list.add(recording);
     }
 }

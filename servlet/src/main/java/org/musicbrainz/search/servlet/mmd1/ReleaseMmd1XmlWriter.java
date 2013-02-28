@@ -53,7 +53,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
         ReleaseList releaseList = of.createReleaseList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Release release = of.createRelease();
             release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
 
@@ -69,7 +69,8 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                 }
             }
 
-            release.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
+            result.setNormalizedScore(results.getMaxScore());
+            release.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
             String name = doc.get(ReleaseIndexField.RELEASE);
             if (name != null) {
@@ -212,8 +213,8 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             }
             releaseList.getRelease().add(release);
         }
-        releaseList.setCount(BigInteger.valueOf(results.totalHits));
-        releaseList.setOffset(BigInteger.valueOf(results.offset));
+        releaseList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        releaseList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setReleaseList(releaseList);
         return metadata;
     }

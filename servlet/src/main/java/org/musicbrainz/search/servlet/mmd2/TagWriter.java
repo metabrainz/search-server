@@ -47,14 +47,15 @@ public class TagWriter extends ResultsWriter {
         TagList  tagList = of.createTagList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Tag tag = of.createTag();
             tag.setName(doc.get(TagIndexField.TAG));;
-            tag.setScore(calculateNormalizedScore(result, results.maxScore));
+            result.setNormalizedScore(results.getMaxScore());
+            tag.setScore(String.valueOf(result.getNormalizedScore()));
             tagList.getTag().add(tag);
         }
-        tagList.setCount(BigInteger.valueOf(results.totalHits));
-        tagList.setOffset(BigInteger.valueOf(results.offset));
+        tagList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        tagList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setTagList(tagList);
     }
 }

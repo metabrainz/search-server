@@ -14,7 +14,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -114,9 +113,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelById() throws Exception {
     Results res = ss.search("laid:\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     assertEquals("1993", doc.get(LabelIndexField.BEGIN));
@@ -130,9 +129,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByName() throws Exception {
     Results res = ss.search("label:\"Jockey Slut\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
@@ -140,9 +139,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByDismax1() throws Exception {
     Results res = sd.search("Jockey Slut", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
@@ -150,9 +149,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByDismax2() throws Exception {
     Results res = sd.search("Jockey", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
@@ -160,9 +159,9 @@ public class FindLabelTest {
     @Test
     public void testFindLabelByDismax3() throws Exception {
         Results res = sd.search("1234", 0, 10);
-        assertEquals(1, res.totalHits);
+        assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
-        MbDocument doc = result.doc;
+        MbDocument doc = result.getDoc();
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
         assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
@@ -172,27 +171,27 @@ public class FindLabelTest {
 
     {
       Results res = ss.search("\"Jockey Slut\"", 0, 10);
-      assertEquals(1, res.totalHits);
+      assertEquals(1, res.getTotalHits());
       Result result = res.results.get(0);
-      MbDocument doc = result.doc;
+      MbDocument doc = result.getDoc();
       assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
       assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
 
     {
       Results res = ss.search("\"Slut Jockey\"", 0, 10);
-      assertEquals(1, res.totalHits);
+      assertEquals(1, res.getTotalHits());
       Result result = res.results.get(0);
-      MbDocument doc = result.doc;
+      MbDocument doc = result.getDoc();
       assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
       assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
 
     {
       Results res = ss.search("\"Jockeys\"", 0, 10);
-      assertEquals(1, res.totalHits);
+      assertEquals(1, res.getTotalHits());
       Result result = res.results.get(0);
-      MbDocument doc = result.doc;
+      MbDocument doc = result.getDoc();
       assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
       assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
     }
@@ -201,9 +200,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByType() throws Exception {
     Results res = ss.search("type:\"production\"", 0, 10);
-    assertEquals(2, res.totalHits);
+    assertEquals(2, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
 
     //(This will always come first because searcher sots by score and then docno, and this doc added first)
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
@@ -213,9 +212,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByIpi() throws Exception {
     Results res = ss.search("ipi:1001", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
 
     //(This will always come first because searcher sots by score and then docno, and this doc added first)
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
@@ -225,9 +224,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByNumericType() throws Exception {
     Results res = ss.search("type:3", 0, 10);
-    assertEquals(2, res.totalHits);
+    assertEquals(2, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
 
     //(This will always come first because searcher sots by score and then docno, and this doc added first)
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
@@ -237,9 +236,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelBySortname() throws Exception {
     Results res = ss.search("sortname:\"Slut, Jockey\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
@@ -247,9 +246,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByCountry() throws Exception {
     Results res = ss.search("country:\"gb\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
@@ -257,18 +256,18 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByUnknownCountry() throws Exception {
     Results res = ss.search("country:\"unknown\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
   }
 
   @Test
   public void testFindLabelByCountryUpercase() throws Exception {
     Results res = ss.search("country:\"GB\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
@@ -276,9 +275,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByCode() throws Exception {
     Results res = ss.search("code:5807", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("4AD", doc.get(LabelIndexField.LABEL));
   }
@@ -286,9 +285,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByCode2() throws Exception {
     Results res = ss.search("code:05807", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("4AD", doc.get(LabelIndexField.LABEL));
   }
@@ -296,9 +295,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByCode3() throws Exception {
     Results res = ss.search("code:005807", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("4AD", doc.get(LabelIndexField.LABEL));
   }
@@ -307,9 +306,9 @@ public class FindLabelTest {
   public void testFindLabelByCodeRange() throws Exception {
       try {
     Results res = ss.search("code:[5806 TO 5807]", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("4AD", doc.get(LabelIndexField.LABEL));
       }
@@ -322,9 +321,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByZeroedCode() throws Exception {
     Results res = ss.search("code:\"05807\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("4AD", doc.get(LabelIndexField.LABEL));
   }
@@ -332,9 +331,9 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByTag() throws Exception {
     Results res = ss.search("tag:dance", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
     assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
   }
@@ -342,16 +341,16 @@ public class FindLabelTest {
   @Test
   public void testFindLabelByEnded() throws Exception {
     Results res = ss.search("ended:\"true\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
   }
 
 
   public void testIssue66() throws Exception {
     Results res = ss.search("dark", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     ResultsWriter writer = new LabelMmd1XmlWriter();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);

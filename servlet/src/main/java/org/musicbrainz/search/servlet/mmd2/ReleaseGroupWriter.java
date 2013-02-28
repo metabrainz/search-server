@@ -37,19 +37,44 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
 public class ReleaseGroupWriter extends ResultsWriter {
 
-    public void write(Metadata metadata, Results results) throws IOException {
 
+    public void write(Metadata metadata, Results results) throws IOException
+    {
         ObjectFactory of = new ObjectFactory();
         ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
 
-        for (Result result : results.results) {
-            MbDocument doc = result.doc;
+        for(Result result:results.results)
+        {
+            result.setNormalizedScore(results.getMaxScore());
+        }
+        write(releaseGroupList.getReleaseGroup(), results);
+
+        releaseGroupList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        releaseGroupList.setOffset(BigInteger.valueOf(results.getOffset()));
+        metadata.setReleaseGroupList(releaseGroupList);
+    }
+
+    public void write(List list, Results results) throws IOException
+    {
+        for (Result result : results.results)
+        {
+            write(list, result);
+        }
+    }
+
+    public void write(List list, Result result) throws IOException
+    {
+        ObjectFactory of = new ObjectFactory();
+        ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
+
+            MbDocument doc = result.getDoc();
             ReleaseGroup releaseGroup = of.createReleaseGroup();
             releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
-            releaseGroup.setScore(calculateNormalizedScore(result, results.maxScore));
+            releaseGroup.setScore(String.valueOf(result.getNormalizedScore()));
             String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
             if (name != null) {
                 releaseGroup.setTitle(name);
@@ -114,9 +139,6 @@ public class ReleaseGroupWriter extends ResultsWriter {
                 }
                 releaseGroup.setTagList(tagList);
             }
+            list.add(releaseGroup);
         }
-        releaseGroupList.setCount(BigInteger.valueOf(results.totalHits));
-        releaseGroupList.setOffset(BigInteger.valueOf(results.offset));
-        metadata.setReleaseGroupList(releaseGroupList);
-    }
 }

@@ -30,7 +30,6 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
@@ -184,7 +183,7 @@ public class TestSearchOnly {
         long queryInMs = ((end - start) / 1000000 );
         totalQueryTime+=queryInMs;
         //System.out.println(URLDecoder.decode(url.toString(),"UTF8"));
-        System.out.println("url ok :" + URLDecoder.decode(url.toString(), "UTF8") + ":" + results.totalHits + ":" + queryInMs + " ms");
+        System.out.println("url ok :" + URLDecoder.decode(url.toString(), "UTF8") + ":" + results.getTotalHits() + ":" + queryInMs + " ms");
         //System.out.println(((end - start) / 1000000));
 
     }

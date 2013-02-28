@@ -138,9 +138,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByV1TrackField() throws Exception {
     Results res = ss.search("track:\"Gravitational Lenz\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
@@ -153,9 +153,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecording() throws Exception {
     Results res = ss.search("recording:\"Gravitational Lenz\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
@@ -169,80 +169,80 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingDismax1() throws Exception {
     Results res = sd.search("Gravitational", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingDismax2() throws Exception {
     Results res = sd.search("Glorious", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingDismax3() throws Exception {
     Results res = sd.search("Farming Incident", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByV1TrackId() throws Exception {
     Results res = ss.search("trid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingById() throws Exception {
     Results res = ss.search("rid:\"7ca7782b-a602-448b-b108-bb881a7be2d6\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByReleaseId() throws Exception {
     Results res = ss.search("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByDemo() throws Exception {
     Results res = ss.search("comment:\"demo\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("demo", doc.get(RecordingIndexField.COMMENT));
   }
 
   @Test
   public void testFindRecordingByArtistId() throws Exception {
     Results res = ss.search("arid:\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   public void testFindRecordingByArtistName() throws Exception {
     Results res = ss.search("artist:\"Farming Incident\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
@@ -250,141 +250,141 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByTrackName() throws Exception {
     Results res = ss.search("recording:\"Gravitational Lens\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByReleaseType() throws Exception {
     Results res = ss.search("type:\"compilation\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByPrimaryReleaseType() throws Exception {
     Results res = ss.search("primarytype:\"album\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingBySecondaryReleaseType() throws Exception {
     Results res = ss.search("secondarytype:\"compilation\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByReleaseGroupId() throws Exception {
     Results res = ss.search("rgid:\"4444e264-1cf0-4d1f-aca7-2a6f89e34b36\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByReleaseCountry() throws Exception {
     Results res = ss.search("country:UK", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByReleaseFormat() throws Exception {
     Results res = ss.search("format:Vinyl", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByReleaseTypeNumeric() throws Exception {
     Results res = ss.search("type:\"4\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByNumberOfTracksOnMediumOnRelease() throws Exception {
     Results res = ss.search("tracks:10", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByNumberOfTracksOnRelease() throws Exception {
     Results res = ss.search("tracksrelease:10", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByDuration() throws Exception {
     Results res = ss.search("dur:234000", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByDuration2() throws Exception {
     Results res = ss.search("dur:234000", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByISRC() throws Exception {
     Results res = ss.search("isrc:123456789", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByNonNumericDuration() throws Exception {
     Results res = ss.search("dur:fred", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
   }
 
   @Test
   public void testFindRecordingByTag() throws Exception {
     Results res = ss.search("tag:indie", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
   }
 
   @Test
   public void testFindRecordingByDurationRange() throws Exception {
     Results res = ss.search("dur:[87 TO 240000]", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
@@ -395,9 +395,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByQdur() throws Exception {
     Results res = ss.search("qdur:117", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
@@ -409,9 +409,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByTrackPosition() throws Exception {
     Results res = ss.search("tnum:5", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
@@ -422,9 +422,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByTrackNumber() throws Exception {
     Results res = ss.search("number:A4", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
@@ -435,9 +435,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByPosition() throws Exception {
     Results res = ss.search("position:1", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
@@ -448,9 +448,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByReleaseStatus() throws Exception {
     Results res = ss.search("status:Official", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
@@ -461,9 +461,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByReleaseDate() throws Exception {
     Results res = ss.search("date:1970-01-01", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals(5, NumericUtils.prefixCodedToInt(new BytesRef(doc.get(RecordingIndexField.TRACKNUM))));
@@ -474,9 +474,9 @@ public class FindRecordingTest {
   @Test
   public void testFindRecordingByDefault() throws Exception {
     Results res = ss.search("\"Gravitational Lenz\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", doc.get(RecordingIndexField.RECORDING_ID));
     assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(RecordingIndexField.RELEASE_ID));
     assertEquals("Our Glorious 5 Year Plan", doc.get(RecordingIndexField.RELEASE));
@@ -488,13 +488,13 @@ public class FindRecordingTest {
   @Test
   public void testNumericRangeQuery() throws Exception {
     Results res = ss.search("tracks:[1 TO 10]", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testFindRecordingByPuid() throws Exception {
     Results res = ss.search("puid:1d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
 

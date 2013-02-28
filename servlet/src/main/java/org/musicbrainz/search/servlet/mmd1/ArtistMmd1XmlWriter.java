@@ -50,7 +50,7 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
         ArtistList artistList = of.createArtistList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Artist artist = of.createArtist();
 
             artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
@@ -60,8 +60,8 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
                 artist.setType(StringUtils.capitalize(artype));
             }
 
-
-            artist.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
+            result.setNormalizedScore(results.getMaxScore());
+            artist.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
             String name = doc.get(ArtistIndexField.ARTIST);
             if (name != null) {
@@ -99,8 +99,8 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
             artistList.getArtist().add(artist);
 
         }
-        artistList.setCount(BigInteger.valueOf(results.totalHits));
-        artistList.setOffset(BigInteger.valueOf(results.offset));
+        artistList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        artistList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setArtistList(artistList);
         return metadata;
     }

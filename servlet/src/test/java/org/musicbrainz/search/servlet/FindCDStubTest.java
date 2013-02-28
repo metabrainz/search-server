@@ -12,7 +12,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -74,61 +73,61 @@ public class FindCDStubTest {
   @Test
   public void testSearchByArtist() throws Exception {
     Results res = ss.search("artist:\"Doo Doo\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDismax1() throws Exception {
     Results res = sd.search("First", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDismax2() throws Exception {
     Results res = sd.search("Doo Doo", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDismax3() throws Exception {
     Results res = sd.search("837101029193", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDismax4() throws Exception {
     Results res = sd.search("CD Baby", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByTitle() throws Exception {
     Results res = ss.search("title:\"Doo Doo First\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByBarcode() throws Exception {
     Results res = ss.search("barcode:\"837101029193\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByComment() throws Exception {
     Results res = ss.search("comment:\"CD Baby id:vozzolo\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDiscId() throws Exception {
     Results res = ss.search("discid:qA87dKURKperVfmckD5b_xo8BO8-", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByNumTracks() throws Exception {
     Results res = ss.search("tracks:2", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
 

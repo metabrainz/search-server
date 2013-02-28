@@ -12,7 +12,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.mmd2.Artist;
@@ -135,9 +134,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupById() throws Exception {
     Results res = ss.search("rgid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c45\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("secret", doc.get(ReleaseGroupIndexField.RELEASE));
@@ -147,9 +146,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByName() throws Exception {
     Results res = ss.search("releasegroup:\"Nobody's Twisting Your Arm\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -158,9 +157,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByReleaseStatus() throws Exception {
     Results res = ss.search("status:official", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -168,9 +167,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByDismax1() throws Exception {
     Results res = sd.search("Twisting", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -179,9 +178,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByDismax2() throws Exception {
     Results res = sd.search("secret", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -190,9 +189,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByDismax3() throws Exception {
     Results res = sd.search("wedding", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -201,11 +200,11 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByRelease() throws Exception {
     Results res = ss.search("releasegroup:\"secret\"", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
     res = ss.search("release:secret", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -214,17 +213,17 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseByNumberofReleases() throws Exception {
     Results res = ss.search("releases:1", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testFindReleaseGroupByReleaseId() throws Exception {
     Results res = ss.search("releaseid:\"2c7d81da-8fc3-3157-99c1-e9195ac92c46\"", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
     res = ss.search("release:secret", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -233,9 +232,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByArtist() throws Exception {
     Results res = ss.search("artist:\"The Wedding Present\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -246,9 +245,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByType() throws Exception {
     Results res = ss.search("type:\"single\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -257,9 +256,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByPrimaryType() throws Exception {
     Results res = ss.search("primarytype:\"single\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -268,9 +267,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupBySecondaryType() throws Exception {
     Results res = ss.search("secondarytype:\"live\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -279,9 +278,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByNumericType() throws Exception {
     Results res = ss.search("type:2", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -290,11 +289,11 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByDefault() throws Exception {
     Results res = ss.search("\"secret\"", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
     res = ss.search("\"Nobody's Twisting Your Arm\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
     assertEquals("Single", doc.get(ReleaseGroupIndexField.TYPE));
@@ -306,9 +305,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByArtist2() throws Exception {
     Results res = ss.search("artist:\"Erich Kunzel\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
   }
@@ -316,9 +315,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByAllArtist2() throws Exception {
     Results res = ss.search("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
   }
@@ -326,9 +325,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByArtistName() throws Exception {
     Results res = ss.search("artistname:\"Erich Kunzel\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
   }
@@ -336,9 +335,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByAllArtistName() throws Exception {
     Results res = ss.search("artistname:\"Erich Kunzel\" AND artistname:\"Cincinnati Pops\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Epics", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
 
@@ -347,9 +346,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByTag() throws Exception {
     Results res = ss.search("tag:indie", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("2c7d81da-8fc3-3157-99c1-e9195ac92c45", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("Nobody's Twisting Your Arm", doc.get(ReleaseGroupIndexField.RELEASEGROUP));
   }
@@ -357,9 +356,9 @@ public class FindReleaseGroupTest {
   @Test
   public void testFindReleaseGroupByComment() throws Exception {
     Results res = ss.search("comment:demo", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
     assertEquals("demo", doc.get(ReleaseGroupIndexField.COMMENT));
   }

@@ -12,7 +12,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -146,7 +145,7 @@ public class ReloadIndexesTest {
   public void testReloadDoesNothingIfIndexNotChanged() throws Exception {
     ss.reloadIndex();
     Results res = ss.search("type:\"group\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
@@ -154,19 +153,19 @@ public class ReloadIndexesTest {
 
     Results res;
     res = ss.search("type:\"group\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
 
     // Testing reloading if there are no changes
     ss.reloadIndex();
 
     res = ss.search("type:\"group\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
 
     addArtist2();
     ss.reloadIndex();
 
     res = ss.search("type:\"group\"", 0, 10);
-    assertEquals(2, res.totalHits);
+    assertEquals(2, res.getTotalHits());
   }
 
   @Test
@@ -174,7 +173,7 @@ public class ReloadIndexesTest {
 
     Results res;
     res = sd.search("Bunnymen", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
 
     addArtist2();
     // this should also reload index for the 2nd searchserver sd, since they share the same
@@ -182,7 +181,7 @@ public class ReloadIndexesTest {
     ss.reloadIndex();
 
     res = sd.search("Bunnymen", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
@@ -221,6 +220,6 @@ public class ReloadIndexesTest {
     ss = new ArtistSearch(searcherManager);
 
     Results res = ss.search("type:\"group\"", 0, 10);
-    assertEquals(2, res.totalHits);
+    assertEquals(2, res.getTotalHits());
   }
 }

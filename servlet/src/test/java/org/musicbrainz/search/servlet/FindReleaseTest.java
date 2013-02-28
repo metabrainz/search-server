@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
@@ -190,9 +189,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseById() throws Exception {
     Results res = ss.search("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals(2, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
@@ -222,9 +221,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByName() throws Exception {
     Results res = ss.search("release:\"Our Glorious 5 Year Plan\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -232,9 +231,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByDismax1() throws Exception {
     Results res = sd.search("Wrath", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -242,9 +241,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByDismax2() throws Exception {
     Results res = sd.search("Farming", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -252,9 +251,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByDismax3() throws Exception {
     Results res = sd.search("Incident", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -262,9 +261,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByDismax4() throws Exception {
     Results res = sd.search("Our Glorious", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -272,9 +271,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByDefault() throws Exception {
     Results res = ss.search("\"Our Glorious 5 Year Plan\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
 
@@ -283,9 +282,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByArtistName() throws Exception {
     Results res = ss.search("artist:\"Farming Incident\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -293,9 +292,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByFormat() throws Exception {
     Results res = ss.search("format:Vinyl", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
 
@@ -304,9 +303,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByCatNo() throws Exception {
     Results res = ss.search("catno:WRATHCD25", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -315,18 +314,18 @@ public class FindReleaseTest {
     @Test
     public void testFindReleaseByCatNoIgnoreHypens() throws Exception {
         Results res = ss.search("catno:LP001", 0, 10);
-        assertEquals(1, res.totalHits);
+        assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
-        MbDocument doc = result.doc;
+        MbDocument doc = result.getDoc();
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
   @Test
   public void testFindReleaseByBarcodeWithoutZero() throws Exception {
     Results res = ss.search("barcode:7599273202", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
@@ -336,9 +335,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByBarcodeWithZero() throws Exception {
     Results res = ss.search("barcode:07599273202", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
@@ -348,9 +347,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByAsin() throws Exception {
     Results res = ss.search("asin:B00004Y6O9", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -358,9 +357,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByAsinLowercase() throws Exception {
     Results res = ss.search("asin:b00004y6O9", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -373,9 +372,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByLanguage() throws Exception {
     Results res = ss.search("lang:eng", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -388,9 +387,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByLanguageUppercase() throws Exception {
     Results res = ss.search("lang:ENG", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -401,9 +400,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByScript() throws Exception {
     Results res = ss.search("script:latn", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -414,9 +413,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByComment() throws Exception {
     Results res = ss.search("comment:demo", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("demo", doc.get(ReleaseIndexField.COMMENT));
   }
@@ -427,9 +426,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByScriptUppercase() throws Exception {
     Results res = ss.search("script:LATN", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -440,9 +439,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByCountry() throws Exception {
     Results res = ss.search("country:gb", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -453,9 +452,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseWithNoBarcode() throws Exception {
     Results res = ss.search("barcode:none", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
   }
 
@@ -465,7 +464,7 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseWithNotKnownBarcode() throws Exception {
     Results res = ss.search("barcode:\\-", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
   }
 
   /*
@@ -474,9 +473,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByNumTracks() throws Exception {
     Results res = ss.search("tracks:17", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -487,9 +486,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByTracksOnMedium() throws Exception {
     Results res = ss.search("tracksmedium:10", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -500,9 +499,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByNumDiscOnMedium() throws Exception {
     Results res = ss.search("discidsmedium:2", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -513,9 +512,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByNumDisc() throws Exception {
     Results res = ss.search("discids:3", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -526,9 +525,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByCountryUppercase() throws Exception {
     Results res = ss.search("country:GB", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -537,9 +536,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByDate() throws Exception {
     Results res = ss.search("date:2005", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
@@ -547,9 +546,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByTypeLowercase() throws Exception {
     Results res = ss.search("type:\"compilation\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Compilation", doc.get(ReleaseGroupIndexField.TYPE));
@@ -558,9 +557,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseBySecondaryTypeFirst() throws Exception {
     Results res = ss.search("secondarytype:\"Live\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
@@ -570,9 +569,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseBySecondaryTypeSecond() throws Exception {
     Results res = ss.search("secondarytype:\"Compilation\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
@@ -582,9 +581,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByTypeTitleCase() throws Exception {
     Results res = ss.search("type:\"Compilation\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseIndexField.PRIMARY_TYPE));
@@ -594,9 +593,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByRgid() throws Exception {
     Results res = ss.search("rgid:1d9e8ed6-3893-4d3b-aa7d-6cd79609e333", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
@@ -606,9 +605,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByNumericType() throws Exception {
     Results res = ss.search("type:4", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
@@ -618,9 +617,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByStatusLowercase() throws Exception {
     Results res = ss.search("status:\"official\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
@@ -630,9 +629,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByStatusTitleCase() throws Exception {
     Results res = ss.search("status:\"Official\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
@@ -642,9 +641,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByNumericstatus() throws Exception {
     Results res = ss.search("status:1", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     assertEquals("Album", doc.get(ReleaseGroupIndexField.PRIMARY_TYPE));
@@ -654,9 +653,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseGroupByArtist2() throws Exception {
     Results res = ss.search("artist:\"Erich Kunzel\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseIndexField.RELEASE_ID));
     assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
 
@@ -665,9 +664,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseGroupByAllArtist2() throws Exception {
     Results res = ss.search("artist:\"Erich Kunzel and Cincinnati Pops\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("0011c128-b1f2-300e-88cc-c33c30dce704", doc.get(ReleaseIndexField.RELEASE_ID));
     assertEquals("Epics", doc.get(ReleaseIndexField.RELEASE));
   }
@@ -675,25 +674,25 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByNumberofMediums() throws Exception {
     Results res = ss.search("mediums:2", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testFindReleaseByLabelId() throws Exception {
     Results res = ss.search("laid:c1dfaf9c-d498-4f6c-b040-f7714315fcea", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testNumericRangeQuery() throws Exception {
     Results res = ss.search("tracksmedium:[7 TO 17]", 0, 10);
-    assertEquals(2, res.totalHits);
+    assertEquals(2, res.getTotalHits());
   }
 
   @Test
   public void testFindReleaseByPuid() throws Exception {
     Results res = ss.search("puid:668f3a22-03e8-e3cd-55e4-2e9a0906419a", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   /**
@@ -862,9 +861,9 @@ public class FindReleaseTest {
   @Test
   public void testFindReleaseByTag() throws Exception {
         Results res = ss.search("tag:punk", 0, 10);
-        assertEquals(1, res.totalHits);
+        assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
-        MbDocument doc = result.doc;
+        MbDocument doc = result.getDoc();
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", doc.get(ReleaseIndexField.RELEASE_ID));
         assertEquals("punk", doc.get(ReleaseIndexField.TAG));
         assertEquals("10", doc.get(ReleaseIndexField.TAGCOUNT));

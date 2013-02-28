@@ -30,8 +30,6 @@ package org.musicbrainz.search.servlet.mmd1;
 
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.Result;
@@ -48,7 +46,7 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
         LabelList labelList = of.createLabelList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Label label = of.createLabel();
             label.setId(doc.get(LabelIndexField.LABEL_ID));
 
@@ -57,7 +55,8 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
                 label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
             }
 
-            label.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
+            result.setNormalizedScore(results.getMaxScore());
+            label.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {
@@ -96,8 +95,8 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
             labelList.getLabel().add(label);
 
         }
-        labelList.setCount(BigInteger.valueOf(results.totalHits));
-        labelList.setOffset(BigInteger.valueOf(results.offset));
+        labelList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        labelList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setLabelList(labelList);
         return metadata;
     }

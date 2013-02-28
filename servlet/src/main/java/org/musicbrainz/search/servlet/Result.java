@@ -30,10 +30,16 @@ package org.musicbrainz.search.servlet;
 
 import org.musicbrainz.search.MbDocument;
 
-public class Result {
+public class Result implements Comparable<Result>{
 
-	public MbDocument doc;
-	public float score;
+	private MbDocument   doc;
+	private float        score;
+    private int          normalizedScore;
+    private ResourceType resourceType;
+
+
+    public Result() {
+    }
 
 	public MbDocument getDoc() {
 		return doc;
@@ -43,7 +49,40 @@ public class Result {
 		return score;
 	}
 
-	public Result() {
+    public void setNormalizedScore(float maxScore)
+    {
+        normalizedScore = (((int)(((float)(getScore() / maxScore)) * 100)));
     }
 
+    public int compareTo(Result result)
+    {
+        return  (getNormalizedScore() < result.getNormalizedScore() ? -1 : (getNormalizedScore() == result.getNormalizedScore() ? 0 : 1));
+
+    }
+
+    public void setDoc(MbDocument doc)
+    {
+        this.doc = doc;
+    }
+
+    public void setScore(float score)
+    {
+        this.score = score;
+    }
+
+    public int getNormalizedScore()
+    {
+        return normalizedScore;
+    }
+
+
+    public ResourceType getResourceType()
+    {
+        return resourceType;
+    }
+
+    public void setResourceType(ResourceType resourceType)
+    {
+        this.resourceType = resourceType;
+    }
 }

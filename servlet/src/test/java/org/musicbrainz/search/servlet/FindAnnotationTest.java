@@ -12,7 +12,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
@@ -116,87 +115,87 @@ public class FindAnnotationTest {
   @Test
   public void testSearchByTypeRelease() throws Exception {
     Results res = ss.search("type:release", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByTypeArtist() throws Exception {
     Results res = ss.search("type:artist", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDismax1() throws Exception {
     Results res = sd.search("Pieds nus", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDismax2() throws Exception {
     Results res = sd.search("0828768226629", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByTypeReleaseGroup() throws Exception {
     Results res = ss.search("type:release-group", 0, 10);
     assertEquals("3 Songs", res.results.get(0).getDoc().get(AnnotationIndexField.NAME));
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByTypeRecording() throws Exception {
     Results res = ss.search("type:recording", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByTypeWork() throws Exception {
     Results res = ss.search("type:work", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByName() throws Exception {
     Results res = ss.search("name:Pieds nus sur la braise", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByNameNoMatch() throws Exception {
     Results res = ss.search("name:fred", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
   }
 
   @Test
   public void testSearchByEntity() throws Exception {
     Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-7b730325ae47", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByEntitydNoMatch() throws Exception {
     Results res = ss.search("entity:bdb24cb5-404b-4f60-bba4-000000000000", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
   }
 
   @Test
   public void testSearchByText() throws Exception {
     Results res = ss.search("text:DiscID", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   @Test
   public void testSearchByTextNoMatch() throws Exception {
     Results res = ss.search("text:fred", 0, 10);
-    assertEquals(0, res.totalHits);
+    assertEquals(0, res.getTotalHits());
   }
 
   @Test
   public void testSearchByDefaultField() throws Exception {
 
     Results res = ss.search("DiscID", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
   }
 
   /**

@@ -53,12 +53,13 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
         TrackList trackList = of.createTrackList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Track track = of.createTrack();
 
             track.setId(doc.get(RecordingIndexField.RECORDING_ID));
-            
-            track.getOtherAttributes().put(getScore(), calculateNormalizedScore(result, results.maxScore));
+
+            result.setNormalizedScore(results.getMaxScore());
+            track.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
             String name = doc.get(RecordingIndexField.RECORDING_OUTPUT);
 
@@ -118,8 +119,8 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
             track.setReleaseList(releaseList);
             trackList.getTrack().add(track);
         }
-        trackList.setCount(BigInteger.valueOf(results.totalHits));
-        trackList.setOffset(BigInteger.valueOf(results.offset));
+        trackList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        trackList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setTrackList(trackList);
         return metadata;
     }

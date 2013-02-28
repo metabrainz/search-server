@@ -37,19 +37,46 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 
 public class WorkWriter extends ResultsWriter {
 
-    public void write(Metadata metadata, Results results) throws IOException {
+
+
+    public void write(Metadata metadata, Results results) throws IOException
+    {
+        ObjectFactory of = new ObjectFactory();
+        WorkList workList = of.createWorkList();
+
+        for(Result result:results.results)
+        {
+            result.setNormalizedScore(results.getMaxScore());
+        }
+        write(workList.getWork(), results);
+
+        workList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        workList.setOffset(BigInteger.valueOf(results.getOffset()));
+        metadata.setWorkList(workList);
+    }
+
+    public void write(List list, Results results) throws IOException
+    {
+        for (Result result : results.results)
+        {
+            write(list, result);
+        }
+    }
+
+    public void write(List list, Result result) throws IOException
+    {
 
         ObjectFactory of = new ObjectFactory();
         WorkList workList = of.createWorkList();
 
-        for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Work work = of.createWork();
             work.setId(doc.get(WorkIndexField.WORK_ID));
-            work.setScore(calculateNormalizedScore(result, results.maxScore));
+            work.setScore(String.valueOf(result.getNormalizedScore()));
 
             String name = doc.get(WorkIndexField.WORK);
             if (name != null) {
@@ -114,12 +141,6 @@ public class WorkWriter extends ResultsWriter {
                }
                work.setTagList(tagList);
             }
-
-
-            workList.getWork().add(work);
+            list.add(work);
         }
-        workList.setCount(BigInteger.valueOf(results.totalHits));
-        workList.setOffset(BigInteger.valueOf(results.offset));
-        metadata.setWorkList(workList);
-    }
 }

@@ -12,7 +12,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.mmd2.Artist;
@@ -109,9 +108,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkById() throws Exception {
     Results res = ss.search("wid:\"4ff89cf0-86af-11de-90ed-001fc6f176ff\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -119,9 +118,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByName() throws Exception {
     Results res = ss.search("work:\"Symphony No. 5\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -129,9 +128,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByLyricsLang() throws Exception {
     Results res = ss.search("lang:eng", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -139,9 +138,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByDismax1() throws Exception {
     Results res = sd.search("Symphony No. 5", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -149,9 +148,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByDismax2() throws Exception {
     Results res = sd.search("Symphony", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -159,9 +158,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByComment() throws Exception {
     Results res = ss.search("comment:demo", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("demo", doc.get(WorkIndexField.COMMENT));
   }
@@ -169,9 +168,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByArtist() throws Exception {
     Results res = ss.search("artist:\"Пётр Ильич Чайковский\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -180,9 +179,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByISWC() throws Exception {
     Results res = ss.search("iswc:\"T-101779304-1\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -190,9 +189,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByType() throws Exception {
     Results res = ss.search("type:\"opera\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -200,9 +199,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByAlias() throws Exception {
     Results res = ss.search("alias:symp5", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -210,9 +209,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByTag() throws Exception {
     Results res = ss.search("tag:classical", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -220,9 +219,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByDefaultUsingName() throws Exception {
     Results res = ss.search("\"Symphony No. 5\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
@@ -230,9 +229,9 @@ public class FindWorkTest {
   @Test
   public void testFindWorkByDefaultUsingAlias() throws Exception {
     Results res = ss.search("symp5", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }

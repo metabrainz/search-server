@@ -41,22 +41,45 @@ import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Locale;
 
 
 public class ReleaseWriter extends ResultsWriter {
 
 
-
-    public void write(Metadata metadata, Results results) throws IOException {
+    public void write(Metadata metadata, Results results) throws IOException
+    {
         ObjectFactory of = new ObjectFactory();
         ReleaseList releaseList = of.createReleaseList();
 
-        for (Result result : results.results) {
-            MbDocument doc = result.doc;
+        for(Result result:results.results)
+        {
+            result.setNormalizedScore(results.getMaxScore());
+        }
+        write(releaseList.getRelease(), results);
+
+        releaseList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        releaseList.setOffset(BigInteger.valueOf(results.getOffset()));
+        metadata.setReleaseList(releaseList);
+    }
+
+    public void write(List list, Results results) throws IOException
+    {
+        for (Result result : results.results)
+        {
+            write(list, result);
+        }
+    }
+
+    public void write(List list, Result result) throws IOException
+    {
+        ObjectFactory of = new ObjectFactory();
+
+            MbDocument doc = result.getDoc();
             Release release = of.createRelease();
             release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
-            release.setScore(calculateNormalizedScore(result, results.maxScore));
+            release.setScore(String.valueOf(result.getNormalizedScore()));
 
             String name = doc.get(ReleaseIndexField.RELEASE);
             if (name != null) {
@@ -214,10 +237,6 @@ public class ReleaseWriter extends ResultsWriter {
                 release.setTagList(tagList);
             }
 
-            releaseList.getRelease().add(release);
+            list.add(release);
         }
-        releaseList.setCount(BigInteger.valueOf(results.totalHits));
-        releaseList.setOffset(BigInteger.valueOf(results.offset));
-        metadata.setReleaseList(releaseList);
-    }
 }

@@ -50,7 +50,7 @@ public class CDStubWriter extends ResultsWriter {
         CdstubList cdstubList = of.createCdstubList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Cdstub cdstub = of.createCdstub();
 
             String artist = doc.get(CDStubIndexField.ARTIST);
@@ -104,12 +104,12 @@ public class CDStubWriter extends ResultsWriter {
             }
 
 
-            cdstub.setScore(calculateNormalizedScore(result, results.maxScore));
+            result.setNormalizedScore(results.getMaxScore());
+            cdstub.setScore(String.valueOf(result.getNormalizedScore()));
             cdstubList.getCdstub().add(cdstub);
-
         }
-        cdstubList.setCount(BigInteger.valueOf(results.totalHits));
-        cdstubList.setOffset(BigInteger.valueOf(results.offset));
+        cdstubList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        cdstubList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setCdstubList(cdstubList);
     }
 }

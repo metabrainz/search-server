@@ -77,10 +77,4 @@ public abstract class ResultsWriter {
     {
         return serverLastUpdatedDate;
     }
-
-    protected String calculateNormalizedScore(Result result, float maxScore)
-    {
-        return String.valueOf((int)(((float)(result.score  / maxScore)) * 100));
-    }
-
 }

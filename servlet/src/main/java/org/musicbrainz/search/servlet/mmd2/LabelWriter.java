@@ -29,35 +29,59 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Locale;
 
 public class LabelWriter extends ResultsWriter {
 
-    public void write(Metadata metadata, Results results) throws IOException {
+    public void write(EntityList list, Results results) throws IOException
+    {
+        write(list.getArtistAndReleaseAndReleaseGroup(), results);
+    }
 
+    public void write(Metadata metadata, Results results) throws IOException
+    {
         ObjectFactory of = new ObjectFactory();
         LabelList labelList = of.createLabelList();
 
-        for (Result result : results.results) {
-            MbDocument doc = result.doc;
+        for(Result result:results.results)
+        {
+            result.setNormalizedScore(results.getMaxScore());
+        }
+        write(labelList.getLabel(), results);
+
+        labelList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        labelList.setOffset(BigInteger.valueOf(results.getOffset()));
+        metadata.setLabelList(labelList);
+    }
+
+    public void write(List list, Results results) throws IOException
+    {
+        for (Result result : results.results)
+        {
+            write(list, result);
+        }
+    }
+
+    public void write(List list, Result result) throws IOException
+    {
+        ObjectFactory of = new ObjectFactory();
+            MbDocument doc = result.getDoc();
             Label label = of.createLabel();
             label.setId(doc.get(LabelIndexField.LABEL_ID));
             String type = doc.get(LabelIndexField.TYPE);
             if (isNotUnknown(type)){
                 label.setType(type);
             }
-            label.setScore(calculateNormalizedScore(result, results.maxScore));
+            label.setScore(String.valueOf(result.getNormalizedScore()));
             String name = doc.get(LabelIndexField.LABEL);
             if (name != null) {
                 label.setName(name);
@@ -134,13 +158,7 @@ public class LabelWriter extends ResultsWriter {
                 }
                 label.setTagList(tagList);
             }
+            list.add(label);
 
-            
-            labelList.getLabel().add(label);
-
-        }
-        labelList.setCount(BigInteger.valueOf(results.totalHits));
-        labelList.setOffset(BigInteger.valueOf(results.offset));
-        metadata.setLabelList(labelList);
     }
 }

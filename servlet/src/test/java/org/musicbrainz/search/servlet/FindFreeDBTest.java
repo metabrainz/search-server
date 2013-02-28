@@ -53,9 +53,9 @@ public class FindFreeDBTest  {
   @Test
   public void testSearchFreeDBByArtist() throws Exception {
     Results res = ss.search("artist:\"Ska-P\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
     assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
     assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
@@ -67,9 +67,9 @@ public class FindFreeDBTest  {
   @Test
   public void testSearchFreeDBByTitle() throws Exception {
     Results res = ss.search("title:\"L\u00e1grimas & Gozos\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
     assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
     assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
@@ -81,9 +81,9 @@ public class FindFreeDBTest  {
   @Test
   public void testSearchFreeDBByDiscId() throws Exception {
     Results res = ss.search("discid:\"c20c4b0d\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
     assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
     assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
@@ -95,9 +95,9 @@ public class FindFreeDBTest  {
   @Test
   public void testSearchFreeDBByYear() throws Exception {
     Results res = ss.search("year:\"2008\"", 0, 10);
-    assertEquals(1, res.totalHits);
+    assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
-    MbDocument doc = result.doc;
+    MbDocument doc = result.getDoc();
     assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
     assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
     assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
@@ -112,9 +112,9 @@ public class FindFreeDBTest  {
     //by artist
     {
       Results res = ss.search("\"Ska-P\"", 0, 10);
-      assertEquals(1, res.totalHits);
+      assertEquals(1, res.getTotalHits());
       Result result = res.results.get(0);
-      MbDocument doc = result.doc;
+      MbDocument doc = result.getDoc();
       assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
       assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
       assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));
@@ -126,9 +126,9 @@ public class FindFreeDBTest  {
     //by title
     {
       Results res = ss.search("\"L\u00e1grimas & Gozos\"", 0, 10);
-      assertEquals(1, res.totalHits);
+      assertEquals(1, res.getTotalHits());
       Result result = res.results.get(0);
-      MbDocument doc = result.doc;
+      MbDocument doc = result.getDoc();
       assertEquals("Ska-P", doc.get(FreeDBIndexField.ARTIST));
       assertEquals("L\u00e1grimas & Gozos", doc.get(FreeDBIndexField.TITLE));
       assertEquals("folk", doc.get(FreeDBIndexField.CATEGORY));

@@ -51,18 +51,20 @@ public class AnnotationWriter extends ResultsWriter {
         AnnotationList annotationList = of.createAnnotationList();
 
         for (Result result : results.results) {
-            MbDocument doc = result.doc;
+            MbDocument doc = result.getDoc();
             Annotation annotation= of.createAnnotation();
             annotation.setName(doc.get(AnnotationIndexField.NAME));
             annotation.setText(doc.get(AnnotationIndexField.TEXT));
             annotation.setType(doc.get(AnnotationIndexField.TYPE));
             annotation.setEntity(doc.get(AnnotationIndexField.ENTITY));
-            annotation.setScore(calculateNormalizedScore(result, results.maxScore));
+
+            result.setNormalizedScore(results.getMaxScore());
+            annotation.setScore(String.valueOf(result.getNormalizedScore()));
             annotationList.getAnnotation().add(annotation);
 
         }
-        annotationList.setCount(BigInteger.valueOf(results.totalHits));
-        annotationList.setOffset(BigInteger.valueOf(results.offset));
+        annotationList.setCount(BigInteger.valueOf(results.getTotalHits()));
+        annotationList.setOffset(BigInteger.valueOf(results.getOffset()));
         metadata.setAnnotationList(annotationList);
     }
 }
