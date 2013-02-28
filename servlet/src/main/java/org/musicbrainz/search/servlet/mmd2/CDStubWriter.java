@@ -44,6 +44,12 @@ import java.math.BigInteger;
 
 public class CDStubWriter extends ResultsWriter {
 
+    /**
+     *
+     * @param metadata
+     * @param results
+     * @throws IOException
+     */
     public void write(Metadata metadata, Results results) throws IOException {
 
         ObjectFactory of = new ObjectFactory();

@@ -44,6 +44,12 @@ import java.util.Locale;
 public class ArtistWriter extends ResultsWriter
 {
 
+    /**
+     *
+     * @param metadata
+     * @param results
+     * @throws IOException
+     */
     public void write(Metadata metadata, Results results) throws IOException
     {
         ObjectFactory of = new ObjectFactory();
@@ -61,6 +67,12 @@ public class ArtistWriter extends ResultsWriter
     }
 
 
+    /**
+     *
+     * @param list
+     * @param results
+     * @throws IOException
+     */
     public void write(List list, Results results) throws IOException
     {
         for (Result result : results.results)
@@ -69,6 +81,12 @@ public class ArtistWriter extends ResultsWriter
         }
     }
 
+    /**
+     *
+     * @param list
+     * @param result
+     * @throws IOException
+     */
     public void write(List list, Result result) throws IOException
     {
         ObjectFactory of = new ObjectFactory();

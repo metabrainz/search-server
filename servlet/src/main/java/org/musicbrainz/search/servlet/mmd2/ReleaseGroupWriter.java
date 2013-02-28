@@ -42,6 +42,12 @@ import java.util.List;
 public class ReleaseGroupWriter extends ResultsWriter {
 
 
+    /**
+     *
+     * @param metadata
+     * @param results
+     * @throws IOException
+     */
     public void write(Metadata metadata, Results results) throws IOException
     {
         ObjectFactory of = new ObjectFactory();
@@ -58,6 +64,12 @@ public class ReleaseGroupWriter extends ResultsWriter {
         metadata.setReleaseGroupList(releaseGroupList);
     }
 
+    /**
+     *
+     * @param list
+     * @param results
+     * @throws IOException
+     */
     public void write(List list, Results results) throws IOException
     {
         for (Result result : results.results)
@@ -66,6 +78,12 @@ public class ReleaseGroupWriter extends ResultsWriter {
         }
     }
 
+    /**
+     *
+     * @param list
+     * @param result
+     * @throws IOException
+     */
     public void write(List list, Result result) throws IOException
     {
         ObjectFactory of = new ObjectFactory();

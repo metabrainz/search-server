@@ -39,16 +39,21 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
-public class WorkWriter extends ResultsWriter {
+public class WorkWriter extends ResultsWriter
+{
 
 
-
+    /**
+     * @param metadata
+     * @param results
+     * @throws IOException
+     */
     public void write(Metadata metadata, Results results) throws IOException
     {
         ObjectFactory of = new ObjectFactory();
         WorkList workList = of.createWorkList();
 
-        for(Result result:results.results)
+        for (Result result : results.results)
         {
             result.setNormalizedScore(results.getMaxScore());
         }
@@ -59,6 +64,11 @@ public class WorkWriter extends ResultsWriter {
         metadata.setWorkList(workList);
     }
 
+    /**
+     * @param list
+     * @param results
+     * @throws IOException
+     */
     public void write(List list, Results results) throws IOException
     {
         for (Result result : results.results)
@@ -67,80 +77,91 @@ public class WorkWriter extends ResultsWriter {
         }
     }
 
+    /**
+     * @param list
+     * @param result
+     * @throws IOException
+     */
     public void write(List list, Result result) throws IOException
     {
 
         ObjectFactory of = new ObjectFactory();
         WorkList workList = of.createWorkList();
 
-            MbDocument doc = result.getDoc();
-            Work work = of.createWork();
-            work.setId(doc.get(WorkIndexField.WORK_ID));
-            work.setScore(String.valueOf(result.getNormalizedScore()));
+        MbDocument doc = result.getDoc();
+        Work work = of.createWork();
+        work.setId(doc.get(WorkIndexField.WORK_ID));
+        work.setScore(String.valueOf(result.getNormalizedScore()));
 
-            String name = doc.get(WorkIndexField.WORK);
-            if (name != null) {
-                work.setTitle(name);
-            }
-
-            String comment = doc.get(WorkIndexField.COMMENT);
-            if (isNotNoValue(comment)) {
-                work.setDisambiguation(comment);
-            }
-
-            String type = doc.get(WorkIndexField.TYPE);
-            if (isNotNoValue(type)) {
-                work.setType(type);
-            }
-
-            String lyricsLanguage = doc.get(WorkIndexField.LYRICS_LANG);
-            if (isNotNoValue(lyricsLanguage)) {
-                work.setLanguage(lyricsLanguage);
-            }
-            
-            String[] iswcs = doc.getValues(WorkIndexField.ISWC);
-            if(iswcs.length>0)
-            {
-                IswcList iswcList = of.createIswcList();
-                for(int i=0;i<iswcs.length;i++)
-                {
-                    iswcList.getIswc().add(iswcs[i]);
-                }
-                work.setIswcList(iswcList);
-            }
-
-            String artistRelation = doc.get(WorkIndexField.ARTIST_RELATION);
-            if(artistRelation!=null)
-            {
-                RelationList rc = (RelationList) MMDSerializer.unserialize(artistRelation, RelationList.class);
-                work.getRelationList().add(rc);
-            }
-
-            String[] aliases = doc.getValues(WorkIndexField.ALIAS);
-            if(aliases.length>0)
-            {
-                AliasList aliasList = of.createAliasList();
-                for(int i = 0;i<aliases.length;i++) {
-                    Alias alias = of.createAlias();
-                    alias.setContent(aliases[i]);
-                    aliasList.getAlias().add(alias);
-                }
-                work.setAliasList(aliasList);
-            }
-
-            String[] tags       = doc.getValues(WorkIndexField.TAG);
-            String[] tagCounts  = doc.getValues(WorkIndexField.TAGCOUNT);
-            if(tags.length>0)
-            {
-               TagList tagList = of.createTagList();
-               for(int i = 0;i<tags.length;i++) {
-                   Tag tag = of.createTag();
-                   tag.setName(tags[i]);
-                   tag.setCount(new BigInteger(tagCounts[i]));
-                   tagList.getTag().add(tag);
-               }
-               work.setTagList(tagList);
-            }
-            list.add(work);
+        String name = doc.get(WorkIndexField.WORK);
+        if (name != null)
+        {
+            work.setTitle(name);
         }
+
+        String comment = doc.get(WorkIndexField.COMMENT);
+        if (isNotNoValue(comment))
+        {
+            work.setDisambiguation(comment);
+        }
+
+        String type = doc.get(WorkIndexField.TYPE);
+        if (isNotNoValue(type))
+        {
+            work.setType(type);
+        }
+
+        String lyricsLanguage = doc.get(WorkIndexField.LYRICS_LANG);
+        if (isNotNoValue(lyricsLanguage))
+        {
+            work.setLanguage(lyricsLanguage);
+        }
+
+        String[] iswcs = doc.getValues(WorkIndexField.ISWC);
+        if (iswcs.length > 0)
+        {
+            IswcList iswcList = of.createIswcList();
+            for (int i = 0; i < iswcs.length; i++)
+            {
+                iswcList.getIswc().add(iswcs[i]);
+            }
+            work.setIswcList(iswcList);
+        }
+
+        String artistRelation = doc.get(WorkIndexField.ARTIST_RELATION);
+        if (artistRelation != null)
+        {
+            RelationList rc = (RelationList) MMDSerializer.unserialize(artistRelation, RelationList.class);
+            work.getRelationList().add(rc);
+        }
+
+        String[] aliases = doc.getValues(WorkIndexField.ALIAS);
+        if (aliases.length > 0)
+        {
+            AliasList aliasList = of.createAliasList();
+            for (int i = 0; i < aliases.length; i++)
+            {
+                Alias alias = of.createAlias();
+                alias.setContent(aliases[i]);
+                aliasList.getAlias().add(alias);
+            }
+            work.setAliasList(aliasList);
+        }
+
+        String[] tags = doc.getValues(WorkIndexField.TAG);
+        String[] tagCounts = doc.getValues(WorkIndexField.TAGCOUNT);
+        if (tags.length > 0)
+        {
+            TagList tagList = of.createTagList();
+            for (int i = 0; i < tags.length; i++)
+            {
+                Tag tag = of.createTag();
+                tag.setName(tags[i]);
+                tag.setCount(new BigInteger(tagCounts[i]));
+                tagList.getTag().add(tag);
+            }
+            work.setTagList(tagList);
+        }
+        list.add(work);
+    }
 }

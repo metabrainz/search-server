@@ -42,11 +42,14 @@ import java.util.Locale;
 
 public class LabelWriter extends ResultsWriter {
 
-    public void write(EntityList list, Results results) throws IOException
-    {
-        write(list.getArtistAndReleaseAndReleaseGroup(), results);
-    }
 
+    /**
+     * Write Search results
+     *
+     * @param metadata
+     * @param results
+     * @throws IOException
+     */
     public void write(Metadata metadata, Results results) throws IOException
     {
         ObjectFactory of = new ObjectFactory();
@@ -63,6 +66,13 @@ public class LabelWriter extends ResultsWriter {
         metadata.setLabelList(labelList);
     }
 
+    /**
+     * Write Search All Results
+     *
+     * @param list
+     * @param results
+     * @throws IOException
+     */
     public void write(List list, Results results) throws IOException
     {
         for (Result result : results.results)
@@ -71,6 +81,13 @@ public class LabelWriter extends ResultsWriter {
         }
     }
 
+    /**
+     * Write result and add to the list
+     *
+     * @param list
+     * @param result
+     * @throws IOException
+     */
     public void write(List list, Result result) throws IOException
     {
         ObjectFactory of = new ObjectFactory();
