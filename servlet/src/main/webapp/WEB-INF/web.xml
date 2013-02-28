@@ -19,6 +19,10 @@
 <servlet-name>SearchServerServlet</servlet-name>
 <servlet-class>org.musicbrainz.search.servlet.SearchServerServlet</servlet-class>
   <init-param>
+        <param-name>init</param-name>
+        <param-value>mmap</param-value>
+  </init-param>
+  <init-param>
      <param-name>index_dir</param-name>
      <param-value>/home/search/indexdata</param-value>
   </init-param>

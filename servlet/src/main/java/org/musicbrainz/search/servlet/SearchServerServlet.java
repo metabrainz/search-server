@@ -102,7 +102,15 @@ public class SearchServerServlet extends HttpServlet
     @Override
     public void init()
     {
-        init(true);
+        String init = getServletConfig().getInitParameter("init");
+        if(init!=null && init.equals("nfio"))
+        {
+            init(false);
+        }
+        else
+        {
+            init(true);
+        }
     }
 
     /**
