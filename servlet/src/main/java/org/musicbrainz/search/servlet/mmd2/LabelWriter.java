@@ -115,15 +115,7 @@ public class LabelWriter extends ResultsWriter {
 
             String code = doc.get(LabelIndexField.CODE);
             if (isNotNoValue(code)) {
-                try
-                {
-                    label.setLabelCode(new BigInteger(code));
-                }
-                catch(Exception ex)
-                {
-                    System.out.println("Code is:"+code);
-                    ex.printStackTrace();
-                }
+                label.setLabelCode(new BigInteger(code));
             }
 
             String countryCode = doc.get(LabelIndexField.COUNTRY);
