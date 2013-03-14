@@ -37,6 +37,8 @@ import org.musicbrainz.search.index.RecordingIndexField;
 /**
  * Calculates a score for a match, overridden to deal with problems with recordings linked to many releases
  */
+//TODO in Lucene 4.1 we can now use PerFieldSimailrityWrapper so that we only oerform this on fields that need it, with
+//current code tf() is performed on every field because we are not passed fieldname
 public class RecordingSimilarity extends DefaultSimilarity {
 
     /**
