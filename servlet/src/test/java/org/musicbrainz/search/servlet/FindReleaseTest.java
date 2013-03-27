@@ -107,7 +107,9 @@ public class FindReleaseTest {
     doc.addField(ReleaseIndexField.BARCODE, "07599273202");
 
     //Multiples allowed of these
-    doc.addField(ReleaseIndexField.CATALOG_NO, "WRATHCD25");
+    doc.addField(ReleaseIndexField.CATALOG_NO, "WRATHCD-25");
+    doc.addField(ReleaseIndexField.CATALOG_NO, "CAT WITH SPACE");
+
     doc.addField(ReleaseIndexField.LABEL, "Wrath Records");
     doc.addField(ReleaseIndexField.LABEL_ID, Index.NO_VALUE);
 
@@ -194,8 +196,8 @@ public class FindReleaseTest {
     MbDocument doc = result.getDoc();
     assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
-    assertEquals(2, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
-    assertEquals("WRATHCD25", doc.get(ReleaseIndexField.CATALOG_NO));
+    assertEquals(3, doc.getFields(ReleaseIndexField.CATALOG_NO).length);
+    assertEquals("WRATHCD-25", doc.get(ReleaseIndexField.CATALOG_NO));
     assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE).length);
     assertEquals("07599273202", doc.get(ReleaseIndexField.BARCODE));
     assertEquals(1, doc.getFields(ReleaseIndexField.AMAZON_ID).length);
@@ -302,7 +304,7 @@ public class FindReleaseTest {
 
   @Test
   public void testFindReleaseByCatNo() throws Exception {
-    Results res = ss.search("catno:WRATHCD25", 0, 10);
+    Results res = ss.search("catno:WRATHCD-25", 0, 10);
     assertEquals(1, res.getTotalHits());
     Result result = res.results.get(0);
     MbDocument doc = result.getDoc();
@@ -310,7 +312,59 @@ public class FindReleaseTest {
     assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
   }
 
+    @Test
+    public void testFindReleaseByCatNoWithSpaces() throws Exception {
+        Results res = ss.search("catno:\"CAT WITH SPACE\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
 
+    @Test
+    public void testFindReleaseByCatNoWithSpacesIgnoringingSpaces() throws Exception {
+        Results res = ss.search("catno:\"CATWITHSPACE\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    @Test
+    public void testFindReleaseByCatNoWithSpacesIgnoringingSpacesWildcard() throws Exception {
+        Results res = ss.search("catno:CATWITHSPACE*", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    /*
+    @Test
+    public void testFindReleaseByCatNoWithoutHyphen() throws Exception {
+        Results res = ss.search("catno:WRATHCD25", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+    */
+
+    @Test
+   public void testFindReleaseByCatNoAsterisk() throws Exception {
+        Results res = ss.search("catno:WRATHCD-25*", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
+        assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
+    }
+
+    /*
     @Test
     public void testFindReleaseByCatNoIgnoreHypens() throws Exception {
         Results res = ss.search("catno:LP001", 0, 10);
@@ -320,6 +374,7 @@ public class FindReleaseTest {
         assertEquals("Our Glorious 5 Year Plan", doc.get(ReleaseIndexField.RELEASE));
         assertEquals("Wrath Records", doc.get(ReleaseIndexField.LABEL));
     }
+    */
   @Test
   public void testFindReleaseByBarcodeWithoutZero() throws Exception {
     Results res = ss.search("barcode:7599273202", 0, 10);
@@ -730,7 +785,7 @@ public class FindReleaseTest {
     assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
 
     assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
-    assertTrue(output.contains("catalog-number=\"WRATHCD25\""));
+    assertTrue(output.contains("catalog-number=\"WRATHCD-25\""));
 
   }
 
@@ -775,7 +830,7 @@ public class FindReleaseTest {
     assertTrue(output.contains("<track-count>17</track-count>"));
     assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
     assertTrue(output.contains("<label id=\"c1dfaf9c-d498-4f6c-b040-f7714315fcea\"><name>Major Records</name></label>"));
-    assertTrue(output.contains("<catalog-number>WRATHCD25</catalog-number>"));
+    assertTrue(output.contains("<catalog-number>WRATHCD-25</catalog-number>"));
     assertTrue(output.contains("<medium-list count=\"2\">"));
     assertTrue(output.contains("<secondary-type-list><secondary-type>Live</secondary-type><secondary-type>Compilation</secondary-type></secondary-type-list>"));
     assertTrue(output.contains("<tag-list><tag count=\"10\"><name>punk</name></tag></tag-list>"));
@@ -837,7 +892,7 @@ public class FindReleaseTest {
     assertTrue(output.contains("\"disc-count\":1"));
     assertTrue(output.contains("\"track-count\":7"));
     assertTrue(output.contains("\"label-info\""));
-    assertTrue(output.contains("\"catalog-number\":\"WRATHCD25\""));
+    assertTrue(output.contains("\"catalog-number\":\"WRATHCD-25\""));
     assertTrue(output.contains("\"primary-type\":\"Album\""));
     assertTrue(output.contains(""));
   }

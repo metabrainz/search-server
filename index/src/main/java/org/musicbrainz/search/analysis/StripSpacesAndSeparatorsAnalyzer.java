@@ -23,9 +23,9 @@ public class StripSpacesAndSeparatorsAnalyzer extends Analyzer {
 
         NormalizeCharMap.Builder builder = new NormalizeCharMap.Builder();
         builder.add(" ","");
-        builder.add("-","");
-        builder.add("_","");
-        builder.add(":","");
+        //builder.add("-","");
+        //builder.add("_","");
+        //builder.add(":","");
         charConvertMap = builder.build();
     }
 
