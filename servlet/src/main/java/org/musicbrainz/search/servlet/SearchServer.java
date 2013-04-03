@@ -47,6 +47,8 @@ public interface SearchServer {
    * @throws IOException
    * @throws ParseException
    */
+  public abstract String explain(Query query, int offset, int limit) throws IOException, ParseException;
+
   public abstract String explain(String query, int offset, int limit) throws IOException, ParseException;
 
   public abstract SearcherManager getSearcherManager();

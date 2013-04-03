@@ -39,7 +39,14 @@ public abstract class AbstractDismaxSearchServer implements SearchServer {
   }
 
   @Override
-  public String explain(String query, int offset, int limit) throws IOException, ParseException {
+  public String explain(String userQuery, int offset, int limit) throws IOException, ParseException {
+      Query query = parseQuery(userQuery);
+      return realSearchServer.explain(query, offset, limit);
+  }
+
+
+    @Override
+  public String explain(Query query, int offset, int limit) throws IOException, ParseException {
     return realSearchServer.explain(query, offset, limit);
   }
 

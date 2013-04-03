@@ -248,24 +248,28 @@ public abstract class AbstractSearchServer implements SearchServer {
     return results;
   }
 
+  public String explain(String userQuery, int offset, int limit) throws IOException, ParseException {
+    Query parsedQuery = parseQuery(userQuery);
+    return explain(parsedQuery, offset, limit);
+  }
+
   /* (non-Javadoc)
    * @see org.musicbrainz.search.servlet.ISearchServer#explain(java.lang.String, int, int)
    */
   @Override
-  public String explain(String query, int offset, int limit) throws IOException, ParseException {
+  public String explain(Query query, int offset, int limit) throws IOException, ParseException {
     StringBuffer sb = new StringBuffer("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
     sb.append("<html lang=\"en\">\n<head>\n");
     sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
     sb.append("</head>\n<body>");
     IndexSearcher searcher = searcherManager.acquire();
     try {
-      Query parsedQuery = parseQuery(query);
-      TopDocs topdocs = searcher.search(parsedQuery, offset + limit);
+      TopDocs topdocs = searcher.search(query, offset + limit);
       ScoreDoc docs[] = topdocs.scoreDocs;
       float maxScore = topdocs.getMaxScore();
-      sb.append("<p>Query:" + parsedQuery.toString() + "</p>\n");
+      sb.append("<p>Query:" + query.toString() + "</p>\n");
       for (int i = 0; i < docs.length; i++) {
-        explainAndDisplayResult(i, sb, searcher, parsedQuery, docs[i], maxScore);
+        explainAndDisplayResult(i, sb, searcher, query, docs[i], maxScore);
       }
       searchCount.incrementAndGet();
     } finally {
