@@ -281,7 +281,7 @@ public class ArtistIndex extends DatabaseIndex {
         }
 
 
-        ArtistBoostDoc.boost(artistGuid, doc);
+        //ArtistBoostDoc.boost(artistGuid, doc);
         return doc.getLuceneDocument();
     }
 

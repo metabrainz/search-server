@@ -255,7 +255,7 @@ public class LabelIndex extends DatabaseIndex {
             }
         }
 
-        LabelBoostDoc.boost(labelGuid, doc);
+        //LabelBoostDoc.boost(labelGuid, doc);
         return doc.getLuceneDocument();
     }
 
