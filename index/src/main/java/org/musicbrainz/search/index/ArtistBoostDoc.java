@@ -46,7 +46,7 @@ import java.util.Set;
 public class ArtistBoostDoc {
 
     //Double the score of this doc if it comes up in search
-    private static float ARTIST_DOC_BOOST = 2.0f;
+    private static float ARTIST_DOC_BOOST = 1.1f;
 
     private static Set<String> artistGuIdSet = new HashSet<String>();
 
