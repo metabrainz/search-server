@@ -31,11 +31,11 @@ package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermContext;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
-import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.musicbrainz.search.LuceneVersion;
 
@@ -55,7 +55,7 @@ public class DismaxQueryParser {
     public DismaxQueryParser(org.apache.lucene.analysis.Analyzer analyzer) {
         dqp = new DisjunctionQueryParser(IMPOSSIBLE_FIELD_NAME, analyzer);
         //TODO FIXME
-        //dqp.setMultiTermRewriteMethod(new MultiTermUseIdfOfSearchTerm(100));
+        //dqp.setMultiTermRewriteMethod(new FuzzyTermRewrite(100));
     }
 
     /**
@@ -123,10 +123,10 @@ public class DismaxQueryParser {
             aliases.put(field, dismaxAlias);
         }
 
-        // TODO FIXME _ Unable to create rewrite using original idf
         // Rewrite Method used by Prefix Search and Fuzzy Search, use idf of the original term
-        //MultiTermQuery.RewriteMethod fuzzyAndPrefixQueryRewriteMethod
-        //        = new MultiTermUseIdfOfSearchTerm(200);
+        MultiTermQuery.RewriteMethod prefixRewrite = new PrefixTermRewrite(200);
+        MultiTermQuery.RewriteMethod fuzzyRewrite = new FuzzyTermRewrite(200);
+
 
         protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
             if (querySub != null) {
@@ -146,12 +146,11 @@ public class DismaxQueryParser {
         }
 
         @Override
-        //TODO FIXME was using a FLOAT similarity value of 0.5 but now chnaged to integral
+        //TODO FIXME was using a FLOAT similarity value of 0.5 but now changed to integral
         protected Query getFuzzyQuery(String field, String termStr, float minSimilarity) {
             Term t = new Term(field, termStr);
             FuzzyQuery fq = new FuzzyQuery(t,  2, MIN_FIELD_LENGTH_TO_MAKE_FUZZY);
-            //TODO FIXME
-            //fq.setRewriteMethod(fuzzyAndPrefixQueryRewriteMethod);
+            fq.setRewriteMethod(fuzzyRewrite);
             return fq;
         }
 
@@ -216,20 +215,62 @@ public class DismaxQueryParser {
          */
         protected Query newPrefixQuery(Term prefix){
             PrefixQuery query = new PrefixQuery(prefix);
-            //TODO FIXME
-            //query.setRewriteMethod(fuzzyAndPrefixQueryRewriteMethod);
+            query.setRewriteMethod(prefixRewrite);
             return query;
         }
     }
 
-    /*
-    TODO FIXME WAS Overriding methods that are now final
-    public static class MultiTermUseIdfOfSearchTerm<Q extends DisjunctionMaxQuery> extends TopTermsRewrite<Query> {
+    /**
+     * Fuzzy matches are rewritten to a DisjunctionMaxQuery instead of the more usual BooleanQuery so that
+     * if search term matches multiple fields we just take the best field rather summing all matches like a boolean
+     * query. The 0.1 for tiebreaker is to favour documents that contain all words rather than the same word in multiple
+     * fields.
+     *
+     * We use a constant score otherwise fuzzy matches could get higher scores then an exact match
+     *
+     * @param <Q>
+     */
+    public static class FuzzyTermRewrite<Q extends DisjunctionMaxQuery> extends TopTermsRewrite<Query> {
 
-    //public static final class MultiTermUseIdfOfSearchTerm extends TopTermsRewrite<BooleanQuery> {
+        public FuzzyTermRewrite(int size) {
+            super(size);
+        }
+
+        @Override
+        protected int getMaxSize() {
+            return BooleanQuery.getMaxClauseCount();
+        }
+
+        @Override
+        protected DisjunctionMaxQuery getTopLevelQuery() {
+            return new DisjunctionMaxQuery(0.1f);
+        }
+
+        @Override
+        protected void addClause(Query topLevel, Term term, int docCount, float boost, TermContext states) {
+            final Query tq = new ConstantScoreQuery(new TermQuery(term, states));
+            tq.setBoost(boost);
+            ((DisjunctionMaxQuery)topLevel).add(tq);
+        }
+    }
+
+    /**
+     *
+     * Prefix matches are rewritten to a DisjunctionMaxQuery instead of the more usual BooleanQuery so that
+     * if search term matches multiple fields we just take the best field rather summing all matches like a boolean
+     * query. The 0.1 for tiebreaker is to favour documents that contain all words rather than the same word in multiple
+     * fields.
+     *
+     * We set the idf the same as an exact match so that a wildcard match to a term which happens to be rarer than
+     * the exact term we were searching for does not get an unfairly high idf.
+     *
+     * @param <Q>
+     */
+    public static class PrefixTermRewrite<Q extends DisjunctionMaxQuery> extends TopTermsRewrite<Query> {
+
         private final TFIDFSimilarity similarity;
 
-        public MultiTermUseIdfOfSearchTerm(int size) {
+        public PrefixTermRewrite(int size) {
             super(size);
             this.similarity = new DefaultSimilarity();
 
@@ -246,8 +287,8 @@ public class DismaxQueryParser {
         }
 
         @Override
-        protected void addClause(Query topLevel, Term term, float boost) {
-            final Query tq = new ConstantScoreQuery(new TermQuery(term));
+        protected void addClause(Query topLevel, Term term, int docCount, float boost, TermContext states) {
+            final Query tq = new ConstantScoreQuery(new TermQuery(term, states));
             tq.setBoost(boost);
             ((DisjunctionMaxQuery)topLevel).add(tq);
         }
@@ -256,19 +297,17 @@ public class DismaxQueryParser {
                 throws IOException {
             float idf = 1f;
             float df;
-            if (query instanceof PrefixQuery)
+            PrefixQuery fq = (PrefixQuery) query;
+            df = reader.docFreq(fq.getPrefix());
+            if(df>=1)
             {
-                PrefixQuery fq = (PrefixQuery) query;
-                df = reader.docFreq(fq.getPrefix());
-                if(df>=1)
-                {
-                    //Same as idf value for search term, 0.5 acts as length norm
-                    idf = (float)Math.pow(similarity.idf((int) df, reader.numDocs()),2) * 0.5f;
-                }
+                //Same as idf value for search term, 0.5 acts as length norm
+                idf = (float)Math.pow(similarity.idf((int) df, reader.numDocs()),2) * 0.5f;
             }
             return idf;
         }
 
+        /*
         @Override
         public Query rewrite(final IndexReader reader, final MultiTermQuery query) throws IOException {
             DisjunctionMaxQuery  bq = (DisjunctionMaxQuery)super.rewrite(reader, query);
@@ -281,8 +320,9 @@ public class DismaxQueryParser {
                 next.setBoost(next.getBoost() * idfBoost);
             }
             return bq;
-        }
+        } */
 
     }
-    */
+
+
 }
