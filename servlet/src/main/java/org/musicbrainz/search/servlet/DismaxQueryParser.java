@@ -54,8 +54,6 @@ public class DismaxQueryParser {
 
     public DismaxQueryParser(org.apache.lucene.analysis.Analyzer analyzer) {
         dqp = new DisjunctionQueryParser(IMPOSSIBLE_FIELD_NAME, analyzer);
-        //TODO FIXME
-        //dqp.setMultiTermRewriteMethod(new FuzzyTermRewrite(100));
     }
 
     /**
@@ -264,33 +262,15 @@ public class DismaxQueryParser {
      * We set the idf the same as an exact match so that a wildcard match to a term which happens to be rarer than
      * the exact term we were searching for does not get an unfairly high idf.
      *
-     * @param <Q>
      */
-    public static class PrefixTermRewrite<Q extends DisjunctionMaxQuery> extends TopTermsRewrite<Query> {
+    public static class PrefixTermRewrite extends MultiTermQuery.RewriteMethod {
 
-        private final TFIDFSimilarity similarity;
+        private TFIDFSimilarity     similarity;
+        private FuzzyTermRewrite    rewrite;
 
         public PrefixTermRewrite(int size) {
-            super(size);
+            this.rewrite    = new FuzzyTermRewrite(size);
             this.similarity = new DefaultSimilarity();
-
-        }
-
-        @Override
-        protected int getMaxSize() {
-            return BooleanQuery.getMaxClauseCount();
-        }
-
-        @Override
-        protected DisjunctionMaxQuery getTopLevelQuery() {
-            return new DisjunctionMaxQuery(0.1f);
-        }
-
-        @Override
-        protected void addClause(Query topLevel, Term term, int docCount, float boost, TermContext states) {
-            final Query tq = new ConstantScoreQuery(new TermQuery(term, states));
-            tq.setBoost(boost);
-            ((DisjunctionMaxQuery)topLevel).add(tq);
         }
 
         protected float getQueryBoost(final IndexReader reader, final MultiTermQuery query)
@@ -307,21 +287,19 @@ public class DismaxQueryParser {
             return idf;
         }
 
-        /*
+
         @Override
         public Query rewrite(final IndexReader reader, final MultiTermQuery query) throws IOException {
-            DisjunctionMaxQuery  bq = (DisjunctionMaxQuery)super.rewrite(reader, query);
-
+            DisjunctionMaxQuery  dmq = (DisjunctionMaxQuery)rewrite.rewrite(reader, query);
             float idfBoost = getQueryBoost(reader, query);
-            Iterator<Query> iterator = bq.iterator();
+            Iterator<Query> iterator = dmq.iterator();
             while(iterator.hasNext())
             {
                 Query next = iterator.next();
                 next.setBoost(next.getBoost() * idfBoost);
             }
-            return bq;
-        } */
-
+            return dmq;
+        }
     }
 
 
