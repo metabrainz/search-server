@@ -24,7 +24,7 @@
   </init-param>
   <init-param>
      <param-name>index_dir</param-name>
-     <param-value>/Users/paul/code/indexes/indexesv4</param-value>
+     <param-value>/home/search/indexdata</param-value>
   </init-param>
   <init-param>
       <param-name>ratelimitserver_enabled</param-name>
