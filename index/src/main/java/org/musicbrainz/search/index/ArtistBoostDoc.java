@@ -77,7 +77,6 @@ public class ArtistBoostDoc {
             {
                 if(indexablefield.name().equals(ArtistIndexField.ALIAS.getName()))
                 {
-                    System.out.println("AliasField");
                     Field field = (Field)indexablefield;
                     field.setBoost(ARTIST_DOC_BOOST);
                     break;
