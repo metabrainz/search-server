@@ -127,7 +127,7 @@ public class ICUTransformFilter extends TokenFilter {
     }
   }
 
-  public boolean incrementToken() throws IOException {
+  public final boolean incrementToken() throws IOException {
 
     /*
      * Wrap the TermAttribute around the replaceable interface, clear the

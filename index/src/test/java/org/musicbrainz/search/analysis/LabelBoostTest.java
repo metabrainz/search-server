@@ -95,8 +95,7 @@ public class LabelBoostTest
             {
                 System.out.println(sd);
             }
-//            assertTrue(td.scoreDocs[0].score - (td.scoreDocs[1].score * 2) >  -0.1f);
-
+           assertTrue(td.scoreDocs[0].score - (td.scoreDocs[1].score * 2) >  -0.1f);
         }
 
     }

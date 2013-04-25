@@ -45,7 +45,7 @@ import java.util.Set;
 public class LabelBoostDoc {
 
     //Double the score of this doc if it comes up in search
-    private static float DOC_BOOST = 1.1f;
+    private static float DOC_BOOST = 2.0f;
 
     private static Set<String> labelGuIdSet = new HashSet<String>();
 
@@ -71,6 +71,7 @@ public class LabelBoostDoc {
                 {
                     Field field = (Field)indexablefield;
                     field.setBoost(DOC_BOOST);
+                    break;
                 }
             }
         }

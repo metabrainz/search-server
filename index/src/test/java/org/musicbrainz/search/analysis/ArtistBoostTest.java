@@ -52,7 +52,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Test wildcard search cshold match if search/field contains exclamation mark
+ * Test wildcard search should match if search/field contains exclamation mark
  *
  */
 public class ArtistBoostTest
@@ -67,11 +67,13 @@ public class ArtistBoostTest
         IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
 
-        //THis field has anid that means it gets doc boost
+        //This field has arid that means it gets doc boost
         Document doc = new Document();
         doc.add(new Field(ArtistIndexField.ARTIST_ID.getName(), "24f1766e-9635-4d58-a4d4-9413f9f98a4c", TextField.TYPE_STORED));
         doc.add(new Field(ArtistIndexField.ARTIST.getName(), "Johann Sebastian Bach", TextField.TYPE_STORED));
-        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "Bach", TextField.TYPE_STORED));
+        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "bach", TextField.TYPE_STORED));
+        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "bachhy", TextField.TYPE_STORED));
+        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "fred", TextField.TYPE_STORED));
         ArtistBoostDoc.boost("24f1766e-9635-4d58-a4d4-9413f9f98a4c",doc);
         writer.addDocument(doc);
 
@@ -80,6 +82,8 @@ public class ArtistBoostTest
         doc.add(new Field(ArtistIndexField.ARTIST_ID.getName(), "9cefb3f2-763c-47a3-bc1e-86f1f35206f0", TextField.TYPE_STORED));
         doc.add(new Field(ArtistIndexField.ARTIST.getName(), "bach", TextField.TYPE_STORED));
         doc.add(new Field(ArtistIndexField.ALIAS.getName(), "bach", TextField.TYPE_STORED));
+        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "bachhy", TextField.TYPE_STORED));
+        doc.add(new Field(ArtistIndexField.ALIAS.getName(), "fred", TextField.TYPE_STORED));
         ArtistBoostDoc.boost("9cefb3f2-763c-47a3-bc1e-86f1f35206f0",doc);
         writer.addDocument(doc);
 
@@ -94,7 +98,7 @@ public class ArtistBoostTest
             {
                 System.out.println(sd);
             }
-//            assertTrue(td.scoreDocs[0].score - (td.scoreDocs[1].score * 2) >  -0.2f);
+            assertTrue(td.scoreDocs[0].score - (td.scoreDocs[1].score * 2) >  -0.2f);
 
         }
 

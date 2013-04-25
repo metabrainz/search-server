@@ -334,7 +334,7 @@ public class MusicbrainzWordDelimiterFilter extends TokenFilter {
   }
   
   @Override
-  public boolean incrementToken() throws IOException {
+  public final boolean incrementToken() throws IOException {
     while (true) {
       if (!hasSavedState) {
         // process a new input word
