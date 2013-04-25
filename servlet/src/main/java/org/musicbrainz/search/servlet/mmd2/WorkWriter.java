@@ -31,6 +31,7 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -123,9 +124,13 @@ public class WorkWriter extends ResultsWriter
             IswcList iswcList = of.createIswcList();
             for (int i = 0; i < iswcs.length; i++)
             {
-                iswcList.getIswc().add(iswcs[i]);
+                if (isNotNoValue(iswcs[i])) {
+                    iswcList.getIswc().add(iswcs[i]);
+                }
             }
-            work.setIswcList(iswcList);
+            if(iswcList.getIswc().size()>0) {
+                work.setIswcList(iswcList);
+            }
         }
 
         String artistRelation = doc.get(WorkIndexField.ARTIST_RELATION);

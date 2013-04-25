@@ -92,6 +92,38 @@ public class FindWorkTest {
       writer.addDocument(doc.getLuceneDocument());
     }
 
+      {
+          MbDocument doc = new MbDocument();
+          doc.addField(WorkIndexField.WORK_ID, "bba1da16-6a0d-3299-aacf-042f8e13b0b7");
+          doc.addField(WorkIndexField.WORK, "Debaser");
+          doc.addField(WorkIndexField.ARTIST_ID, "789f6768-5830-4b08-8b4f-f38566b2eb1d");
+          doc.addField(WorkIndexField.ARTIST, "Back Francis");
+          doc.addField(WorkIndexField.LYRICS_LANG, "esp");
+          doc.addField(WorkIndexField.TYPE, "Song");
+          doc.addField(WorkIndexField.ALIAS, "Debaser (Clif Norrell mix)");
+          doc.addField(WorkIndexField.ISWC, "-");
+
+
+          RelationList rl = of.createRelationList();
+          rl.setTargetType("artist");
+          {
+              Relation relation = of.createRelation();
+              AttributeList al  = of.createAttributeList();
+              Artist artist = of.createArtist();
+              artist.setId("789f6768-5830-4b08-8b4f-f38566b2eb1d");
+              artist.setName("Black Francis");
+              artist.setSortName("Francis, Black");
+              relation.setArtist(artist);
+              relation.setType("composer");
+              relation.setDirection(DefDirection.BACKWARD);
+              al.getAttribute().add("additional");
+              relation.setAttributeList(al);
+              rl.getRelation().add(relation);
+          }
+          doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
+          writer.addDocument(doc.getLuceneDocument());
+      }
+
     {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
@@ -236,7 +268,28 @@ public class FindWorkTest {
     assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
   }
 
+    @Test
+    public void testFindWorkByNoISWC() throws Exception {
+        Results res = ss.search("iswc:\\-", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("bba1da16-6a0d-3299-aacf-042f8e13b0b7", doc.get(WorkIndexField.WORK_ID));
+    }
 
+    @Test
+    public void testOutputNoISWCInXml() throws Exception {
+
+        Results res = ss.search("iswc:\\-", 0, 1);
+        ResultsWriter writer = ss.getMmd2Writer();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res,SearchServerServlet.RESPONSE_XML, true);
+        pr.close();
+        String output = sw.toString();
+        System.out.println("Xml is" + output);
+        assertTrue(!output.contains("<iswc>"));
+    }
   /**
    * Tests
    *
