@@ -138,11 +138,15 @@ public class RecordingWriter extends ResultsWriter {
             if(isrcs.length>0) {
                 IsrcList isrcList = of.createIsrcList();
                 for (int i = 0; i < isrcs.length; i++) {
-                    Isrc isrc = of.createIsrc();
-                    isrc.setId(isrcs[i]);
-                    isrcList.getIsrc().add(isrc);
+                    if (isNotNoValue(isrcs[i])) {
+                        Isrc isrc = of.createIsrc();
+                        isrc.setId(isrcs[i]);
+                        isrcList.getIsrc().add(isrc);
+                    }
                 }
-                recording.setIsrcList(isrcList);
+                if(isrcList.getIsrc().size()>0) {
+                    recording.setIsrcList(isrcList);
+                }
             }
 
             String[] puids              = doc.getValues(RecordingIndexField.PUID);
