@@ -123,12 +123,12 @@ public class ArtistIndex extends DatabaseIndex {
                 "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
                 "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
                 "  end_date_year, end_date_month, end_date_day,ended, " +
-                "  comment, lower(iso_code) as country, lower(gender.name) as gender " +
+                "  comment, lower(i.code) as country, lower(gender.name) as gender " +
                 " FROM artist " +
                 "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
                 "  LEFT JOIN artist_name n1 ON artist.sort_name = n1.id " +
                 "  LEFT JOIN artist_type ON artist.type = artist_type.id " +
-                "  LEFT JOIN country ON artist.country = country.id " +
+                "  LEFT JOIN iso_3166_1 i on artist.area=i.area" +
                 "  LEFT JOIN gender ON artist.gender=gender.id " +
                 " WHERE artist.id BETWEEN ? AND ?");
 

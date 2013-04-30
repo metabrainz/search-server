@@ -32,6 +32,7 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.mmd2.Release;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.search.MbDocument;
 
@@ -108,7 +109,7 @@ public class  ReleaseIndex extends DatabaseIndex {
             addPreparedStatement("PUIDS",
                 "SELECT m.release, p.puid " +
                 "FROM medium m " +
-                " INNER JOIN track t ON (t.tracklist=m.tracklist AND m.release BETWEEN ? AND ?) " +
+                " INNER JOIN track t ON (t.medium=m.id AND m.release BETWEEN ? AND ?) " +
                 " INNER JOIN recording_puid rp ON rp.recording = t.recording " +
                 " INNER JOIN puid p ON rp.puid=p.id");
         }
@@ -121,13 +122,12 @@ public class  ReleaseIndex extends DatabaseIndex {
                " WHERE rl.release BETWEEN ? AND ?");
 
         addPreparedStatement("MEDIUMS",
-              "SELECT m.release as releaseId, mf.name as format, tr.track_count as numTracksOnMedium, count(mc.id) as discidsOnMedium " +
+              "SELECT m.release as releaseId, mf.name as format, m.track_count as numTracksOnMedium, count(mc.id) as discidsOnMedium " +
               " FROM medium m " +
               "  LEFT JOIN medium_format mf ON m.format=mf.id " +
-              "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
               "  LEFT JOIN medium_cdtoc mc ON mc.medium=m.id "  +
               " WHERE m.release BETWEEN ? AND ? " +
-              " GROUP BY m.release, m.position, m.id, mf.name, tr.track_count" +
+              " GROUP BY m.release, m.position, m.id, mf.name, m.track_count" +
               " ORDER BY m.release, m.position, m.id "
         );
 
@@ -158,11 +158,19 @@ public class  ReleaseIndex extends DatabaseIndex {
 
         addPreparedStatement("RELEASES",
                 " SELECT id, gid, name, " +
-                "  barcode, country, " +
-                "  date_year, date_month, date_day, type, rg_gid, amazon_asin, " +
+                "  barcode, " +
+                "  type, rg_gid, amazon_asin, " +
                 "  language, language_2t, script, status, comment " +
                 " FROM tmp_release rl " +
                 " WHERE id BETWEEN ? AND ? ");
+
+        addPreparedStatement("RELEASE_COUNTRY",
+                " SELECT release, r2.code as country, " +
+                        "  date_year, date_month, date_day"+
+                        " FROM release_country r1 " +
+                        " LEFT JOIN iso_3166_1 r2 " +
+                        " ON r1.country = r2.area " +
+                        " WHERE release BETWEEN ? AND ? ");
 
         addPreparedStatement("TAGS",
                 "SELECT release_tag.release, tag.name as tag, release_tag.count as count " +
@@ -244,10 +252,24 @@ public class  ReleaseIndex extends DatabaseIndex {
 
     }
 
+    private Map<Integer, List<Release>> loadReleaseEvents(int min, int max) throws SQLException, IOException {
+
+        // Get Release Country
+        PreparedStatement st = getPreparedStatement("RELEASE_COUNTRY");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        //TODO Will Become ReleaseEvent when MMD updated
+        Map<Integer,List<Release>> releaseEvents = ReleaseEventHelper.completeReleaseEventsFromDbResults(rs,"release");
+        rs.close();
+        return releaseEvents;
+
+    }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         Map<Integer, List<Tag>> tags                        = loadTags(min, max);
+        Map<Integer, List<Release>> releaseEvents           = loadReleaseEvents(min, max);
 
         //A particular release can have multiple catalog nos, labels when released as an imprint, typically used
         //by major labels
@@ -357,7 +379,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         rs = st.executeQuery();
         releaseClock.suspend();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, tags, labelInfo, mediums, puidWrapper, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, tags, releaseEvents, labelInfo, mediums, puidWrapper, artistCredits));
         }
         rs.close();
     }
@@ -365,6 +387,7 @@ public class  ReleaseIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<String>> secondaryTypes,
                                           Map<Integer,List<Tag>> tags,
+                                          Map<Integer,List<Release>> releaseEvents,
                                           Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<String>> puids,
@@ -391,9 +414,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rg_gid"));
         doc.addFieldOrUnknown(ReleaseIndexField.STATUS, rs.getString("status"));
 
-        doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, rs.getString("country"));
-        doc.addNonEmptyField(ReleaseIndexField.DATE,
-                Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
+
 
         String barcode = rs.getString("barcode");
         if(barcode==null) {
@@ -492,6 +513,16 @@ public class  ReleaseIndex extends DatabaseIndex {
             }
         }
 
+        if (releaseEvents.containsKey(id)) {
+            for (Release releaseEvent : releaseEvents.get(id)) {
+                doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, releaseEvent.getCountry());
+                doc.addFieldOrUnknown(ReleaseIndexField.DATE, releaseEvent.getDate());
+            }
+        }
+        else {
+            doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, null);
+            doc.addFieldOrUnknown(ReleaseIndexField.DATE, null);
+        }
         return doc.getLuceneDocument();
     }
 

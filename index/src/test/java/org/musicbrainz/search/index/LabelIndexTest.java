@@ -60,12 +60,12 @@ public class LabelIndexTest extends AbstractIndexTest {
     private void addLabelTwo() throws Exception {
 
         Statement stmt = conn.createStatement();
-		
-	stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (38, 'CA','Canada')");
-	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
-	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
-		
-        stmt.addBatch("INSERT INTO label(id, gid, name, sort_name, type, label_code, country, comment, " + 
+
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (38, 'Canada')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (38, 'CA')");
+	    stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
+	    stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
+		stmt.addBatch("INSERT INTO label(id, gid, name, sort_name, type, label_code, area, comment, " +
 					"	begin_date_year, begin_date_month, begin_date_day, end_date_year, end_date_month,ended) " +
 					"VALUES (2, 'd8caa692-704d-412b-a410-4fbcf5b9c796', 3, 4, 1, 0099998, 38, 'DO NOT EDIT THIS LABEL', " +
 					"	2009, 1, 1, 2009, 4,false)");
@@ -82,12 +82,13 @@ public class LabelIndexTest extends AbstractIndexTest {
     private void addLabelThree() throws Exception {
 
         Statement stmt = conn.createStatement();
-		
-		stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (1, 'AF','Afghanistan')");
-		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (1, 'Afghanistan')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (1, 'AF')");
+        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
 		stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, country, ended)" +
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, area, ended)" +
 					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1, true)");
         stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (3, 2)");
 

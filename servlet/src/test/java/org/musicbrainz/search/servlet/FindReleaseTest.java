@@ -802,7 +802,7 @@ public class FindReleaseTest {
     ResultsWriter writer = ss.getMmd2Writer();
     StringWriter sw = new StringWriter();
     PrintWriter pr = new PrintWriter(sw);
-    writer.write(pr, res, SearchServerServlet.RESPONSE_XML);
+    writer.write(pr, res, SearchServerServlet.RESPONSE_XML, true);
     pr.close();
     String output = sw.toString();
     System.out.println("Xml is" + output);
@@ -828,12 +828,14 @@ public class FindReleaseTest {
     assertTrue(output.contains("<format>Vinyl</format>"));
     assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
     assertTrue(output.contains("<track-count>17</track-count>"));
-    assertTrue(output.contains("<label><name>Wrath Records</name></label>"));
-    assertTrue(output.contains("<label id=\"c1dfaf9c-d498-4f6c-b040-f7714315fcea\"><name>Major Records</name></label>"));
+    assertTrue(output.contains("<name>Wrath Records</name>"));
+    assertTrue(output.contains("<label id=\"c1dfaf9c-d498-4f6c-b040-f7714315fcea\">"));
+    assertTrue(output.contains("<name>Major Records</name>"));
     assertTrue(output.contains("<catalog-number>WRATHCD-25</catalog-number>"));
     assertTrue(output.contains("<medium-list count=\"2\">"));
-    assertTrue(output.contains("<secondary-type-list><secondary-type>Live</secondary-type><secondary-type>Compilation</secondary-type></secondary-type-list>"));
-    assertTrue(output.contains("<tag-list><tag count=\"10\"><name>punk</name></tag></tag-list>"));
+    assertTrue(output.contains("<secondary-type>Live</secondary-type>"));
+    assertTrue(output.contains("<secondary-type>Compilation</secondary-type>"));
+    assertTrue(output.contains("<name>punk</name>"));
   }
 
   @Test

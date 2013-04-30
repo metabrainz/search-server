@@ -113,7 +113,7 @@ public class CommonTables  {
             "CREATE TEMPORARY TABLE tmp_release_puid AS " +
             "  SELECT m.release, rp.recording, p.puid " +
             "  FROM medium m " +
-            "    INNER JOIN track t ON t.tracklist = m.tracklist " +
+            "    INNER JOIN track t ON t.medium = m.id " +
             "    INNER JOIN recording_puid rp ON rp.recording = t.recording " +
             "    INNER JOIN puid p ON rp.puid = p.id");
         clock.stop();
@@ -141,24 +141,22 @@ public class CommonTables  {
         getDbConnection().createStatement().execute(
             "CREATE TEMPORARY TABLE tmp_release AS " +
                 "SELECT r.id, r.gid, rn.name as name, " +
-                "  barcode, country.iso_code as country, " +
-                "  date_year, date_month, date_day, rgt.name as type, rg.id as rg_id, rg.gid as rg_gid, rm.amazon_asin, " +
+                "  barcode, " +
+                "  rgt.name as type, rg.id as rg_id, rg.gid as rg_gid, rm.amazon_asin, " +
                 "  language.iso_code_3 as language, language.iso_code_2t as language_2t, script.iso_code as script, rs.name as status, " +
-                "  sum(tr.track_count) as tracks," +
+                "  sum(m.track_count) as tracks," +
                 "  r.artist_credit," +
                 "  r.comment" +
                 " FROM release r " +
                 "  LEFT JOIN release_meta rm ON r.id = rm.id " +
                 "  LEFT JOIN release_group rg ON rg.id = r.release_group " +
                 "  LEFT JOIN release_group_primary_type rgt  ON rg.type = rgt.id " +
-                "  LEFT JOIN country ON r.country=country.id " +
                 "  LEFT JOIN release_name rn ON r.name = rn.id " +
                 "  LEFT JOIN release_status rs ON r.status = rs.id " +
                 "  LEFT JOIN language ON r.language=language.id " +
                 "  LEFT JOIN script ON r.script=script.id " +
                 "  LEFT JOIN medium m ON m.release=r.id" +
-                "  LEFT JOIN tracklist tr ON m.tracklist=tr.id " +
-                " GROUP BY r.id,r.gid,rn.name,barcode,country.iso_code,date_year,date_month,date_day,rgt.name,rg.id, rg.gid," +
+                " GROUP BY r.id,r.gid,rn.name,barcode,rgt.name,rg.id, rg.gid," +
                 "  rm.amazon_asin, language.iso_code_3, language.iso_code_2t, script.iso_code,rs.name,r.artist_credit, r.comment");
         clock.stop();
         System.out.println("tmp_release     :Finished:" + Utils.formatClock(clock));
@@ -181,12 +179,11 @@ public class CommonTables  {
 
         getDbConnection().createStatement().execute(
             "CREATE TEMPORARY TABLE tmp_track AS " +
-                "SELECT t.id, t.recording, t.length, tn.name as track_name, t.position as track_position, t.number as track_number, tl.track_count, " +
+                "SELECT t.id, t.recording, t.length, tn.name as track_name, t.position as track_position, t.number as track_number, m.track_count, " +
                 "  m.release as release_id, m.position as medium_position, mf.name as format " +
                 " FROM track t " +
                 "  INNER JOIN track_name tn ON t.name=tn.id" +
-                "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                "  INNER JOIN medium m ON m.tracklist=tl.id " +
+                "  INNER JOIN medium m ON t.medium=m.id " +
                 "  LEFT JOIN  medium_format mf ON m.format=mf.id ");
 
         clock.stop();

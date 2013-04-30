@@ -198,6 +198,7 @@ public class RecordingWriter extends ResultsWriter {
                         release.setStatus(releaseStatus[i]);
                     }
 
+
                     if (isNotNoValue(releaseDate[i])) {
                         release.setDate(releaseDate[i].toLowerCase(Locale.US));
                     }

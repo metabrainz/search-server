@@ -53,20 +53,20 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type) " +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 3)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
-                "  language, script, date_year, date_month, date_day,comment) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1, 1,'demo')");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
+                "  language, script, comment) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1,'demo')");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
-        stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
+        stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 1, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (1, 1, 1)");
         stmt.addBatch("INSERT INTO puid (id, puid) VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e38')");
         stmt.addBatch("INSERT INTO recording_puid (id, puid, recording) VALUES (1, 1, 2)");
-        stmt.addBatch("INSERT INTO tracklist (id, track_count) VALUES (1, 1)");
-        stmt.addBatch("INSERT INTO track (id, recording, tracklist, position, name, artist_credit, length) "
+
+        stmt.addBatch("INSERT INTO track (id, recording, medium, position, name, artist_credit, length) "
                         + " VALUES (1, 2, 1, 4, 2, 1, 33100)");
+
         stmt.addBatch("INSERT INTO recording(id, gid, name, artist_credit, length)"
                         + " VALUES (2, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
-
 
         stmt.executeBatch();
         stmt.close();
@@ -93,11 +93,11 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging," +
                 "  language, script) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1,1, 1)");
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1)");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
-        stmt.addBatch("INSERT INTO medium (id, tracklist, release, position) VALUES (1, 1, 491240, 1)");
+        stmt.addBatch("INSERT INTO medium (id, track_count, release, position) VALUES (1, 1, 491240, 1)");
 
         stmt.executeBatch();
         stmt.close();
@@ -124,14 +124,13 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, packaging, country, " +
-                "  language, script, date_year, date_month, date_day) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, packaging," +
+                "  language, script) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1)");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
-        stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
+        stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 10, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (1, 1, 1)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (2, 1, 3)");
-        stmt.addBatch("INSERT INTO tracklist (id, track_count) VALUES (1, 10)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -160,14 +159,14 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,1)");
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,2)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
-                "language, script, date_year, date_month, date_day) " +
-                "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1, 28, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging," +
+                "language, script) " +
+                "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 28)");
         stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
         	" VALUES (1, null, 'eng', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
-        stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
+        stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 1, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'punk', 2)");
         stmt.addBatch("INSERT INTO release_tag (release, tag, count) VALUES (491240, 1, 10)");
 
@@ -199,22 +198,26 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit) " +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, country, " +
-                "  language, script, date_year, date_month, date_day, barcode) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 221, 1, 28, 1970, 1, 1, '5060180310066')");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
+                "  language, script, barcode) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 28,'5060180310066')");
         stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
         	" VALUES (1, null, 'end', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
-        stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (221, 'GB', 'United Kingdom')");
+
+        stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 221, 1970,1,1)");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
+
 
         stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, 'korova')");
 
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, country) " +
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name,area) " +
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1)");
-        stmt.addBatch("INSERT INTO release_label (id, release, label, catalog_number) VALUES (1, 491240, 1, 'ECHO1')");
 
+        stmt.addBatch("INSERT INTO release_label (id, release, label, catalog_number) VALUES (1, 491240, 1, 'ECHO1')");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
-        stmt.addBatch("INSERT INTO medium (id, tracklist, release, position, format) VALUES (1, 1, 491240, 1, 7)");
+        stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 1, 491240, 1, 7)");
 
         stmt.executeBatch();
         stmt.close();
@@ -518,7 +521,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.DATE.getName()).length);
+            assertEquals(1, doc.getFields(ReleaseIndexField.DATE.getName()).length);
         }
         ir.close();
     }
@@ -781,8 +784,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.DATE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
             assertEquals(0, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
             assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
         }

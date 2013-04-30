@@ -99,6 +99,7 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     String releases;
+    String releaseEvents;
     String releaseSecondaryTypes;
 
     @Override
@@ -127,12 +128,11 @@ public class RecordingIndex extends DatabaseIndex {
                             " AND   recording between ? AND ?");
 
             addPreparedStatement("TRACKS",
-                    "SELECT t.id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, tl.track_count, " +
+                    "SELECT t.id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, m.track_count, " +
                             "  m.release as release_id, m.position as medium_position,mf.name as format " +
                             " FROM track t " +
                             "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
-                            "  INNER JOIN tracklist tl ON t.tracklist=tl.id " +
-                            "  INNER JOIN medium m ON m.tracklist=tl.id " +
+                            "  INNER JOIN medium m ON t.medium=m.id " +
                             "  LEFT JOIN  medium_format mf ON m.format=mf.id "
             );
         }
@@ -184,9 +184,17 @@ public class RecordingIndex extends DatabaseIndex {
         releases =
                 "SELECT " +
                         "  id as releaseKey, gid as releaseid, name as releasename, type, " +
-                        "  status, date_year, date_month, date_day, tracks,artist_credit, country,rg_gid " +
+                        "  status, tracks,artist_credit, rg_gid " +
                         " FROM tmp_release r1 " +
                         " WHERE r1.id in ";
+
+        releaseEvents =
+                " SELECT re.release as releaseKey, r2.code as country, " +
+                        "  date_year, date_month, date_day"+
+                        " FROM release_country re " +
+                        " LEFT JOIN iso_3166_1 r2 " +
+                        " ON re.country = r2.area " +
+                        " WHERE re.release in ";
 
         releaseSecondaryTypes =
                 "SELECT rg.name as type, r.id as releaseKey" +
@@ -446,6 +454,22 @@ public class RecordingIndex extends DatabaseIndex {
 
     }
 
+    private PreparedStatement createReleaseEventStatement(int noOfElements) throws SQLException {
+        StringBuilder inClause = new StringBuilder();
+        boolean firstValue = true;
+        for (int i = 0; i < noOfElements; i++) {
+            if (firstValue) {
+                firstValue = false;
+            } else {
+                inClause.append(',');
+            }
+            inClause.append('?');
+        }
+        PreparedStatement stmt = dbConnection.prepareStatement(
+                releaseEvents + "(" + inClause.toString() + ')');
+        return stmt;
+
+    }
     /**
      * Create the release secondary types statement
      *
@@ -529,8 +553,6 @@ public class RecordingIndex extends DatabaseIndex {
             rg.setId(rs.getString("rg_gid"));
             release.setReleaseGroup(rg);
             release.setStatus(rs.getString("status"));
-            release.setCountry(rs.getString("country"));
-            release.setDate(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
             ml.setTrackCount(BigInteger.valueOf(rs.getInt("tracks")));
             release.setReleaseGroup(rg);
             release.setMediumList(ml);
@@ -542,7 +564,27 @@ public class RecordingIndex extends DatabaseIndex {
         }
         rs.close();
 
+        //Add ReleaseEvents for each Release
+        stmt = createReleaseEventStatement(releaseKeys.size());
+        count = 1;
+        for (Integer key : releaseKeys) {
+            stmt.setInt(count, key);
+            count++;
+        }
+        rs = stmt.executeQuery();
+        while (rs.next()) {
+            int releaseKey = rs.getInt("releaseKey");
+            release = releases.get(releaseKey);
+            if (release.getReleaseEventList() == null) {
+                release.setReleaseEventList(of.createReleaseEventList());
+            }
+            ReleaseEvent re = of.createReleaseEvent();
+            re.setDate(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
+            re.setCountry((rs.getString("country")));
+            release.getReleaseEventList().getReleaseEvent().add(re);
+        }
 
+        //Add secondary types of the releasegroup that each release is part of
         stmt = createReleaseSecondaryTypesStatement(releaseKeys.size());
         count = 1;
         for (Integer key : releaseKeys) {
@@ -686,8 +728,23 @@ public class RecordingIndex extends DatabaseIndex {
                     doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
                     doc.addFieldOrNoValue(RecordingIndexField.NUMBER, track.getTrackNumber());
                     doc.addFieldOrNoValue(RecordingIndexField.RELEASE_STATUS, release.getStatus());
-                    doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, release.getDate());
-                    doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, release.getCountry());
+
+                    if(
+                            (release.getReleaseEventList()!=null) &&
+                            (release.getReleaseEventList().getReleaseEvent()!=null)
+                      ) {
+                        for(ReleaseEvent re:release.getReleaseEventList().getReleaseEvent())
+                        {
+                            doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, re.getDate());
+                            doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, re.getCountry());
+                        }
+                    }
+                    else  {
+                        doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, null);
+                        doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, null);
+                    }
+
+
                     doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
                     doc.addField(RecordingIndexField.RELEASE, release.getTitle());
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());

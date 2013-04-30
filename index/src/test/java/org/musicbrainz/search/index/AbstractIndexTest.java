@@ -214,11 +214,62 @@ public abstract class AbstractIndexTest {
     }
 
     protected void setupCommonTables(Statement stmt) throws Exception {
-        stmt.addBatch("CREATE TABLE country (" +
-                "  id serial NOT NULL," +
-                "  iso_code character varying(2) NOT NULL," +
-                "  name character varying(100) NOT NULL" +
-                ")");
+
+        stmt.addBatch("CREATE TABLE area_type (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);");
+
+
+        stmt.addBatch("CREATE TABLE area (id          INTEGER PRIMARY KEY," +
+                "                   gid               uuid," +
+                "                   name              VARCHAR ," +
+                "                   sort_name         VARCHAR ," +
+                "                   type              INTEGER," +
+                "                   edits_pending     INTEGER NOT NULL DEFAULT 0," +
+                "                   last_updated      TIMESTAMP," +
+                "                   begin_date_year   SMALLINT," +
+                "                   begin_date_month  SMALLINT," +
+                "                   begin_date_day    SMALLINT," +
+                "                   end_date_year     SMALLINT," +
+                "                   end_date_month    SMALLINT," +
+                "                   end_date_day      SMALLINT," +
+                "                   ended             BOOLEAN NOT NULL DEFAULT FALSE" +
+                "                   );");
+
+        stmt.addBatch("CREATE TABLE area_gid_redirect (" +
+                "    gid UUID NOT NULL PRIMARY KEY," +
+                "    new_id INTEGER NOT NULL," +
+                "    created TIMESTAMP" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE iso_3166_1 (area      INTEGER NOT NULL," +
+                "                         code      CHAR(2) PRIMARY KEY);" +
+                "");
+
+        stmt.addBatch("CREATE TABLE iso_3166_2 (area      INTEGER NOT NULL," +
+                "                         code      VARCHAR(10) PRIMARY KEY);");
+
+        stmt.addBatch("CREATE TABLE iso_3166_3 (area      INTEGER NOT NULL," +
+                "                         code      CHAR(4) PRIMARY KEY);");
+
+
+        stmt.addBatch("CREATE TABLE area_alias_type (id SERIAL PRIMARY KEY, name TEXT NOT NULL);");
+
+
+        stmt.addBatch("CREATE TABLE area_alias (id            SERIAL PRIMARY KEY," +
+                "                         area                INTEGER NOT NULL," +
+                "                         name                VARCHAR NOT NULL," +
+                "                         locale              TEXT," +
+                "                         edits_pending       INTEGER NOT NULL DEFAULT 0 ," +
+                "                         last_updated        TIMESTAMP," +
+                "                         type                INTEGER," +
+                "                         sort_name           VARCHAR NOT NULL," +
+                "                         begin_date_year     SMALLINT," +
+                "                         begin_date_month    SMALLINT," +
+                "                         begin_date_day      SMALLINT," +
+                "                         end_date_year       SMALLINT," +
+                "                         end_date_month      SMALLINT," +
+                "                         end_date_day        SMALLINT," +
+                "                         primary_for_locale  BOOLEAN NOT NULL DEFAULT false"+
+                ");");
 
         stmt.addBatch("CREATE TABLE tag (" +
                 "  id serial NOT NULL," +
@@ -242,7 +293,9 @@ public abstract class AbstractIndexTest {
                 "  end_date_month integer," +
                 "  end_date_day integer," +
                 "  type integer," +
-                "  country integer," +
+                "  area integer," +
+                "  begin_area integer," +
+                "  end_area integer," +
                 "  gender integer," +
                 "  comment character varying(255)," +
                 "  last_updated timestamp," +
@@ -338,7 +391,7 @@ public abstract class AbstractIndexTest {
                 "  end_date_day integer," +
                 "  label_code integer," +
                 "  type integer," +
-                "  country integer," +
+                "  area integer," +
                 "  comment character varying(255)," +
                 "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0," +
@@ -403,12 +456,8 @@ public abstract class AbstractIndexTest {
                 "  release_group integer NOT NULL," +
                 "  status integer," +
                 "  packaging integer," +
-                "  country integer," +
                 "  language integer," +
                 "  script integer," +
-                "  date_year integer," +
-                "  date_month integer," +
-                "  date_day integer," +
                 "  barcode character varying(255)," +
                 "  comment character varying(255)," +
                 "  last_updated timestamp," +
@@ -440,7 +489,7 @@ public abstract class AbstractIndexTest {
 
         stmt.addBatch("CREATE TABLE medium (" +
                 "  id serial NOT NULL," +
-                "  tracklist integer NOT NULL," +
+                "  track_count integer NOT NULL," +
                 "  release integer NOT NULL," +
                 "  position integer NOT NULL," +
                 "  format integer," +
@@ -502,6 +551,15 @@ public abstract class AbstractIndexTest {
                 "  count integer NOT NULL," +
                 "  last_updated timestamp" +
                 ")");
+
+        stmt.addBatch("CREATE TABLE release_country" +
+                "(" +
+                "  release integer NOT NULL," +
+                "  country integer NOT NULL," +
+                "  date_year smallint NOT NULL," +
+                "  date_month smallint NOT NULL," +
+                "  date_day smallint NOT NULL" +
+                ")");
     }
 
     protected void setupReleaseGroupTables(Statement stmt) throws Exception {
@@ -549,9 +607,10 @@ public abstract class AbstractIndexTest {
                 ")");
 
         stmt.addBatch("CREATE TABLE track (" +
-                "  id serial NOT NULL," +
+                "  id serial," +
+                "  gid uuid," +
                 "  recording integer NOT NULL," +
-                "  tracklist integer NOT NULL," +
+                "  medium integer NOT NULL," +
                 "  position integer NOT NULL," +
                 "  number text, " +
                 "  name integer NOT NULL," +

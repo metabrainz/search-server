@@ -140,15 +140,39 @@ public class ReleaseWriter extends ResultsWriter {
                 release.setStatus(status);
             }
 
-            String country = doc.get(ReleaseIndexField.COUNTRY);
-            if (isNotUnknown(country)){
-
-                release.setCountry(country);
+            String[] countrys = doc.getValues(ReleaseIndexField.COUNTRY);
+            String[] dates    = doc.getValues(ReleaseIndexField.DATE);
+            ReleaseEventList rel = of.createReleaseEventList();
+            for(int i=0;i<countrys.length; i++)
+            {
+                String nextCountry = countrys[i];
+                String nextDate = dates[i];
+                if(isNotUnknown(nextCountry) || isNotUnknown(nextDate))
+                {
+                    ReleaseEvent re = of.createReleaseEvent();
+                    if(isNotUnknown(nextCountry))
+                    {
+                        re.setCountry(nextCountry);
+                    }
+                    if(isNotUnknown(nextDate))
+                    {
+                        re.setDate(nextDate);
+                    }
+                    rel.getReleaseEvent().add(re);
+                }
+            }
+            if(rel.getReleaseEvent().size()>0) {
+                release.setReleaseEventList(rel);
             }
 
-            String date = doc.get(ReleaseIndexField.DATE);
-            if (date != null) {
-                release.setDate(date);
+            //For backwards compatability
+            if (isNotUnknown(countrys[0])){
+
+                release.setCountry(countrys[0]);
+            }
+            if (isNotUnknown(dates[0])){
+
+                release.setDate(dates[0]);
             }
 
             String barcode = doc.get(ReleaseIndexField.BARCODE);

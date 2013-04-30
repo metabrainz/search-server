@@ -105,12 +105,12 @@ public class LabelIndex extends DatabaseIndex {
                 "SELECT label.id, gid, n0.name as name, n1.name as sort_name, " +
                 "  label_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
                 "  end_date_year, end_date_month, end_date_day, ended," +
-                "  comment, label_code, lower(iso_code) as country " +
+                "  comment, label_code, lower(i.code) as country " +
                 " FROM label " +
                 "  LEFT JOIN label_name n0 ON label.name = n0.id " +
                 "  LEFT JOIN label_name n1 ON label.sort_name = n1.id " +
                 "  LEFT JOIN label_type ON label.type = label_type.id " +
-                "  LEFT JOIN country ON label.country = country.id " +
+                "  LEFT JOIN iso_3166_1 i on label.area=i.area" +
                 " WHERE label.id BETWEEN ? AND ?");
 
         addPreparedStatement("IPICODES",

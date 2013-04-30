@@ -34,10 +34,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, country,ended)" +
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, area,ended)" +
             " VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, 1999, 4, 2, 1, 1,true)");
         stmt.addBatch("INSERT INTO artist_ipi (artist,ipi) values(521316,'10001')");
-        stmt.addBatch("INSERT INTO country (id, iso_code, name) VALUES (1, 'AF', 'Afghanistan')");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (1, 'Afghanistan')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (1, 'AF')");
 
         stmt.executeBatch();
         stmt.close();
