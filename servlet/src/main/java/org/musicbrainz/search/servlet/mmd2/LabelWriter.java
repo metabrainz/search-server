@@ -40,6 +40,9 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Write Label Output
+ */
 public class LabelWriter extends ResultsWriter {
 
 
