@@ -40,6 +40,10 @@ import org.musicbrainz.search.servlet.Results;
 import java.io.IOException;
 import java.math.BigInteger;
 
+/**
+ * Write Folksonomy Tags
+ *
+ */
 public class TagWriter extends ResultsWriter {
 
     /**
