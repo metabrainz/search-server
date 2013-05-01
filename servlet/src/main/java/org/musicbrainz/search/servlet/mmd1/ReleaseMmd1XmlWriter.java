@@ -28,13 +28,24 @@
 
 package org.musicbrainz.search.servlet.mmd1;
 
+import com.google.common.base.Strings;
 import com.jthink.brainz.mmd.*;
+import com.jthink.brainz.mmd.Artist;
+import com.jthink.brainz.mmd.DiscList;
+import com.jthink.brainz.mmd.Label;
+import com.jthink.brainz.mmd.Metadata;
+import com.jthink.brainz.mmd.ObjectFactory;
+import com.jthink.brainz.mmd.Release;
+import com.jthink.brainz.mmd.ReleaseEventList;
+import com.jthink.brainz.mmd.ReleaseList;
+import com.jthink.brainz.mmd.TextRepresentation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
@@ -54,163 +65,148 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
 
         for (Result result : results.results) {
             MbDocument doc = result.getDoc();
+
             Release release = of.createRelease();
-            release.setId(doc.get(ReleaseIndexField.RELEASE_ID));
-
-            String type = doc.get(ReleaseIndexField.TYPE);
-            String status = doc.get(ReleaseIndexField.STATUS);
-            if (isNotUnknown(type) || isNotUnknown(status)) {
-                if (isNotUnknown(type)) {
-                    release.getType().add(StringUtils.capitalize(type));
-                }
-
-                if (isNotUnknown(status)) {
-                    release.getType().add(status);
-                }
-            }
-
             result.setNormalizedScore(results.getMaxScore());
             release.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
-            String name = doc.get(ReleaseIndexField.RELEASE);
-            if (name != null) {
-                release.setTitle(name);
+            org.musicbrainz.mmd2.Release releasev2
+                    = (org.musicbrainz.mmd2.Release) MMDSerializer.unserialize(doc.get(ReleaseIndexField.RELEASE_STORE), org.musicbrainz.mmd2.Release.class);
+            release.setId(releasev2.getId());
+            release.getType().add(StringUtils.capitalize(releasev2.getReleaseGroup().getType()));
 
+            if (!Strings.isNullOrEmpty(releasev2.getStatus())) {
+                release.getType().add(releasev2.getStatus());
             }
 
-            String asin = doc.get(ReleaseIndexField.AMAZON_ID);
-            if (isNotNoValue(asin)) {
-                release.setAsin(asin);
+            if (!Strings.isNullOrEmpty(releasev2.getTitle())) {
+                release.setTitle(releasev2.getTitle());
+            }
 
+            if (!Strings.isNullOrEmpty(releasev2.getAsin())) {
+                release.setAsin(releasev2.getAsin());
             }
 
             TextRepresentation tr = of.createTextRepresentation();
-            String script = doc.get(ReleaseIndexField.SCRIPT);
-            if (isNotUnknown(script)) {
-                tr.setScript(script);
-            }
-            String lang = doc.get(ReleaseIndexField.LANGUAGE);
-            if (isNotUnknown(lang)) {
-                tr.setLanguage(lang.toUpperCase(Locale.US));
-            }
+            org.musicbrainz.mmd2.TextRepresentation tr2 = releasev2.getTextRepresentation();
+            if (tr != null) {
+                if (!Strings.isNullOrEmpty(tr2.getScript())) {
+                    tr.setScript(tr2.getScript());
+                }
 
-            if (script != null || lang != null) {
+                if (!Strings.isNullOrEmpty(tr2.getLanguage())) {
+                    tr.setLanguage(tr2.getLanguage().toUpperCase(Locale.US));
+                }
                 release.setTextRepresentation(tr);
             }
 
-            String country = doc.get(ReleaseIndexField.COUNTRY);
-            String date = doc.get(ReleaseIndexField.DATE);
-            String barcode = doc.get(ReleaseIndexField.BARCODE);
-            String format = doc.get(ReleaseIndexField.FORMAT);
+            if (!Strings.isNullOrEmpty(releasev2.getCountry())) {
+                release.setAsin(releasev2.getAsin());
+            }
 
-            String[] labelNames = doc.getValues(ReleaseIndexField.LABEL);
-            //Now releases can only have multiple labe;/catno combinations but MMDv1
-            //expects country,date,barcode and format to also be part of each release event.
-            if (labelNames.length > 0) {
+            if (!Strings.isNullOrEmpty(releasev2.getDate())) {
+                release.setAsin(releasev2.getAsin());
+            }
+
+            if (!Strings.isNullOrEmpty(releasev2.getBarcode())) {
+                release.setAsin(releasev2.getAsin());
+            }
+
+            if (!Strings.isNullOrEmpty(releasev2.getAsin())) {
+                release.setAsin(releasev2.getAsin());
+            }
+
+            //Just use format of first medium
+            Medium firstMediumv2 = releasev2.getMediumList().getMedium().get(0);
+            LabelInfoList lilv2 = releasev2.getLabelInfoList();
+            if (!lilv2.getLabelInfo().isEmpty()) {
                 ReleaseEventList eventList = of.createReleaseEventList();
-                String[] catnos = doc.getValues(ReleaseIndexField.CATALOG_NO);
-                String[] labelIds = doc.getValues(ReleaseIndexField.LABEL_ID);
-
-                for (int i = 0; i < labelNames.length; i++) {
+                for (LabelInfo liv2 : lilv2.getLabelInfo()) {
                     Event event = of.createEvent();
 
-                    if (isNotNoValue(labelNames[i]) || isNotNoValue(labelIds[i])) {
+                    if (!Strings.isNullOrEmpty(liv2.getCatalogNumber())) {
+                        event.setCatalogNumber(liv2.getCatalogNumber());
+                    }
+
+                    org.musicbrainz.mmd2.Label labelv2 = liv2.getLabel();
+                    if (labelv2 != null) {
                         Label label = of.createLabel();
                         event.setLabel(label);
-                        
-                        if (isNotNoValue(labelNames[i])) {
-                            label.setName(labelNames[i]);
+                        if (!Strings.isNullOrEmpty(labelv2.getId())) {
+                            label.setId(labelv2.getId());
                         }
-                        
-                        if (isNotNoValue(labelIds[i])) {
-                            label.setId(labelIds[i]);
+
+                        if (!Strings.isNullOrEmpty(labelv2.getName())) {
+                            label.setName(labelv2.getName());
                         }
                     }
 
-                    if (isNotNoValue(catnos[i])) {
-                        event.setCatalogNumber(catnos[i]);
+                    if (!Strings.isNullOrEmpty(releasev2.getCountry())) {
+                        event.setCountry(StringUtils.upperCase(releasev2.getCountry()));
                     }
 
-                    if (isNotUnknown(country)) {
-                        event.setCountry(StringUtils.upperCase(country));
+                    if (!Strings.isNullOrEmpty(releasev2.getDate())) {
+                        event.setDate(releasev2.getDate());
                     }
 
-                    if (event != null) {
-                        event.setDate(date);
+                    if (!Strings.isNullOrEmpty(releasev2.getBarcode())) {
+                        event.setBarcode(releasev2.getBarcode());
                     }
 
-                    if (isNotNoValue(barcode)) {
-                        event.setBarcode(barcode);
-                    }
-
-                    if (isNotNoValue(format)) {
-                        event.setFormat(format);
+                    if (!Strings.isNullOrEmpty(firstMediumv2.getFormat())) {
+                        event.setFormat(firstMediumv2.getFormat());
                     }
                     eventList.getEvent().add(event);
                 }
                 release.setReleaseEventList(eventList);
-            }
-            else {
+            } else {
                 ReleaseEventList eventList = of.createReleaseEventList();
                 Event event = of.createEvent();
-
-                if (country != null) {
-                    event.setCountry(StringUtils.upperCase(country));
-                }
-
-                if (event != null) {
-                    event.setDate(date);
-                }
-
-                if (barcode != null) {
-                    event.setBarcode(barcode);
-                }
-
-                if (format != null) {
-                    event.setFormat(format);
-                }
                 eventList.getEvent().add(event);
-                release.setReleaseEventList(eventList);                    
+                release.setReleaseEventList(eventList);
+
+                if (!Strings.isNullOrEmpty(releasev2.getCountry())) {
+                    event.setCountry(StringUtils.upperCase(releasev2.getCountry()));
+                }
+
+                if (!Strings.isNullOrEmpty(releasev2.getDate())) {
+                    event.setDate(releasev2.getDate());
+                }
+
+                if (!Strings.isNullOrEmpty(releasev2.getBarcode())) {
+                    event.setBarcode(releasev2.getBarcode());
+                }
+
+                if (!Strings.isNullOrEmpty(firstMediumv2.getFormat())) {
+                    event.setFormat(firstMediumv2.getFormat());
+                }
             }
 
-            //Just add the first Artist (if there are more than one, this means that once releases get added with multiple
-            //name credits using this old interface isn't going to give very good results
-            if(doc.get(ReleaseIndexField.ARTIST_CREDIT)!=null) {
-                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT));
-                if (ac.getNameCredit().size()>0) {
+            ArtistCredit acv2 = releasev2.getArtistCredit();
+            if(acv2!=null) {
+                if (acv2.getNameCredit().size() > 0) {
                     Artist artist = of.createArtist();
-                    artist.setName(ac.getNameCredit().get(0).getArtist().getName());
-                    artist.setId(ac.getNameCredit().get(0).getArtist().getId());
-                    artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
+                    artist.setName(acv2.getNameCredit().get(0).getArtist().getName());
+                    artist.setId(acv2.getNameCredit().get(0).getArtist().getId());
+                    artist.setSortName(acv2.getNameCredit().get(0).getArtist().getSortName());
                     release.setArtist(artist);
                 }
             }
 
-            String[] numDiscsIdsOnMedium = doc.getValues(ReleaseIndexField.NUM_DISCIDS_MEDIUM);
-            if(numDiscsIdsOnMedium.length>0)
+            int totaldiscIds=0;
+            MediumList mediumListv2 = releasev2.getMediumList();
+            TrackList trackList = of.createTrackList();
+            trackList.setCount(mediumListv2.getTrackCount());
+            release.setTrackList(trackList);
+
+            for(Medium mediumv2:mediumListv2.getMedium())
             {
-                int numDiscs = 0;
-                for(int i=0;i<numDiscsIdsOnMedium.length;i++) {
-                    numDiscs+=NumericUtils.prefixCodedToInt(new BytesRef(numDiscsIdsOnMedium[i]));
-                }
-
-                DiscList discList = of.createDiscList();
-                discList.setCount(BigInteger.valueOf(numDiscs));
-                release.setDiscList(discList);
+                totaldiscIds+=mediumv2.getDiscList().getCount().intValue();
             }
+            DiscList discList = of.createDiscList();
+            discList.setCount(BigInteger.valueOf(totaldiscIds));
+            release.setDiscList(discList);
 
-            String[] numTracksOnMedium = doc.getValues(ReleaseIndexField.NUM_TRACKS_MEDIUM);
-            if(numTracksOnMedium.length>0)
-            {
-                int numTracks = 0;
-                for(int i=0;i<numTracksOnMedium.length;i++) {
-                    numTracks+=NumericUtils.prefixCodedToInt(new BytesRef(numTracksOnMedium[i]));
-                }
-
-                TrackList trackList = of.createTrackList();
-                trackList.setCount(BigInteger.valueOf(numTracks));
-                release.setTrackList(trackList);
-            }
             releaseList.getRelease().add(release);
         }
         releaseList.setCount(BigInteger.valueOf(results.getTotalHits()));

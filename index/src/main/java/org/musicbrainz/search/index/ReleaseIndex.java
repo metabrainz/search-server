@@ -28,15 +28,17 @@
 
 package org.musicbrainz.search.index;
 
+import com.google.common.base.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.musicbrainz.mmd2.Release;
-import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
 
@@ -252,15 +254,14 @@ public class  ReleaseIndex extends DatabaseIndex {
 
     }
 
-    private Map<Integer, List<Release>> loadReleaseEvents(int min, int max) throws SQLException, IOException {
+    private Map<Integer, List<ReleaseEvent>> loadReleaseEvents(int min, int max) throws SQLException, IOException {
 
         // Get Release Country
         PreparedStatement st = getPreparedStatement("RELEASE_COUNTRY");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        //TODO Will Become ReleaseEvent when MMD updated
-        Map<Integer,List<Release>> releaseEvents = ReleaseEventHelper.completeReleaseEventsFromDbResults(rs,"release");
+        Map<Integer,List<ReleaseEvent>> releaseEvents = ReleaseEventHelper.completeReleaseEventsFromDbResults(rs,"release");
         rs.close();
         return releaseEvents;
 
@@ -269,7 +270,7 @@ public class  ReleaseIndex extends DatabaseIndex {
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         Map<Integer, List<Tag>> tags                        = loadTags(min, max);
-        Map<Integer, List<Release>> releaseEvents           = loadReleaseEvents(min, max);
+        Map<Integer, List<ReleaseEvent>> releaseEvents      = loadReleaseEvents(min, max);
 
         //A particular release can have multiple catalog nos, labels when released as an imprint, typically used
         //by major labels
@@ -387,34 +388,58 @@ public class  ReleaseIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<String>> secondaryTypes,
                                           Map<Integer,List<Tag>> tags,
-                                          Map<Integer,List<Release>> releaseEvents,
+                                          Map<Integer,List<ReleaseEvent>> releaseEvents,
                                           Map<Integer,List<List<String>>> labelInfo,
                                           Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<String>> puids,
                                           Map<Integer, ArtistCreditWrapper> artistCredits) throws SQLException {
         MbDocument doc = new MbDocument();
+
+        ObjectFactory of = new ObjectFactory();
+        Release release = of.createRelease();
+
         int id = rs.getInt("id");
         doc.addField(ReleaseIndexField.ID, id);
         doc.addField(ReleaseIndexField.RELEASE_ID, rs.getString("gid"));
+        release.setId(rs.getString("gid"));
+
         String name = rs.getString("name");
         doc.addField(ReleaseIndexField.RELEASE, name );
         doc.addField(ReleaseIndexField.RELEASE_ACCENT, name);
+        release.setTitle(name);
 
         String primaryType = rs.getString("type");
         doc.addFieldOrUnknown(ReleaseIndexField.PRIMARY_TYPE, primaryType);
+        ReleaseGroup rg = of.createReleaseGroup();
+        release.setReleaseGroup(rg);
+        if (primaryType!=null && !primaryType.isEmpty()){
+            release.getReleaseGroup().setType(primaryType);
+        }
+
         if (secondaryTypes.containsKey(id)) {
+            SecondaryTypeList stl = of.createSecondaryTypeList();
             for (String secondaryType : secondaryTypes.get(id)) {
                 doc.addField(ReleaseIndexField.SECONDARY_TYPE, secondaryType);
+                stl.getSecondaryType().add(secondaryType);
             }
+            release.getReleaseGroup().setSecondaryTypeList(stl);
         }
+
         String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType, secondaryTypes.get(id));
         doc.addFieldOrUnknown(ReleaseIndexField.TYPE, type);
+        if (type!=null && !type.isEmpty()) {
+            release.getReleaseGroup().setType(type);
+        }
 
+        String releaseGroupId = rs.getString("rg_gid");
+        doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, releaseGroupId);
+        release.getReleaseGroup().setId(releaseGroupId);
 
-        doc.addNonEmptyField(ReleaseIndexField.RELEASEGROUP_ID, rs.getString("rg_gid"));
-        doc.addFieldOrUnknown(ReleaseIndexField.STATUS, rs.getString("status"));
-
-
+        String status = rs.getString("status");
+        doc.addFieldOrUnknown(ReleaseIndexField.STATUS, status);
+        if (status!=null && !status.isEmpty()) {
+            release.setStatus(type);
+        }
 
         String barcode = rs.getString("barcode");
         if(barcode==null) {
@@ -422,67 +447,134 @@ public class  ReleaseIndex extends DatabaseIndex {
         }
         else if(barcode.equals("")) {
             doc.addField(ReleaseIndexField.BARCODE, BARCODE_NONE);
+            release.setBarcode(barcode);
         }
         else {
             doc.addField(ReleaseIndexField.BARCODE,barcode);
+            release.setBarcode(barcode);
         }
-        doc.addFieldOrNoValue(ReleaseIndexField.AMAZON_ID, rs.getString("amazon_asin"));
+
+        String asin = rs.getString("amazon_asin");
+        doc.addFieldOrNoValue(ReleaseIndexField.AMAZON_ID, asin);
+        if (asin!=null && !asin.isEmpty()) {
+            release.setAsin(asin);
+        }
+
+        boolean isScriptOrLanguage = false;
+        TextRepresentation tr = of.createTextRepresentation();
+        String script = rs.getString("script");
+        doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, script) ;
+        if (script!=null && !script.isEmpty()) {
+            tr.setScript(script);
+            isScriptOrLanguage=true;
+        }
 
         String lang3= rs.getString("language");
         String lang2= rs.getString("language_2t");
         if(lang3!=null)
         {
             doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, lang3);
+            tr.setLanguage(lang3.toLowerCase(Locale.US));
+            isScriptOrLanguage=true;
         }
-        else
+        else if(lang2!=null)
         {
             doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, lang2);
+            tr.setLanguage(lang2.toLowerCase(Locale.US));
+            isScriptOrLanguage=true;
         }
-        doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, rs.getString("script"));
-        doc.addFieldOrNoValue(ReleaseIndexField.COMMENT, rs.getString("comment"));
+        else {
+            doc.addFieldOrUnknown(ReleaseIndexField.LANGUAGE, null);
+        }
+        if(isScriptOrLanguage) {
+            release.setTextRepresentation(tr);
+        }
+
+        String comment = rs.getString("comment");
+        doc.addFieldOrNoValue(ReleaseIndexField.COMMENT, comment);
+        if (comment!=null && !comment.isEmpty()) {
+            release.setDisambiguation(comment);
+        }
 
         if (labelInfo.containsKey(id)) {
+            LabelInfoList labelInfoList = of.createLabelInfoList();
             for (List<String> entry : labelInfo.get(id)) {
+                LabelInfo li = of.createLabelInfo();
+                Label label = of.createLabel();
+                li.setLabel(label);
+                labelInfoList.getLabelInfo().add(li);
                 doc.addFieldOrNoValue(ReleaseIndexField.LABEL_ID, entry.get(0));
+                if(entry.get(0)!=null && !entry.get(0).isEmpty()) {
+                    label.setId(entry.get(0));
+                }
+
                 doc.addFieldOrNoValue(ReleaseIndexField.LABEL, entry.get(1));
+                if(entry.get(1)!=null && !entry.get(1).isEmpty()) {
+                    label.setName(entry.get(1));
+                }
+
                 doc.addFieldOrUnknown(ReleaseIndexField.CATALOG_NO, entry.get(2));
+                if(entry.get(2)!=null && !entry.get(2).isEmpty()) {
+                    li.setCatalogNumber(entry.get(2));
+                }
             }
+            release.setLabelInfoList(labelInfoList);
+        }
+        else {
+            doc.addFieldOrNoValue(ReleaseIndexField.LABEL, null);
+            doc.addFieldOrNoValue(ReleaseIndexField.CATALOG_NO, null);
         }
 
         int trackCount = 0;
         int discCount = 0;
         int mediumCount = 0;
         if (mediums.containsKey(id)) {
+            MediumList mediumList = of.createMediumList();
             for (List<String> entry : mediums.get(id)) {
-                String str;
-                str = entry.get(0);
-                doc.addFieldOrNoValue(ReleaseIndexField.FORMAT, str);
+                Medium medium = of.createMedium();
+
+                String mediumFormat = entry.get(0);
+                doc.addFieldOrNoValue(ReleaseIndexField.FORMAT, mediumFormat);
+                if(mediumFormat!=null && !mediumFormat.isEmpty()) {
+                    medium.setFormat(mediumFormat);
+                }
+
+                //Num of tracks on the Medium
                 int numTracksOnMedium = Integer.parseInt(entry.get(1));
                 doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, numTracksOnMedium);
+                org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
+                trackList.setCount(BigInteger.valueOf(numTracksOnMedium));
                 trackCount += numTracksOnMedium;
+                medium.setTrackList(trackList);
 
+                //Num of discids associated with medium
                 int numDiscsOnMedium = Integer.parseInt(entry.get(2));
                 doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, numDiscsOnMedium);
                 discCount += numDiscsOnMedium;
                 mediumCount++;
+                DiscList discList = of.createDiscList();
+                discList.setCount(BigInteger.valueOf(numDiscsOnMedium));
+                medium.setDiscList(discList);
+
+                mediumList.getMedium().add(medium);
+
             }
+
             //Num of mediums on the release
             doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS, mediumCount);
 
             //Num Tracks over the whole release
             doc.addNumericField(ReleaseIndexField.NUM_TRACKS, trackCount);
+            mediumList.setTrackCount(BigInteger.valueOf(trackCount));
 
-            //Num Discs over the whole release
+            //Num Discs Ids over the whole release
             doc.addNumericField(ReleaseIndexField.NUM_DISCIDS, discCount);
-
         }
         else
         {
             //No mediums on release
             doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS, 0);
-
         }
-
 
         if (puids.containsKey(id)) {
             for (String puid : puids.get(id)) {
@@ -493,36 +585,61 @@ public class  ReleaseIndex extends DatabaseIndex {
 
         ArtistCreditWrapper ac = artistCredits.get(id);
         if(ac!=null) {
-            ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+            ArtistCreditHelper.buildIndexFieldsOnlyFromArtistCredit
                    (doc,
                     ac.getArtistCredit(),
                     ReleaseIndexField.ARTIST,
                     ReleaseIndexField.ARTIST_NAMECREDIT,
                     ReleaseIndexField.ARTIST_ID,
-                    ReleaseIndexField.ARTIST_NAME,
-                    ReleaseIndexField.ARTIST_CREDIT);
+                    ReleaseIndexField.ARTIST_NAME);
+            release.setArtistCredit(ac.getArtistCredit());
         }
         else {
             System.out.println("\nNo artist credit found for release:"+rs.getString("gid"));
         }
 
         if (tags.containsKey(id)) {
-            for (Tag tag : tags.get(id)) {
-                doc.addField(ReleaseIndexField.TAG, tag.getName());
-                doc.addField(ReleaseIndexField.TAGCOUNT, tag.getCount().toString());
+            TagList tagList = of.createTagList();
+            for (Tag nextTag : tags.get(id)) {
+                Tag tag = of.createTag();
+                doc.addField(ReleaseIndexField.TAG, nextTag.getName());
+                tag.setName(nextTag.getName());
+                tag.setCount(new BigInteger(nextTag.getCount().toString()));
+                tagList.getTag().add(tag);
             }
+            release.setTagList(tagList);
         }
 
         if (releaseEvents.containsKey(id)) {
-            for (Release releaseEvent : releaseEvents.get(id)) {
-                doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, releaseEvent.getCountry());
-                doc.addFieldOrUnknown(ReleaseIndexField.DATE, releaseEvent.getDate());
+            ReleaseEventList rel = of.createReleaseEventList();
+            for (ReleaseEvent releaseEvent : releaseEvents.get(id)) {
+
+                String nextCountry  = releaseEvent.getCountry();
+                doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY,nextCountry);
+
+                String nextDate     = releaseEvent.getDate();
+                doc.addFieldOrUnknown(ReleaseIndexField.DATE, nextDate );
+                rel.getReleaseEvent().add(releaseEvent);
+            }
+            release.setReleaseEventList(rel);
+
+            //backwards compatability
+            ReleaseEvent firstReleaseEvent = rel.getReleaseEvent().get(0);
+            if (!Strings.isNullOrEmpty(firstReleaseEvent.getCountry())) {
+                release.setCountry(firstReleaseEvent.getCountry());
+            }
+            if (!Strings.isNullOrEmpty(firstReleaseEvent.getDate())) {
+                release.setDate(firstReleaseEvent.getDate());
             }
         }
         else {
             doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, null);
-            doc.addFieldOrUnknown(ReleaseIndexField.DATE, null);
+            doc.addFieldOrUnknown(ReleaseIndexField.DATE, null );
         }
+
+
+        doc.addField(ReleaseIndexField.RELEASE_STORE, MMDSerializer.serialize(release));
+
         return doc.getLuceneDocument();
     }
 

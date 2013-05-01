@@ -6,6 +6,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
 import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.Release;
 
 import java.sql.Statement;
 
@@ -96,6 +97,11 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging," +
                 "  language, script) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1)");
+
+        stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491241, 221, 1970,1,1)");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
+
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position) VALUES (1, 1, 491240, 1)");
 
@@ -127,6 +133,11 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, packaging," +
                 "  language, script) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1)");
+
+        stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 221, 1970,1,1)");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
+
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 10, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (1, 1, 1)");
@@ -162,6 +173,15 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging," +
                 "language, script) " +
                 "  VALUES (491240,'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 28)");
+
+        stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 221, 1970,1,1)");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
+
+        stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 222, 1970,1,1)");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (222, 'Sweden')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (222, 'SW')");
+
         stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
         	" VALUES (1, null, 'eng', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
@@ -240,16 +260,13 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals("Crocodiles (bonus disc)", doc.getField(ReleaseIndexField.RELEASE.getName()).stringValue());
-            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(ReleaseIndexField.RELEASE_ID.getName()).stringValue());
-            assertEquals(1, doc.getFields(ReleaseIndexField.TYPE.getName()).length);
-            assertEquals("EP", doc.getField(ReleaseIndexField.TYPE.getName()).stringValue());
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseIndexField.RELEASEGROUP_ID.getName()).stringValue());
-            assertEquals(1, doc.getFields(ReleaseIndexField.STATUS.getName()).length);
-            assertEquals("Official", doc.getField(ReleaseIndexField.STATUS.getName()).stringValue());
-            assertEquals(1, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.SCRIPT.getName()).length);
+            checkTerm(ir, ReleaseIndexField.RELEASE, "bonus");
+            checkTerm(ir, ReleaseIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134e");
+            checkTerm(ir, ReleaseIndexField.TYPE, "ep");
+            checkTerm(ir, ReleaseIndexField.RELEASEGROUP_ID, "efd2ace2-b3b9-305f-8a53-9803595c0e37");
+            checkTerm(ir, ReleaseIndexField.STATUS, "official");
+            checkTerm(ir, ReleaseIndexField.LANGUAGE, "unknown");
+            checkTerm(ir, ReleaseIndexField.SCRIPT, "unknown");
         }
         ir.close();
     }
@@ -267,13 +284,12 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
+
             Document doc = ir.document(1);
-            checkTerm(ir, ReleaseIndexField.ARTIST_NAME, "and");
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT.getName()));
+            Release release = (Release) MMDSerializer.unserialize(doc.get(ReleaseIndexField.RELEASE_STORE.getName()), Release.class);
+            ArtistCredit ac = release.getArtistCredit();
             assertNotNull(ac);
             assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
-            assertEquals(null, ac.getNameCredit().get(0).getJoinphrase());
-
         }
         ir.close();
     }
@@ -292,10 +308,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
-            //assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
-            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS.getName()).length);
-            //assertEquals(1, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS.getName()).stringValue()));
+
+            checkTerm(ir,ReleaseIndexField.NUM_DISCIDS_MEDIUM,1);
+            checkTerm(ir,ReleaseIndexField.NUM_DISCIDS,1);
         }
         ir.close();
     }
@@ -334,7 +349,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseIndexField.ARTIST_CREDIT.getName()));
+            Release release = (Release) MMDSerializer.unserialize(doc.get(ReleaseIndexField.RELEASE_STORE.getName()), Release.class);
+            ArtistCredit ac = release.getArtistCredit();
             assertNotNull(ac);
             assertEquals("Echo and The Bunnymen", ac.getNameCredit().get(0).getArtist().getSortName());
         }
@@ -354,9 +370,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
-            assertEquals("unknown", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.TYPE, "unknown");
         }
         ir.close();
     }
@@ -374,10 +388,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
-            assertEquals(Index.UNKNOWN, doc.getField(ReleaseIndexField.LANGUAGE.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.LANGUAGE, "unknown");
         }
         ir.close();
     }
@@ -395,10 +406,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.SCRIPT.getName()).length);
-            assertEquals(Index.UNKNOWN, doc.getField(ReleaseIndexField.SCRIPT.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.SCRIPT, "unknown");
         }
         ir.close();
     }
@@ -416,10 +424,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
-            assertEquals("-", doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.FORMAT, "-");
         }
         ir.close();
     }
@@ -437,9 +442,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
+            checkTerm(ir, ReleaseIndexField.BARCODE, "-");
         }
         ir.close();
     }
@@ -457,9 +460,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
+            checkTerm(ir, ReleaseIndexField.LABEL, "-");
         }
         ir.close();
     }
@@ -477,9 +478,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
+            checkTerm(ir, ReleaseIndexField.CATALOG_NO, "-");
         }
         ir.close();
     }
@@ -497,10 +496,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-            assertEquals(Index.UNKNOWN, doc.getField(ReleaseIndexField.COUNTRY.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.COUNTRY, "unknown");
 
         }
         ir.close();
@@ -519,9 +515,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.DATE.getName()).length);
+            checkTerm(ir, ReleaseIndexField.DATE, "unknown");
         }
         ir.close();
     }
@@ -539,10 +533,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.STATUS.getName()).length);
-            assertEquals(Index.UNKNOWN, doc.getField(ReleaseIndexField.STATUS.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.STATUS, "unknown");
         }
         ir.close();
     }
@@ -560,10 +551,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
-            assertEquals("eng", doc.getField(ReleaseIndexField.LANGUAGE.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.LANGUAGE, "eng");
         }
         ir.close();
     }
@@ -581,10 +569,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.LANGUAGE.getName()).length);
-            assertEquals("end", doc.getField(ReleaseIndexField.LANGUAGE.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.LANGUAGE, "end");
         }
         ir.close();
     }
@@ -602,10 +587,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.AMAZON_ID.getName()).length);
-            assertEquals("B00005NTQ7", doc.getField(ReleaseIndexField.AMAZON_ID.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.AMAZON_ID, "b00005ntq7");
         }
         ir.close();
     }
@@ -623,10 +605,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.SCRIPT.getName()).length);
-            assertEquals("Latn", doc.getField(ReleaseIndexField.SCRIPT.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.SCRIPT, "latn");
         }
         ir.close();
     }
@@ -644,10 +623,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.COMMENT.getName()).length);
-            assertEquals("demo", doc.getField(ReleaseIndexField.COMMENT.getName()).stringValue());
+            checkTerm(ir,ReleaseIndexField.COMMENT,"demo");
         }
         ir.close();
     }
@@ -664,10 +640,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
-            assertEquals("Vinyl", doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.FORMAT, "vinyl");
         }
         ir.close();
     }
@@ -684,10 +657,25 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-            assertEquals("GB", doc.getField(ReleaseIndexField.COUNTRY.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.COUNTRY, "gb");
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testIndexReleaseMultipleCountrys() throws Exception {
+        addReleaseFour();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, ReleaseIndexField.COUNTRY, "gb");
+            checkTermX(ir, ReleaseIndexField.COUNTRY, "sw", 1);
         }
         ir.close();
     }
@@ -705,10 +693,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).length);
-            //assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_DISCIDS_MEDIUM.getName()).stringValue()));
+            checkTerm(ir,ReleaseIndexField.NUM_DISCIDS_MEDIUM, 2);
         }
         ir.close();
     }
@@ -726,10 +711,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.NUM_TRACKS_MEDIUM.getName()).length);
-            //assertEquals(10, NumericUtils.prefixCodedToInt(doc.getField(ReleaseIndexField.NUM_TRACKS_MEDIUM.getName()).stringValue()));
+            checkTerm(ir,ReleaseIndexField.NUM_TRACKS_MEDIUM, 10);
         }
         ir.close();
     }
@@ -747,22 +729,12 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.DATE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.CATALOG_NO.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
-
-            assertEquals("GB", doc.getField(ReleaseIndexField.COUNTRY.getName()).stringValue());
-            assertEquals("5060180310066", doc.getField(ReleaseIndexField.BARCODE.getName()).stringValue());
-            assertEquals("1970-01-01", doc.getField(ReleaseIndexField.DATE.getName()).stringValue());
-            assertEquals("ECHO1", doc.getField(ReleaseIndexField.CATALOG_NO.getName()).stringValue());
-            assertEquals("korova", doc.getField(ReleaseIndexField.LABEL.getName()).stringValue());
-            assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(ReleaseIndexField.LABEL_ID.getName()).stringValue());
-            assertEquals("Vinyl", doc.getField(ReleaseIndexField.FORMAT.getName()).stringValue());
+            checkTerm(ir,ReleaseIndexField.COUNTRY, "gb");
+            checkTerm(ir,ReleaseIndexField.BARCODE, "5060180310066");
+            checkTerm(ir,ReleaseIndexField.DATE, "1970-01-01");
+            checkTerm(ir,ReleaseIndexField.CATALOG_NO, "echo1");
+            checkTerm(ir,ReleaseIndexField.LABEL, "korova");
+            checkTerm(ir,ReleaseIndexField.FORMAT, "vinyl");
         }
         ir.close();
     }
@@ -781,11 +753,10 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.COUNTRY.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.BARCODE.getName()).length);
-            assertEquals(0, doc.getFields(ReleaseIndexField.LABEL.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.FORMAT.getName()).length);
+            checkTerm(ir, ReleaseIndexField.COUNTRY, "unknown");
+            checkTerm(ir, ReleaseIndexField.BARCODE, "-");
+            checkTerm(ir, ReleaseIndexField.LABEL, "-");
+            checkTerm(ir, ReleaseIndexField.FORMAT, "-");
         }
         ir.close();
     }
@@ -840,9 +811,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASEGROUP_ID.getName()).length);
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(ReleaseIndexField.RELEASEGROUP_ID.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.RELEASEGROUP_ID, "efd2ace2-b3b9-305f-8a53-9803595c0e37");
         }
         ir.close();
     }
@@ -860,19 +829,10 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-
-            assertEquals(1, doc.getFields(ReleaseGroupIndexField.PRIMARY_TYPE.getName()).length);
-            assertEquals("Album", doc.getFields(ReleaseGroupIndexField.PRIMARY_TYPE.getName())[0].stringValue());
-
-            //Note old type field maps secondary type to compilation
-            assertEquals(1, doc.getFields(ReleaseGroupIndexField.TYPE.getName()).length);
-            assertEquals("Compilation", doc.getFields(ReleaseGroupIndexField.TYPE.getName())[0].stringValue());
-
-            assertEquals(2, doc.getFields(ReleaseIndexField.SECONDARY_TYPE.getName()).length);
-            assertEquals("Compilation", doc.getFields(ReleaseIndexField.SECONDARY_TYPE.getName())[0].stringValue());
-            assertEquals("Interview", doc.getFields(ReleaseIndexField.SECONDARY_TYPE.getName())[1].stringValue());
+            checkTerm(ir,ReleaseIndexField.PRIMARY_TYPE, "album");
+            checkTerm(ir, ReleaseIndexField.TYPE, "compilation");
+            checkTerm(ir, ReleaseIndexField.SECONDARY_TYPE, "compilation");
+            checkTermX(ir, ReleaseIndexField.SECONDARY_TYPE, "interview", 1);
 
         }
         ir.close();
@@ -888,10 +848,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ReleaseIndexField.RELEASE.getName()).length);
-            assertEquals(1, doc.getFields(ReleaseIndexField.TAG.getName()).length);
-            assertEquals("punk", doc.getField(ReleaseGroupIndexField.TAG.getName()).stringValue());
+            checkTerm(ir, ReleaseIndexField.TAG, "punk");
         }
         ir.close();
     }

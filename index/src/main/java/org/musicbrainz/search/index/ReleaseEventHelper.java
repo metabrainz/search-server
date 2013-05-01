@@ -31,6 +31,7 @@ package org.musicbrainz.search.index;
 
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.mmd2.Release;
+import org.musicbrainz.mmd2.ReleaseEvent;
 import org.musicbrainz.mmd2.Tag;
 
 import java.math.BigInteger;
@@ -43,21 +44,21 @@ import java.util.Map;
 
 public class ReleaseEventHelper {
 
-    public static Map<Integer,List<Release>> completeReleaseEventsFromDbResults(ResultSet rs,
+    public static Map<Integer,List<ReleaseEvent>> completeReleaseEventsFromDbResults(ResultSet rs,
                                                                   String entityKey) throws SQLException {
-        Map<Integer, List<Release>> releaseEvents = new HashMap<Integer, List<Release>>();
+        Map<Integer, List<ReleaseEvent>> releaseEvents = new HashMap<Integer, List<ReleaseEvent>>();
         ObjectFactory of = new ObjectFactory();
-        List<Release> releaseEventList;
+        List<ReleaseEvent> releaseEventList;
         while (rs.next()) {
             int entityId = rs.getInt(entityKey);
             if (!releaseEvents.containsKey(entityId)) {
-                releaseEventList = new ArrayList<Release>();
+                releaseEventList = new ArrayList<ReleaseEvent>();
                 releaseEvents.put(entityId, releaseEventList);
             } else {
                 releaseEventList = releaseEvents.get(entityId);
             }
 
-            Release releaseEvent = of.createRelease();
+            ReleaseEvent releaseEvent = of.createReleaseEvent();
             releaseEvent.setCountry(rs.getString("country"));
             releaseEvent.setDate(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
             releaseEventList.add(releaseEvent);

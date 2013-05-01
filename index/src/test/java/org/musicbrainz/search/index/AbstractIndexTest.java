@@ -3,6 +3,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.musicbrainz.search.LuceneVersion;
 
@@ -61,7 +62,16 @@ public abstract class AbstractIndexTest {
         assertEquals(value,termsEnum.term().utf8ToString());
     }
 
-    /** Check first term of given field, terms are listed lexigrahically
+    protected void checkTerm(IndexReader ir, IndexField field, int value) throws IOException {
+
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms(field.getName());
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(value, NumericUtils.prefixCodedToInt(termsEnum.term()));
+    }
+
+    /** Check nth term of given field, terms are listed lexigraphically
      *  Use when field is indexed. but not stored
      *
      * @param ir

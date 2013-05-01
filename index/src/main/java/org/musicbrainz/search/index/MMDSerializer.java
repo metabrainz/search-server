@@ -32,7 +32,7 @@ import java.util.Map;
 
 
 /**
- * Handles Serializing clases in the MMD for storing within Index, and deserealizing back into
+ * Handles Serializing classes in the MMD for storing within Index, and deserializing back into
  * the original class.
  *
  * We use JSON rather than XML or Java Serialization because it is the quickest and takes less space.

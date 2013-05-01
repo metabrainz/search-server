@@ -188,4 +188,42 @@ public class ArtistCreditHelper {
 
         }
     }
+
+    public static void buildIndexFieldsOnlyFromArtistCredit(MbDocument doc,
+                                                        ArtistCredit ac,
+                                                        IndexField artist,
+                                                        IndexField artistNameCredit,
+                                                        IndexField artistId,
+                                                        IndexField artistName)
+
+    {
+        if (ac!=null) {
+
+            //Search Fields
+
+            //The full artist credit as it appears on the release
+            doc.addField(artist, ArtistCreditHelper.buildFullArtistCreditName(ac));
+            for(NameCredit nc:ac.getNameCredit()) {
+
+                //Each individual name credit (uses artist if name credit is unchanged from artist name)
+                if(nc.getName()!=null) {
+                    doc.addField(artistNameCredit, nc.getName());
+                }
+                else {
+                    doc.addField(artistNameCredit, nc.getArtist().getName());
+                }
+
+                //Each artist id and name on the release
+                doc.addField(artistId, nc.getArtist().getId());
+                doc.addField(artistName, nc.getArtist().getName());
+
+                //If there is an english locale based alias we add this to help when looking up releases
+                //by artists who name is in non-latin script
+                if(nc.getArtist().getAliasList()!=null)
+                {
+                    doc.addField(artistName,(String)nc.getArtist().getAliasList().getAlias().get(0).getContent());
+                }
+            }
+        }
+    }
 }
