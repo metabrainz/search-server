@@ -9,6 +9,8 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
 import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.mmd2.Recording;
+import org.musicbrainz.mmd2.Release;
 
 import java.sql.Statement;
 
@@ -240,24 +242,16 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
-            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
-            assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
-            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(RecordingIndexField.RELEASE_ID.getName()).stringValue());
-            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue())));
-            assertEquals(4, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue())));
-            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue())));
-            assertEquals(33000, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue())));
-            assertEquals("Compilation", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
-            assertEquals("Official", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
-            assertEquals("FRAAA9000038", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
-            assertEquals("1", doc.getField(RecordingIndexField.POSITION.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RECORDING_ID, "2f250ed2-6285-40f1-aa2a-14f1c05e9765");
+            checkTerm(ir, RecordingIndexField.RELEASE_TYPE, "compilation");
+            checkTerm(ir, RecordingIndexField.RELEASE_STATUS, "official");
+            checkTerm(ir, RecordingIndexField.ISRC, "fraaa9000038");
+            checkTerm(ir, RecordingIndexField.RELEASE, "bonus");
+            checkTerm(ir, RecordingIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134e");
+            checkTerm(ir, RecordingIndexField.POSITION, "1");
+            checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
+            checkTerm(ir, RecordingIndexField.TRACKNUM, 4);
+            checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
         }
         ir.close();
     }
@@ -277,24 +271,16 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
-            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
-            assertEquals("Crocodiles (bonus disc)", doc.getField(RecordingIndexField.RELEASE.getName()).stringValue());
-            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getField(RecordingIndexField.RELEASE_ID.getName()).stringValue());
-            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue())));
-            assertEquals(4, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue())));
-            assertEquals(2, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue())));
-            assertEquals(33000, NumericUtils.prefixCodedToInt(new BytesRef(doc.getField(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue())));
-            assertEquals("Compilation", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
-            assertEquals("Official", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
-            assertEquals("FRAAA9000038", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
-            assertEquals("1", doc.getField(RecordingIndexField.POSITION.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RECORDING_ID, "2f250ed2-6285-40f1-aa2a-14f1c05e9765");
+            checkTerm(ir, RecordingIndexField.RELEASE_TYPE, "compilation");
+            checkTerm(ir, RecordingIndexField.RELEASE_STATUS, "official");
+            checkTerm(ir, RecordingIndexField.ISRC, "fraaa9000038");
+            checkTerm(ir, RecordingIndexField.RELEASE, "bonus");
+            checkTerm(ir, RecordingIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134e");
+            checkTerm(ir, RecordingIndexField.POSITION, "1");
+            checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
+            checkTerm(ir, RecordingIndexField.TRACKNUM, 4);
+            checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
         }
         ir.close();
     }
@@ -314,14 +300,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            //assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals(0, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
-            assertEquals(0, doc.getFields(RecordingIndexField.RELEASE.getName()).length);
-            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
-            assertEquals("standalone", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RECORDING_ID, "2f250ed2-6285-40f1-aa2a-14f1c05e9765");
+            checkTerm(ir, RecordingIndexField.RELEASE_TYPE, "standalone");
         }
         ir.close();
     }
@@ -341,9 +321,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASEGROUP_ID.getName()).length);
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(RecordingIndexField.RELEASEGROUP_ID.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RELEASEGROUP_ID, "efd2ace2-b3b9-305f-8a53-9803595c0e37");
         }
         ir.close();
     }
@@ -364,10 +342,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals("Compilation", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RELEASE_TYPE, "compilation");
         }
         ir.close();
     }
@@ -387,10 +362,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_PRIMARY_TYPE.getName()).length);
-            assertEquals("Album", doc.getField(RecordingIndexField.RELEASE_PRIMARY_TYPE.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RELEASE_PRIMARY_TYPE, "album");
         }
         ir.close();
     }
@@ -409,10 +381,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.COUNTRY.getName()).length);
-            assertEquals("GB", doc.getField(RecordingIndexField.COUNTRY.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.COUNTRY, "gb");
         }
         ir.close();
     }
@@ -432,10 +401,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_DATE.getName()).length);
-            assertEquals("1970-01-01", doc.getField(RecordingIndexField.RELEASE_DATE.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RELEASE_DATE, "1970-01-01");
+
         }
         ir.close();
     }
@@ -458,7 +425,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT.getName()));
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
             assertNotNull(ac);
             assertEquals("Echo and The Bunnymen", ac.getNameCredit().get(0).getArtist().getSortName());
         }
@@ -480,10 +448,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals("-", doc.getField(RecordingIndexField.RELEASE_TYPE.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RELEASE_TYPE, "-");
         }
         ir.close();
     }
@@ -503,10 +468,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
-            assertEquals("-", doc.getField(RecordingIndexField.RELEASE_STATUS.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.RELEASE_STATUS, "-");
         }
         ir.close();
     }
@@ -526,7 +488,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
             assertNotNull(ac);
             assertNull(ac.getNameCredit().get(0).getArtist().getDisambiguation());
         }
@@ -548,7 +511,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
             assertNotNull(ac);
             assertEquals("a comment", ac.getNameCredit().get(0).getArtist().getDisambiguation());
         }
@@ -570,10 +534,10 @@ public class RecordingIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
             assertNotNull(ac);
             assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
-            assertTrue(doc.get(RecordingIndexField.TRACK_ARTIST_CREDIT.getName()).equals("-"));
         }
         ir.close();
     }
@@ -593,14 +557,16 @@ public class RecordingIndexTest extends AbstractIndexTest {
         {
             Document doc = ir.document(1);
 
-            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT.getName()));
+
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
             assertNotNull(ac);
             assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
 
-            assertFalse(doc.get(RecordingIndexField.TRACK_ARTIST_CREDIT.getName()).equals("-"));
-            ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.TRACK_ARTIST_CREDIT.getName()));
+
+            ac = recording.getReleaseList().getRelease().get(0).getMediumList().getMedium().get(0).getTrackList().getDefTrack().get(0).getArtistCredit();
             assertNotNull(ac);
-            assertEquals("Pixies", ac.getNameCredit().get(0).getArtist().getName());
+            assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
         }
         ir.close();
     }
@@ -618,34 +584,12 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals("punk", doc.getField(RecordingIndexField.TAG.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.TAG, "punk");
         }
         ir.close();
     }
 
-    /**
-     * @throws Exception exception
-     */
-    @Test
-    public void testTrackName() throws Exception {
 
-        addTrackOne();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = DirectoryReader.open(ramDir);
-        assertEquals(2, ir.numDocs());
-        {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals("Do It Clean", doc.getField(RecordingIndexField.RECORDING_OUTPUT.getName()).stringValue());
-            assertEquals(1, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
-            assertEquals("Do It Cleans", doc.getField(RecordingIndexField.TRACK_OUTPUT.getName()).stringValue());
-        }
-        ir.close();
-    }
 
     /**
      * Basic test of all fields
@@ -662,9 +606,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
-            assertEquals("FRAAA9000038", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.ISRC, "fraaa9000038");
         }
         ir.close();
     }
@@ -683,9 +625,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.ISRC.getName()).length);
-            assertEquals("-", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.ISRC, "-");
         }
         ir.close();
     }
@@ -705,9 +645,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.PUID.getName()).length);
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", doc.getField(RecordingIndexField.PUID.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.PUID, "efd2ace2-b3b9-305f-8a53-9803595c0e38");
         }
         ir.close();
     }
@@ -727,9 +665,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.PUID.getName()).length);
-            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", doc.getField(RecordingIndexField.PUID.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.PUID, "efd2ace2-b3b9-305f-8a53-9803595c0e38");
         }
         ir.close();
     }
@@ -749,9 +685,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.COMMENT.getName()).length);
-            assertEquals("demo", doc.getField(RecordingIndexField.COMMENT.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.COMMENT, "demo");
         }
         ir.close();
     }
@@ -771,9 +705,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.NUMBER.getName()).length);
-            assertEquals("A4", doc.getField(RecordingIndexField.NUMBER.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.NUMBER, "a4");
         }
         ir.close();
     }
@@ -814,9 +746,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.FORMAT.getName()).length);
-            assertEquals("Vinyl", doc.getField(RecordingIndexField.FORMAT.getName()).stringValue());
+            checkTerm(ir, RecordingIndexField.FORMAT, "vinyl");
         }
         ir.close();
     }
@@ -858,34 +788,23 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_OUTPUT.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.TRACK_OUTPUT.getName()).length);
-            assertEquals(1, doc.getFields(RecordingIndexField.RECORDING_ID.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.RELEASE_TYPE.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.RELEASE.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.RELEASE_STATUS.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.TRACKNUM.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.NUM_TRACKS.getName()).length);
-            assertEquals(2, doc.getFields(RecordingIndexField.ISRC.getName()).length);
-            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", doc.getField(RecordingIndexField.RECORDING_ID.getName()).stringValue());
-            assertEquals("Crocodiles (bonus disc)", doc.getFields(RecordingIndexField.RELEASE.getName())[0].stringValue());
-            assertEquals("Crocodiles", doc.getFields(RecordingIndexField.RELEASE.getName())[1].stringValue());
-            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", doc.getFields(RecordingIndexField.RELEASE_ID.getName())[0].stringValue());
-            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134f", doc.getFields(RecordingIndexField.RELEASE_ID.getName())[1].stringValue());
-            //assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS.getName()).stringValue()));
-            //assertEquals(7, NumericUtils.prefixCodedToInt(doc.getFields(RecordingIndexField.TRACKNUM.getName())[0].stringValue()));
-            //assertEquals(4, NumericUtils.prefixCodedToInt(doc.getFields(RecordingIndexField.TRACKNUM.getName())[1].stringValue()));
-            //assertEquals(2, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.NUM_TRACKS_RELEASE.getName()).stringValue()));
-            //assertEquals(33000, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.RECORDING_DURATION_OUTPUT.getName()).stringValue()));
-            assertEquals("Album", doc.getFields(RecordingIndexField.RELEASE_TYPE.getName())[0].stringValue());
-            assertEquals("Single", doc.getFields(RecordingIndexField.RELEASE_TYPE.getName())[1].stringValue());
-            assertEquals("Official", doc.getFields(RecordingIndexField.RELEASE_STATUS.getName())[0].stringValue());
-            assertEquals("Promotion", doc.getFields(RecordingIndexField.RELEASE_STATUS.getName())[1].stringValue());
+            checkTerm(ir, RecordingIndexField.RECORDING_ID, "2f250ed2-6285-40f1-aa2a-14f1c05e9765");
+            checkTerm(ir, RecordingIndexField.RELEASE_TYPE, "album");
+            checkTerm(ir, RecordingIndexField.RELEASE_STATUS, "official");
+            checkTerm(ir, RecordingIndexField.ISRC, "fraaa9000038");
+            checkTerm(ir, RecordingIndexField.RELEASE, "bonus");
+            checkTerm(ir, RecordingIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134e");
+            checkTerm(ir, RecordingIndexField.POSITION, "1");
 
-            assertEquals("FRAAA9000038", doc.getField(RecordingIndexField.ISRC.getName()).stringValue());
-            assertEquals("1", doc.getFields(RecordingIndexField.POSITION.getName())[0].stringValue());
-            assertEquals("1", doc.getFields(RecordingIndexField.POSITION.getName())[1].stringValue());
+            checkTermX(ir, RecordingIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134f",1);
+            checkTermX(ir, RecordingIndexField.RELEASE_TYPE, "single",1);
+            checkTermX(ir, RecordingIndexField.RELEASE_STATUS, "promotion",1);
+            //checkTermX(ir, RecordingIndexField.POSITION, "1",1);
+
+            checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
+            checkTerm(ir, RecordingIndexField.TRACKNUM, 4);
+            checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
+
         }
         ir.close();
     }

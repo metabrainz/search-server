@@ -51,7 +51,6 @@ public class IssueSearch240Test
       MbDocument doc = new MbDocument();
       doc.addField(RecordingIndexField.RECORDING_ID, "7ca7782b-a602-448b-b108-bb881a7be2d6");
       doc.addField(RecordingIndexField.RECORDING, "I Don\u001at Dance");
-      doc.addField(RecordingIndexField.RECORDING_OUTPUT, "I Don\u001at Dance");
       doc.addField(RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
       doc.addField(RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
       doc.addField(RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
@@ -81,17 +80,14 @@ public class IssueSearch240Test
       artist.setSortName("Incident, Pig");
       nc.setArtist(artist);
       ac.getNameCredit().add(nc);
-      doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT, MMDSerializer.serialize(ac));
 
       doc.addNumericField(RecordingIndexField.DURATION, 234000);
-      doc.addNumericField(RecordingIndexField.RECORDING_DURATION_OUTPUT, 234000);
 
       doc.addNumericField(RecordingIndexField.QUANTIZED_DURATION, (234000 / 2000));
       doc.addNumericField(RecordingIndexField.NUM_TRACKS,10);
       doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE,10);
       doc.addNumericField(RecordingIndexField.TRACKNUM, 5);
       doc.addField(RecordingIndexField.NUMBER, "A4");
-      doc.addField(RecordingIndexField.TRACK_OUTPUT, "Gravitational Lens");
       doc.addField(RecordingIndexField.RECORDING, "Gravitational Lens");
       doc.addField(RecordingIndexField.RELEASEGROUP_ID, "4444e264-1cf0-4d1f-aca7-2a6f89e34b36");
 
@@ -102,17 +98,14 @@ public class IssueSearch240Test
 
       SecondaryTypeList stl = of.createSecondaryTypeList();
       stl.getSecondaryType().add("Compilation");
-      doc.addField(RecordingIndexField.SECONDARY_TYPE_OUTPUT, MMDSerializer.serialize(stl));
 
       doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
       doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
       doc.addField(RecordingIndexField.ISRC, "123456789");
       doc.addField(RecordingIndexField.ISRC, "abcdefghi");
       doc.addNumericField(RecordingIndexField.DURATION, 233000);
-      doc.addNumericField(RecordingIndexField.TRACK_DURATION_OUTPUT, 233000);
 
       doc.addField(RecordingIndexField.TAG, "indie");
-      doc.addField(RecordingIndexField.TAGCOUNT, "101");
       doc.addField(RecordingIndexField.RELEASE_AC_VA,"1");
       writer.addDocument(doc.getLuceneDocument());
 

@@ -19,6 +19,7 @@
 
 package org.musicbrainz.search.index;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -34,6 +35,9 @@ import java.sql.*;
 import java.util.*;
 
 public class RecordingIndex extends DatabaseIndex {
+
+    private static final String VARIOUS_ARTISTS_GUID = "89ad4ac3-39f7-470e-963a-56509c546377";
+    private static final String VARIOUS_ARTISTS_NAME = "Various Artists";
 
     private static final int VARIOUS_ARTIST_CREDIT_ID = 1;
 
@@ -190,7 +194,7 @@ public class RecordingIndex extends DatabaseIndex {
 
         releaseEvents =
                 " SELECT re.release as releaseKey, r2.code as country, " +
-                        "  date_year, date_month, date_day"+
+                        "  date_year, date_month, date_day" +
                         " FROM release_country re " +
                         " LEFT JOIN iso_3166_1 r2 " +
                         " ON re.country = r2.area " +
@@ -470,6 +474,7 @@ public class RecordingIndex extends DatabaseIndex {
         return stmt;
 
     }
+
     /**
      * Create the release secondary types statement
      *
@@ -509,11 +514,11 @@ public class RecordingIndex extends DatabaseIndex {
         Map<Integer, Release> releases = new HashMap<Integer, Release>();
         ObjectFactory of = new ObjectFactory();
 
-    	try {
-    		releaseClock.resume();
-    	} catch (IllegalStateException e) {
-    		System.out.println("Warning: IllegalStateException during StopWatch.resume");
-    	}
+        try {
+            releaseClock.resume();
+        } catch (IllegalStateException e) {
+            System.out.println("Warning: IllegalStateException during StopWatch.resume");
+        }
 
         // Add all the releaseKeys to a set to prevent duplicates
         Set<Integer> releaseKeys = new HashSet<Integer>();
@@ -601,12 +606,12 @@ public class RecordingIndex extends DatabaseIndex {
             }
             rg.getSecondaryTypeList().getSecondaryType().add(rs.getString("type"));
         }
-        
-    	try {
-    		releaseClock.suspend();
-    	} catch (IllegalStateException e) {
-    		System.out.println("Warning: IllegalStateException during StopWatch.resume");
-    	}
+
+        try {
+            releaseClock.suspend();
+        } catch (IllegalStateException e) {
+            System.out.println("Warning: IllegalStateException during StopWatch.resume");
+        }
         return releases;
     }
 
@@ -650,96 +655,135 @@ public class RecordingIndex extends DatabaseIndex {
         int id = rs.getInt("recordingId");
 
         MbDocument doc = new MbDocument();
+        ObjectFactory of = new ObjectFactory();
+        Recording recording = of.createRecording();
+
         doc.addField(RecordingIndexField.ID, id);
-        doc.addField(RecordingIndexField.RECORDING_ID, rs.getString("trackid"));
+
+        String guid = rs.getString("trackid");
+        doc.addField(RecordingIndexField.RECORDING_ID, guid);
+        recording.setId(guid);
+
         String recordingName = rs.getString("trackname");
         //Just add an accent version for recording name not track names
         doc.addField(RecordingIndexField.RECORDING_ACCENT, recordingName);
+        recording.setTitle(recordingName);
 
         trackNames.add(recordingName.toLowerCase(Locale.UK));
-        doc.addNonEmptyField(RecordingIndexField.RECORDING_OUTPUT, recordingName);  //Output
         int recordingDuration = rs.getInt("duration");
         if (recordingDuration > 0) {
             durations.add(recordingDuration);
-            doc.addNumericField(RecordingIndexField.RECORDING_DURATION_OUTPUT, recordingDuration);
+            recording.setLength(BigInteger.valueOf(recordingDuration));
         }
 
-        doc.addFieldOrNoValue(RecordingIndexField.COMMENT, rs.getString("comment"));
+        String comment = rs.getString("comment");
+        doc.addFieldOrNoValue(RecordingIndexField.COMMENT, comment);
+        if (!Strings.isNullOrEmpty(comment)) {
+            recording.setDisambiguation(comment);
+        }
 
         if (puids.containsKey(id)) {
+            PuidList puidList = of.createPuidList();
             // Add each puid for recording
-            for (String puid : puids.get(id)) {
-                doc.addField(RecordingIndexField.PUID, puid);
+            for (String nextPuid : puids.get(id)) {
+                doc.addField(RecordingIndexField.PUID, nextPuid);
+                Puid puid = of.createPuid();
+                puid.setId(nextPuid);
+                puidList.getPuid().add(puid);
             }
+            recording.setPuidList(puidList);
         }
 
         if (isrcs.containsKey(id)) {
-            // For each credit artist for this recording
-            for (String isrc : isrcs.get(id)) {
-                doc.addField(RecordingIndexField.ISRC, isrc);
+            IsrcList isrcList = of.createIsrcList();
+            for (String nextIsrc : isrcs.get(id)) {
+                doc.addField(RecordingIndexField.ISRC, nextIsrc);
+                Isrc isrc = of.createIsrc();
+                isrc.setId(nextIsrc);
+                isrcList.getIsrc().add(isrc);
             }
-        }
-        else {
+            recording.setIsrcList(isrcList);
+        } else {
             doc.addFieldOrNoValue(RecordingIndexField.ISRC, null);
         }
 
         //Recording Artist Credit
         ArtistCreditWrapper ac = artistCredits.get(id);
         if (ac != null) {
-            ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+            ArtistCreditHelper.buildIndexFieldsOnlyFromArtistCredit
                     (doc,
                             ac.getArtistCredit(),
                             RecordingIndexField.ARTIST,
                             RecordingIndexField.ARTIST_NAMECREDIT,
                             RecordingIndexField.ARTIST_ID,
-                            RecordingIndexField.ARTIST_NAME,
-                            RecordingIndexField.ARTIST_CREDIT);
+                            RecordingIndexField.ARTIST_NAME);
+            recording.setArtistCredit(ac.getArtistCredit());
         } else {
             System.out.println("\nNo artist credit found for recording:" + rs.getString("trackid"));
         }
+
         if (tracks.containsKey(id)) {
-            // For each track for this recording
-            for (TrackWrapper track : tracks.get(id)) {
-                Release release = releases.get(track.getReleaseId());
+
+            ReleaseList releaseList = of.createReleaseList();
+            recording.setReleaseList(releaseList);
+
+            // For each track that uses recording
+            for (TrackWrapper trackWrapper : tracks.get(id)) {
+                //Set the release details for this track
+                Release release = releases.get(trackWrapper.getReleaseId());
+                releaseList.getRelease().add(release);
+
                 if (release != null) {
                     ReleaseGroup rg = release.getReleaseGroup();
                     String primaryType = rg.getPrimaryType();
-                    doc.addFieldOrUnknown(RecordingIndexField.RELEASEGROUP_ID,rg.getId());
+                    doc.addFieldOrUnknown(RecordingIndexField.RELEASEGROUP_ID, rg.getId());
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASE_PRIMARY_TYPE, primaryType);
                     if (
                             (rg.getSecondaryTypeList() != null) &&
-                            (rg.getSecondaryTypeList().getSecondaryType() != null) 
-                       ) {
+                                    (rg.getSecondaryTypeList().getSecondaryType() != null)
+                            ) {
                         for (String secondaryType : rg.getSecondaryTypeList().getSecondaryType()) {
                             doc.addField(RecordingIndexField.RELEASE_SECONDARY_TYPE, secondaryType);
                         }
-                        doc.addField(RecordingIndexField.SECONDARY_TYPE_OUTPUT, 
-                                MMDSerializer.serialize(rg.getSecondaryTypeList()));
+
                         String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType,
                                 rg.getSecondaryTypeList().getSecondaryType());
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, type);
-                    }
-                    else {
+                    } else {
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getPrimaryType());
-                        doc.addField(RecordingIndexField.SECONDARY_TYPE_OUTPUT,Index.NO_VALUE);
                     }
 
-                    doc.addNumericField(RecordingIndexField.NUM_TRACKS, track.getTrackCount());
-                    doc.addNumericField(RecordingIndexField.TRACKNUM, track.getTrackPosition());
-                    doc.addFieldOrNoValue(RecordingIndexField.NUMBER, track.getTrackNumber());
+                    doc.addNumericField(RecordingIndexField.NUM_TRACKS, trackWrapper.getTrackCount());
+                    doc.addNumericField(RecordingIndexField.TRACKNUM, trackWrapper.getTrackPosition());
+                    doc.addFieldOrNoValue(RecordingIndexField.NUMBER, trackWrapper.getTrackNumber());
+                    org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
+                    track.setTitle(trackWrapper.getTrackName());
+                    track.setLength(BigInteger.valueOf(trackWrapper.getDuration()));
+                    track.setNumber(trackWrapper.getTrackNumber());
+
+                    Medium medium = of.createMedium();
+                    medium.setPosition(BigInteger.valueOf(trackWrapper.getMediumPosition()));
+                    medium.setFormat(trackWrapper.getMediumFormat());
+
+                    Medium.TrackList tl  = of.createMediumTrackList();
+                    tl.setCount(BigInteger.valueOf(trackWrapper.getTrackCount()));
+                    tl.setOffset(BigInteger.valueOf(trackWrapper.getTrackPosition()  - 1));
+
+                    release.getMediumList().getMedium().add(medium);
+                    medium.setTrackList(tl);
+                    tl.getDefTrack().add(track);
+
                     doc.addFieldOrNoValue(RecordingIndexField.RELEASE_STATUS, release.getStatus());
 
-                    if(
-                            (release.getReleaseEventList()!=null) &&
-                            (release.getReleaseEventList().getReleaseEvent()!=null)
-                      ) {
-                        for(ReleaseEvent re:release.getReleaseEventList().getReleaseEvent())
-                        {
+                    if (
+                            (release.getReleaseEventList() != null) &&
+                                    (release.getReleaseEventList().getReleaseEvent() != null)
+                            ) {
+                        for (ReleaseEvent re : release.getReleaseEventList().getReleaseEvent()) {
                             doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, re.getDate());
                             doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, re.getCountry());
                         }
-                    }
-                    else  {
+                    } else {
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, null);
                         doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, null);
                     }
@@ -748,14 +792,7 @@ public class RecordingIndex extends DatabaseIndex {
                     doc.addField(RecordingIndexField.RELEASE_ID, release.getId());
                     doc.addField(RecordingIndexField.RELEASE, release.getTitle());
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
-                    int trackDuration = track.getDuration();
-                    if (trackDuration > 0) {
-                        //So can be displayed in output
-                        doc.addNumericField(RecordingIndexField.TRACK_DURATION_OUTPUT, trackDuration);
-                        durations.add(trackDuration);
-                    } else {
-                        doc.addField(RecordingIndexField.TRACK_DURATION_OUTPUT, Index.NO_VALUE);
-                    }
+
 
                     //Is Various Artist Release
                     if (release.getArtistCredit() != null) {
@@ -763,14 +800,12 @@ public class RecordingIndex extends DatabaseIndex {
                     } else {
                         doc.addField(RecordingIndexField.RELEASE_AC_VA, Index.NO_VALUE);
                     }
-                    // Added to TRACK_OUTPUT for outputting xml,
-                    doc.addField(RecordingIndexField.TRACK_OUTPUT, track.getTrackName());
-                    trackNames.add(track.getTrackName().toLowerCase(Locale.UK));
-                    doc.addField(RecordingIndexField.POSITION, String.valueOf(track.getMediumPosition()));
-                    doc.addFieldOrNoValue(RecordingIndexField.FORMAT, track.getMediumFormat());
+                    trackNames.add(trackWrapper.getTrackName().toLowerCase(Locale.UK));
+                    doc.addField(RecordingIndexField.POSITION, String.valueOf(trackWrapper.getMediumPosition()));
+                    doc.addFieldOrNoValue(RecordingIndexField.FORMAT, trackWrapper.getMediumFormat());
 
                     //Get Artist Credit for Track
-                    ArtistCreditWrapper taw = trackArtistCredits.get(track.getTrackId());
+                    ArtistCreditWrapper taw = trackArtistCredits.get(trackWrapper.getTrackId());
                     //If different to the Artist Credit for the recording
                     if (taw != null &&
                             (
@@ -778,41 +813,39 @@ public class RecordingIndex extends DatabaseIndex {
                                             (taw.getArtistCreditId() != ac.getArtistCreditId())
                             )
                             ) {
-                        ArtistCreditHelper.buildIndexFieldsFromArtistCredit
+                        ArtistCreditHelper.buildIndexFieldsOnlyFromArtistCredit
                                 (doc,
                                         taw.getArtistCredit(),
                                         RecordingIndexField.ARTIST,
                                         RecordingIndexField.ARTIST_NAMECREDIT,
                                         RecordingIndexField.ARTIST_ID,
-                                        RecordingIndexField.ARTIST_NAME,
-                                        RecordingIndexField.TRACK_ARTIST_CREDIT);
-                    } else {
-                        doc.addField(RecordingIndexField.TRACK_ARTIST_CREDIT, Index.NO_VALUE);
+                                        RecordingIndexField.ARTIST_NAME);
+                        track.setArtistCredit(ac.getArtistCredit());
                     }
                 }
             }
-        }
-        else {
+        } else {
             doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, "standalone");
         }
 
         if (tags.containsKey(id)) {
-            for (Tag tag : tags.get(id)) {
-                doc.addField(RecordingIndexField.TAG, tag.getName());
-                doc.addField(RecordingIndexField.TAGCOUNT, tag.getCount().toString());
+            TagList tagList = of.createTagList();
+            for (Tag nextTag : tags.get(id)) {
+                Tag tag = of.createTag();
+                doc.addField(RecordingIndexField.TAG, nextTag.getName());
+                tag.setName(nextTag.getName());
+                tag.setCount(new BigInteger(nextTag.getCount().toString()));
+                tagList.getTag().add(tag);
             }
+            recording.setTagList(tagList);
         }
 
         //If we have no recording length in the recording itself or the track length then we add this value so
         //they can search for recordings/tracks with no length
-        if (durations.size() == 0)
-
-        {
+        if (durations.size() == 0) {
             doc.addField(RecordingIndexField.DURATION, Index.NO_VALUE);
             doc.addField(RecordingIndexField.QUANTIZED_DURATION, Index.NO_VALUE);
-        } else
-
-        {
+        } else {
             for (Integer dur : durations) {
                 doc.addNumericField(RecordingIndexField.DURATION, dur);
                 qdurs.add(dur / QUANTIZED_DURATION);
@@ -825,15 +858,30 @@ public class RecordingIndex extends DatabaseIndex {
         }
 
         //Allow searching of all unique recording/track names
-        for (
-                String next
-                : trackNames)
-
-        {
+        for (String next : trackNames) {
             doc.addNonEmptyField(RecordingIndexField.RECORDING, next);
         }
 
+        doc.addField(RecordingIndexField.RECORDING_STORE, MMDSerializer.serialize(recording));
         return doc.getLuceneDocument();
+    }
+
+    /**
+     * Create various artist credits
+     *
+     * @return
+     */
+    private ArtistCredit createVariousArtistsCredit()
+    {
+        ObjectFactory of = new ObjectFactory();
+        Artist       artist   = of.createArtist();
+        artist.setId(VARIOUS_ARTISTS_GUID);
+        artist.setName(VARIOUS_ARTISTS_NAME);
+        NameCredit   naCredit = of.createNameCredit();
+        naCredit.setArtist(artist);
+        ArtistCredit vaCredit = of.createArtistCredit();
+        vaCredit.getNameCredit().add(naCredit);
+        return vaCredit;
     }
 
 }

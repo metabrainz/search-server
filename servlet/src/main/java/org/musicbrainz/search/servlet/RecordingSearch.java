@@ -45,7 +45,7 @@ public class RecordingSearch extends AbstractSearchServer {
   @Override
   protected String printExplainHeader(Document doc) throws IOException, ParseException {
     return doc.get(RecordingIndexField.RECORDING_ID.getName()) + ':'
-        + doc.get(RecordingIndexField.RECORDING_OUTPUT.getName()) + '\n';
+        + doc.get(RecordingIndexField.RECORDING.getName()) + '\n';
   }
 
     /**

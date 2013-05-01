@@ -28,6 +28,7 @@
 
 package org.musicbrainz.search.servlet.mmd1;
 
+import com.google.common.base.Strings;
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.util.BytesRef;
@@ -35,7 +36,9 @@ import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -55,69 +58,51 @@ public class TrackMmd1XmlWriter extends Mmd1XmlWriter {
         for (Result result : results.results) {
             MbDocument doc = result.getDoc();
             Track track = of.createTrack();
-
-            track.setId(doc.get(RecordingIndexField.RECORDING_ID));
-
             result.setNormalizedScore(results.getMaxScore());
             track.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
-            String name = doc.get(RecordingIndexField.RECORDING_OUTPUT);
 
-            if (name != null) {
-                track.setTitle(name);
+            org.musicbrainz.mmd2.Recording recordingv2
+                    = (org.musicbrainz.mmd2.Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE), org.musicbrainz.mmd2.Recording.class);
+
+            track.setId(recordingv2.getId());
+
+            if (!Strings.isNullOrEmpty(recordingv2.getTitle())) {
+                track.setTitle(recordingv2.getTitle());
             }
 
-            String duration = doc.get(RecordingIndexField.DURATION);
-            if (isNotNoValue(duration)) {
-                track.setDuration(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(duration))));
+            if (recordingv2.getLength()!=null) {
+                track.setDuration(recordingv2.getLength());
             }
 
-            if(doc.get(RecordingIndexField.ARTIST_CREDIT)!=null) {
-                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(RecordingIndexField.ARTIST_CREDIT));
-                if (ac.getNameCredit().size()>0) {
+            ArtistCredit acv2 = recordingv2.getArtistCredit();
+            if(acv2!=null) {
+                if (acv2.getNameCredit().size() > 0) {
                     Artist artist = of.createArtist();
-                    artist.setName(ac.getNameCredit().get(0).getArtist().getName());
-                    artist.setId(ac.getNameCredit().get(0).getArtist().getId());
-                    artist.setSortName(ac.getNameCredit().get(0).getArtist().getSortName());
+                    artist.setName(acv2.getNameCredit().get(0).getArtist().getName());
+                    artist.setId(acv2.getNameCredit().get(0).getArtist().getId());
+                    artist.setSortName(acv2.getNameCredit().get(0).getArtist().getSortName());
                     track.setArtist(artist);
                 }
             }
 
-
-            String[] releaseIds         = doc.getValues(RecordingIndexField.RELEASE_ID);
-            String[] releaseTypes       = doc.getValues(RecordingIndexField.RELEASE_TYPE);
-            String[] numTracks          = doc.getValues(RecordingIndexField.NUM_TRACKS_RELEASE);
-            String[] trackNos           = doc.getValues(RecordingIndexField.TRACKNUM);
-            String[] releases           = doc.getValues(RecordingIndexField.RELEASE);
-
-            ReleaseList releaseList = of.createReleaseList();
-            for (int i = 0; i < releaseIds.length; i++) {
-                String releaseName = releases[i];
-                if (releaseName != null) {
+            if(recordingv2.getReleaseList()!=null) {
+                ReleaseList releaseList = of.createReleaseList();
+                for(org.musicbrainz.mmd2.Release releasev2:recordingv2.getReleaseList().getRelease()) {
                     Release release = of.createRelease();
-                    release.setId(releaseIds[i]);
-                    release.setTitle(releaseName);
+                    release.setId(releasev2.getId());
+                    release.setTitle(releasev2.getTitle());
+                    release.getType().add(StringUtils.capitalize(releasev2.getReleaseGroup().getType()));
 
-                    String type = releaseTypes[i];
-                    if (isNotNoValue(type)) {
-                        release.getType().add(StringUtils.capitalize(type));
-                    }
-
-                    String trackNo = trackNos[i];
-                    String tracks  = numTracks[i];
-                    if (trackNo != null) {
-                        TrackList releaseTrackList = of.createTrackList();
-                        releaseTrackList.setOffset(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(trackNo)) - 1));
-                        if (tracks != null) {
-                            releaseTrackList.setCount(BigInteger.valueOf(NumericUtils.prefixCodedToInt(new BytesRef(tracks))));
-                        }
-                        release.setTrackList(releaseTrackList);
-                    }
+                    TrackList releaseTrackList = of.createTrackList();
+                    releaseTrackList.setOffset(releasev2.getMediumList().getMedium().get(0).getTrackList().getOffset());
+                    releaseTrackList.setCount(releasev2.getMediumList().getMedium().get(0).getTrackList().getCount());
+                    release.setTrackList(releaseTrackList);
                     releaseList.getRelease().add(release);
                 }
+                track.setReleaseList(releaseList);
+                trackList.getTrack().add(track);
             }
-            track.setReleaseList(releaseList);
-            trackList.getTrack().add(track);
         }
         trackList.setCount(BigInteger.valueOf(results.getTotalHits()));
         trackList.setOffset(BigInteger.valueOf(results.getOffset()));

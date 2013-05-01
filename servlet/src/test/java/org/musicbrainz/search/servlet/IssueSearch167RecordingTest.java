@@ -45,9 +45,7 @@ public class IssueSearch167RecordingTest {
       doc.addField(RecordingIndexField.COMMENT, "the real one");
       doc.addField(RecordingIndexField.COUNTRY, "AF");
       doc.addField(RecordingIndexField.TAG, "thrash");
-      doc.addField(RecordingIndexField.TAGCOUNT, "5");
       doc.addField(RecordingIndexField.TAG, "güth");
-      doc.addField(RecordingIndexField.TAGCOUNT, "11");
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -59,9 +57,7 @@ public class IssueSearch167RecordingTest {
       doc.addField(RecordingIndexField.COMMENT, "the real one");
       doc.addField(RecordingIndexField.COUNTRY, "AF");
       doc.addField(RecordingIndexField.TAG, "thrash");
-      doc.addField(RecordingIndexField.TAGCOUNT, "5");
       doc.addField(RecordingIndexField.TAG, "güth");
-      doc.addField(RecordingIndexField.TAGCOUNT, "11");
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -73,9 +69,7 @@ public class IssueSearch167RecordingTest {
       doc.addField(RecordingIndexField.COMMENT, "the real one");
       doc.addField(RecordingIndexField.COUNTRY, "AF");
       doc.addField(RecordingIndexField.TAG, "thrash");
-      doc.addField(RecordingIndexField.TAGCOUNT, "5");
       doc.addField(RecordingIndexField.TAG, "güth");
-      doc.addField(RecordingIndexField.TAGCOUNT, "11");
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -87,9 +81,7 @@ public class IssueSearch167RecordingTest {
       doc.addField(RecordingIndexField.COMMENT, "the real one");
       doc.addField(RecordingIndexField.COUNTRY, "AF");
       doc.addField(RecordingIndexField.TAG, "thrash");
-      doc.addField(RecordingIndexField.TAGCOUNT, "5");
       doc.addField(RecordingIndexField.TAG, "güth");
-      doc.addField(RecordingIndexField.TAGCOUNT, "11");
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -101,9 +93,7 @@ public class IssueSearch167RecordingTest {
       doc.addField(RecordingIndexField.COMMENT, "the real one");
       doc.addField(RecordingIndexField.COUNTRY, "AF");
       doc.addField(RecordingIndexField.TAG, "thrash");
-      doc.addField(RecordingIndexField.TAGCOUNT, "5");
       doc.addField(RecordingIndexField.TAG, "güth");
-      doc.addField(RecordingIndexField.TAGCOUNT, "11");
       writer.addDocument(doc.getLuceneDocument());
     }
 
@@ -115,9 +105,7 @@ public class IssueSearch167RecordingTest {
       doc.addField(RecordingIndexField.COMMENT, "the real one");
       doc.addField(RecordingIndexField.COUNTRY, "AF");
       doc.addField(RecordingIndexField.TAG, "thrash");
-      doc.addField(RecordingIndexField.TAGCOUNT, "5");
       doc.addField(RecordingIndexField.TAG, "güth");
-      doc.addField(RecordingIndexField.TAGCOUNT, "11");
       writer.addDocument(doc.getLuceneDocument());
     }
 
