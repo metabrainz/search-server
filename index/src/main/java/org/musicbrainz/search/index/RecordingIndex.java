@@ -749,6 +749,7 @@ public class RecordingIndex extends DatabaseIndex {
                         String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType,
                                 rg.getSecondaryTypeList().getSecondaryType());
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, type);
+                        rg.setType(type);
                     } else {
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getPrimaryType());
                     }
@@ -783,6 +784,16 @@ public class RecordingIndex extends DatabaseIndex {
                             doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, re.getDate());
                             doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, re.getCountry());
                         }
+
+                        ReleaseEvent firstReleaseEvent = release.getReleaseEventList().getReleaseEvent().get(0);
+                        if (!Strings.isNullOrEmpty(firstReleaseEvent.getDate())) {
+                            release.setDate(firstReleaseEvent.getDate());
+                        }
+                        if (!Strings.isNullOrEmpty(firstReleaseEvent.getCountry())) {
+                            release.setCountry(firstReleaseEvent.getCountry());
+                        }
+                        release.setCountry(firstReleaseEvent.getCountry());
+
                     } else {
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, null);
                         doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, null);

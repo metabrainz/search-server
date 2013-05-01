@@ -610,6 +610,7 @@ public class  ReleaseIndex extends DatabaseIndex {
             release.setTagList(tagList);
         }
 
+        System.out.println("ReleaseEventsCheck");
         if (releaseEvents.containsKey(id)) {
             ReleaseEventList rel = of.createReleaseEventList();
             for (ReleaseEvent releaseEvent : releaseEvents.get(id)) {
@@ -624,8 +625,10 @@ public class  ReleaseIndex extends DatabaseIndex {
             release.setReleaseEventList(rel);
 
             //backwards compatability
+            System.out.println("ReleaseCountryCheck");
             ReleaseEvent firstReleaseEvent = rel.getReleaseEvent().get(0);
             if (!Strings.isNullOrEmpty(firstReleaseEvent.getCountry())) {
+                System.out.println("ReleaseCountry1");
                 release.setCountry(firstReleaseEvent.getCountry());
             }
             if (!Strings.isNullOrEmpty(firstReleaseEvent.getDate())) {

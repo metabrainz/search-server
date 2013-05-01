@@ -259,7 +259,6 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
             checkTerm(ir, ReleaseIndexField.RELEASE, "bonus");
             checkTerm(ir, ReleaseIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134e");
             checkTerm(ir, ReleaseIndexField.TYPE, "ep");
@@ -849,6 +848,58 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             checkTerm(ir, ReleaseIndexField.TAG, "punk");
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredRelease1() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
+            Document doc = ir.document(1);
+            Release release = (Release) MMDSerializer.unserialize(doc.get(ReleaseIndexField.RELEASE_STORE.getName()), Release.class);
+            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
+            assertEquals("Crocodiles (bonus disc)", release.getTitle());
+            assertEquals("B00005NTQ7", release.getAsin());
+
+
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredRelease2() throws Exception {
+
+        addReleaseThree();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
+            Document doc = ir.document(1);
+            Release release = (Release) MMDSerializer.unserialize(doc.get(ReleaseIndexField.RELEASE_STORE.getName()), Release.class);
+            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
+            assertEquals("Crocodiles (bonus disc)", release.getTitle());
+            assertEquals("B00005NTQ7", release.getAsin());
+            assertEquals("GB", release.getCountry());
+            assertEquals("1970-01-01", release.getDate());
+
+
         }
         ir.close();
     }

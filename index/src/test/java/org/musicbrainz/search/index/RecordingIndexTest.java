@@ -8,9 +8,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
-import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.Recording;
-import org.musicbrainz.mmd2.Release;
+import org.musicbrainz.mmd2.*;
 
 import java.sql.Statement;
 
@@ -691,7 +689,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * Test tracknum
+     * Test Free Text Track Number
      *
      * @throws Exception exception
      */
@@ -711,7 +709,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * Test tracknum
+     * Test Track Position
      *
      * @throws Exception exception
      */
@@ -725,9 +723,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(RecordingIndexField.TRACKNUM.getName()).length);
-     //       assertEquals(4, NumericUtils.prefixCodedToInt(doc.getField(RecordingIndexField.TRACKNUM.getName()).stringValue()));
+            checkTerm(ir, RecordingIndexField.TRACKNUM, 4);
         }
         ir.close();
     }
@@ -796,15 +792,64 @@ public class RecordingIndexTest extends AbstractIndexTest {
             checkTerm(ir, RecordingIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134e");
             checkTerm(ir, RecordingIndexField.POSITION, "1");
 
-            checkTermX(ir, RecordingIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134f",1);
+            checkTermX(ir, RecordingIndexField.RELEASE_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134f", 1);
             checkTermX(ir, RecordingIndexField.RELEASE_TYPE, "single",1);
             checkTermX(ir, RecordingIndexField.RELEASE_STATUS, "promotion",1);
-            //checkTermX(ir, RecordingIndexField.POSITION, "1",1);
-
             checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
             checkTerm(ir, RecordingIndexField.TRACKNUM, 4);
             checkTerm(ir, RecordingIndexField.NUM_TRACKS_RELEASE, 2);
 
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredRecording() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
+            Document doc = ir.document(1);
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", recording.getId());
+            assertEquals("Do It Clean", recording.getTitle());
+
+            ReleaseList releaseList = recording.getReleaseList();
+            Release     release     = releaseList.getRelease().get(0);
+            assertNotNull(release);
+            assertEquals("Crocodiles (bonus disc)", release.getTitle());
+            assertEquals("Official", release.getStatus());
+            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
+            assertEquals("GB", release.getCountry());
+            assertEquals("1970-01-01", release.getDate());
+
+            ReleaseGroup releaseGroup = release.getReleaseGroup();
+            assertNotNull(releaseGroup);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37",releaseGroup.getId());
+            assertEquals("Compilation",releaseGroup.getType());
+            assertEquals("Album",releaseGroup.getPrimaryType());
+
+            SecondaryTypeList secondaryTypeList = releaseGroup.getSecondaryTypeList();
+            assertNotNull(secondaryTypeList);
+            assertEquals("Compilation",secondaryTypeList.getSecondaryType().get(0));
+            assertEquals("Interview",secondaryTypeList.getSecondaryType().get(1));
+
+            MediumList mediumList = release.getMediumList();
+            assertNotNull(mediumList);
+            assertEquals(2,mediumList.getTrackCount().intValue());
+
+            Medium medium = mediumList.getMedium().get(0);
+            assertNotNull(medium);
+            assertEquals(1, medium.getPosition().intValue());
+            assertEquals("Vinyl", medium.getFormat());
         }
         ir.close();
     }
