@@ -126,7 +126,7 @@ public class RecordingIndex extends DatabaseIndex {
                             " WHERE recording between ? AND ?");
 
             addPreparedStatement("TRACKS",
-                    "SELECT id, track_name, length as duration, recording, track_position, track_number, track_count, " +
+                    "SELECT id, gid, track_name, length as duration, recording, track_position, track_number, track_count, " +
                             "  release_id, medium_position, format " +
                             " FROM tmp_track " +
                             " WHERE recording between ? AND ?");
@@ -138,7 +138,7 @@ public class RecordingIndex extends DatabaseIndex {
                             " AND   recording between ? AND ?");
 
             addPreparedStatement("TRACKS",
-                    "SELECT t.id, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, m.track_count, " +
+                    "SELECT t.id, t.gid, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, m.track_count, " +
                             "  m.release as release_id, m.position as medium_position,mf.name as format " +
                             " FROM track t " +
                             "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
@@ -425,6 +425,7 @@ public class RecordingIndex extends DatabaseIndex {
             }
             TrackWrapper tw = new TrackWrapper();
             tw.setTrackId(rs.getInt("id"));
+            tw.setTrackGuid(rs.getString("gid"));
             tw.setReleaseId(rs.getInt("release_id"));
             tw.setTrackCount(rs.getInt("track_count"));
             tw.setTrackPosition(rs.getInt("track_position"));
@@ -742,6 +743,8 @@ public class RecordingIndex extends DatabaseIndex {
                 releaseList.getRelease().add(release);
 
                 if (release != null) {
+
+                    doc.addNonEmptyField(RecordingIndexField.TRACK_ID, trackWrapper.getTrackGuid());
                     ReleaseGroup rg = release.getReleaseGroup();
                     String primaryType = rg.getPrimaryType();
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASEGROUP_ID, rg.getId());

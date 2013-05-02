@@ -5,6 +5,7 @@ package org.musicbrainz.search.index;
  */
 class TrackWrapper {
     private int     trackId;
+    private String  trackGuid;
     private int     trackPosition;
     private int     trackCount;
     private int     releaseId;
@@ -85,5 +86,13 @@ class TrackWrapper {
 
     public void setTrackNumber(String trackNumber) {
         this.trackNumber = trackNumber;
+    }
+
+    public String getTrackGuid() {
+        return trackGuid;
+    }
+
+    public void setTrackGuid(String trackGuid) {
+        this.trackGuid = trackGuid;
     }
 }

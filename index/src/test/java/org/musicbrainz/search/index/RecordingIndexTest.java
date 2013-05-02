@@ -81,8 +81,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 2, 491240, 1, 7)");
 
-        stmt.addBatch("INSERT INTO track (id, recording, medium, position, number, name, artist_credit, length) "
-                + " VALUES (1, 1, 1, 4, 'A4', 2, 1, 33100)");
+        stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, number, name, artist_credit, length) "
+                + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 4, 'A4', 2, 1, 33100)");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment)"
                 + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000, 'demo')");
 
@@ -137,8 +137,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
                 "  language, script) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1)");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 2, 491240, 1, 7)");
-        stmt.addBatch("INSERT INTO track (id, recording, medium, position, name, artist_credit, length) "
-                + " VALUES (1, 1, 1, 4, 1, 2, 33100)");
+        stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, name, artist_credit, length) "
+                + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 4, 1, 2, 33100)");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length)"
                 + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
         stmt.addBatch("INSERT INTO track_name (id, name) VALUES (1, 'Do It Clean')");
@@ -177,8 +177,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
                 "  language, script) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1)");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format, name) VALUES (1, 2, 491240, 1, 7, null)");
-        stmt.addBatch("INSERT INTO track (id, recording, medium, position, name, artist_credit, length) "
-                + " VALUES (1, 1, 1, 7, 2, 1, 33100)");
+        stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, name, artist_credit, length) "
+                + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 7, 2, 1, 33100)");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length)"
                 + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
 
@@ -192,8 +192,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (2, 2, 491241, 1, 7)");
 
-        stmt.addBatch("INSERT INTO track (id, recording, medium, position, name, artist_credit, length) "
-                + " VALUES (2, 1, 2, 4, 2, 1, 33100)");
+        stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, name, artist_credit, length) "
+                + " VALUES (2, 'd3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 2, 4, 2, 1, 33100)");
 
         stmt.addBatch("INSERT INTO track_name (id, name) VALUES (1, 'Do It Clean')");
         stmt.addBatch("INSERT INTO track_name (id, name) VALUES (2, 'Do It Cleans')");
@@ -620,6 +620,25 @@ public class RecordingIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    /**
+     * Basic test of all fields
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testTrackGuid() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, RecordingIndexField.TRACK_ID, "c3b8dbc9-c1ff-4743-9015-8d762819134e");
+        }
+        ir.close();
+    }
 
     /**
      * @throws Exception exception
@@ -842,7 +861,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertEquals(null, release.getCountry());
             assertEquals("1950", release.getDate());
             ReleaseEventList rel = release.getReleaseEventList();
-            assertEquals(4,rel.getReleaseEvent().size());
+            assertEquals(4, rel.getReleaseEvent().size());
             assertEquals(null, release.getCountry());
             assertEquals("1950", release.getDate());
             assertEquals(null, rel.getReleaseEvent().get(0).getCountry());
@@ -873,6 +892,17 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertNotNull(medium);
             assertEquals(1, medium.getPosition().intValue());
             assertEquals("Vinyl", medium.getFormat());
+
+            Medium.TrackList trackList = medium.getTrackList();
+            assertNotNull(trackList);
+
+            assertNotNull(trackList.getDefTrack());
+
+            Medium.TrackList.Track track = trackList.getDefTrack().get(0);
+            assertEquals("Do It Cleans", track.getTitle());
+            assertNull(track.getPosition());  //We dont currently output this, but perhaps should
+            assertEquals("A4", track.getNumber());
+
         }
         ir.close();
     }

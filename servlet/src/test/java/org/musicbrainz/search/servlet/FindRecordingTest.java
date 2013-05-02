@@ -77,6 +77,7 @@ public class FindRecordingTest {
             recording.setReleaseList(releaseList);
             m.setFormat("Vinyl");
             track.setTitle("Gravitational Lens");
+            doc.addField(RecordingIndexField.TRACK_ID,"2d9e8ed6-3893-4d3b-aa7d-72e79609e386");
 
             release.setId("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
             release.setTitle("Our Glorious 5 Year Plan");
@@ -463,6 +464,12 @@ public class FindRecordingTest {
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", getRecordingId(res.results.get(0).getDoc()));
     }
 
+    @Test
+    public void testFindRecordingByTrackId() throws Exception {
+        Results res = ss.search("tid:2d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", getRecordingId(res.results.get(0).getDoc()));
+    }
 
     @Test
     public void testOutputAsMmd1Xml() throws Exception {

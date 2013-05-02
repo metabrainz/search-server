@@ -45,6 +45,7 @@ public enum RecordingIndexField implements IndexField {
     RELEASEGROUP_ID	        ("rgid",			    MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     TAG		                ("tag",		            MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TRACKNUM			    ("tnum",		        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED, new KeywordAnalyzer()),
+    TRACK_ID                ("tid",		            MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RECORDING_STORE		     ("recordingstore",    MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
 
 
