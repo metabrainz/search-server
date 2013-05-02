@@ -23,8 +23,14 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONMarshaller;
 import com.sun.jersey.api.json.JSONUnmarshaller;
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import org.musicbrainz.mmd2.Metadata;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -33,67 +39,57 @@ import java.util.Map;
 
 /**
  * Handles Serializing classes in the MMD for storing within Index, and deserializing back into
- * the original class.
- *
- * We use JSON rather than XML or Java Serialization because it is the quickest and takes less space.
+ * the original class and little difference in space as stored fields are compressed by lucene anyway.
  */
 public class MMDSerializer {
 
-    static final JSONJAXBContext jsoncontext = initJsonContext();
 
+    static final JAXBContext            context                 = initContext();
+    static final NamespacePrefixMapper prefixMapper            = new PreferredMapper();
 
-    /**
-     * @return context for marshalling as JSON in a way that allows unmarshaling
-     */
-    private static JSONJAXBContext initJsonContext() {
-        Map<String, String> nsMap = new HashMap<String, String>();
-        nsMap.put("http://www.w3.org/2001/XMLSchema-instance", "xsi");
-        nsMap.put("http://musicbrainz.org/ns/mmd-2.0#", "mmd");
-        nsMap.put("http://musicbrainz.org/ns/ext#-2.0", "ext");
-
-
+    private static JAXBContext initContext() {
         try {
-            return new JSONJAXBContext(JSONConfiguration.mapped().rootUnwrapping(false).xml2JsonNs(nsMap).build()
-                    ,
-                    "org.musicbrainz.mmd2");
+            return JAXBContext.newInstance("org.musicbrainz.mmd2");
         }
         catch (JAXBException ex) {
-            //Unable to initialize jaxb context, should never happen
+            //Unable to initilize jaxb context, should never happen
             throw new RuntimeException(ex);
         }
     }
 
+    public static class PreferredMapper extends NamespacePrefixMapper {
+        @Override
+        public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
+            if(namespaceUri.equals("http://musicbrainz.org/ns/ext#-2.0"))
+            {
+                return "ext";
+            }
+            return null;
+        }
+    }
 
-    /**
-     * Serialize using json, the most compact solution
-     *
-     * @param object
-     * @return
-     */
-    public static String serialize(Object object) {
+    public static String serialize(Object o) {
         try {
-
             StringWriter sw = new StringWriter();
-            JSONMarshaller m = jsoncontext.createJSONMarshaller();
-            m.marshallToJSON(object, sw);
+            Marshaller m = context.createMarshaller();
+            m.setProperty("com.sun.xml.bind.namespacePrefixMapper", prefixMapper);
+            m.marshal(o, sw);
             return sw.toString();
-
         }
         catch (JAXBException je) {
             throw new RuntimeException(je);
         }
     }
 
-
     public static Object unserialize(String string, Class classType) {
         try {
-            JSONUnmarshaller m = jsoncontext.createJSONUnmarshaller();
-            return m.unmarshalFromJSON(new StringReader(string), classType);
+            Unmarshaller m = context.createUnmarshaller();
+            //m.setProperty("com.sun.xml.bind.namespacePrefixMapper", prefixMapper);
+            return m.unmarshal(new StringReader(string));
 
         }
         catch (JAXBException ex) {
             throw new RuntimeException(ex);
         }
     }
-
 }

@@ -50,6 +50,8 @@ public class RecordingIndex extends DatabaseIndex {
     private StopWatch trackArtistClock = new StopWatch();
     private StopWatch releaseClock = new StopWatch();
     private StopWatch recordingClock = new StopWatch();
+    private StopWatch buildClock = new StopWatch();
+    private StopWatch storeClock = new StopWatch();
 
 
     private final static int QUANTIZED_DURATION = 2000;
@@ -63,6 +65,8 @@ public class RecordingIndex extends DatabaseIndex {
         trackArtistClock.start();
         releaseClock.start();
         recordingClock.start();
+        buildClock.start();
+        storeClock.start();
         trackClock.suspend();
         isrcClock.suspend();
         puidClock.suspend();
@@ -70,6 +74,8 @@ public class RecordingIndex extends DatabaseIndex {
         releaseClock.suspend();
         recordingClock.suspend();
         trackArtistClock.suspend();
+        buildClock.suspend();
+        storeClock.suspend();
     }
 
     public RecordingIndex() {
@@ -226,6 +232,8 @@ public class RecordingIndex extends DatabaseIndex {
         System.out.println(this.getName() + ":Puids Queries " + Utils.formatClock(puidClock));
         System.out.println(this.getName() + ":Releases Queries " + Utils.formatClock(releaseClock));
         System.out.println(this.getName() + ":Recording Queries " + Utils.formatClock(recordingClock));
+        System.out.println(this.getName() + ":Build Index " + Utils.formatClock(buildClock));
+        System.out.println(this.getName() + ":Build Store " + Utils.formatClock(storeClock));
 
     }
 
@@ -563,7 +571,7 @@ public class RecordingIndex extends DatabaseIndex {
             release.setMediumList(ml);
 
             if (rs.getInt("artist_credit") == VARIOUS_ARTIST_CREDIT_ID) {
-                ArtistCredit ac = of.createArtistCredit();
+                ArtistCredit ac = createVariousArtistsCredit();
                 release.setArtistCredit(ac);
             }
         }
@@ -631,11 +639,12 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(2, max);
         recordingClock.resume();
         ResultSet rs = st.executeQuery();
+        recordingClock.suspend();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, puids, tags, isrcs, artistCredits, trackArtistCredits, tracks, releases));
         }
         rs.close();
-        recordingClock.suspend();
+
     }
 
     public Document documentFromResultSet(ResultSet rs,
@@ -647,6 +656,7 @@ public class RecordingIndex extends DatabaseIndex {
                                           Map<Integer, List<TrackWrapper>> tracks,
                                           Map<Integer, Release> releases) throws SQLException {
 
+        buildClock.resume();
         Set<Integer> durations = new HashSet<Integer>();
         Set<Integer> qdurs = new HashSet<Integer>();
 
@@ -873,7 +883,10 @@ public class RecordingIndex extends DatabaseIndex {
             doc.addNonEmptyField(RecordingIndexField.RECORDING, next);
         }
 
+        buildClock.suspend();
+        storeClock.resume();
         doc.addField(RecordingIndexField.RECORDING_STORE, MMDSerializer.serialize(recording));
+        storeClock.suspend();
         return doc.getLuceneDocument();
     }
 

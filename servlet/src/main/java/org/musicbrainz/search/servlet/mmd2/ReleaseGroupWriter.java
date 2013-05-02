@@ -43,18 +43,15 @@ public class ReleaseGroupWriter extends ResultsWriter {
 
 
     /**
-     *
      * @param metadata
      * @param results
      * @throws IOException
      */
-    public void write(Metadata metadata, Results results) throws IOException
-    {
+    public void write(Metadata metadata, Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
         ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
 
-        for(Result result:results.results)
-        {
+        for (Result result : results.results) {
             result.setNormalizedScore(results.getMaxScore());
         }
         write(releaseGroupList.getReleaseGroup(), results);
@@ -65,98 +62,90 @@ public class ReleaseGroupWriter extends ResultsWriter {
     }
 
     /**
-     *
      * @param list
      * @param results
      * @throws IOException
      */
-    public void write(List list, Results results) throws IOException
-    {
-        for (Result result : results.results)
-        {
+    public void write(List list, Results results) throws IOException {
+        for (Result result : results.results) {
             write(list, result);
         }
     }
 
     /**
-     *
      * @param list
      * @param result
      * @throws IOException
      */
-    public void write(List list, Result result) throws IOException
-    {
+    public void write(List list, Result result) throws IOException {
         ObjectFactory of = new ObjectFactory();
-        ReleaseGroupList releaseGroupList = of.createReleaseGroupList();
 
-            MbDocument doc = result.getDoc();
-            ReleaseGroup releaseGroup = of.createReleaseGroup();
-            releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
-            releaseGroup.setScore(String.valueOf(result.getNormalizedScore()));
-            String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
-            if (name != null) {
-                releaseGroup.setTitle(name);
-            }
-
-            String comment = doc.get(ReleaseGroupIndexField.COMMENT);
-            if (isNotNoValue(comment)) {
-                releaseGroup.setDisambiguation(comment);
-            }
-
-            String type = doc.get(ReleaseGroupIndexField.TYPE);
-            if(isNotUnknown(type)) {
-                releaseGroup.setType(type);
-            }
-
-            String primaryType = doc.get(ReleaseGroupIndexField.PRIMARY_TYPE);
-            if(isNotUnknown(primaryType )) {
-                releaseGroup.setPrimaryType(primaryType );
-            }
-
-            String[] secondaryTypes = doc.getValues(ReleaseGroupIndexField.SECONDARY_TYPE);
-            if(secondaryTypes.length>0) {
-                SecondaryTypeList stl = of.createSecondaryTypeList();
-                for(int i =0; i< secondaryTypes.length; i++) {
-                    stl.getSecondaryType().add(secondaryTypes[i]);
-                }
-                releaseGroup.setSecondaryTypeList(stl);
-            }
-            
-            if(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT)!=null) {
-                ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
-                releaseGroup.setArtistCredit(ac);
-            }
-
-            String[] releaseIds          = doc.getValues(ReleaseGroupIndexField.RELEASE_ID);
-            String[] releaseNames        = doc.getValues(ReleaseGroupIndexField.RELEASE);
-            String[] releaseStatuses     = doc.getValues(ReleaseGroupIndexField.RELEASESTATUS);
-
-            ReleaseList releaseList = of.createReleaseList();
-            releaseList.setCount(BigInteger.valueOf(releaseIds.length));
-            for(int i =0; i< releaseIds.length; i++) {
-                Release release = of.createRelease();
-                release.setId(releaseIds[i]);
-                release.setTitle(releaseNames[i]);
-                release.setStatus(releaseStatuses[i]);
-
-                releaseList.getRelease().add(release);
-            }
-            releaseGroup.setReleaseList(releaseList);
-            releaseGroupList.getReleaseGroup().add(releaseGroup);
-
-            String[] tags       = doc.getValues(ReleaseGroupIndexField.TAG);
-            String[] tagCounts  = doc.getValues(ReleaseGroupIndexField.TAGCOUNT);
-            if(tags.length>0)
-            {
-                TagList tagList = of.createTagList();
-                for(int i = 0;i<tags.length;i++) {
-                    Tag tag = of.createTag();
-                    tag.setName(tags[i]);
-                    tag.setCount(new BigInteger(tagCounts[i]));
-                    tagList.getTag().add(tag);
-                }
-                releaseGroup.setTagList(tagList);
-            }
-            list.add(releaseGroup);
+        MbDocument doc = result.getDoc();
+        ReleaseGroup releaseGroup = of.createReleaseGroup();
+        releaseGroup.setId(doc.get(ReleaseGroupIndexField.RELEASEGROUP_ID));
+        releaseGroup.setScore(String.valueOf(result.getNormalizedScore()));
+        String name = doc.get(ReleaseGroupIndexField.RELEASEGROUP);
+        if (name != null) {
+            releaseGroup.setTitle(name);
         }
+
+        String comment = doc.get(ReleaseGroupIndexField.COMMENT);
+        if (isNotNoValue(comment)) {
+            releaseGroup.setDisambiguation(comment);
+        }
+
+        String type = doc.get(ReleaseGroupIndexField.TYPE);
+        if (isNotUnknown(type)) {
+            releaseGroup.setType(type);
+        }
+
+        String primaryType = doc.get(ReleaseGroupIndexField.PRIMARY_TYPE);
+        if (isNotUnknown(primaryType)) {
+            releaseGroup.setPrimaryType(primaryType);
+        }
+
+        String[] secondaryTypes = doc.getValues(ReleaseGroupIndexField.SECONDARY_TYPE);
+        if (secondaryTypes.length > 0) {
+            SecondaryTypeList stl = of.createSecondaryTypeList();
+            for (int i = 0; i < secondaryTypes.length; i++) {
+                stl.getSecondaryType().add(secondaryTypes[i]);
+            }
+            releaseGroup.setSecondaryTypeList(stl);
+        }
+
+        if (doc.get(ReleaseGroupIndexField.ARTIST_CREDIT) != null) {
+            ArtistCredit ac = ArtistCreditHelper.unserialize(doc.get(ReleaseGroupIndexField.ARTIST_CREDIT));
+            releaseGroup.setArtistCredit(ac);
+        }
+
+        String[] releaseIds = doc.getValues(ReleaseGroupIndexField.RELEASE_ID);
+        String[] releaseNames = doc.getValues(ReleaseGroupIndexField.RELEASE);
+        String[] releaseStatuses = doc.getValues(ReleaseGroupIndexField.RELEASESTATUS);
+
+        ReleaseList releaseList = of.createReleaseList();
+        releaseList.setCount(BigInteger.valueOf(releaseIds.length));
+        for (int i = 0; i < releaseIds.length; i++) {
+            Release release = of.createRelease();
+            release.setId(releaseIds[i]);
+            release.setTitle(releaseNames[i]);
+            release.setStatus(releaseStatuses[i]);
+
+            releaseList.getRelease().add(release);
+        }
+        releaseGroup.setReleaseList(releaseList);
+
+        String[] tags = doc.getValues(ReleaseGroupIndexField.TAG);
+        String[] tagCounts = doc.getValues(ReleaseGroupIndexField.TAGCOUNT);
+        if (tags.length > 0) {
+            TagList tagList = of.createTagList();
+            for (int i = 0; i < tags.length; i++) {
+                Tag tag = of.createTag();
+                tag.setName(tags[i]);
+                tag.setCount(new BigInteger(tagCounts[i]));
+                tagList.getTag().add(tag);
+            }
+            releaseGroup.setTagList(tagList);
+        }
+        list.add(releaseGroup);
+    }
 }

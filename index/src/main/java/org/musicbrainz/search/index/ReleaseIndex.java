@@ -29,7 +29,6 @@
 package org.musicbrainz.search.index;
 
 import com.google.common.base.Strings;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -51,6 +50,8 @@ public class  ReleaseIndex extends DatabaseIndex {
     private StopWatch puidClock = new StopWatch();
     private StopWatch artistClock = new StopWatch();
     private StopWatch releaseClock = new StopWatch();
+    private StopWatch buildClock = new StopWatch();
+    private StopWatch storeClock = new StopWatch();
 
     public static final String INDEX_NAME = "release";
 
@@ -61,11 +62,15 @@ public class  ReleaseIndex extends DatabaseIndex {
         puidClock.start();
         artistClock.start();
         releaseClock.start();
+        buildClock.start();
+        storeClock.start();
         labelClock.suspend();
         mediumClock.suspend();
         puidClock.suspend();
         artistClock.suspend();
         releaseClock.suspend();
+        buildClock.suspend();
+        storeClock.suspend();
     }
 
     public ReleaseIndex() {
@@ -192,6 +197,8 @@ public class  ReleaseIndex extends DatabaseIndex {
             System.out.println(this.getName()+":Artists Queries "  + Utils.formatClock(artistClock));
             System.out.println(this.getName()+":Puids Queries "    + Utils.formatClock(puidClock));
             System.out.println(this.getName()+":Releases Queries " + Utils.formatClock(releaseClock));
+            System.out.println(this.getName() + ":Build Index " + Utils.formatClock(buildClock));
+            System.out.println(this.getName() + ":Build Store " + Utils.formatClock(storeClock));
 
         }
         catch(Exception ex)
@@ -393,8 +400,9 @@ public class  ReleaseIndex extends DatabaseIndex {
                                           Map<Integer,List<List<String>>> mediums,
                                           Map<Integer, List<String>> puids,
                                           Map<Integer, ArtistCreditWrapper> artistCredits) throws SQLException {
-        MbDocument doc = new MbDocument();
+        buildClock.resume();
 
+        MbDocument doc = new MbDocument();
         ObjectFactory of = new ObjectFactory();
         Release release = of.createRelease();
 
@@ -610,7 +618,6 @@ public class  ReleaseIndex extends DatabaseIndex {
             release.setTagList(tagList);
         }
 
-        System.out.println("ReleaseEventsCheck");
         if (releaseEvents.containsKey(id)) {
             ReleaseEventList rel = of.createReleaseEventList();
             for (ReleaseEvent releaseEvent : releaseEvents.get(id)) {
@@ -624,11 +631,9 @@ public class  ReleaseIndex extends DatabaseIndex {
             }
             release.setReleaseEventList(rel);
 
-            //backwards compatability
-            System.out.println("ReleaseCountryCheck");
+            //backwards compatibility
             ReleaseEvent firstReleaseEvent = rel.getReleaseEvent().get(0);
             if (!Strings.isNullOrEmpty(firstReleaseEvent.getCountry())) {
-                System.out.println("ReleaseCountry1");
                 release.setCountry(firstReleaseEvent.getCountry());
             }
             if (!Strings.isNullOrEmpty(firstReleaseEvent.getDate())) {
@@ -639,10 +644,11 @@ public class  ReleaseIndex extends DatabaseIndex {
             doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, null);
             doc.addFieldOrUnknown(ReleaseIndexField.DATE, null );
         }
-
-
-        doc.addField(ReleaseIndexField.RELEASE_STORE, MMDSerializer.serialize(release));
-
+        buildClock.suspend();
+        storeClock.resume();
+        String json = MMDSerializer.serialize(release);
+        doc.addField(ReleaseIndexField.RELEASE_STORE, json);
+        storeClock.suspend();
         return doc.getLuceneDocument();
     }
 

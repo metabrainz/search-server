@@ -53,13 +53,11 @@ public class LabelWriter extends ResultsWriter {
      * @param results
      * @throws IOException
      */
-    public void write(Metadata metadata, Results results) throws IOException
-    {
+    public void write(Metadata metadata, Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
         LabelList labelList = of.createLabelList();
 
-        for(Result result:results.results)
-        {
+        for (Result result : results.results) {
             result.setNormalizedScore(results.getMaxScore());
         }
         write(labelList.getLabel(), results);
@@ -76,10 +74,8 @@ public class LabelWriter extends ResultsWriter {
      * @param results
      * @throws IOException
      */
-    public void write(List list, Results results) throws IOException
-    {
-        for (Result result : results.results)
-        {
+    public void write(List list, Results results) throws IOException {
+        for (Result result : results.results) {
             write(list, result);
         }
     }
@@ -91,93 +87,90 @@ public class LabelWriter extends ResultsWriter {
      * @param result
      * @throws IOException
      */
-    public void write(List list, Result result) throws IOException
-    {
+    public void write(List list, Result result) throws IOException {
         ObjectFactory of = new ObjectFactory();
-            MbDocument doc = result.getDoc();
-            Label label = of.createLabel();
-            label.setId(doc.get(LabelIndexField.LABEL_ID));
-            String type = doc.get(LabelIndexField.TYPE);
-            if (isNotUnknown(type)){
-                label.setType(type);
-            }
-            label.setScore(String.valueOf(result.getNormalizedScore()));
-            String name = doc.get(LabelIndexField.LABEL);
-            if (name != null) {
-                label.setName(name);
-            }
+        MbDocument doc = result.getDoc();
+        Label label = of.createLabel();
+        label.setId(doc.get(LabelIndexField.LABEL_ID));
+        String type = doc.get(LabelIndexField.TYPE);
+        if (isNotUnknown(type)) {
+            label.setType(type);
+        }
+        label.setScore(String.valueOf(result.getNormalizedScore()));
+        String name = doc.get(LabelIndexField.LABEL);
+        if (name != null) {
+            label.setName(name);
+        }
 
-            String[] ipiCodes = doc.getValues(LabelIndexField.IPI);
-            if (ipiCodes.length > 0) {
-                IpiList ipiList = of.createIpiList();
-                for (int i = 0; i < ipiCodes.length; i++) {
-                    ipiList.getIpi().add(ipiCodes[i]);
-                }
-                label.setIpiList(ipiList);
+        String[] ipiCodes = doc.getValues(LabelIndexField.IPI);
+        if (ipiCodes.length > 0) {
+            IpiList ipiList = of.createIpiList();
+            for (int i = 0; i < ipiCodes.length; i++) {
+                ipiList.getIpi().add(ipiCodes[i]);
             }
+            label.setIpiList(ipiList);
+        }
 
-            String code = doc.get(LabelIndexField.CODE);
-            if (isNotNoValue(code)) {
-                label.setLabelCode(new BigInteger(code));
+        String code = doc.get(LabelIndexField.CODE);
+        if (isNotNoValue(code)) {
+            label.setLabelCode(new BigInteger(code));
+        }
+
+        String countryCode = doc.get(LabelIndexField.COUNTRY);
+        if (isNotUnknown(countryCode)) {
+            label.setCountry(countryCode.toUpperCase(Locale.US));
+        }
+
+        String sortname = doc.get(LabelIndexField.SORTNAME);
+        if (sortname != null) {
+            label.setSortName(sortname);
+        }
+
+        String begin = doc.get(LabelIndexField.BEGIN);
+        String end = doc.get(LabelIndexField.END);
+        String ended = doc.get(LabelIndexField.ENDED);
+
+        LifeSpan lifespan = of.createLifeSpan();
+        label.setLifeSpan(lifespan);
+
+        if (begin != null) {
+            lifespan.setBegin(begin);
+        }
+
+        if (end != null) {
+            lifespan.setEnd(end);
+        }
+        lifespan.setEnded(ended);
+
+        String comment = doc.get(LabelIndexField.COMMENT);
+        if (isNotNoValue(comment)) {
+            label.setDisambiguation(comment);
+        }
+
+        String[] aliases = doc.getValues(LabelIndexField.ALIAS);
+        if (aliases.length > 0) {
+            AliasList aliasList = of.createAliasList();
+            for (int i = 0; i < aliases.length; i++) {
+                Alias alias = of.createAlias();
+                alias.setContent(aliases[i]);
+                aliasList.getAlias().add(alias);
             }
+            label.setAliasList(aliasList);
+        }
 
-            String countryCode = doc.get(LabelIndexField.COUNTRY);
-            if (isNotUnknown(countryCode)){
-                label.setCountry(countryCode.toUpperCase(Locale.US));
+        String[] tags = doc.getValues(LabelIndexField.TAG);
+        String[] tagCounts = doc.getValues(LabelIndexField.TAGCOUNT);
+        if (tags.length > 0) {
+            TagList tagList = of.createTagList();
+            for (int i = 0; i < tags.length; i++) {
+                Tag tag = of.createTag();
+                tag.setName(tags[i]);
+                tag.setCount(new BigInteger(tagCounts[i]));
+                tagList.getTag().add(tag);
             }
-
-            String sortname = doc.get(LabelIndexField.SORTNAME);
-            if (sortname != null) {
-                label.setSortName(sortname);
-            }
-
-            String begin = doc.get(LabelIndexField.BEGIN);
-            String end = doc.get(LabelIndexField.END);
-            String ended = doc.get(LabelIndexField.ENDED);
-
-            LifeSpan lifespan = of.createLifeSpan();
-            label.setLifeSpan(lifespan);
-
-            if (begin != null) {
-                lifespan.setBegin(begin);
-            }
-
-            if (end != null) {
-                lifespan.setEnd(end);
-            }
-            lifespan.setEnded(ended);
-
-            String comment = doc.get(LabelIndexField.COMMENT);
-            if (isNotNoValue(comment)) {
-                label.setDisambiguation(comment);
-            }
-
-            String[] aliases = doc.getValues(LabelIndexField.ALIAS);
-            if(aliases.length>0)
-            {
-                AliasList aliasList = of.createAliasList();
-                for(int i = 0;i<aliases.length;i++) {
-                    Alias alias = of.createAlias();
-                    alias.setContent(aliases[i]);
-                    aliasList.getAlias().add(alias);
-                }
-                label.setAliasList(aliasList);
-            }
-
-            String[] tags       = doc.getValues(LabelIndexField.TAG);
-            String[] tagCounts  = doc.getValues(LabelIndexField.TAGCOUNT);
-            if(tags.length>0)
-            {
-                TagList tagList = of.createTagList();
-                for(int i = 0;i<tags.length;i++) {
-                    Tag tag = of.createTag();
-                    tag.setName(tags[i]);
-                    tag.setCount(new BigInteger(tagCounts[i]));
-                    tagList.getTag().add(tag);
-                }
-                label.setTagList(tagList);
-            }
-            list.add(label);
+            label.setTagList(tagList);
+        }
+        list.add(label);
 
     }
 }

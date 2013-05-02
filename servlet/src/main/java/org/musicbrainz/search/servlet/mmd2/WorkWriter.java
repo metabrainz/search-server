@@ -90,7 +90,6 @@ public class WorkWriter extends ResultsWriter
     {
 
         ObjectFactory of = new ObjectFactory();
-        WorkList workList = of.createWorkList();
 
         MbDocument doc = result.getDoc();
         Work work = of.createWork();
