@@ -132,8 +132,7 @@ public class CommonTables  {
     }
 
 
-    private void createReleaseTableUsingDb() throws SQLException
-    {
+    private void createReleaseTableUsingDb() throws SQLException {
         System.out.println("tmp_release     :Started at:" + Utils.formatCurrentTimeForOutput());
         StopWatch clock = new StopWatch();
         clock.start();
@@ -170,6 +169,33 @@ public class CommonTables  {
         clock.reset();
     }
 
+    private void createReleaseEventsTableUsingDb() throws SQLException {
+        System.out.println("tmp_release_event     :Started at:" + Utils.formatCurrentTimeForOutput());
+        StopWatch clock = new StopWatch();
+        clock.start();
+
+        getDbConnection().createStatement().execute(
+                "CREATE TEMPORARY TABLE tmp_release_event AS " +
+                        " SELECT release, r2.code as country, " +
+                        "  date_year, date_month, date_day"+
+                        " FROM release_country r1 " +
+                        " LEFT JOIN iso_3166_1 r2 " +
+                        " ON r1.country = r2.area " +
+                        " UNION" +
+                        " SELECT release, null as country, " +
+                        "  date_year, date_month, date_day"+
+                        " FROM release_unknown_country r1 ");
+        clock.stop();
+        System.out.println("tmp_release_event     :Finished:" + Utils.formatClock(clock));
+        clock.reset();
+
+        clock.start();
+        getDbConnection().createStatement().execute(
+                "CREATE INDEX tmp_release_event_idx_release ON tmp_release_event (release) ");
+        clock.stop();
+        System.out.println("tmp_release_event     :Created Indexes:" + Utils.formatClock(clock));
+        clock.reset();
+    }
 
     private void createTrackTableUsingDb() throws SQLException
     {
@@ -223,6 +249,7 @@ public class CommonTables  {
             }
 
             createReleaseTableUsingDb();
+            createReleaseEventsTableUsingDb();
         }
 
         if(

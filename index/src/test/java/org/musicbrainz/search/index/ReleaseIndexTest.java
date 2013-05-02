@@ -7,6 +7,7 @@ import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.Release;
+import org.musicbrainz.mmd2.ReleaseEventList;
 
 import java.sql.Statement;
 
@@ -137,6 +138,17 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 221, 1970,1,1)");
         stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
+
+        stmt.addBatch("INSERT INTO release_country (release, country) values (491240, 222)");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (222, 'Albania')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (222, 'AF')");
+
+        stmt.addBatch("INSERT INTO release_country (release, country) values (491240, 2)");
+        stmt.addBatch("INSERT INTO area (id, name) VALUES (2, 'Afghanistan')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (2, 'AN')");
+
+        stmt.addBatch("INSERT INTO release_unknown_country (release, date_year) values (491240, 1950)");
+
 
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 10, 491240, 1, 7)");
@@ -896,9 +908,19 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
             assertEquals("Crocodiles (bonus disc)", release.getTitle());
             assertEquals("B00005NTQ7", release.getAsin());
-            assertEquals("GB", release.getCountry());
-            assertEquals("1970-01-01", release.getDate());
-
+            ReleaseEventList rel = release.getReleaseEventList();
+            assertNotNull(rel);
+            assertEquals(4,rel.getReleaseEvent().size());
+            assertEquals(null, release.getCountry());
+            assertEquals("1950", release.getDate());
+            assertEquals(null, rel.getReleaseEvent().get(0).getCountry());
+            assertEquals("1950", rel.getReleaseEvent().get(0).getDate());
+            assertEquals("GB", rel.getReleaseEvent().get(1).getCountry());
+            assertEquals("1970-01-01", rel.getReleaseEvent().get(1).getDate());
+            assertEquals("AF", rel.getReleaseEvent().get(2).getCountry());
+            assertEquals(null, rel.getReleaseEvent().get(2).getDate());
+            assertEquals("AN", rel.getReleaseEvent().get(3).getCountry());
+            assertEquals(null, rel.getReleaseEvent().get(3).getDate());
 
         }
         ir.close();

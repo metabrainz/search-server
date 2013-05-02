@@ -199,12 +199,10 @@ public class RecordingIndex extends DatabaseIndex {
                         " WHERE r1.id in ";
 
         releaseEvents =
-                " SELECT re.release as releaseKey, r2.code as country, " +
-                        "  date_year, date_month, date_day" +
-                        " FROM release_country re " +
-                        " LEFT JOIN iso_3166_1 r2 " +
-                        " ON re.country = r2.area " +
-                        " WHERE re.release in ";
+                " SELECT release, country, " +
+                        "   date_year, date_month, date_day"+
+                        " FROM tmp_release_event r " +
+                        " WHERE r.release in ";
 
         releaseSecondaryTypes =
                 "SELECT rg.name as type, r.id as releaseKey" +
@@ -586,13 +584,13 @@ public class RecordingIndex extends DatabaseIndex {
         }
         rs = stmt.executeQuery();
         while (rs.next()) {
-            int releaseKey = rs.getInt("releaseKey");
+            int releaseKey = rs.getInt("release");
             release = releases.get(releaseKey);
             if (release.getReleaseEventList() == null) {
                 release.setReleaseEventList(of.createReleaseEventList());
             }
             ReleaseEvent re = of.createReleaseEvent();
-            re.setDate(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day")));
+            re.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));
             re.setCountry((rs.getString("country")));
             release.getReleaseEventList().getReleaseEvent().add(re);
         }
@@ -791,10 +789,10 @@ public class RecordingIndex extends DatabaseIndex {
                                     (release.getReleaseEventList().getReleaseEvent() != null)
                             ) {
                         for (ReleaseEvent re : release.getReleaseEventList().getReleaseEvent()) {
-                            doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, re.getDate());
-                            doc.addFieldOrNoValue(RecordingIndexField.COUNTRY, re.getCountry());
+                            doc.addNonEmptyField(RecordingIndexField.RELEASE_DATE, re.getDate());
+                            doc.addNonEmptyField(RecordingIndexField.COUNTRY, re.getCountry());
                         }
-
+                        Collections.sort(release.getReleaseEventList().getReleaseEvent(), new ReleaseEventComparator());
                         ReleaseEvent firstReleaseEvent = release.getReleaseEventList().getReleaseEvent().get(0);
                         if (!Strings.isNullOrEmpty(firstReleaseEvent.getDate())) {
                             release.setDate(firstReleaseEvent.getDate());
@@ -802,7 +800,6 @@ public class RecordingIndex extends DatabaseIndex {
                         if (!Strings.isNullOrEmpty(firstReleaseEvent.getCountry())) {
                             release.setCountry(firstReleaseEvent.getCountry());
                         }
-                        release.setCountry(firstReleaseEvent.getCountry());
 
                     } else {
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_DATE, null);

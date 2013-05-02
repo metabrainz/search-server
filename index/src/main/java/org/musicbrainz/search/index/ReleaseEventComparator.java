@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010 Paul Taylor
+ Copyright (c) 2013 Paul Taylor
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -29,44 +29,60 @@
 
 package org.musicbrainz.search.index;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
-import org.musicbrainz.mmd2.ObjectFactory;
-import org.musicbrainz.mmd2.Release;
 import org.musicbrainz.mmd2.ReleaseEvent;
-import org.musicbrainz.mmd2.Tag;
 
-import java.math.BigInteger;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Comparator;
 
-public class ReleaseEventHelper {
+public class ReleaseEventComparator implements Comparator<ReleaseEvent> {
 
-    public static Map<Integer,List<ReleaseEvent>> completeReleaseEventsFromDbResults(ResultSet rs,
-                                                                  String entityKey) throws SQLException {
-        Map<Integer, List<ReleaseEvent>> releaseEvents = new HashMap<Integer, List<ReleaseEvent>>();
-        ObjectFactory of = new ObjectFactory();
-        List<ReleaseEvent> releaseEventList;
-        while (rs.next()) {
-            int entityId = rs.getInt(entityKey);
-            if (!releaseEvents.containsKey(entityId)) {
-                releaseEventList = new ArrayList<ReleaseEvent>();
-                releaseEvents.put(entityId, releaseEventList);
-            } else {
-                releaseEventList = releaseEvents.get(entityId);
-            }
+    private static CharMatcher hyphenMatcher = CharMatcher.anyOf("-");
 
-            ReleaseEvent releaseEvent = of.createReleaseEvent();
-            releaseEvent.setCountry(rs.getString("country"));
-            releaseEvent.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));
-            releaseEventList.add(releaseEvent);
+    /**
+     * Date will be one of these formats
+     *
+     * YYYY
+     * YYYY-MM
+     * YYYY-MM-dd
+     *
+     * Or Empty String
+     *
+     * @param releaseEvent1
+     * @param releaseEvent2
+     * @return dates ordered earliest first
+     */
+    public int compare(ReleaseEvent releaseEvent1, ReleaseEvent releaseEvent2) {
+
+        String date1 = padDate(Strings.nullToEmpty(releaseEvent1.getDate()));
+        String date2 = padDate(Strings.nullToEmpty(releaseEvent2.getDate()));
+
+        try {
+            Integer date1Number = Integer.parseInt(date1);
+            Integer date2Number = Integer.parseInt(date2);
+            return date1Number.compareTo(date2Number);
         }
-        return releaseEvents;
+        catch(NumberFormatException nfe) {
+            return 0;
+        }
+
     }
 
-
+    private String padDate(String origDate)
+    {
+        String date = hyphenMatcher.removeFrom(origDate);
+        if(date.length()==0) {
+            return "99999999";
+        }
+        if(date.length()==4) {
+            return date + "0000";
+        }
+        else if(date.length()==6) {
+            return date + "00";
+        }
+        else {
+            return date;
+        }
+    }
 
 }

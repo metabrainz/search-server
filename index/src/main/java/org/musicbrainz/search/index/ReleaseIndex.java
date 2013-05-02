@@ -171,13 +171,11 @@ public class  ReleaseIndex extends DatabaseIndex {
                 " FROM tmp_release rl " +
                 " WHERE id BETWEEN ? AND ? ");
 
-        addPreparedStatement("RELEASE_COUNTRY",
-                " SELECT release, r2.code as country, " +
-                        "  date_year, date_month, date_day"+
-                        " FROM release_country r1 " +
-                        " LEFT JOIN iso_3166_1 r2 " +
-                        " ON r1.country = r2.area " +
-                        " WHERE release BETWEEN ? AND ? ");
+        addPreparedStatement("RELEASE_EVENTS",
+                " SELECT release, country, " +
+                "   date_year, date_month, date_day"+
+                " FROM tmp_release_event r1 " +
+                " WHERE release BETWEEN ? AND ? ");
 
         addPreparedStatement("TAGS",
                 "SELECT release_tag.release, tag.name as tag, release_tag.count as count " +
@@ -264,7 +262,7 @@ public class  ReleaseIndex extends DatabaseIndex {
     private Map<Integer, List<ReleaseEvent>> loadReleaseEvents(int min, int max) throws SQLException, IOException {
 
         // Get Release Country
-        PreparedStatement st = getPreparedStatement("RELEASE_COUNTRY");
+        PreparedStatement st = getPreparedStatement("RELEASE_EVENTS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -623,12 +621,14 @@ public class  ReleaseIndex extends DatabaseIndex {
             for (ReleaseEvent releaseEvent : releaseEvents.get(id)) {
 
                 String nextCountry  = releaseEvent.getCountry();
-                doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY,nextCountry);
+                doc.addNonEmptyField(ReleaseIndexField.COUNTRY,nextCountry);
 
                 String nextDate     = releaseEvent.getDate();
-                doc.addFieldOrUnknown(ReleaseIndexField.DATE, nextDate );
+                doc.addNonEmptyField(ReleaseIndexField.DATE, nextDate );
                 rel.getReleaseEvent().add(releaseEvent);
             }
+            //Sorted so always listed in date order, and so earliest release is used for backwards compatabilty
+            Collections.sort(rel.getReleaseEvent(), new ReleaseEventComparator());
             release.setReleaseEventList(rel);
 
             //backwards compatibility

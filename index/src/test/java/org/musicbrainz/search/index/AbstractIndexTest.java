@@ -104,7 +104,14 @@ public abstract class AbstractIndexTest {
             //Drop tables, if they exist
             try {
                 Statement stmt = conn.createStatement();
-                stmt.addBatch("DROP TABLE country");
+                stmt.addBatch("DROP TABLE area");
+                stmt.addBatch("DROP TABLE area_type");
+                stmt.addBatch("DROP TABLE area_gid_redirect");
+                stmt.addBatch("DROP TABLE iso_3166_1");
+                stmt.addBatch("DROP TABLE iso_3166_2");
+                stmt.addBatch("DROP TABLE iso_3166_3");
+                stmt.addBatch("DROP TABLE area_alias_type");
+                stmt.addBatch("DROP TABLE area_alias");
                 stmt.addBatch("DROP TABLE tag");
 
                 stmt.addBatch("DROP TABLE artist");
@@ -139,7 +146,8 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE language");
                 stmt.addBatch("DROP TABLE script");
                 stmt.addBatch("DROP TABLE release_tag");
-
+                stmt.addBatch("DROP TABLE release_country");
+                stmt.addBatch("DROP TABLE release_unknown_country");
 
                 stmt.addBatch("DROP TABLE release_group");
                 stmt.addBatch("DROP TABLE release_group_primary_type");
@@ -566,9 +574,17 @@ public abstract class AbstractIndexTest {
                 "(" +
                 "  release integer NOT NULL," +
                 "  country integer NOT NULL," +
-                "  date_year smallint NOT NULL," +
-                "  date_month smallint NOT NULL," +
-                "  date_day smallint NOT NULL" +
+                "  date_year smallint," +
+                "  date_month smallint," +
+                "  date_day smallint" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE release_unknown_country" +
+                "(" +
+                "  release integer NOT NULL," +
+                "  date_year smallint," +
+                "  date_month smallint," +
+                "  date_day smallint" +
                 ")");
     }
 
