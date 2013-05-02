@@ -901,6 +901,7 @@ public class RecordingIndex extends DatabaseIndex {
         Artist       artist   = of.createArtist();
         artist.setId(VARIOUS_ARTISTS_GUID);
         artist.setName(VARIOUS_ARTISTS_NAME);
+        artist.setSortName(VARIOUS_ARTISTS_NAME);
         NameCredit   naCredit = of.createNameCredit();
         naCredit.setArtist(artist);
         ArtistCredit vaCredit = of.createArtistCredit();
