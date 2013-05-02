@@ -805,7 +805,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
         assertTrue(output.contains("\"track-count\":17"));
         assertTrue(output.contains("\"secondary-type-list\":{\"secondary-type\":[\"Live\",\"Compilation\"]}}"));
-
+        assertTrue(output.contains("\"release-event-list\":{\"release-event\":[{\"country\":\"GB\",\"date\":\"2005\"}]}"));
     }
 
     @Test
@@ -838,7 +838,8 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"label-info\""));
         assertTrue(output.contains("\"catalog-number\":\"WRATHCD-25\""));
         assertTrue(output.contains("\"primary-type\":\"Album\""));
-        assertTrue(output.contains(""));
+        assertTrue(output.contains("\"release-events\":[{\"country\":\"GB\",\"date\":\"2005\"}]"));
+        assertTrue(output.contains("\"secondary-types\":[\"Live\",\"Compilation\"]}"));
     }
 
     @Test

@@ -141,6 +141,11 @@
                 <xml-element java-attribute="mediumList" xml-path="."/>
             </java-attributes>
         </java-type>
+        <java-type name="Release">
+            <java-attributes>
+                <xml-element java-attribute="releaseEventList" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="Recording">
             <java-attributes>
                 <xml-element java-attribute="isrcList" xml-path="."/>
@@ -312,6 +317,11 @@
             <java-attributes>
                 <xml-transient java-attribute="targetType"/>
                 <xml-element java-attribute="relation" name="relations"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="ReleaseEventList">
+            <java-attributes>
+                <xml-element java-attribute="releaseEvent" name="release-events"/>
             </java-attributes>
         </java-type>
     </java-types>

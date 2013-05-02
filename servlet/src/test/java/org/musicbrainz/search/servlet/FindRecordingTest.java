@@ -59,7 +59,6 @@ public class FindRecordingTest {
 
             doc.addField(RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
             doc.addField(RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
-            doc.addField(RecordingIndexField.COUNTRY, "UK");
 
 
 
@@ -81,7 +80,6 @@ public class FindRecordingTest {
 
             release.setId("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
             release.setTitle("Our Glorious 5 Year Plan");
-            release.setCountry("UK");
 
             doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
             PuidList puidList = of.createPuidList();
@@ -144,9 +142,16 @@ public class FindRecordingTest {
             ml.setTrackCount(BigInteger.valueOf(10));
             doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
             doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
+            doc.addField(RecordingIndexField.COUNTRY, "UK");
             release.setStatus("Official");
             release.setDate("1970-01-01");
-
+            release.setCountry("UK");
+            ReleaseEventList rel = of.createReleaseEventList();
+            ReleaseEvent     re  = of.createReleaseEvent();
+            re.setCountry("UK");
+            re.setDate("1970-01-01");
+            rel.getReleaseEvent().add(re);
+            release.setReleaseEventList(rel);
             doc.addField(RecordingIndexField.ISRC, "123456789");
             doc.addField(RecordingIndexField.ISRC, "abcdefghi");
             IsrcList isrcList = of.createIsrcList();
@@ -529,6 +534,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("indie</name>"));
         assertTrue(output.contains("<track><number>A4</number><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
+        assertTrue(output.contains("<release-event><country>UK</country><date>1970-01-01</date></release-event></release-event-list>"));
     }
 
 
@@ -563,6 +569,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
         assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
         assertTrue(output.contains("\"artist-credit\":{\"name-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}"));
+        assertTrue(output.contains("\"release-event-list\":{\"release-event\":[{\"country\":\"UK\",\"date\":\"1970-01-01\"}]}"));
     }
 
     @Test
@@ -597,7 +604,8 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"length\":234000"));
         assertTrue(output.contains("\"position\":1"));
         assertTrue(output.contains("\"track-count\":10"));
-
+        assertTrue(output.contains("\"secondary-types\":[\"Compilation\"]}"));
+        assertTrue(output.contains("\"release-events\":[{\"country\":\"UK\",\"date\":\"1970-01-01\"}]"));
     }
 
     @Test
