@@ -28,10 +28,13 @@
 
 package org.musicbrainz.search.servlet.mmd1;
 
+import com.google.common.base.Strings;
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -53,47 +56,38 @@ public class ArtistMmd1XmlWriter extends Mmd1XmlWriter {
             MbDocument doc = result.getDoc();
             Artist artist = of.createArtist();
 
-            artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
-
-            String artype = doc.get(ArtistIndexField.TYPE);
-            if (isNotUnknown(artype)) {
-                artist.setType(StringUtils.capitalize(artype));
-            }
-
             result.setNormalizedScore(results.getMaxScore());
             artist.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
-            String name = doc.get(ArtistIndexField.ARTIST);
-            if (name != null) {
-                artist.setName(name);
+            org.musicbrainz.mmd2.Artist artistv2
+                    = (org.musicbrainz.mmd2.Artist) MMDSerializer.unserialize(doc.get(ArtistIndexField.ARTIST_STORE), org.musicbrainz.mmd2.Artist.class);
+            artist.setId(artistv2.getId());
+            artist.setType(StringUtils.capitalize(artistv2.getType()));
+            artist.setName(artistv2.getName());
 
+            if(!Strings.isNullOrEmpty(artistv2.getSortName())) {
+                artist.setSortName(artistv2.getSortName());
             }
 
-            String sortname = doc.get(ArtistIndexField.SORTNAME);
-            if (sortname != null) {
-                artist.setSortName(sortname);
-
+            if(!Strings.isNullOrEmpty(artistv2.getDisambiguation())) {
+                artist.setDisambiguation(artistv2.getDisambiguation());
             }
 
-            String begin = doc.get(ArtistIndexField.BEGIN);
-            String end = doc.get(ArtistIndexField.END);
-            if (begin != null || end != null) {
-                LifeSpan lifespan = of.createLifeSpan();
-                if (begin != null) {
-                    lifespan.setBegin(begin);
+            if(artistv2.getLifeSpan()!=null) {
+                String begin = artistv2.getLifeSpan().getBegin();
+                String end = artistv2.getLifeSpan().getEnd();
+                if (begin != null || end != null) {
+                    LifeSpan lifespan = of.createLifeSpan();
+                    if (begin != null) {
+                        lifespan.setBegin(begin);
 
-                }
-                if (end != null) {
-                    lifespan.setEnd(end);
+                    }
+                    if (end != null) {
+                        lifespan.setEnd(end);
 
-                }
-                artist.setLifeSpan(lifespan);
-
-            }
-
-            String comment = doc.get(ArtistIndexField.COMMENT);
-            if (isNotNoValue(comment)) {
-                artist.setDisambiguation(comment);
+                    }
+                    artist.setLifeSpan(lifespan);
+               }
             }
 
             artistList.getArtist().add(artist);

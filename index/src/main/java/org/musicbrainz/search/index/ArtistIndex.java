@@ -19,15 +19,17 @@
 
 package org.musicbrainz.search.index;
 
+import com.google.common.base.Strings;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.similarities.Similarity;
-import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -69,11 +71,11 @@ public class ArtistIndex extends DatabaseIndex {
         return super.getAnalyzer(ArtistIndexField.class);
     }
 
-	@Override
-	public IndexField getIdentifierField() {
-		return ArtistIndexField.ID;
-	}
-    
+    @Override
+    public IndexField getIdentifierField() {
+        return ArtistIndexField.ID;
+    }
+
     public int getMaxId() throws SQLException {
         Statement st = dbConnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT MAX(id) FROM artist");
@@ -82,18 +84,17 @@ public class ArtistIndex extends DatabaseIndex {
     }
 
     public int getNoOfRows(int maxId) throws SQLException {
-    	PreparedStatement st = dbConnection.prepareStatement(
-    			"SELECT count(*) FROM artist WHERE id <= ? AND gid <> ?::uuid");
-    	st.setInt(1, maxId);
-    	st.setString(2, DELETED_ARTIST_MBID);
+        PreparedStatement st = dbConnection.prepareStatement(
+                "SELECT count(*) FROM artist WHERE id <= ? AND gid <> ?::uuid");
+        st.setInt(1, maxId);
+        st.setString(2, DELETED_ARTIST_MBID);
         ResultSet rs = st.executeQuery();
         rs.next();
         return rs.getInt(1);
     }
 
     @Override
-    public Similarity getSimilarity()
-    {
+    public Similarity getSimilarity() {
         return new MusicbrainzSimilarity();
     }
 
@@ -103,43 +104,44 @@ public class ArtistIndex extends DatabaseIndex {
 
         addPreparedStatement("TAGS",
                 "SELECT artist_tag.artist, tag.name as tag, artist_tag.count as count " +
-                " FROM artist_tag " +
-                "  INNER JOIN tag ON tag=id " +
-                " WHERE artist between ? AND ?");
+                        " FROM artist_tag " +
+                        "  INNER JOIN tag ON tag=id " +
+                        " WHERE artist between ? AND ?");
 
         addPreparedStatement("ALIASES",
                 "SELECT artist_alias.artist as artist, n.name as alias " +
-                " FROM artist_alias " +
-                "  JOIN artist_name n ON (artist_alias.name = n.id) " +
-                " WHERE artist BETWEEN ? AND ? " +
-                "UNION " +
-                "SELECT artist as artist, n.name as alias " +
-                " FROM artist_credit_name " +
-                "  JOIN artist_name n ON n.id = artist_credit_name.name " +
-                " WHERE artist BETWEEN ? AND ? ");
+                        " FROM artist_alias " +
+                        "  JOIN artist_name n ON (artist_alias.name = n.id) " +
+                        " WHERE artist BETWEEN ? AND ?");
+
+        addPreparedStatement("ARTISTCREDITS",
+                        "SELECT artist as artist, n.name as artistcredit " +
+                        " FROM artist_credit_name " +
+                        "  JOIN artist_name n ON n.id = artist_credit_name.name " +
+                        " WHERE artist BETWEEN ? AND ? ");
 
 
         addPreparedStatement("ARTISTS",
                 "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
-                "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
-                "  end_date_year, end_date_month, end_date_day,ended, " +
-                "  comment, lower(i.code) as country, lower(gender.name) as gender " +
-                " FROM artist " +
-                "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
-                "  LEFT JOIN artist_name n1 ON artist.sort_name = n1.id " +
-                "  LEFT JOIN artist_type ON artist.type = artist_type.id " +
-                "  LEFT JOIN iso_3166_1 i on artist.area=i.area" +
-                "  LEFT JOIN gender ON artist.gender=gender.id " +
-                " WHERE artist.id BETWEEN ? AND ?");
+                        "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
+                        "  end_date_year, end_date_month, end_date_day,ended, " +
+                        "  comment, lower(i.code) as country, lower(gender.name) as gender " +
+                        " FROM artist " +
+                        "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
+                        "  LEFT JOIN artist_name n1 ON artist.sort_name = n1.id " +
+                        "  LEFT JOIN artist_type ON artist.type = artist_type.id " +
+                        "  LEFT JOIN iso_3166_1 i on artist.area=i.area" +
+                        "  LEFT JOIN gender ON artist.gender=gender.id " +
+                        " WHERE artist.id BETWEEN ? AND ?");
 
         addPreparedStatement("IPICODES",
                 "SELECT ipi, artist " +
-                " FROM artist_ipi  " +
-                " WHERE artist between ? AND ?");
+                        " FROM artist_ipi  " +
+                        " WHERE artist between ? AND ?");
 
     }
 
-    private  Map<Integer, List<String>> loadIpiCodes(int min, int max) throws SQLException, IOException {
+    private Map<Integer, List<String>> loadIpiCodes(int min, int max) throws SQLException, IOException {
         Map<Integer, List<String>> ipiCodes = new HashMap<Integer, List<String>>();
         PreparedStatement st = getPreparedStatement("IPICODES");
         st.setInt(1, min);
@@ -160,7 +162,7 @@ public class ArtistIndex extends DatabaseIndex {
         rs.close();
         return ipiCodes;
     }
-    
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         // Get Tags
@@ -168,19 +170,17 @@ public class ArtistIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"artist");
+        Map<Integer, List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs, "artist");
         rs.close();
 
         // IPI Codes
-        Map<Integer, List<String>> ipiCodes = loadIpiCodes(min,max);
-        
+        Map<Integer, List<String>> ipiCodes = loadIpiCodes(min, max);
+
         //Aliases (and Artist Credits)
         Map<Integer, Set<String>> aliases = new HashMap<Integer, Set<String>>();
         st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
-        st.setInt(3, min);
-        st.setInt(4, max);
         rs = st.executeQuery();
         while (rs.next()) {
             int artistId = rs.getInt("artist");
@@ -195,93 +195,162 @@ public class ArtistIndex extends DatabaseIndex {
         }
         rs.close();
 
+        //Artist Credits)
+        Map<Integer, Set<String>> artistCredits = new HashMap<Integer, Set<String>>();
+        st = getPreparedStatement("ARTISTCREDITS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int artistId = rs.getInt("artist");
+            Set<String> list;
+            if (!artistCredits.containsKey(artistId)) {
+                list = new HashSet<String>();
+                artistCredits.put(artistId, list);
+            } else {
+                list = artistCredits.get(artistId);
+            }
+            list.add(rs.getString("artistcredit"));
+        }
+        rs.close();
+
         st = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            if(rs.getString("gid").equals(DELETED_ARTIST_MBID))
-            {
+            if (rs.getString("gid").equals(DELETED_ARTIST_MBID)) {
                 continue;
             }
-            indexWriter.addDocument(documentFromResultSet(rs, tags, ipiCodes, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, ipiCodes, aliases, artistCredits));
         }
         rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer,List<Tag>> tags,
+                                          Map<Integer, List<Tag>> tags,
                                           Map<Integer, List<String>> ipiCodes,
-                                          Map<Integer, Set<String>> aliases) throws SQLException {
+                                          Map<Integer, Set<String>> aliases,
+                                          Map<Integer, Set<String>> artistCredits) throws SQLException {
 
         MbDocument doc = new MbDocument();
+
+        ObjectFactory of = new ObjectFactory();
+        Artist artist = of.createArtist();
+
         int artistId = rs.getInt("id");
         String artistGuid = rs.getString("gid");
         doc.addField(ArtistIndexField.ID, artistId);
         doc.addField(ArtistIndexField.ARTIST_ID, artistGuid);
+        artist.setId(artistGuid);
 
         String artistName = rs.getString("name");
-        doc.addField(ArtistIndexField.ARTIST, artistName );
+        doc.addField(ArtistIndexField.ARTIST, artistName);
+        artist.setName(artistName);
 
         //Accented artist
-        doc.addField(ArtistIndexField.ARTIST_ACCENT, artistName );
+        doc.addField(ArtistIndexField.ARTIST_ACCENT, artistName);
 
         String sortName = rs.getString("sort_name");
         doc.addField(ArtistIndexField.SORTNAME, sortName);
+        artist.setSortName(sortName);
 
         String type = rs.getString("type");
         doc.addFieldOrUnknown(ArtistIndexField.TYPE, type);
-
-        if(rs.getBoolean("ended")) {
-           doc.addFieldOrUnknown(ArtistIndexField.ENDED, "true");
-        }
-        else {
-            doc.addFieldOrUnknown(ArtistIndexField.ENDED, "false");
+        if (!Strings.isNullOrEmpty(type)) {
+            artist.setType(type);
         }
 
-        doc.addNonEmptyField(ArtistIndexField.BEGIN,
-                Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));
+        boolean ended = rs.getBoolean("ended");
+        doc.addFieldOrUnknown(ArtistIndexField.ENDED, Boolean.toString(ended));
 
-        doc.addNonEmptyField(ArtistIndexField.END,
-                Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day")));
+        String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+        doc.addNonEmptyField(ArtistIndexField.BEGIN, begin);
 
-        doc.addFieldOrNoValue(ArtistIndexField.COMMENT, rs.getString("comment"));
-        doc.addFieldOrUnknown(ArtistIndexField.COUNTRY, rs.getString("country"));
+        String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+                doc.addNonEmptyField(ArtistIndexField.END, end);
 
+        LifeSpan lifespan = of.createLifeSpan();
+        artist.setLifeSpan(lifespan);
+        if(!Strings.isNullOrEmpty(begin)) {
+            lifespan.setBegin(begin);
+        }
+        if(!Strings.isNullOrEmpty(end)) {
+            lifespan.setBegin(end);
+        }
+        lifespan.setEnded(Boolean.toString(ended));
+
+        String comment = rs.getString("comment");
+        doc.addFieldOrNoValue(ArtistIndexField.COMMENT, comment);
+        if (!Strings.isNullOrEmpty(comment)) {
+            artist.setDisambiguation(comment);
+        }
+
+        String country = rs.getString("country");
+        doc.addFieldOrUnknown(ArtistIndexField.COUNTRY, country);
+        if (!Strings.isNullOrEmpty(country)) {
+            artist.setCountry(country.toUpperCase(Locale.US));
+        }
         String gender = rs.getString("gender");
         if (gender != null) {
             doc.addField(ArtistIndexField.GENDER, gender);
+            artist.setGender(gender);
         } else {
-            if( (type!=null) && (type.equalsIgnoreCase(ArtistType.PERSON.getName())) ) {
+            if ((type != null) && (type.equalsIgnoreCase(ArtistType.PERSON.getName()))) {
                 doc.addField(ArtistIndexField.GENDER, Index.UNKNOWN);
             }
         }
 
         if (aliases.containsKey(artistId)) {
-            for (String alias : aliases.get(artistId)) {
-                //Ignore artist credits that are identical to artist name
-                if(!alias.equalsIgnoreCase(artistName)) {
-                    doc.addField(ArtistIndexField.ALIAS, alias);
-                }
+            AliasList aliasList = of.createAliasList();
+            for (String aliasName : aliases.get(artistId)) {
+                doc.addField(ArtistIndexField.ALIAS, aliasName);
+
+                Alias alias = of.createAlias();
+                alias.setContent(aliasName);
+                aliasList.getAlias().add(alias);
+            }
+            artist.setAliasList(aliasList);
+        }
+
+        //Artist Credits are added for search only
+        if (artistCredits.containsKey(artistId)) {
+            for (String artistCredit : artistCredits.get(artistId)) {
+
+                //Add alias even if same as artist
+                doc.addField(ArtistIndexField.ALIAS, artistCredit);
             }
         }
+
         addArtistInitialized(type, artistName, sortName, doc);
 
         if (tags.containsKey(artistId)) {
-            for (Tag tag : tags.get(artistId)) {
-                doc.addField(ArtistIndexField.TAG, tag.getName());
-                doc.addField(ArtistIndexField.TAGCOUNT, tag.getCount().toString());
+            TagList tagList = of.createTagList();
+            for (Tag nextTag : tags.get(artistId)) {
+                Tag tag = of.createTag();
+                doc.addField(ArtistIndexField.TAG, nextTag.getName());
+                tag.setName(nextTag.getName());
+                tag.setCount(new BigInteger(nextTag.getCount().toString()));
+                tagList.getTag().add(tag);
             }
+            artist.setTagList(tagList);
         }
 
         if (ipiCodes.containsKey(artistId)) {
+            IpiList ipiList = of.createIpiList();
             for (String ipiCode : ipiCodes.get(artistId)) {
                 doc.addField(ArtistIndexField.IPI, ipiCode);
+                ipiList.getIpi().add(ipiCode);
             }
+            artist.setIpiList(ipiList);
         }
 
 
         ArtistBoostDoc.boost(artistGuid, doc);
+
+        String store = MMDSerializer.serialize(artist);
+        doc.addField(ArtistIndexField.ARTIST_STORE, store);
+
         return doc.getLuceneDocument();
     }
 
@@ -290,33 +359,30 @@ public class ArtistIndex extends DatabaseIndex {
      * can be latin encoded and has a sortname containing a comma indicating probably a real name rather than a
      * performance name
      *
+     * This is only used for searching, not returned in the list of aliases as output because it is not actually
+     * a real alias, just one we have added to help searching
+     *
      * @param type
      * @param artistName
      * @param sortName
      * @param doc
      */
-    private void addArtistInitialized(String type, String artistName, String sortName, MbDocument doc)
-    {
-        if(type==null || !type.equals(PERSON))
-        {
+
+    private void addArtistInitialized(String type, String artistName, String sortName, MbDocument doc) {
+        if (type == null || !type.equals(PERSON)) {
             return;
         }
 
-        try
-        {
+        try {
             latinEncoder.encode(CharBuffer.wrap(artistName));
-        }
-        catch(CharacterCodingException cdd)
-        {
+        } catch (CharacterCodingException cdd) {
             return;
         }
 
-        if(sortName.contains(","))
-        {
+        if (sortName.contains(",")) {
             String[] names = artistName.split(" ");
-            if(names.length>=2)
-            {
-                doc.addField(ArtistIndexField.ALIAS, names[0].substring(0,1) + ' ' + names[names.length - 1]);
+            if (names.length >= 2) {
+                doc.addField(ArtistIndexField.ALIAS, names[0].substring(0, 1) + ' ' + names[names.length - 1]);
             }
         }
     }

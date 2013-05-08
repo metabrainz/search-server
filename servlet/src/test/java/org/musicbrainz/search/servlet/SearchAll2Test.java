@@ -8,6 +8,7 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
@@ -17,6 +18,7 @@ import org.musicbrainz.search.servlet.mmd2.AllWriter;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -48,6 +50,7 @@ public class SearchAll2Test
     @Before
     public void setUp() throws Exception
     {
+        ObjectFactory of = new ObjectFactory();
         {
             RAMDirectory ramDir = new RAMDirectory();
             Analyzer analyzer = DatabaseIndex.getAnalyzer(LabelIndexField.class);
@@ -140,11 +143,40 @@ public class SearchAll2Test
                 doc.addField(ArtistIndexField.COUNTRY, "AF");
                 doc.addField(ArtistIndexField.GENDER, "male");
                 doc.addField(ArtistIndexField.TAG, "thrash");
-                doc.addField(ArtistIndexField.TAGCOUNT, "5");
                 doc.addField(ArtistIndexField.TAG, "güth");
-                doc.addField(ArtistIndexField.TAGCOUNT, "11");
                 doc.addField(ArtistIndexField.IPI, "1001");
                 doc.addField(ArtistIndexField.IPI, "1002");
+
+                Artist artist = of.createArtist();
+                artist.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+                artist.setName("Dark Incident");
+                artist.setSortName("Dark Incident");
+                LifeSpan lifespan = of.createLifeSpan();
+                lifespan.setBegin("1999-04");
+                lifespan.setEnded("true");
+                artist.setLifeSpan(lifespan);
+                artist.setType("Group");
+                artist.setDisambiguation("the real one");
+                artist.setCountry("AF");
+                artist.setGender("male");
+                TagList tagList = of.createTagList();
+                Tag tag = of.createTag();
+                tag.setName("thrash");
+                tag.setCount(BigInteger.valueOf(5));
+                tagList.getTag().add(tag);
+
+                tag = of.createTag();
+                tag.setName("güth");
+                tag.setCount(BigInteger.valueOf(11));
+                tagList.getTag().add(tag);
+                artist.setTagList(tagList);
+
+                IpiList ipiList = of.createIpiList();
+                ipiList.getIpi().add("1001");
+                ipiList.getIpi().add("1002");
+                artist.setIpiList(ipiList);
+
+                doc.addField(ArtistIndexField.ARTIST_STORE, MMDSerializer.serialize(artist));
 
                 writer.addDocument(doc.getLuceneDocument());
             }
@@ -157,8 +189,25 @@ public class SearchAll2Test
                 doc.addField(ArtistIndexField.SORTNAME, "dark,the");
                 doc.addField(ArtistIndexField.BEGIN, "1978");
                 doc.addField(ArtistIndexField.COUNTRY, "unknown");
-                doc.addField(ArtistIndexField.TYPE, ArtistType.GROUP.getName());
+                doc.addField(ArtistIndexField.TYPE, "Group");
                 doc.addField(ArtistIndexField.ALIAS, "The darkness");
+
+                Artist artist = of.createArtist();
+                artist.setId("ccd4879c-5e88-4385-b131-bf65296bf245");
+                artist.setName("The darkness");
+                artist.setSortName("dark,the");
+                LifeSpan lifespan = of.createLifeSpan();
+                lifespan.setBegin("1978");
+                artist.setLifeSpan(lifespan);
+                artist.setType("Group");
+
+                AliasList aliasList = of.createAliasList();
+                Alias alias = of.createAlias();
+                alias.setContent("The darkness");
+                aliasList.getAlias().add(alias);
+
+                doc.addField(ArtistIndexField.ARTIST_STORE, MMDSerializer.serialize(artist));
+
                 writer.addDocument(doc.getLuceneDocument());
             }
 
@@ -169,6 +218,14 @@ public class SearchAll2Test
                 doc.addField(ArtistIndexField.ARTIST, "The dark place");
                 doc.addField(ArtistIndexField.TYPE, ArtistType.PERSON.getName());
                 doc.addField(ArtistIndexField.GENDER, "unknown");
+
+                Artist artist = of.createArtist();
+                artist.setId("dde4879c-5e88-4385-b131-bf65296bf245");
+                artist.setName("The dark place");
+                artist.setSortName("dark,the");
+                artist.setType("Person");
+
+                doc.addField(ArtistIndexField.ARTIST_STORE, MMDSerializer.serialize(artist));
                 writer.addDocument(doc.getLuceneDocument());
             }
 

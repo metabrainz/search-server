@@ -6,6 +6,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
+import org.musicbrainz.mmd2.Artist;
+import org.musicbrainz.mmd2.Release;
 
 import java.sql.Statement;
 
@@ -123,20 +125,13 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(0, doc.getFields(ArtistIndexField.ALIAS.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST_ID.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.BEGIN.getName()).length);
-            assertEquals(0, doc.getFields(ArtistIndexField.END.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
-
-            assertEquals("Farming Incident", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", doc.getField(ArtistIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("Farming Incident", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
-            assertEquals("1999-04", doc.getField(ArtistIndexField.BEGIN.getName()).stringValue());
-            assertEquals("Group", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.ARTIST, "farming");
+            checkTermX(ir, ArtistIndexField.ARTIST, "incident",1);
+            checkTerm(ir, ArtistIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            checkTerm(ir, ArtistIndexField.SORTNAME, "farming");
+            checkTermX(ir, ArtistIndexField.SORTNAME, "incident", 1);
+            checkTerm(ir, ArtistIndexField.BEGIN, "1999-04");
+            checkTerm(ir, ArtistIndexField.TYPE, "group");
         }
         ir.close();
 
@@ -152,9 +147,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
-            assertEquals("Group", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.TYPE, "group");
         }
         ir.close();
     }
@@ -169,9 +162,9 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals("a comment", doc.getField(ArtistIndexField.COMMENT.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.COMMENT, "a");
+            checkTermX(ir, ArtistIndexField.COMMENT, "comment", 1);
+
         }
         ir.close();
     }
@@ -186,9 +179,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
             IndexReader ir = DirectoryReader.open(ramDir);
             assertEquals(2, ir.numDocs());
             {
-                Document doc = ir.document(1);
-                assertEquals(1, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
-                assertEquals("af", doc.getField(ArtistIndexField.COUNTRY.getName()).stringValue());
+                checkTerm(ir, ArtistIndexField.COUNTRY, "af");
             }
             ir.close();
         }
@@ -204,9 +195,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
                 IndexReader ir = DirectoryReader.open(ramDir);
                 assertEquals(2, ir.numDocs());
                 {
+                    checkTerm(ir, ArtistIndexField.IPI, "10001");
                     Document doc = ir.document(1);
-                    assertEquals(1, doc.getFields(ArtistIndexField.IPI.getName()).length);
-                    assertEquals("10001", doc.getField(ArtistIndexField.IPI.getName()).stringValue());
                 }
                 ir.close();
             }
@@ -221,9 +211,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
             IndexReader ir = DirectoryReader.open(ramDir);
             assertEquals(2, ir.numDocs());
             {
-                Document doc = ir.document(1);
-                assertEquals(1, doc.getFields(ArtistIndexField.COUNTRY.getName()).length);
-                assertEquals("unknown", doc.getField(ArtistIndexField.COUNTRY.getName()).stringValue());
+                checkTerm(ir, ArtistIndexField.COUNTRY, "unknown");
             }
             ir.close();
         }
@@ -238,9 +226,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.GENDER.getName()).length);
-            assertEquals("male", doc.getField(ArtistIndexField.GENDER.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.GENDER, "male");
         }
         ir.close();
     }
@@ -255,9 +241,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.GENDER.getName()).length);
-            assertEquals("unknown", doc.getField(ArtistIndexField.GENDER.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.GENDER, "unknown");
         }
         ir.close();
     }
@@ -295,22 +279,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(4, doc.getFields(ArtistIndexField.ALIAS.getName()).length); //aliases are searchable but not stored
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST_ID.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.BEGIN.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.END.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
+            checkTerm(ir, ArtistIndexField.ALIAS, "and");
 
-            assertEquals("Echo & The Bunnymen", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", doc.getField(ArtistIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("Echo & The Bunnymen", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
-            assertEquals("1978", doc.getField(ArtistIndexField.BEGIN.getName()).stringValue());
-            assertEquals("Group", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
-            assertEquals("a comment", doc.getField(ArtistIndexField.COMMENT.getName()).stringValue());
         }
         ir.close();
     }
@@ -330,9 +300,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.BEGIN.getName()).length);
-            assertEquals("1978", doc.getField(ArtistIndexField.BEGIN.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.BEGIN, "1978");
         }
         ir.close();
     }
@@ -352,9 +320,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.ENDED.getName()).length);
-            assertEquals("true", doc.getField(ArtistIndexField.ENDED.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.ENDED, "true");
         }
         ir.close();
     }
@@ -375,9 +341,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.ENDED.getName()).length);
-            assertEquals("false", doc.getField(ArtistIndexField.ENDED.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.ENDED, "false");
         }
         ir.close();
     }
@@ -399,9 +363,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.END.getName()).length);
-            assertEquals("1995", doc.getField(ArtistIndexField.END.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.END, "1995");
         }
         ir.close();
     }
@@ -421,9 +383,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
-            assertEquals("Person", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.TYPE, "person");
         }
         ir.close();
     }
@@ -444,9 +404,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals("-", doc.getField(ArtistIndexField.COMMENT.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.COMMENT, "-");
         }
         ir.close();
     }
@@ -489,15 +447,10 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
+
+
             Document doc = ir.document(1);
             assertEquals(0, doc.getFields(ArtistIndexField.END.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.COMMENT.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.TYPE.getName()).length);
-
-            assertEquals("Siobhan Lynch", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("ae8707b6-684c-4d4a-95c5-d117970a6dfe", doc.getField(ArtistIndexField.ARTIST_ID.getName()).stringValue());
-            assertEquals("Lynch, Siobhan", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
-            assertEquals("Person", doc.getField(ArtistIndexField.TYPE.getName()).stringValue());
         }
         ir.close();
     }
@@ -517,11 +470,12 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.SORTNAME.getName()).length);
-            assertEquals("Siobhan Lynch", doc.getField(ArtistIndexField.ARTIST.getName()).stringValue());
-            assertEquals("Lynch, Siobhan", doc.getField(ArtistIndexField.SORTNAME.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.ARTIST, "lynch");
+            checkTermX(ir, ArtistIndexField.ARTIST, "siobhan", 1);
+
+            checkTerm(ir, ArtistIndexField.SORTNAME, "lynch");
+            checkTermX(ir, ArtistIndexField.SORTNAME, "siobhan",1);
+
         }
         ir.close();
     }
@@ -542,12 +496,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.TAG.getName()).length);
-            assertEquals("Goth", doc.getField(ArtistIndexField.TAG.getName()).stringValue());
-            assertEquals(1, doc.getFields(ArtistIndexField.TAGCOUNT.getName()).length);
-            assertEquals("10", doc.getField(ArtistIndexField.TAGCOUNT.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.TAG, "goth");
         }
         ir.close();
     }
@@ -567,10 +516,9 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
-            assertEquals(1, doc.getFields(ArtistIndexField.ALIAS.getName()).length);
-            assertEquals("S Lynch", doc.getField(ArtistIndexField.ALIAS.getName()).stringValue());
+            checkTerm(ir, ArtistIndexField.ALIAS, "lynch");
+            checkTermX(ir, ArtistIndexField.ALIAS, "s", 1);
+
 
         }
         ir.close();
@@ -591,8 +539,8 @@ public class ArtistIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
+
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(ArtistIndexField.ARTIST.getName()).length);
             assertEquals(0, doc.getFields(ArtistIndexField.ALIAS.getName()).length);
         }
         ir.close();
@@ -616,5 +564,31 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals("42459", doc.getField(MetaIndexField.REPLICATION_SEQUENCE.getName()).stringValue());
             assertEquals("12", doc.getField(MetaIndexField.SCHEMA_SEQUENCE.getName()).stringValue());
         }
+    }
+
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredArtist() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
+            Document doc = ir.document(1);
+            Artist artist = (Artist) MMDSerializer.unserialize(doc.get(ArtistIndexField.ARTIST_STORE.getName()), Artist.class);
+            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", artist.getId());
+            assertEquals("Farming Incident", artist.getName());
+            assertEquals("AF", artist.getCountry());
+
+
+        }
+        ir.close();
     }
 }

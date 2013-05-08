@@ -32,6 +32,8 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.ArtistIndexField;
+import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -89,108 +91,9 @@ public class ArtistWriter extends ResultsWriter
      */
     public void write(List list, Result result) throws IOException
     {
-        ObjectFactory of = new ObjectFactory();
-
         MbDocument doc = result.getDoc();
-        Artist artist = of.createArtist();
-
-        artist.setId(doc.get(ArtistIndexField.ARTIST_ID));
+        Artist artist = (Artist) MMDSerializer.unserialize(doc.get(ArtistIndexField.ARTIST_STORE), Artist.class);
         artist.setScore(String.valueOf(result.getNormalizedScore()));
-
-        String artype = doc.get(ArtistIndexField.TYPE);
-        if (isNotUnknown(artype))
-        {
-            artist.setType(artype);
-        }
-
-        String gender = doc.get(ArtistIndexField.GENDER);
-        if (isNotUnknown(gender))
-        {
-            artist.setGender(gender);
-        }
-
-        String country = doc.get(ArtistIndexField.COUNTRY);
-        if (isNotUnknown(country))
-        {
-            artist.setCountry(country.toUpperCase(Locale.US));
-
-        }
-
-        String name = doc.get(ArtistIndexField.ARTIST);
-        if (name != null)
-        {
-            artist.setName(name);
-        }
-
-        String[] ipiCodes = doc.getValues(ArtistIndexField.IPI);
-        if (ipiCodes.length > 0)
-        {
-            IpiList ipiList = of.createIpiList();
-            for (int i = 0; i < ipiCodes.length; i++)
-            {
-                ipiList.getIpi().add(ipiCodes[i]);
-            }
-            artist.setIpiList(ipiList);
-        }
-
-        String sortname = doc.get(ArtistIndexField.SORTNAME);
-        if (sortname != null)
-        {
-            artist.setSortName(sortname);
-
-        }
-
-        String begin = doc.get(ArtistIndexField.BEGIN);
-        String end = doc.get(ArtistIndexField.END);
-        String ended = doc.get(ArtistIndexField.ENDED);
-
-        LifeSpan lifespan = of.createLifeSpan();
-        artist.setLifeSpan(lifespan);
-
-        if (begin != null)
-        {
-            lifespan.setBegin(begin);
-        }
-
-        if (end != null)
-        {
-            lifespan.setEnd(end);
-        }
-        lifespan.setEnded(ended);
-
-        String comment = doc.get(ArtistIndexField.COMMENT);
-        if (isNotNoValue(comment))
-        {
-            artist.setDisambiguation(comment);
-        }
-
-        String[] aliases = doc.getValues(ArtistIndexField.ALIAS);
-        if (aliases.length > 0)
-        {
-            AliasList aliasList = of.createAliasList();
-            for (int i = 0; i < aliases.length; i++)
-            {
-                Alias alias = of.createAlias();
-                alias.setContent(aliases[i]);
-                aliasList.getAlias().add(alias);
-            }
-            artist.setAliasList(aliasList);
-        }
-
-        String[] tags = doc.getValues(ArtistIndexField.TAG);
-        String[] tagCounts = doc.getValues(ArtistIndexField.TAGCOUNT);
-        if (tags.length > 0)
-        {
-            TagList tagList = of.createTagList();
-            for (int i = 0; i < tags.length; i++)
-            {
-                Tag tag = of.createTag();
-                tag.setName(tags[i]);
-                tag.setCount(new BigInteger(tagCounts[i]));
-                tagList.getTag().add(tag);
-            }
-            artist.setTagList(tagList);
-        }
         list.add(artist);
     }
 }

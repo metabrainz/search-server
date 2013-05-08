@@ -54,9 +54,7 @@ public class ReloadIndexesTest {
       doc.addField(ArtistIndexField.COUNTRY, "AF");
       doc.addField(ArtistIndexField.GENDER, "male");
       doc.addField(ArtistIndexField.TAG, "thrash");
-      doc.addField(ArtistIndexField.TAGCOUNT, "5");
-      doc.addField(ArtistIndexField.TAG, "güth");
-      doc.addField(ArtistIndexField.TAGCOUNT, "11");
+      doc.addField(ArtistIndexField.TAG, "güth");;
       doc.addField(ArtistIndexField.IPI, "1001");
       writer.addDocument(doc.getLuceneDocument());
     }
@@ -124,9 +122,7 @@ public class ReloadIndexesTest {
       doc.addField(ArtistIndexField.COUNTRY, "AF");
       doc.addField(ArtistIndexField.GENDER, "male");
       doc.addField(ArtistIndexField.TAG, "thrash");
-      doc.addField(ArtistIndexField.TAGCOUNT, "5");
       doc.addField(ArtistIndexField.TAG, "güth");
-      doc.addField(ArtistIndexField.TAGCOUNT, "11");
       doc.addField(ArtistIndexField.IPI, "1001");
       writer.addDocument(doc.getLuceneDocument());
     }

@@ -646,8 +646,8 @@ public class  ReleaseIndex extends DatabaseIndex {
         }
         buildClock.suspend();
         storeClock.resume();
-        String json = MMDSerializer.serialize(release);
-        doc.addField(ReleaseIndexField.RELEASE_STORE, json);
+        String store = MMDSerializer.serialize(release);
+        doc.addField(ReleaseIndexField.RELEASE_STORE, store);
         storeClock.suspend();
         return doc.getLuceneDocument();
     }

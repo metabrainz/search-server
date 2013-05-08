@@ -216,10 +216,10 @@ public class LabelIndex extends DatabaseIndex {
 
 
         if(rs.getBoolean("ended")) {
-            doc.addFieldOrUnknown(ArtistIndexField.ENDED, "true");
+            doc.addFieldOrUnknown(LabelIndexField.ENDED, "true");
         }
         else {
-            doc.addFieldOrUnknown(ArtistIndexField.ENDED, "false");
+            doc.addFieldOrUnknown(LabelIndexField.ENDED, "false");
         }
 
         doc.addNonEmptyField(LabelIndexField.BEGIN,
@@ -251,7 +251,7 @@ public class LabelIndex extends DatabaseIndex {
 
         if (ipiCodes.containsKey(labelId)) {
             for (String ipiCode : ipiCodes.get(labelId)) {
-                doc.addField(ArtistIndexField.IPI, ipiCode);
+                doc.addField(LabelIndexField.IPI, ipiCode);
             }
         }
 
