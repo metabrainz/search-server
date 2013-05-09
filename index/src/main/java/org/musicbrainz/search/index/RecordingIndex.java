@@ -763,6 +763,7 @@ public class RecordingIndex extends DatabaseIndex {
                         rg.setType(type);
                     } else {
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getPrimaryType());
+                        rg.setType(release.getReleaseGroup().getPrimaryType());
                     }
 
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS, trackWrapper.getTrackCount());
