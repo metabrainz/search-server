@@ -563,7 +563,7 @@ public class  ReleaseIndex extends DatabaseIndex {
                 medium.setDiscList(discList);
 
                 mediumList.getMedium().add(medium);
-
+                release.setMediumList(mediumList);
             }
 
             //Num of mediums on the release

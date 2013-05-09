@@ -60,52 +60,117 @@ public class SearchAll2Test
 
             {
                 MbDocument doc = new MbDocument();
+
+                Label label = of.createLabel();
                 doc.addField(LabelIndexField.LABEL_ID, "ff571ff4-04cb-4b9c-8a1c-354c330f863c");
+                label.setId("ff571ff4-04cb-4b9c-8a1c-354c330f863c");
+
                 doc.addField(LabelIndexField.LABEL, "Jockey Slut");
+                label.setName("Jockey Slut");
+
                 doc.addField(LabelIndexField.SORTNAME, "Slut, Jockey");
+                label.setSortName("Slut, Jockey");
+
                 doc.addField(LabelIndexField.ALIAS, "Jockeys");
+                AliasList aliasList = of.createAliasList();
+                Alias alias = of.createAlias();
+                aliasList.getAlias().add(alias);
+                alias.setContent("Jockeys");
+                label.setAliasList(aliasList);
+
                 doc.addField(LabelIndexField.CODE, 1234);
+                label.setLabelCode(BigInteger.valueOf(1234));
+
                 doc.addField(LabelIndexField.BEGIN, "1993");
                 doc.addField(LabelIndexField.END, "2004");
                 doc.addField(LabelIndexField.ENDED, "true");
-                doc.addField(LabelIndexField.TYPE, "Production");
-                doc.addField(LabelIndexField.COUNTRY, "GB");
-                doc.addField(LabelIndexField.TAG, "dance");
-                doc.addField(LabelIndexField.TAGCOUNT, "22");
-                doc.addField(LabelIndexField.IPI, "1001");
+                LifeSpan lifespan = of.createLifeSpan();
+                label.setLifeSpan(lifespan);
+                lifespan.setBegin("1993");
+                lifespan.setEnd("2004");
+                lifespan.setEnded("true");
 
+                doc.addField(LabelIndexField.TYPE, "Production");
+                label.setType("Production");
+
+                doc.addField(LabelIndexField.COUNTRY, "GB");
+                label.setCountry("GB");
+
+                doc.addField(LabelIndexField.TAG, "dance");
+                TagList tagList = of.createTagList();
+                Tag tag = of.createTag();
+                tag.setName("dance");
+                tag.setCount(BigInteger.valueOf(22));
+                tagList.getTag().add(tag);
+                label.setTagList(tagList);
+
+                doc.addField(LabelIndexField.IPI, "1001");
+                IpiList ipiList = of.createIpiList();
+                ipiList.getIpi().add("1001");
+                label.setIpiList(ipiList);
+
+                doc.addField(LabelIndexField.LABEL_STORE, MMDSerializer.serialize(label));
                 writer.addDocument(doc.getLuceneDocument());
             }
 
             {
                 MbDocument doc = new MbDocument();
+                Label label = of.createLabel();
                 doc.addField(LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7503");
+                label.setId("a539bb1e-f2e1-4b45-9db8-8053841e7503");
+
                 doc.addField(LabelIndexField.LABEL, "4AD");
+                label.setName("4AD");
+
                 doc.addField(LabelIndexField.SORTNAME, "4AD");
+                label.setSortName("4AD");
+
                 doc.addField(LabelIndexField.BEGIN, "1979");
                 doc.addField(LabelIndexField.CODE, 5807);
-                doc.addField(LabelIndexField.TYPE, LabelType.PRODUCTION.getName());
-                doc.addField(LabelIndexField.COUNTRY, "unknown");
+                label.setLabelCode(BigInteger.valueOf(5807));
 
+                doc.addField(LabelIndexField.TYPE, "Production");
+                label.setType("Production");
+
+                doc.addField(LabelIndexField.COUNTRY, "unknown");
+                doc.addField(LabelIndexField.LABEL_STORE, MMDSerializer.serialize(label));
                 writer.addDocument(doc.getLuceneDocument());
             }
 
             {
                 MbDocument doc = new MbDocument();
+                Label label = of.createLabel();
                 doc.addField(LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7504");
+                label.setId("a539bb1e-f2e1-4b45-9db8-8053841e7504");
+
                 doc.addField(LabelIndexField.LABEL, "Dark Prism");
+                label.setName("Dark Prism");
+
                 doc.addField(LabelIndexField.SORTNAME, "Dark Prism");
+                label.setSortName("Dark Prism");
+
                 doc.addField(LabelIndexField.CODE, Index.NO_VALUE);
                 doc.addField(LabelIndexField.TYPE, LabelType.HOLDING.getName());
+                label.setType("holding");
+
+                doc.addField(LabelIndexField.LABEL_STORE, MMDSerializer.serialize(label));
                 writer.addDocument(doc.getLuceneDocument());
             }
 
             {
                 MbDocument doc = new MbDocument();
+                Label label = of.createLabel();
                 doc.addField(LabelIndexField.LABEL_ID, "b539bb1e-f2e1-4b45-9db8-8053841e7504");
+                label.setId("b539bb1e-f2e1-4b45-9db8-8053841e7504");
+
                 doc.addField(LabelIndexField.LABEL, "blob");
+                label.setName("blob");
+
                 doc.addField(LabelIndexField.SORTNAME, "blob");
+                label.setSortName("blob");
+
                 doc.addField(LabelIndexField.TYPE, "unknown");
+                doc.addField(LabelIndexField.LABEL_STORE, MMDSerializer.serialize(label));
                 writer.addDocument(doc.getLuceneDocument());
             }
 

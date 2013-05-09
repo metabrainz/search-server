@@ -19,20 +19,19 @@
 
 package org.musicbrainz.search.index;
 
+import com.google.common.base.Strings;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.similarities.Similarity;
-import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LabelIndex extends DatabaseIndex {
 
@@ -93,12 +92,15 @@ public class LabelIndex extends DatabaseIndex {
                 "  INNER JOIN tag ON tag=id " +
                 " WHERE label between ? AND ?");
 
-
-        addPreparedStatement("ALIASES", 
-                "SELECT label_alias.label as label, n.name as alias " +
-                " FROM label_alias " +
-                "  JOIN label_name n ON (label_alias.name = n.id) " +
-                " WHERE label BETWEEN ? AND ?");
+        addPreparedStatement("ALIASES",
+                "SELECT a.label as label, n.name as alias, sn.name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
+                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
+                        " FROM label_alias a" +
+                        "  JOIN label_name n ON (a.name = n.id) " +
+                        "  JOIN label_name sn ON (a.sort_name = sn.id) " +
+                        "  LEFT JOIN label_alias_type att on (a.type=att.id)" +
+                        " WHERE label BETWEEN ? AND ?" +
+                        " ORDER BY label, alias, alias_sortname");
 
 
         addPreparedStatement("LABELS",
@@ -146,6 +148,8 @@ public class LabelIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
+        ObjectFactory of = new ObjectFactory();
+
         // Get Tags
         PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
@@ -159,22 +163,47 @@ public class LabelIndex extends DatabaseIndex {
 
 
         // Get labels aliases
-        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
+        //Aliases
+        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
         st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            int labelId = rs.getInt("label");
-
-            List<String> list;
-            if (!aliases.containsKey(labelId)) {
-                list = new LinkedList<String>();
-                aliases.put(labelId, list);
+            int artistId = rs.getInt("label");
+            Set<Alias> list;
+            if (!aliases.containsKey(artistId)) {
+                list = new LinkedHashSet<Alias>();
+                aliases.put(artistId, list);
             } else {
-                list = aliases.get(labelId);
+                list = aliases.get(artistId);
             }
-            list.add(rs.getString("alias"));
+            Alias alias = of.createAlias();
+            alias.setContent(rs.getString("alias"));
+            alias.setSortName(rs.getString("alias_sortname"));
+            boolean isPrimary = rs.getBoolean("primary_for_locale");
+            if(isPrimary) {
+                alias.setPrimary("primary");
+            }
+            String locale = rs.getString("locale");
+            if(locale!=null) {
+                alias.setLocale(locale);
+            }
+            String type = rs.getString("type");
+            if(type!=null) {
+                alias.setType(type);
+            }
+
+            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+            if(!Strings.isNullOrEmpty(begin))  {
+                alias.setBeginDate(begin);
+            }
+
+            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+            if(!Strings.isNullOrEmpty(end))  {
+                alias.setEndDate(end);
+            }
+            list.add(alias);
         }
         rs.close();
 
@@ -197,65 +226,116 @@ public class LabelIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer,List<Tag>> tags,
                                           Map<Integer, List<String>> ipiCodes,
-                                          Map<Integer, List<String>> aliases) throws SQLException {
+                                          Map<Integer, Set<Alias>> aliases) throws SQLException {
 
         MbDocument doc = new MbDocument();
+
+        ObjectFactory of = new ObjectFactory();
+        Label label = of.createLabel();
+
         int labelId = rs.getInt("id");
         String labelGuid = rs.getString("gid");
         doc.addField(LabelIndexField.LABEL_ID, labelGuid);
+        label.setId(labelGuid);
+
         String name=rs.getString("name");
         doc.addField(LabelIndexField.LABEL,name );
+        label.setName(name);
 
         //Accented artist
         doc.addField(LabelIndexField.LABEL_ACCENT, name );
 
-        doc.addField(LabelIndexField.SORTNAME, rs.getString("sort_name"));
-        doc.addFieldOrUnknown(LabelIndexField.TYPE, rs.getString("type"));
-        doc.addFieldOrNoValue(LabelIndexField.COMMENT, rs.getString("comment"));
-        doc.addFieldOrUnknown(LabelIndexField.COUNTRY, rs.getString("country"));
+        String sortName = rs.getString("sort_name");
+        doc.addField(LabelIndexField.SORTNAME, sortName);
+        label.setSortName(sortName);
 
 
-        if(rs.getBoolean("ended")) {
-            doc.addFieldOrUnknown(LabelIndexField.ENDED, "true");
-        }
-        else {
-            doc.addFieldOrUnknown(LabelIndexField.ENDED, "false");
+        String type = rs.getString("type");
+        doc.addFieldOrUnknown(LabelIndexField.TYPE, type);
+        if (!Strings.isNullOrEmpty(type)) {
+            label.setType(type);
         }
 
-        doc.addNonEmptyField(LabelIndexField.BEGIN,
-                Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day")));
+        String comment = rs.getString("comment");
+        doc.addFieldOrNoValue(LabelIndexField.COMMENT, comment);
+        if (!Strings.isNullOrEmpty(comment)) {
+            label.setDisambiguation(comment);
+        }
 
-        doc.addNonEmptyField(LabelIndexField.END,
-                Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day")));
+        String country = rs.getString("country");
+        doc.addFieldOrUnknown(LabelIndexField.COUNTRY, country);
+        if (!Strings.isNullOrEmpty(country)) {
+            label.setCountry(country.toUpperCase(Locale.US));
+        }
+
+        boolean ended = rs.getBoolean("ended");
+        doc.addFieldOrUnknown(LabelIndexField.ENDED, Boolean.toString(ended));
+
+        String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+        doc.addNonEmptyField(LabelIndexField.BEGIN, begin);
+
+        String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+        doc.addNonEmptyField(LabelIndexField.END, end);
+
+        LifeSpan lifespan = of.createLifeSpan();
+        label.setLifeSpan(lifespan);
+        if(!Strings.isNullOrEmpty(begin)) {
+            lifespan.setBegin(begin);
+        }
+        if(!Strings.isNullOrEmpty(end)) {
+            lifespan.setEnd(end);
+        }
+        lifespan.setEnded(Boolean.toString(ended));
+
 
         int labelcode = rs.getInt("label_code");
         if (labelcode > 0) {
             doc.addField(LabelIndexField.CODE, labelcode);
+            label.setLabelCode(BigInteger.valueOf(labelcode));
         }
         else {
             doc.addField(LabelIndexField.CODE,Index.NO_VALUE);
         }
 
         if (aliases.containsKey(labelId)) {
-            for (String alias : aliases.get(labelId)) {
-                doc.addField(LabelIndexField.ALIAS, alias);
+            AliasList aliasList = of.createAliasList();
+            for (Alias nextAlias : aliases.get(labelId)) {
+                doc.addField(LabelIndexField.ALIAS, nextAlias.getContent());
+                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
+                    doc.addField(LabelIndexField.ALIAS, nextAlias.getSortName());
+                }
+                aliasList.getAlias().add(nextAlias);
             }
+            label.setAliasList(aliasList);
         }
 
+
         if (tags.containsKey(labelId)) {
-            for (Tag tag : tags.get(labelId)) {
-                doc.addField(LabelIndexField.TAG, tag.getName());
-                doc.addField(LabelIndexField.TAGCOUNT, tag.getCount().toString());
+            TagList tagList = of.createTagList();
+            for (Tag nextTag : tags.get(labelId)) {
+                Tag tag = of.createTag();
+                doc.addField(LabelIndexField.TAG, nextTag.getName());
+                tag.setName(nextTag.getName());
+                tag.setCount(new BigInteger(nextTag.getCount().toString()));
+                tagList.getTag().add(tag);
             }
+           label.setTagList(tagList);
         }
 
         if (ipiCodes.containsKey(labelId)) {
+            IpiList ipiList = of.createIpiList();
             for (String ipiCode : ipiCodes.get(labelId)) {
                 doc.addField(LabelIndexField.IPI, ipiCode);
+                ipiList.getIpi().add(ipiCode);
             }
+            label.setIpiList(ipiList);
         }
 
         LabelBoostDoc.boost(labelGuid, doc);
+
+        String store = MMDSerializer.serialize(label);
+        doc.addField(LabelIndexField.LABEL_STORE, store);
+
         return doc.getLuceneDocument();
     }
 

@@ -8,11 +8,16 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
+import org.musicbrainz.mmd2.Artist;
+import org.musicbrainz.mmd2.Label;
+import org.musicbrainz.mmd2.LifeSpan;
 
 import java.math.BigInteger;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class LabelIndexTest extends AbstractIndexTest {
 
@@ -39,13 +44,13 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
-	stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
+	    stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
+	    stmt.addBatch("INSERT INTO label_name (id, name) VALUES (2, '4AD US')");
 		
         stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, begin_date_year, ended) " +
 					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 4, 5807, 1979, true)");
         stmt.addBatch("INSERT INTO label_ipi (label, ipi) values(1,'1001')");
-        stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (1, 2)");
+        stmt.addBatch("INSERT INTO label_alias (label, name, sort_name) VALUES (1, 2, 2)");
 
         stmt.executeBatch();
         stmt.close();
@@ -90,7 +95,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 		
         stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, area, ended)" +
 					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1, true)");
-        stmt.addBatch("INSERT INTO label_alias (label, name) VALUES (3, 2)");
+        stmt.addBatch("INSERT INTO label_alias (label, name,sort_name) VALUES (3, 2, 2)");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2);");
         stmt.addBatch("INSERT INTO label_tag (label, tag, count) VALUES (3, 1, 10)");
@@ -109,11 +114,8 @@ public class LabelIndexTest extends AbstractIndexTest {
            IndexReader ir = DirectoryReader.open(ramDir);
            assertEquals(2, ir.numDocs());
            {
-               Document doc = ir.document(1);
-               assertEquals(1, doc.getFields(LabelIndexField.LABEL_ID.getName()).length);
-               assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", doc.getField(LabelIndexField.LABEL_ID.getName()).stringValue());               
-               assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-               assertEquals("af", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
+               checkTerm(ir, LabelIndexField.LABEL_ID, "a539bb1e-f2e1-4b45-9db8-8053841e7503");
+               checkTerm(ir, LabelIndexField.COUNTRY, "af");
            }
            ir.close();
 
@@ -130,9 +132,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-            assertEquals("unknown", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
+           checkTerm(ir, LabelIndexField.COUNTRY, "unknown");
         }
         ir.close();
 
@@ -148,9 +148,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.COUNTRY.getName()).length);
-            assertEquals("af", doc.getField(LabelIndexField.COUNTRY.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.COUNTRY, "af");
         }
         ir.close();
 
@@ -166,9 +164,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.IPI.getName()).length);
-            assertEquals("1001", doc.getField(LabelIndexField.IPI.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.IPI, "1001");
         }
         ir.close();
 
@@ -184,9 +180,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.COMMENT.getName()).length);
-            assertEquals("-", doc.getField(LabelIndexField.COMMENT.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.COMMENT, "-");
         }
         ir.close();
     }
@@ -201,9 +195,10 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.COMMENT.getName()).length);
-            assertEquals("DO NOT EDIT THIS LABEL", doc.getField(LabelIndexField.COMMENT.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.COMMENT, "do");
+            checkTermX(ir, LabelIndexField.COMMENT, "edit", 1);
+            checkTermX(ir, LabelIndexField.COMMENT, "label",2);
+            checkTermX(ir, LabelIndexField.COMMENT, "not",3);
         }
         ir.close();
     }
@@ -219,9 +214,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals("-", doc.getField(LabelIndexField.CODE.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.CODE, "-");
         }
         ir.close();
     }
@@ -236,9 +229,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals("5807", doc.get(LabelIndexField.CODE.getName()));
+            checkTerm(ir, LabelIndexField.CODE, "5807");
         }
         ir.close();
     }
@@ -253,9 +244,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.CODE.getName()).length);
-            assertEquals("99998", doc.get(LabelIndexField.CODE.getName()));
+            checkTerm(ir, LabelIndexField.CODE, "99998");
         }
         ir.close();
     }
@@ -275,8 +264,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.ALIAS.getName()).length);
+            checkTerm(ir, LabelIndexField.ALIAS, "4ad");
         }
         ir.close();
     }
@@ -296,9 +284,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.BEGIN.getName()).length);
-            assertEquals("1979", doc.getField(LabelIndexField.BEGIN.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.BEGIN, "1979");
         }
         ir.close();
     }
@@ -314,9 +300,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.ENDED.getName()).length);
-            assertEquals("true", doc.getField(LabelIndexField.ENDED.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.ENDED, "true");
         }
         ir.close();
     }
@@ -332,9 +316,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.ENDED.getName()).length);
-            assertEquals("false", doc.getField(LabelIndexField.ENDED.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.ENDED, "false");
         }
         ir.close();
     }
@@ -374,9 +356,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.END.getName()).length);
-            assertEquals("2009-04", doc.getField(LabelIndexField.END.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.END, "2009-04");
         }
         ir.close();
     }
@@ -413,9 +393,7 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.TYPE.getName()).length);
-            assertEquals("Original Production", doc.getField(LabelIndexField.TYPE.getName()).stringValue());
+            checkTerm(ir, LabelIndexField.TYPE, "original production");
         }
         ir.close();
     }
@@ -435,12 +413,67 @@ public class LabelIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
+            checkTerm(ir, LabelIndexField.TAG, "goth");
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredLabel1() throws Exception {
+
+        addLabelOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(LabelIndexField.LABEL.getName()).length);
-            assertEquals(1, doc.getFields(LabelIndexField.TAG.getName()).length);
-            assertEquals("Goth", doc.getField(LabelIndexField.TAG.getName()).stringValue());
-            assertEquals(1, doc.getFields(LabelIndexField.TAGCOUNT.getName()).length);
-            assertEquals("10", doc.getField(LabelIndexField.TAGCOUNT.getName()).stringValue());
+            Label label = (Label) MMDSerializer.unserialize(doc.get(LabelIndexField.LABEL_STORE.getName()), Label.class);
+            assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", label.getId());
+            assertEquals("4AD", label.getName());
+            assertNull(label.getCountry());
+            assertEquals("4AD", label.getSortName());
+            assertNull(label.getDisambiguation());
+            assertEquals("Original Production",label.getType());
+            assertEquals("4AD",label.getSortName());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredLabel2() throws Exception {
+
+        addLabelTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
+            Document doc = ir.document(1);
+            Label label = (Label) MMDSerializer.unserialize(doc.get(LabelIndexField.LABEL_STORE.getName()), Label.class);
+            assertEquals("d8caa692-704d-412b-a410-4fbcf5b9c796", label.getId());
+            assertEquals("MusicBrainz Data Testing Label", label.getName());
+            assertEquals("CA", label.getCountry());
+            assertEquals("Data Testing Label, MusicBrainz",label.getSortName());
+            assertEquals("DO NOT EDIT THIS LABEL", label.getDisambiguation());
+            assertEquals("Distributor",label.getType());
+            assertEquals("Data Testing Label, MusicBrainz",label.getSortName());
+            LifeSpan lifespan = label.getLifeSpan();
+            assertNotNull(lifespan);
+            assertEquals("2009-01-01",lifespan.getBegin());
+            assertEquals("false",lifespan.getEnded());
+            assertEquals("2009-04",lifespan.getEnd());
+
         }
         ir.close();
     }

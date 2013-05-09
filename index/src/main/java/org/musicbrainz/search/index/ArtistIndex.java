@@ -307,7 +307,7 @@ public class ArtistIndex extends DatabaseIndex {
             lifespan.setBegin(begin);
         }
         if(!Strings.isNullOrEmpty(end)) {
-            lifespan.setBegin(end);
+            lifespan.setEnd(end);
         }
         lifespan.setEnded(Boolean.toString(ended));
 
@@ -322,6 +322,7 @@ public class ArtistIndex extends DatabaseIndex {
         if (!Strings.isNullOrEmpty(country)) {
             artist.setCountry(country.toUpperCase(Locale.US));
         }
+
         String gender = rs.getString("gender");
         if (gender != null) {
             doc.addField(ArtistIndexField.GENDER, gender);

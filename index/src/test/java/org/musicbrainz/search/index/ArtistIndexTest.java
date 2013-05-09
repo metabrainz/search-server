@@ -199,7 +199,6 @@ public class ArtistIndexTest extends AbstractIndexTest {
                 assertEquals(2, ir.numDocs());
                 {
                     checkTerm(ir, ArtistIndexField.IPI, "10001");
-                    Document doc = ir.document(1);
                 }
                 ir.close();
             }

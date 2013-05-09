@@ -883,6 +883,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
             assertEquals("Crocodiles (bonus disc)", release.getTitle());
             assertEquals("B00005NTQ7", release.getAsin());
+            assertNotNull(release.getMediumList());
 
 
         }
@@ -908,6 +909,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
             assertEquals("Crocodiles (bonus disc)", release.getTitle());
             assertEquals("B00005NTQ7", release.getAsin());
+            assertNotNull(release.getMediumList());
             ReleaseEventList rel = release.getReleaseEventList();
             assertNotNull(rel);
             assertEquals(4,rel.getReleaseEvent().size());

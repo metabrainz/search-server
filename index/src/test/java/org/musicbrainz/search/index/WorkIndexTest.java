@@ -311,7 +311,7 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(WorkIndexField.TAG.getName()).length);
             assertEquals("Classical", doc.getField(WorkIndexField.TAG.getName()).stringValue());
             assertEquals(1, doc.getFields(WorkIndexField.TAGCOUNT.getName()).length);
-            assertEquals("10", doc.getField(LabelIndexField.TAGCOUNT.getName()).stringValue());
+            assertEquals("10", doc.getField(WorkIndexField.TAGCOUNT.getName()).stringValue());
         }
         ir.close();
     }

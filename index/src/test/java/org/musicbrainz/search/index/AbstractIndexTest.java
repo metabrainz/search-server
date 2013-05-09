@@ -420,16 +420,18 @@ public abstract class AbstractIndexTest {
                 "  id serial NOT NULL," +
                 "  label integer NOT NULL," +
                 "  name integer NOT NULL," +
-                "  sort_name INTEGER," +
+                "  locale text," +
+                "  last_updated timestamp," +
+                "  edits_pending integer NOT NULL DEFAULT 0," +
                 "  type                INTEGER," +
+                "  sort_name           INTEGER NOT NULL," +
                 "  begin_date_year     SMALLINT," +
                 "  begin_date_month    SMALLINT," +
                 "  begin_date_day      SMALLINT," +
                 "  end_date_year       SMALLINT," +
                 "  end_date_month      SMALLINT," +
                 "  end_date_day        SMALLINT," +
-                "  last_updated timestamp," +
-                "  edits_pending integer NOT NULL DEFAULT 0" +
+                "  primary_for_locale  BOOLEAN"   +
                 ")");
 
         stmt.addBatch("CREATE TABLE label_alias_type (" +

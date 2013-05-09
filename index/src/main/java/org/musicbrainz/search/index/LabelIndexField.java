@@ -39,21 +39,21 @@ import org.musicbrainz.search.analysis.*;
 public enum LabelIndexField implements IndexField {
 
 	ID			("_id",			MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ALIAS		("alias",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    BEGIN		("begin",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    COMMENT		("comment",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
-    CODE		("code",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new StripLeadingZeroesAnalyzer()),
-    COUNTRY		("country",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
-    END			("end",			MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ENDED       ("ended",       MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    IPI         ("ipi",         MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    ALIAS		("alias",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    BEGIN		("begin",		MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    COMMENT		("comment",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
+    CODE		("code",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new StripLeadingZeroesAnalyzer()),
+    COUNTRY		("country",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
+    END			("end",			MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ENDED       ("ended",       MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    IPI         ("ipi",         MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     LABEL		("label",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     LABEL_ACCENT("labelaccent", MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
     LABEL_ID	("laid",		MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    SORTNAME	("sortname",	MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
-    TYPE		("type",		MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
-    TAG		    ("tag",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    TAGCOUNT    ("tagcount",	MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
+    SORTNAME	("sortname",	MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
+    TAG		    ("tag",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    TYPE		("type",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    LABEL_STORE ("labelstore",  MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ;
 
     private String name;

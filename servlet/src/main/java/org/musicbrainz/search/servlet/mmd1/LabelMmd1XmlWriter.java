@@ -28,10 +28,12 @@
 
 package org.musicbrainz.search.servlet.mmd1;
 
+import com.google.common.base.Strings;
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
@@ -40,6 +42,7 @@ import java.math.BigInteger;
 
 public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
     public Metadata write(Results results) throws IOException {
+
         ObjectFactory of = new ObjectFactory();
 
         Metadata metadata = of.createMetadata();
@@ -48,50 +51,45 @@ public class LabelMmd1XmlWriter extends Mmd1XmlWriter {
         for (Result result : results.results) {
             MbDocument doc = result.getDoc();
             Label label = of.createLabel();
-            label.setId(doc.get(LabelIndexField.LABEL_ID));
-
-            String type = doc.get(LabelIndexField.TYPE);
-            if (isNotUnknown(type)) {
-                label.setType(StringUtils.capitalize(doc.get(LabelIndexField.TYPE)));
-            }
 
             result.setNormalizedScore(results.getMaxScore());
             label.getOtherAttributes().put(getScore(), String.valueOf(result.getNormalizedScore()));
 
-            String name = doc.get(LabelIndexField.LABEL);
-            if (name != null) {
-                label.setName(name);
+            org.musicbrainz.mmd2.Label labelv2
+                    = (org.musicbrainz.mmd2.Label) MMDSerializer.unserialize(doc.get(LabelIndexField.LABEL_STORE), org.musicbrainz.mmd2.Label.class);
+            label.setId(labelv2.getId());
+            label.setType(StringUtils.capitalize(labelv2.getType()));
+            label.setName(labelv2.getName());
+
+            if(!Strings.isNullOrEmpty(labelv2.getSortName())) {
+                label.setSortName(labelv2.getSortName());
             }
 
-            String code = doc.get(LabelIndexField.CODE);
-            if (isNotNoValue(code)) {
-                label.setLabelCode(new BigInteger(code));
+            if(labelv2.getLabelCode()!=null) {
+                label.setLabelCode(labelv2.getLabelCode());
             }
 
-            String sortname = doc.get(LabelIndexField.SORTNAME);
-            if (sortname != null) {
-                label.setSortName(sortname);
-        }
+            if(!Strings.isNullOrEmpty(labelv2.getDisambiguation())) {
+                label.setDisambiguation(labelv2.getDisambiguation());
+            }
 
-            String begin = doc.get(LabelIndexField.BEGIN);
-            String end = doc.get(LabelIndexField.END);
-            if (begin != null || end != null) {
-                LifeSpan lifespan = of.createLifeSpan();
-                if (begin != null) {
-                    lifespan.setBegin(begin);
+            if(labelv2.getLifeSpan()!=null) {
+                String begin = labelv2.getLifeSpan().getBegin();
+                String end = labelv2.getLifeSpan().getEnd();
+                if (begin != null || end != null) {
+                    LifeSpan lifespan = of.createLifeSpan();
+                    if (begin != null) {
+                        lifespan.setBegin(begin);
 
+                    }
+                    if (end != null) {
+                        lifespan.setEnd(end);
+
+                    }
+                    label.setLifeSpan(lifespan);
                 }
-                if (end != null) {
-                    lifespan.setEnd(end);
-
-                }
-                label.setLifeSpan(lifespan);
             }
 
-            String comment = doc.get(LabelIndexField.COMMENT);
-            if (isNotNoValue(comment)) {
-                label.setDisambiguation(comment);
-            }
             labelList.getLabel().add(label);
 
         }

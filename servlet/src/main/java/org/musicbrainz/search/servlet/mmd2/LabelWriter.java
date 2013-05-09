@@ -32,13 +32,13 @@ package org.musicbrainz.search.servlet.mmd2;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.LabelIndexField;
+import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Write Label Output
@@ -81,96 +81,53 @@ public class LabelWriter extends ResultsWriter {
     }
 
     /**
-     * Write result and add to the list
-     *
      * @param list
      * @param result
      * @throws IOException
      */
     public void write(List list, Result result) throws IOException {
-        ObjectFactory of = new ObjectFactory();
         MbDocument doc = result.getDoc();
-        Label label = of.createLabel();
-        label.setId(doc.get(LabelIndexField.LABEL_ID));
-        String type = doc.get(LabelIndexField.TYPE);
-        if (isNotUnknown(type)) {
-            label.setType(type);
-        }
+        Label label = (Label) MMDSerializer.unserialize(doc.get(LabelIndexField.LABEL_STORE), Label.class);
         label.setScore(String.valueOf(result.getNormalizedScore()));
-        String name = doc.get(LabelIndexField.LABEL);
-        if (name != null) {
-            label.setName(name);
-        }
-
-        String[] ipiCodes = doc.getValues(LabelIndexField.IPI);
-        if (ipiCodes.length > 0) {
-            IpiList ipiList = of.createIpiList();
-            for (int i = 0; i < ipiCodes.length; i++) {
-                ipiList.getIpi().add(ipiCodes[i]);
-            }
-            label.setIpiList(ipiList);
-        }
-
-        String code = doc.get(LabelIndexField.CODE);
-        if (isNotNoValue(code)) {
-            label.setLabelCode(new BigInteger(code));
-        }
-
-        String countryCode = doc.get(LabelIndexField.COUNTRY);
-        if (isNotUnknown(countryCode)) {
-            label.setCountry(countryCode.toUpperCase(Locale.US));
-        }
-
-        String sortname = doc.get(LabelIndexField.SORTNAME);
-        if (sortname != null) {
-            label.setSortName(sortname);
-        }
-
-        String begin = doc.get(LabelIndexField.BEGIN);
-        String end = doc.get(LabelIndexField.END);
-        String ended = doc.get(LabelIndexField.ENDED);
-
-        LifeSpan lifespan = of.createLifeSpan();
-        label.setLifeSpan(lifespan);
-
-        if (begin != null) {
-            lifespan.setBegin(begin);
-        }
-
-        if (end != null) {
-            lifespan.setEnd(end);
-        }
-        lifespan.setEnded(ended);
-
-        String comment = doc.get(LabelIndexField.COMMENT);
-        if (isNotNoValue(comment)) {
-            label.setDisambiguation(comment);
-        }
-
-        String[] aliases = doc.getValues(LabelIndexField.ALIAS);
-        if (aliases.length > 0) {
-            AliasList aliasList = of.createAliasList();
-            for (int i = 0; i < aliases.length; i++) {
-                Alias alias = of.createAlias();
-                alias.setContent(aliases[i]);
-                aliasList.getAlias().add(alias);
-            }
-            label.setAliasList(aliasList);
-        }
-
-        String[] tags = doc.getValues(LabelIndexField.TAG);
-        String[] tagCounts = doc.getValues(LabelIndexField.TAGCOUNT);
-        if (tags.length > 0) {
-            TagList tagList = of.createTagList();
-            for (int i = 0; i < tags.length; i++) {
-                Tag tag = of.createTag();
-                tag.setName(tags[i]);
-                tag.setCount(new BigInteger(tagCounts[i]));
-                tagList.getTag().add(tag);
-            }
-            label.setTagList(tagList);
-        }
         list.add(label);
+    }
+
+    /**
+     * Overriden to ensure all attributes are set for each alias
+     *
+     * @param metadata
+     */
+    @Override
+    public void adjustForJson(Metadata metadata) {
+
+        if (metadata.getLabelList().getLabel().size()>0) {
+            for(Label label:metadata.getLabelList().getLabel()) {
+                if(label.getAliasList()!=null) {
+                    for (Alias alias : label.getAliasList().getAlias()) {
+
+                        if (alias.getBeginDate() == null) {
+                            alias.setBeginDate("");
+                        }
+                        if (alias.getEndDate() == null) {
+                            alias.setEndDate("");
+                        }
+                        if (alias.getType() == null) {
+                            alias.setType("");
+                        }
+                        if (alias.getLocale() == null) {
+                            alias.setLocale("");
+                        }
+                        //On Xml output as primary, but in json they have changed to true/false
+                        if (alias.getPrimary() == null) {
+                            alias.setPrimary("false");
+                        }
+                        else {
+                            alias.setPrimary("true");
+                        }
+                    }
+                }
+            }
+        }
 
     }
 }
