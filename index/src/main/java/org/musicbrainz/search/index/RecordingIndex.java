@@ -738,14 +738,26 @@ public class RecordingIndex extends DatabaseIndex {
 
             // For each track that uses recording
             for (TrackWrapper trackWrapper : tracks.get(id)) {
-                //Set the release details for this track
-                Release release = releases.get(trackWrapper.getReleaseId());
-                releaseList.getRelease().add(release);
+                //Get the release details for this track
+                Release origRelease = releases.get(trackWrapper.getReleaseId());
 
-                if (release != null) {
 
-                    doc.addNonEmptyField(RecordingIndexField.TRACK_ID, trackWrapper.getTrackGuid());
+                if (origRelease != null) {
+                    //This release instance will be shared by all recordings that have a track on the release so we need
+                    //to copy details so we can append track specific details
+                    Release release = of.createRelease();
+                    release.setId(origRelease.getId());
+                    release.setTitle(origRelease.getTitle());
+                    MediumList ml = of.createMediumList();
+                    release.setReleaseGroup(origRelease.getReleaseGroup());
+                    release.setStatus(origRelease.getStatus());
+                    ml.setTrackCount(origRelease.getMediumList().getTrackCount());
+                    release.setMediumList(ml);
+                    release.setReleaseEventList(origRelease.getReleaseEventList());
+                    releaseList.getRelease().add(release);
+
                     ReleaseGroup rg = release.getReleaseGroup();
+                    doc.addNonEmptyField(RecordingIndexField.TRACK_ID, trackWrapper.getTrackGuid());
                     String primaryType = rg.getPrimaryType();
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASEGROUP_ID, rg.getId());
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASE_PRIMARY_TYPE, primaryType);
@@ -785,12 +797,11 @@ public class RecordingIndex extends DatabaseIndex {
                     release.getMediumList().getMedium().add(medium);
                     medium.setTrackList(tl);
                     tl.getDefTrack().add(track);
-
                     doc.addFieldOrNoValue(RecordingIndexField.RELEASE_STATUS, release.getStatus());
 
                     if (
                             (release.getReleaseEventList() != null) &&
-                                    (release.getReleaseEventList().getReleaseEvent() != null)
+                                    (release.getReleaseEventList().getReleaseEvent().size()>0)
                             ) {
                         for (ReleaseEvent re : release.getReleaseEventList().getReleaseEvent()) {
                             doc.addNonEmptyField(RecordingIndexField.RELEASE_DATE, re.getDate());
