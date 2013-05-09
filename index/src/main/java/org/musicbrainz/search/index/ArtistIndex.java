@@ -109,9 +109,10 @@ public class ArtistIndex extends DatabaseIndex {
                         " WHERE artist between ? AND ?");
 
         addPreparedStatement("ALIASES",
-                "SELECT artist_alias.artist as artist, n.name as alias " +
+                "SELECT artist_alias.artist as artist, n.name as alias, sn.name as alias_sortname " +
                         " FROM artist_alias " +
                         "  JOIN artist_name n ON (artist_alias.name = n.id) " +
+                        "  JOIN artist_name sn ON (artist_alias.sort_name = sn.id) " +
                         " WHERE artist BETWEEN ? AND ?");
 
         addPreparedStatement("ARTISTCREDITS",
@@ -165,6 +166,8 @@ public class ArtistIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
+        ObjectFactory of = new ObjectFactory();
+
         // Get Tags
         PreparedStatement st = getPreparedStatement("TAGS");
         st.setInt(1, min);
@@ -176,22 +179,25 @@ public class ArtistIndex extends DatabaseIndex {
         // IPI Codes
         Map<Integer, List<String>> ipiCodes = loadIpiCodes(min, max);
 
-        //Aliases (and Artist Credits)
-        Map<Integer, Set<String>> aliases = new HashMap<Integer, Set<String>>();
+        //Aliases
+        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
         st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
             int artistId = rs.getInt("artist");
-            Set<String> list;
+            Set<Alias> list;
             if (!aliases.containsKey(artistId)) {
-                list = new HashSet<String>();
+                list = new HashSet<Alias>();
                 aliases.put(artistId, list);
             } else {
                 list = aliases.get(artistId);
             }
-            list.add(rs.getString("alias"));
+            Alias alias = of.createAlias();
+            alias.setContent(rs.getString("alias"));
+            alias.setSortName(rs.getString("alias_sortname"));
+            list.add(alias);
         }
         rs.close();
 
@@ -230,7 +236,7 @@ public class ArtistIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<Tag>> tags,
                                           Map<Integer, List<String>> ipiCodes,
-                                          Map<Integer, Set<String>> aliases,
+                                          Map<Integer, Set<Alias>> aliases,
                                           Map<Integer, Set<String>> artistCredits) throws SQLException {
 
         MbDocument doc = new MbDocument();
@@ -303,12 +309,12 @@ public class ArtistIndex extends DatabaseIndex {
 
         if (aliases.containsKey(artistId)) {
             AliasList aliasList = of.createAliasList();
-            for (String aliasName : aliases.get(artistId)) {
-                doc.addField(ArtistIndexField.ALIAS, aliasName);
-
-                Alias alias = of.createAlias();
-                alias.setContent(aliasName);
-                aliasList.getAlias().add(alias);
+            for (Alias nextAlias : aliases.get(artistId)) {
+                doc.addField(ArtistIndexField.ALIAS, nextAlias.getContent());
+                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
+                    doc.addField(ArtistIndexField.ALIAS, nextAlias.getSortName());
+                }
+                aliasList.getAlias().add(nextAlias);
             }
             artist.setAliasList(aliasList);
         }

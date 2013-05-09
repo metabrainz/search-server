@@ -270,7 +270,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     @Test
-    public void testIndexArtistWithAlias() throws Exception {
+    public void testIndexArtistWithAliasAndAliasSortname() throws Exception {
 
         addArtistTwo();
         RAMDirectory ramDir = new RAMDirectory();
@@ -280,10 +280,17 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             checkTerm(ir, ArtistIndexField.ALIAS, "and");
+            checkTermX(ir, ArtistIndexField.ALIAS, "bunnyman",1);
+            checkTermX(ir, ArtistIndexField.ALIAS, "bunnymen",2);
+            checkTermX(ir, ArtistIndexField.ALIAS, "buunymen",3); //From alias sortname
+            checkTermX(ir, ArtistIndexField.ALIAS, "echo",4);
+            checkTermX(ir, ArtistIndexField.ALIAS, "orchestra",5);
 
         }
         ir.close();
     }
+
+
 
     /**
      * Checks zeroes are removed from date
