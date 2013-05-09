@@ -13,6 +13,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ReleaseIndexTest extends AbstractIndexTest {
 
@@ -883,6 +884,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
             assertEquals("Crocodiles (bonus disc)", release.getTitle());
             assertEquals("B00005NTQ7", release.getAsin());
+            assertEquals("Official", release.getStatus());
+            assertEquals("EP", release.getReleaseGroup().getPrimaryType());
+            assertEquals("EP", release.getReleaseGroup().getType());
             assertNotNull(release.getMediumList());
 
 
@@ -909,6 +913,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
             assertEquals("Crocodiles (bonus disc)", release.getTitle());
             assertEquals("B00005NTQ7", release.getAsin());
+            assertNull(release.getStatus());
             assertNotNull(release.getMediumList());
             ReleaseEventList rel = release.getReleaseEventList();
             assertNotNull(rel);

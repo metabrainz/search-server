@@ -419,7 +419,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         ReleaseGroup rg = of.createReleaseGroup();
         release.setReleaseGroup(rg);
         if (primaryType!=null && !primaryType.isEmpty()){
-            release.getReleaseGroup().setType(primaryType);
+            release.getReleaseGroup().setPrimaryType(primaryType);
         }
 
         if (secondaryTypes.containsKey(id)) {
@@ -444,7 +444,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         String status = rs.getString("status");
         doc.addFieldOrUnknown(ReleaseIndexField.STATUS, status);
         if (status!=null && !status.isEmpty()) {
-            release.setStatus(type);
+            release.setStatus(status);
         }
 
         String barcode = rs.getString("barcode");
