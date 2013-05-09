@@ -109,11 +109,14 @@ public class ArtistIndex extends DatabaseIndex {
                         " WHERE artist between ? AND ?");
 
         addPreparedStatement("ALIASES",
-                "SELECT artist_alias.artist as artist, n.name as alias, sn.name as alias_sortname " +
-                        " FROM artist_alias " +
-                        "  JOIN artist_name n ON (artist_alias.name = n.id) " +
-                        "  JOIN artist_name sn ON (artist_alias.sort_name = sn.id) " +
-                        " WHERE artist BETWEEN ? AND ?");
+                "SELECT a.artist as artist, n.name as alias, sn.name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
+                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
+                        " FROM artist_alias a" +
+                        "  JOIN artist_name n ON (a.name = n.id) " +
+                        "  JOIN artist_name sn ON (a.sort_name = sn.id) " +
+                        "  LEFT JOIN artist_alias_type att on (a.type=att.id)" +
+                        " WHERE artist BETWEEN ? AND ?" +
+                        " ORDER BY artist, alias, alias_sortname");
 
         addPreparedStatement("ARTISTCREDITS",
                         "SELECT artist as artist, n.name as artistcredit " +
@@ -189,7 +192,7 @@ public class ArtistIndex extends DatabaseIndex {
             int artistId = rs.getInt("artist");
             Set<Alias> list;
             if (!aliases.containsKey(artistId)) {
-                list = new HashSet<Alias>();
+                list = new LinkedHashSet<Alias>();
                 aliases.put(artistId, list);
             } else {
                 list = aliases.get(artistId);
@@ -197,6 +200,28 @@ public class ArtistIndex extends DatabaseIndex {
             Alias alias = of.createAlias();
             alias.setContent(rs.getString("alias"));
             alias.setSortName(rs.getString("alias_sortname"));
+            boolean isPrimary = rs.getBoolean("primary_for_locale");
+            if(isPrimary) {
+                alias.setPrimary("primary");
+            }
+            String locale = rs.getString("locale");
+            if(locale!=null) {
+                alias.setLocale(locale);
+            }
+            String type = rs.getString("type");
+            if(type!=null) {
+                alias.setType(type);
+            }
+
+            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+            if(!Strings.isNullOrEmpty(begin))  {
+                alias.setBeginDate(begin);
+            }
+
+            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+            if(!Strings.isNullOrEmpty(end))  {
+                alias.setEndDate(end);
+            }
             list.add(alias);
         }
         rs.close();

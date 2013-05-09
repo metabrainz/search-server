@@ -38,7 +38,6 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.musicbrainz.mmd2.Metadata;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.servlet.ErrorMessage;
-import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 import org.musicbrainz.search.servlet.SearchServerServlet;
 
@@ -132,6 +131,17 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
     public abstract void write(Metadata metadata, Results results) throws IOException;
 
     /**
+     * Can be overidden to allow fields that have no value and hecne unset in Xml to be set in Json
+     * because Json we expects values to be returned regardless of whether they are set, and there is a problem
+     * with json output if have multiple attributes and some are set and some are not (i.e alias attributes)
+     *
+     * @param metadata
+     */
+    public void adjustForJson(Metadata metadata) {
+
+    }
+
+    /**
      * Write the results to provider writer as Xml
      *
      *
@@ -160,6 +170,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
         else if(outputFormat.equals(SearchServerServlet.RESPONSE_JSON_NEW)) {
             try {
                 Metadata metadata = write(results);
+                adjustForJson(metadata);
                 Marshaller m = jsonContext.createMarshaller();
                 if(isPretty) {
                     m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -173,6 +184,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
         else if(outputFormat.equals(SearchServerServlet.RESPONSE_JSON)) {
             try {
                 Metadata metadata = write(results);
+                adjustForJson(metadata);
                 JSONMarshaller m = internalJsoncontext.createJSONMarshaller();
                 if(isPretty) {
                     m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

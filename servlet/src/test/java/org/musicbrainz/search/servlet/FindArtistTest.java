@@ -122,6 +122,11 @@ public class FindArtistTest {
             AliasList aliasList = of.createAliasList();
             Alias alias = of.createAlias();
             alias.setContent("Echo And The Bunnymen");
+            alias.setSortName("Buunymen, Echo And The");
+            alias.setPrimary("primary");
+            alias.setLocale("en");
+            alias.setType("Artist name");
+            alias.setBeginDate("1978-05-01");
             aliasList.getAlias().add(alias);
 
             alias = of.createAlias();
@@ -461,7 +466,7 @@ public class FindArtistTest {
         assertTrue(output.contains("<name>Echo &amp; The Bunnymen</name>"));
         assertTrue(output.contains("<sort-name>Echo &amp; The Bunnymen</sort-name>"));
         assertTrue(output.contains("<life-span><begin>1978</begin></life-span>"));
-        assertTrue(output.contains("<alias>Echo And The Bunnymen</alias>"));
+        assertTrue(output.contains("<alias locale=\"en\" sort-name=\"Buunymen, Echo And The\" type=\"Artist name\" primary=\"primary\" begin-date=\"1978-05-01\">Echo And The Bunnymen</alias>"));
         assertTrue(output.contains("<alias>Echo &amp; The Bunnyman</alias>"));
         assertTrue(output.contains("<alias>Echo and The Bunymen</alias>"));
         assertTrue(output.contains("<alias>Echo &amp; The Bunymen</alias>"));
@@ -624,7 +629,14 @@ public class FindArtistTest {
         String output = sw.toString();
         System.out.println("JSON New Pretty is" + output);
         assertTrue(output.contains("\"sort-name\" : \"Echo & The Bunnymen\""));
-        assertTrue(output.contains("\"aliases\" : [ \"Echo And The Bunnymen\", \"Echo & The Bunnyman\", \"Echo and The Bunymen\", \"Echo & The Bunymen\" ]"));
+        assertTrue(output.contains("\"type\" : \"Artist name\","));
+        assertTrue(output.contains("\"primary\" : \"true\","));
+        assertTrue(output.contains("\"begin-date\" : \"1978-05-01\","));
+        assertTrue(output.contains(" \"end-date\" : \"\","));
+        assertTrue(output.contains("\"value\" : \"Echo And The Bunnymen\""));
+        assertTrue(output.contains("\"locale\" : \"\","));
+        assertTrue(output.contains("\"type\" : \"\","));
+
     }
 
 }

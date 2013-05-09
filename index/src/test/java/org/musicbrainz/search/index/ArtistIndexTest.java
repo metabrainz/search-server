@@ -6,12 +6,15 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
+import org.musicbrainz.mmd2.Alias;
+import org.musicbrainz.mmd2.AliasList;
 import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.Release;
 
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ArtistIndexTest extends AbstractIndexTest {
 
@@ -57,11 +60,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (5, 'Bunnymen Orchestra')");
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (6, 'Buunymen, Echo And The')");
 
-        stmt.addBatch("INSERT INTO artist_alias (id, sort_name, type, artist, name, begin_date_year,begin_date_month,begin_date_day) " +
-                " VALUES (1, 6, 1, 16153, 2,1978,05,01)");
+        stmt.addBatch("INSERT INTO artist_alias (id, sort_name, type, artist, name, begin_date_year,begin_date_month,begin_date_day,primary_for_locale ) " +
+                " VALUES (1, 6, 1, 16153, 2,1978,05,01, false)");
 
-        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (2, 16153, 3)");
-        stmt.addBatch("INSERT INTO artist_alias (id, artist, name) VALUES (3, 16153, 4)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, sort_name, name, primary_for_locale, type, end_date_year,end_date_month ) VALUES (2, 16153, 6, 3, null, null, 1984,09)");
+        stmt.addBatch("INSERT INTO artist_alias (id, artist, sort_name, name, primary_for_locale, locale, type ) VALUES (3, 16153, 6, 4, true, 'en',3)");
 
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
                 " VALUES (1, 0, 16153, 5)");
@@ -280,11 +283,11 @@ public class ArtistIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             checkTerm(ir, ArtistIndexField.ALIAS, "and");
-            checkTermX(ir, ArtistIndexField.ALIAS, "bunnyman",1);
-            checkTermX(ir, ArtistIndexField.ALIAS, "bunnymen",2);
-            checkTermX(ir, ArtistIndexField.ALIAS, "buunymen",3); //From alias sortname
-            checkTermX(ir, ArtistIndexField.ALIAS, "echo",4);
-            checkTermX(ir, ArtistIndexField.ALIAS, "orchestra",5);
+            checkTermX(ir, ArtistIndexField.ALIAS, "bunnyman", 1);
+            checkTermX(ir, ArtistIndexField.ALIAS, "bunnymen", 2);
+            checkTermX(ir, ArtistIndexField.ALIAS, "buunymen", 3); //From alias sortname
+            checkTermX(ir, ArtistIndexField.ALIAS, "echo", 4);
+            checkTermX(ir, ArtistIndexField.ALIAS, "orchestra", 5);
 
         }
         ir.close();
@@ -578,7 +581,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     @Test
-    public void testStoredArtist() throws Exception {
+    public void testStoredArtist1() throws Exception {
 
         addArtistOne();
         RAMDirectory ramDir = new RAMDirectory();
@@ -594,6 +597,59 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals("Farming Incident", artist.getName());
             assertEquals("AF", artist.getCountry());
 
+
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredArtistWithAliases() throws Exception {
+
+        addArtistTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
+            Document doc = ir.document(1);
+            Artist artist = (Artist) MMDSerializer.unserialize(doc.get(ArtistIndexField.ARTIST_STORE.getName()), Artist.class);
+            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", artist.getId());
+            assertEquals("Echo & The Bunnymen", artist.getName());
+            assertEquals(null, artist.getCountry());
+            AliasList aliasList = artist.getAliasList();
+            assertNotNull(aliasList);
+            assertEquals(3, aliasList.getAlias().size());
+            Alias alias = aliasList.getAlias().get(0);
+            assertEquals("Echo & The Bunnyman", alias.getContent());
+            assertEquals("Buunymen, Echo And The", alias.getSortName());
+            assertEquals(null, alias.getPrimary());
+            assertEquals(null, alias.getLocale());
+            assertEquals(null, alias.getType());
+            assertEquals(null, alias.getBeginDate());
+            assertEquals("1984-09", alias.getEndDate());
+
+            alias = aliasList.getAlias().get(1);
+            assertEquals("Echo And The Bunnymen", alias.getContent());
+            assertEquals("Buunymen, Echo And The", alias.getSortName());
+            assertEquals("primary", alias.getPrimary());
+            assertEquals("en", alias.getLocale());
+            assertEquals("Search hint", alias.getType());
+            assertEquals(null, alias.getBeginDate());
+            assertEquals(null, alias.getEndDate());
+
+            alias = aliasList.getAlias().get(2);
+            assertEquals("Echo and The Bunnymen", alias.getContent());
+            assertEquals("Buunymen, Echo And The", alias.getSortName());
+            assertEquals(null, alias.getPrimary());
+            assertEquals(null, alias.getLocale());
+            assertEquals("Artist name", alias.getType());
+            assertEquals("1978-05-01", alias.getBeginDate());
+            assertEquals(null, alias.getEndDate());
 
         }
         ir.close();

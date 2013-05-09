@@ -89,7 +89,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
-        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, locale, edits_pending, last_updated) VALUES (1, 16153, 2, 'en',1,null)");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, sort_name, locale, edits_pending, last_updated) VALUES (1, 16153, 2,2, 'en',1,null)");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
                 " VALUES (1, 0, 16153, 1, '')");

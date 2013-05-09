@@ -43,22 +43,18 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class ArtistWriter extends ResultsWriter
-{
+public class ArtistWriter extends ResultsWriter {
 
     /**
-     *
      * @param metadata
      * @param results
      * @throws IOException
      */
-    public void write(Metadata metadata, Results results) throws IOException
-    {
+    public void write(Metadata metadata, Results results) throws IOException {
         ObjectFactory of = new ObjectFactory();
         ArtistList artistList = of.createArtistList();
 
-        for(Result result:results.results)
-        {
+        for (Result result : results.results) {
             result.setNormalizedScore(results.getMaxScore());
         }
         write(artistList.getArtist(), results);
@@ -70,30 +66,64 @@ public class ArtistWriter extends ResultsWriter
 
 
     /**
-     *
      * @param list
      * @param results
      * @throws IOException
      */
-    public void write(List list, Results results) throws IOException
-    {
-        for (Result result : results.results)
-        {
+    public void write(List list, Results results) throws IOException {
+        for (Result result : results.results) {
             write(list, result);
         }
     }
 
     /**
-     *
      * @param list
      * @param result
      * @throws IOException
      */
-    public void write(List list, Result result) throws IOException
-    {
+    public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Artist artist = (Artist) MMDSerializer.unserialize(doc.get(ArtistIndexField.ARTIST_STORE), Artist.class);
         artist.setScore(String.valueOf(result.getNormalizedScore()));
         list.add(artist);
+    }
+
+    /**
+     * Overriden to ensure all attributes are set for each alias
+     *
+     * @param metadata
+     */
+    @Override
+    public void adjustForJson(Metadata metadata) {
+
+        if (metadata.getArtistList().getArtist().size()>0) {
+            for(Artist artist:metadata.getArtistList().getArtist()) {
+                if(artist.getAliasList()!=null) {
+                    for (Alias alias : artist.getAliasList().getAlias()) {
+
+                        if (alias.getBeginDate() == null) {
+                            alias.setBeginDate("");
+                        }
+                        if (alias.getEndDate() == null) {
+                            alias.setEndDate("");
+                        }
+                        if (alias.getType() == null) {
+                            alias.setType("");
+                        }
+                        if (alias.getLocale() == null) {
+                            alias.setLocale("");
+                        }
+                        //On Xml output as primary, but in json they have changed to true/false
+                        if (alias.getPrimary() == null) {
+                            alias.setPrimary("false");
+                        }
+                        else {
+                            alias.setPrimary("true");
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

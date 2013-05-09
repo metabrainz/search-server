@@ -345,7 +345,7 @@ public abstract class AbstractIndexTest {
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0," +
                 "  type                INTEGER," +
-                "  sort_name           INTEGER," +
+                "  sort_name           INTEGER NOT NULL," +
                 "  begin_date_year     SMALLINT," +
                 "  begin_date_month    SMALLINT," +
                 "  begin_date_day      SMALLINT," +
@@ -986,7 +986,9 @@ public abstract class AbstractIndexTest {
                 "(16, 'DCC', 1992) "
         );
 
-        stmt.addBatch("INSERT INTO artist_alias_type (id, name) VALUES (1, 'Search hint')");
+        stmt.addBatch("INSERT INTO artist_alias_type (id, name) VALUES (1, 'Artist name')");
+        stmt.addBatch("INSERT INTO artist_alias_type (id, name) VALUES (2, 'Legal name')");
+        stmt.addBatch("INSERT INTO artist_alias_type (id, name) VALUES (3, 'Search hint')");
 
         stmt.addBatch("INSERT INTO label_alias_type (id, name) VALUES (1, 'Search hint')");
 
