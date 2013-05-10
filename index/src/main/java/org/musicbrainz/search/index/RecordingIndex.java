@@ -592,7 +592,14 @@ public class RecordingIndex extends DatabaseIndex {
             }
             ReleaseEvent re = of.createReleaseEvent();
             re.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));
-            re.setCountry((rs.getString("country")));
+            String iso_code=rs.getString("country");
+            if(iso_code!=null) {
+                Iso31661CodeList isoList = of.createIso31661CodeList();
+                isoList.getIso31661Code().add(iso_code);
+                DefAreaElementInner area = of.createDefAreaElementInner();
+                area.setIso31661CodeList(isoList);
+                re.setArea(area);
+            }
             release.getReleaseEventList().getReleaseEvent().add(re);
         }
 
@@ -805,15 +812,22 @@ public class RecordingIndex extends DatabaseIndex {
                             ) {
                         for (ReleaseEvent re : release.getReleaseEventList().getReleaseEvent()) {
                             doc.addNonEmptyField(RecordingIndexField.RELEASE_DATE, re.getDate());
-                            doc.addNonEmptyField(RecordingIndexField.COUNTRY, re.getCountry());
+                            if(re.getArea()!=null) {
+                                if(re.getArea().getIso31661CodeList()!=null) {
+                                    doc.addNonEmptyField(RecordingIndexField.COUNTRY, re.getArea().getIso31661CodeList().getIso31661Code().get(0));
+                                }
+                            }
                         }
                         Collections.sort(release.getReleaseEventList().getReleaseEvent(), new ReleaseEventComparator());
                         ReleaseEvent firstReleaseEvent = release.getReleaseEventList().getReleaseEvent().get(0);
                         if (!Strings.isNullOrEmpty(firstReleaseEvent.getDate())) {
                             release.setDate(firstReleaseEvent.getDate());
                         }
-                        if (!Strings.isNullOrEmpty(firstReleaseEvent.getCountry())) {
-                            release.setCountry(firstReleaseEvent.getCountry());
+                        if(firstReleaseEvent.getArea()!=null) {
+                            if(firstReleaseEvent.getArea().getIso31661CodeList()!=null)
+                            {
+                                release.setCountry(firstReleaseEvent.getArea().getIso31661CodeList().getIso31661Code().get(0));
+                            }
                         }
 
                     } else {

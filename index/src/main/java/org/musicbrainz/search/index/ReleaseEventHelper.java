@@ -30,10 +30,7 @@
 package org.musicbrainz.search.index;
 
 import com.google.common.base.Strings;
-import org.musicbrainz.mmd2.ObjectFactory;
-import org.musicbrainz.mmd2.Release;
-import org.musicbrainz.mmd2.ReleaseEvent;
-import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.mmd2.*;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;
@@ -59,8 +56,15 @@ public class ReleaseEventHelper {
                 releaseEventList = releaseEvents.get(entityId);
             }
 
+            String iso_code = rs.getString("country");
             ReleaseEvent releaseEvent = of.createReleaseEvent();
-            releaseEvent.setCountry(rs.getString("country"));
+            if(iso_code!=null) {
+                Iso31661CodeList isoList = of.createIso31661CodeList();
+                isoList.getIso31661Code().add(iso_code);
+                DefAreaElementInner area = of.createDefAreaElementInner();
+                area.setIso31661CodeList(isoList);
+                releaseEvent.setArea(area);
+            }
             releaseEvent.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));
             releaseEventList.add(releaseEvent);
         }

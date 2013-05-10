@@ -149,7 +149,11 @@ public class FindRecordingTest {
             release.setCountry("UK");
             ReleaseEventList rel = of.createReleaseEventList();
             ReleaseEvent     re  = of.createReleaseEvent();
-            re.setCountry("UK");
+            DefAreaElementInner areaInner = of.createDefAreaElementInner();
+            Iso31661CodeList    isoList   = of.createIso31661CodeList();
+            isoList.getIso31661Code().add("UK");
+            areaInner.setIso31661CodeList(isoList);
+            re.setArea(areaInner);
             re.setDate("1970-01-01");
             rel.getReleaseEvent().add(re);
             release.setReleaseEventList(rel);
@@ -541,7 +545,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("indie</name>"));
         assertTrue(output.contains("<track><number>A4</number><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
         assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
-        assertTrue(output.contains("<release-event><country>UK</country><date>1970-01-01</date></release-event></release-event-list>"));
+        assertTrue(output.contains("<release-event-list><release-event><date>1970-01-01</date><area><iso-3166-1-code-list><iso-3166-1-code>UK</iso-3166-1-code></iso-3166-1-code-list></area></release-event>"));
     }
 
 
@@ -576,7 +580,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
         assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
         assertTrue(output.contains("\"artist-credit\":{\"name-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}"));
-        assertTrue(output.contains("\"release-event-list\":{\"release-event\":[{\"country\":\"UK\",\"date\":\"1970-01-01\"}]}"));
+        assertTrue(output.contains("\"release-event-list\":{\"release-event\":[{\"date\":\"1970-01-01\",\"area\":{\"iso-3166-1-code-list\":{\"iso-3166-1-code\":[\"UK\"]}}}]}"));
     }
 
     @Test
@@ -612,7 +616,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"position\":1"));
         assertTrue(output.contains("\"track-count\":10"));
         assertTrue(output.contains("\"secondary-types\":[\"Compilation\"]}"));
-        assertTrue(output.contains("\"release-events\":[{\"country\":\"UK\",\"date\":\"1970-01-01\"}]"));
+        assertTrue(output.contains("\"release-events\":[{\"date\":\"1970-01-01\",\"area\":{\"iso-3166-1-codes\":[\"UK\"]}}]"));
     }
 
     @Test

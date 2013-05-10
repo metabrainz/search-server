@@ -164,8 +164,12 @@ public class FindReleaseTest {
             doc.addField(ReleaseIndexField.DATE, "2005");
             ReleaseEventList rel = of.createReleaseEventList();
             ReleaseEvent     re  = of.createReleaseEvent();
+            DefAreaElementInner areaInner = of.createDefAreaElementInner();
+            Iso31661CodeList    isoList   = of.createIso31661CodeList();
+            isoList.getIso31661Code().add("GB");
+            areaInner.setIso31661CodeList(isoList);
             re.setDate("2005");
-            re.setCountry("GB");
+            re.setArea(areaInner);
             rel.getReleaseEvent().add(re);
             release.setReleaseEventList(rel);
             release.setDate("2005");
@@ -805,7 +809,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"asin\":\"B00004Y6O9\""));
         assertTrue(output.contains("\"track-count\":17"));
         assertTrue(output.contains("\"secondary-type-list\":{\"secondary-type\":[\"Live\",\"Compilation\"]}}"));
-        assertTrue(output.contains("\"release-event-list\":{\"release-event\":[{\"country\":\"GB\",\"date\":\"2005\"}]}"));
+        assertTrue(output.contains("{\"release-event\":[{\"date\":\"2005\",\"area\":{\"iso-3166-1-code-list\":{\"iso-3166-1-code\":[\"GB\"]}}}]}"));
     }
 
     @Test
@@ -838,7 +842,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"label-info\""));
         assertTrue(output.contains("\"catalog-number\":\"WRATHCD-25\""));
         assertTrue(output.contains("\"primary-type\":\"Album\""));
-        assertTrue(output.contains("\"release-events\":[{\"country\":\"GB\",\"date\":\"2005\"}]"));
+        assertTrue(output.contains("\"release-events\":[{\"date\":\"2005\",\"area\":{\"iso-3166-1-codes\":[\"GB\"]}}]"));
         assertTrue(output.contains("\"secondary-types\":[\"Live\",\"Compilation\"]}"));
     }
 

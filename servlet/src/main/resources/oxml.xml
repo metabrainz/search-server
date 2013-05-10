@@ -29,6 +29,11 @@
                 <xml-element java-attribute="recordingList" xml-path="."/>
             </java-attributes>
         </java-type>
+        <java-type name="DefAreaElementInner">
+            <java-attributes>
+                <xml-element java-attribute="iso31661CodeList" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="Metadata">
             <java-attributes>
                 <xml-element java-attribute="releaseList" xml-path="."/>
@@ -322,6 +327,11 @@
         <java-type name="ReleaseEventList">
             <java-attributes>
                 <xml-element java-attribute="releaseEvent" name="release-events"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Iso31661CodeList">
+            <java-attributes>
+                <xml-element java-attribute="iso31661Code" name="iso-3166-1-codes"/>
             </java-attributes>
         </java-type>
     </java-types>

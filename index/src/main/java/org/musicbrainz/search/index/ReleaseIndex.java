@@ -620,9 +620,10 @@ public class  ReleaseIndex extends DatabaseIndex {
             ReleaseEventList rel = of.createReleaseEventList();
             for (ReleaseEvent releaseEvent : releaseEvents.get(id)) {
 
-                String nextCountry  = releaseEvent.getCountry();
-                doc.addNonEmptyField(ReleaseIndexField.COUNTRY,nextCountry);
-
+                if(releaseEvent.getArea()!=null) {
+                    String nextCountry  = releaseEvent.getArea().getIso31661CodeList().getIso31661Code().get(0);
+                    doc.addNonEmptyField(ReleaseIndexField.COUNTRY,nextCountry);
+                }
                 String nextDate     = releaseEvent.getDate();
                 doc.addNonEmptyField(ReleaseIndexField.DATE, nextDate );
                 rel.getReleaseEvent().add(releaseEvent);
@@ -633,8 +634,8 @@ public class  ReleaseIndex extends DatabaseIndex {
 
             //backwards compatibility
             ReleaseEvent firstReleaseEvent = rel.getReleaseEvent().get(0);
-            if (!Strings.isNullOrEmpty(firstReleaseEvent.getCountry())) {
-                release.setCountry(firstReleaseEvent.getCountry());
+            if (firstReleaseEvent.getArea()!=null) {
+                release.setCountry(firstReleaseEvent.getArea().getIso31661CodeList().getIso31661Code().get(0));
             }
             if (!Strings.isNullOrEmpty(firstReleaseEvent.getDate())) {
                 release.setDate(firstReleaseEvent.getDate());

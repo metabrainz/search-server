@@ -920,13 +920,13 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals(4,rel.getReleaseEvent().size());
             assertEquals(null, release.getCountry());
             assertEquals("1950", release.getDate());
-            assertEquals(null, rel.getReleaseEvent().get(0).getCountry());
+            assertEquals(null, rel.getReleaseEvent().get(0).getArea());
             assertEquals("1950", rel.getReleaseEvent().get(0).getDate());
-            assertEquals("GB", rel.getReleaseEvent().get(1).getCountry());
+            assertEquals("GB", rel.getReleaseEvent().get(1).getArea().getIso31661CodeList().getIso31661Code().get(0));
             assertEquals("1970-01-01", rel.getReleaseEvent().get(1).getDate());
-            assertEquals("AF", rel.getReleaseEvent().get(2).getCountry());
+            assertEquals("AF", rel.getReleaseEvent().get(2).getArea().getIso31661CodeList().getIso31661Code().get(0));
             assertEquals(null, rel.getReleaseEvent().get(2).getDate());
-            assertEquals("AN", rel.getReleaseEvent().get(3).getCountry());
+            assertEquals("AN", rel.getReleaseEvent().get(3).getArea().getIso31661CodeList().getIso31661Code().get(0));
             assertEquals(null, rel.getReleaseEvent().get(3).getDate());
 
         }
