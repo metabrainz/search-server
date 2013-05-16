@@ -575,7 +575,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
             ac = recording.getReleaseList().getRelease().get(0).getMediumList().getMedium().get(0).getTrackList().getDefTrack().get(0).getArtistCredit();
             assertNotNull(ac);
-            assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
+            assertEquals("Pixies", ac.getNameCredit().get(0).getArtist().getName());
         }
         ir.close();
     }

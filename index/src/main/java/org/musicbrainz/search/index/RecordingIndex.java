@@ -867,7 +867,7 @@ public class RecordingIndex extends DatabaseIndex {
                                         RecordingIndexField.ARTIST_NAMECREDIT,
                                         RecordingIndexField.ARTIST_ID,
                                         RecordingIndexField.ARTIST_NAME);
-                        track.setArtistCredit(ac.getArtistCredit());
+                        track.setArtistCredit(taw.getArtistCredit());
                     }
                 }
             }
