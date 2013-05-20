@@ -7,7 +7,7 @@ Requirements
 ------------
 
 This server can be run on linux/osx/windows, but these instructions assume 
-that you will be running linux and will be using the tomcat6 server to host
+that you will be running linux and will be using the tomcat7 server to host
 the servlet.
 
 It also assumes you have created a user called search with a home folder of /home/search
@@ -23,12 +23,12 @@ document assumes that you have completed the setup of this server.
 You will also need these tools:
 
     - Java complete with JDK 1.6, not just the JRE
-    - Apache Tomcat 6
+    - Apache Tomcat 7
     - Maven 2
 
 In a recent Ubuntu, you can install these with this command:
 
-    apt-get install openjdk-6-jdk maven2 tomcat6
+    apt-get install openjdk-6-jdk maven2 tomcat7
 
 Alternatively if you're not on Ubuntu, install the required tools from the following links
 
@@ -44,9 +44,10 @@ setup Java Home directory in your profile (not needed on ubuntu):
 Check out and build server code
 -------------------------------
 
-Check out the mmd-schema and search_server repositories using Subversion as follows:
+Check out the mmd-schema using Git as follows:
+    git clone https://github.com/metabrainz/mmd-schema.git
 
-    svn co http://svn.musicbrainz.org/mmd-schema/trunk mmd-schema
+Check out the search_server repositories using Subversion as follows:
     svn co http://svn.musicbrainz.org/search_server/trunk search_server
 
 Build and install the model:
@@ -76,7 +77,7 @@ Deploy the Search Server Code
 Unjar the search server webapp into the ROOT directory under webapps for your tomcat installation. If you installed
 Tomcat using apt this will be
 
-    /var/lib/tomcat6/webapps
+    /var/lib/tomcat7/webapps
 
 If you installed tomcat manually the webapps directory is directly within the folder tomcat has been installed to.
 
@@ -85,12 +86,12 @@ stop tomcat before upgrading the search application.
 
 On Ubuntu this will work:
 
-    sudo /etc/init.d/tomcat6 stop
+    sudo /etc/init.d/tomcat7 stop
     cd /var/lib/tomcat6/webapps
     rm -rf ROOT/*
     cd ROOT
     jar -xf <your lucene java src dir>/servlet/target/searchserver.war
-    sudo /etc/init.d/tomcat6 start
+    sudo /etc/init.d/tomcat7 start
 
 
 Build Indexes
@@ -131,7 +132,7 @@ Building the search indexes will take some time -- even on a fast machine it wil
 Once indexes are built, ensure that your tomcat instance has the permissions to access your data.
 In Ubuntu:
 
-    chown -R tomcat6:tomcat6 /home/search
+    chown -R tomcat7:tomcat7 /home/search
 
 Update Indexes using the Live Data Feed
 ---------------------------------------
@@ -165,7 +166,7 @@ Tuning Tomcat
 -------------
 
 Ubuntu enables the Java security manager by default, this will prevent the search server working.
-For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat6 to no:
+For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat7 to no:
 
     # Use the Java security manager? (yes/no)
     TOMCAT6_SECURITY=no
@@ -180,10 +181,10 @@ will vary from platform to platform. To accomplish both, set the JAVA_OPTS like 
 
     export JAVA_OPTS="-Xms512M -Xmx512M -Dfile.encoding=UTF-8"
 
-In Ubuntu, you can change JAVA_OPTS in /etc/default/tomcat6 -- you do not need to set an environment var.
+In Ubuntu, you can change JAVA_OPTS in /etc/default/tomcat7 -- you do not need to set an environment var.
 
 Next, specify that Tomcat expects URIEncodings in UTF-8 format so they are decoded correctly.
-In server.xml (in ubuntu thats in /etc/tomcat6/server.xml) add the URIEncoding parameter to this 
+In server.xml (in ubuntu thats in /etc/tomcat7/server.xml) add the URIEncoding parameter to this
 line:
 
     <Connector port="8080" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443">
@@ -305,8 +306,8 @@ Updating Test Server
     java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -d musicbrainz_db_20110716 -u musicbrainz_user --indexes-dir /home/username/indexdata
     cd /home/username/tomcat/ROOT
     jar -xf /home/username/search_server/servlet/target/searchserver.war
-    sudo /etc/init.d/tomcat6 stop
-    sudo /etc/init.d/tomcat6 start
+    sudo /etc/init.d/tomcat7 stop
+    sudo /etc/init.d/tomcat7 start
 
 
 where username is the username of the test searchserver admin.
