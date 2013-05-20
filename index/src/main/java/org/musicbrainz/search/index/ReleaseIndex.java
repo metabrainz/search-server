@@ -561,10 +561,11 @@ public class  ReleaseIndex extends DatabaseIndex {
                 DiscList discList = of.createDiscList();
                 discList.setCount(BigInteger.valueOf(numDiscsOnMedium));
                 medium.setDiscList(discList);
-
                 mediumList.getMedium().add(medium);
-                release.setMediumList(mediumList);
             }
+            mediumList.setCount(BigInteger.valueOf(mediumList.getMedium().size()));
+            release.setMediumList(mediumList);
+
 
             //Num of mediums on the release
             doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS, mediumCount);

@@ -888,6 +888,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("EP", release.getReleaseGroup().getPrimaryType());
             assertEquals("EP", release.getReleaseGroup().getType());
             assertNotNull(release.getMediumList());
+            assertEquals(1,release.getMediumList().getCount().intValue());
+            assertEquals(1,release.getMediumList().getTrackCount().intValue());
 
 
         }
@@ -915,6 +917,9 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("B00005NTQ7", release.getAsin());
             assertNull(release.getStatus());
             assertNotNull(release.getMediumList());
+            assertEquals(1,release.getMediumList().getCount().intValue());
+            assertEquals(10,release.getMediumList().getTrackCount().intValue());
+
             ReleaseEventList rel = release.getReleaseEventList();
             assertNotNull(rel);
             assertEquals(4,rel.getReleaseEvent().size());
