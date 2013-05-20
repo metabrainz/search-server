@@ -89,7 +89,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
 
             TextRepresentation tr = of.createTextRepresentation();
             org.musicbrainz.mmd2.TextRepresentation tr2 = releasev2.getTextRepresentation();
-            if (tr != null) {
+            if (tr2 != null) {
                 if (!Strings.isNullOrEmpty(tr2.getScript())) {
                     tr.setScript(tr2.getScript());
                 }
@@ -119,7 +119,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             //Just use format of first medium
             Medium firstMediumv2 = releasev2.getMediumList().getMedium().get(0);
             LabelInfoList lilv2 = releasev2.getLabelInfoList();
-            if (!lilv2.getLabelInfo().isEmpty()) {
+            if (lilv2!=null && !lilv2.getLabelInfo().isEmpty()) {
                 ReleaseEventList eventList = of.createReleaseEventList();
                 for (LabelInfo liv2 : lilv2.getLabelInfo()) {
                     Event event = of.createEvent();
