@@ -996,6 +996,8 @@ public abstract class AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO work_alias_type (id, name) VALUES (1, 'Search hint')");
 
+        stmt.addBatch("INSERT INTO area_alias_type (id, name) VALUES (1, 'AliasType')");
+
     }
     
     protected void insertReplicationInfo(Statement stmt) throws Exception {

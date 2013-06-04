@@ -33,6 +33,7 @@ import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.FieldType;
 import org.musicbrainz.search.analysis.CaseInsensitiveKeywordAnalyzer;
 import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
+import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
 
 /**
  * Fields created in Lucene Search Index
@@ -40,6 +41,7 @@ import org.musicbrainz.search.analysis.MusicbrainzAnalyzer;
 public enum AreaIndexField implements IndexField {
 
 	ID		    ("_id",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    ALIAS		("alias",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     AREA        ("area",        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     AREA_ID	    ("aid",		    MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     AREA_STORE  ("areastore",   MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),

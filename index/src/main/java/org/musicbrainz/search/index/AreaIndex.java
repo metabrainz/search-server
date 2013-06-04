@@ -32,14 +32,15 @@ import com.google.common.base.Strings;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
-import org.musicbrainz.mmd2.AreaList;
-import org.musicbrainz.mmd2.DefAreaElementInner;
-import org.musicbrainz.mmd2.Label;
-import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 public class AreaIndex extends DatabaseIndex {
@@ -89,23 +90,79 @@ public class AreaIndex extends DatabaseIndex {
                         "  LEFT JOIN area_type at ON a.type = at.id " +
                         " WHERE a.id BETWEEN ? AND ? " +
                         " ORDER BY a.id");
+
+        addPreparedStatement("ALIASES",
+                "SELECT a.area as area, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
+                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
+                        " FROM area_alias a" +
+                        "  LEFT JOIN area_alias_type att on (a.type=att.id)" +
+                        " WHERE area BETWEEN ? AND ?" +
+                        " ORDER BY area, alias, alias_sortname");
+
     }
 
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        PreparedStatement st = getPreparedStatement("AREA");
+        ObjectFactory of = new ObjectFactory();
+
+        // Get area aliases
+        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
+        PreparedStatement st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs));
+            int areaId = rs.getInt("area");
+            Set<Alias> list;
+            if (!aliases.containsKey(areaId)) {
+                list = new LinkedHashSet<Alias>();
+                aliases.put(areaId, list);
+            } else {
+                list = aliases.get(areaId);
+            }
+            Alias alias = of.createAlias();
+            alias.setContent(rs.getString("alias"));
+            alias.setSortName(rs.getString("alias_sortname"));
+            boolean isPrimary = rs.getBoolean("primary_for_locale");
+            if(isPrimary) {
+                alias.setPrimary("primary");
+            }
+            String locale = rs.getString("locale");
+            if(locale!=null) {
+                alias.setLocale(locale);
+            }
+            String type = rs.getString("type");
+            if(type!=null) {
+                alias.setType(type);
+            }
+
+            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+            if(!Strings.isNullOrEmpty(begin))  {
+                alias.setBeginDate(begin);
+            }
+
+            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+            if(!Strings.isNullOrEmpty(end))  {
+                alias.setEndDate(end);
+            }
+            list.add(alias);
+        }
+        rs.close();
+
+        st = getPreparedStatement("AREA");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs, aliases));
         }
         rs.close();
 
     }
 
-    public Document documentFromResultSet(ResultSet rs) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, Set<Alias>> aliases) throws SQLException {
         MbDocument doc = new MbDocument();
 
         ObjectFactory of = new ObjectFactory();
@@ -114,7 +171,8 @@ public class AreaIndex extends DatabaseIndex {
         DefAreaElementInner area = of.createDefAreaElementInner();
         areaList.getArea().add(area);
 
-        doc.addField(AreaIndexField.ID, rs.getString("id"));
+        int areaId = rs.getInt("id");
+        doc.addField(AreaIndexField.ID, areaId);
 
         String guid = rs.getString("gid");
         doc.addField(AreaIndexField.AREA_ID, guid);
@@ -132,6 +190,18 @@ public class AreaIndex extends DatabaseIndex {
         doc.addFieldOrUnknown(AreaIndexField.TYPE, type);
         if (!Strings.isNullOrEmpty(type)) {
             area.setType(type);
+        }
+
+        if (aliases.containsKey(areaId)) {
+            AliasList aliasList = of.createAliasList();
+            for (Alias nextAlias : aliases.get(areaId)) {
+                doc.addField(AreaIndexField.ALIAS, nextAlias.getContent());
+                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
+                    doc.addField(AreaIndexField.ALIAS, nextAlias.getSortName());
+                }
+                aliasList.getAlias().add(nextAlias);
+            }
+            area.setAliasList(aliasList);
         }
 
         String store = MMDSerializer.serialize(areaList);

@@ -53,14 +53,16 @@ public class FindAreaTest {
             doc.addField(AreaIndexField.SORTNAME, "Afghanistan");
             area.setSortName("Afghanistan");
 
-         /*
-            doc.addField(AreaIndexField.ALIAS, "Jockeys");
+
+            doc.addField(AreaIndexField.ALIAS, "Afghany");
             AliasList aliasList = of.createAliasList();
             Alias alias = of.createAlias();
             aliasList.getAlias().add(alias);
-            alias.setContent("Jockeys");
+            alias.setContent("Afghany");
+            alias.setSortName("Afghan");
             area.setAliasList(aliasList);
 
+            /*
             doc.addField(AreaIndexField.CODE, 1234);
             area.setAreaCode(BigInteger.valueOf(1234));
 
@@ -120,6 +122,27 @@ public class FindAreaTest {
     }
 
     @Test
+    public void testFindAreaBySortName() throws Exception {
+        Results res = ss.search("sortname:\"Afghanistan\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
+    @Test
+    public void testFindAreaByAlias() throws Exception {
+        Results res = ss.search("alias:\"Afghany\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
+
+    @Test
     public void testFindAreaByDismax1() throws Exception {
         Results res = sd.search("Afghanistan", 0, 10);
         assertEquals(1, res.getTotalHits());
@@ -154,7 +177,8 @@ public class FindAreaTest {
         assertTrue(output.contains("type=\"Country\""));
         assertTrue(output.contains("<name>Afghanistan</name>"));
         assertTrue(output.contains("<sort-name>Afghanistan</sort-name>"));
-/*        assertTrue(output.contains("<alias>Jockeys</alias>"));
+        assertTrue(output.contains("<alias sort-name=\"Afghan\">Afghany</alias></alias-list>"));
+        /*
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
         assertTrue(output.contains("<area-code>1234</area-code>"));
@@ -217,13 +241,14 @@ public class FindAreaTest {
         assertTrue(output.contains("\"type\":\"Country\""));
         assertTrue(output.contains("name\":\"Afghanistan\""));
         assertTrue(output.contains("\"sort-name\":\"Afghanistan\""));
+        assertTrue(output.contains("\"aliases\":[{\"locale\":\"\",\"sort-name\":\"Afghan\",\"type\":\"\",\"primary\":\"false\",\"begin-date\":\"\",\"end-date\":\"\",\"value\":\"Afghany\""));
+
         /*
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"country\":\"GB\""));
         assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"dance\"}]"));
         assertTrue(output.contains("\"ended\":true"));
         assertTrue(output.contains("\"ipis\":[\"1001\""));
-        assertTrue(output.contains("\"aliases\":[{\"locale\":\"\",\"type\":\"\",\"primary\":\"false\",\"begin-date\":\"\",\"end-date\":\"\",\"value\":\"Jockeys\"}]"));
         assertTrue(output.contains("\"end\":\"2004\""));
         assertTrue(output.contains("\"area-code\":1234"));
         assertTrue(output.contains("\"count\":1"));

@@ -89,7 +89,7 @@ public class ArtistWriter extends ResultsWriter {
     }
 
     /**
-     * Overriden to ensure all attributes are set for each alias
+     * Overridden to ensure all attributes are set for each alias
      *
      * @param metadata
      */

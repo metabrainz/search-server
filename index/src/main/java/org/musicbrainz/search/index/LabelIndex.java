@@ -234,6 +234,8 @@ public class LabelIndex extends DatabaseIndex {
         Label label = of.createLabel();
 
         int labelId = rs.getInt("id");
+        doc.addField(LabelIndexField.ID, labelId);
+
         String labelGuid = rs.getString("gid");
         doc.addField(LabelIndexField.LABEL_ID, labelGuid);
         label.setId(labelGuid);

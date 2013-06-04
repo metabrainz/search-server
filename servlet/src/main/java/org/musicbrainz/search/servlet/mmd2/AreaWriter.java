@@ -29,10 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
-import org.musicbrainz.mmd2.DefAreaElementInner;
-import org.musicbrainz.mmd2.Metadata;
-import org.musicbrainz.mmd2.ObjectFactory;
-import org.musicbrainz.mmd2.AreaList;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.AreaIndexField;
@@ -89,5 +86,44 @@ public class AreaWriter extends ResultsWriter {
         DefAreaElementInner area= areaList.getArea().get(0);
         area.setScore(String.valueOf(result.getNormalizedScore()));
         list.add(area);
+    }
+
+    /**
+     * Overridden to ensure all attributes are set for each alias
+     *
+     * @param metadata
+     */
+    @Override
+    public void adjustForJson(Metadata metadata) {
+
+        if (metadata.getAreaList().getArea().size()>0) {
+            for(DefAreaElementInner area:metadata.getAreaList().getArea()) {
+                if(area.getAliasList()!=null) {
+                    for (Alias alias : area.getAliasList().getAlias()) {
+
+                        if (alias.getBeginDate() == null) {
+                            alias.setBeginDate("");
+                        }
+                        if (alias.getEndDate() == null) {
+                            alias.setEndDate("");
+                        }
+                        if (alias.getType() == null) {
+                            alias.setType("");
+                        }
+                        if (alias.getLocale() == null) {
+                            alias.setLocale("");
+                        }
+                        //On Xml output as primary, but in json they have changed to true/false
+                        if (alias.getPrimary() == null) {
+                            alias.setPrimary("false");
+                        }
+                        else {
+                            alias.setPrimary("true");
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
