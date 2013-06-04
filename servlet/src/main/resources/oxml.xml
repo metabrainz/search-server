@@ -176,6 +176,11 @@
                 <xml-element java-attribute="release" name="releases"/>
             </java-attributes>
         </java-type>
+        <java-type name="ReleaseGroupList">
+            <java-attributes>
+                <xml-element java-attribute="releaseGroup" name="release-groups"/>
+            </java-attributes>
+        </java-type>
         <java-type name="MediumList">
             <java-attributes>
                 <xml-element java-attribute="medium" name="media"/>
