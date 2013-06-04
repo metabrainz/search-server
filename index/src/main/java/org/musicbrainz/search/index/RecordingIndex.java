@@ -764,7 +764,8 @@ public class RecordingIndex extends DatabaseIndex {
                     releaseList.getRelease().add(release);
 
                     ReleaseGroup rg = release.getReleaseGroup();
-                    doc.addNonEmptyField(RecordingIndexField.TRACK_ID, trackWrapper.getTrackGuid());
+                    String trackGuid = trackWrapper.getTrackGuid();
+                    doc.addNonEmptyField(RecordingIndexField.TRACK_ID, trackGuid);
                     String primaryType = rg.getPrimaryType();
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASEGROUP_ID, rg.getId());
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASE_PRIMARY_TYPE, primaryType);
@@ -789,6 +790,7 @@ public class RecordingIndex extends DatabaseIndex {
                     doc.addNumericField(RecordingIndexField.TRACKNUM, trackWrapper.getTrackPosition());
                     doc.addFieldOrNoValue(RecordingIndexField.NUMBER, trackWrapper.getTrackNumber());
                     org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
+                    track.setId(trackGuid);
                     track.setTitle(trackWrapper.getTrackName());
                     track.setLength(BigInteger.valueOf(trackWrapper.getDuration()));
                     track.setNumber(trackWrapper.getTrackNumber());
