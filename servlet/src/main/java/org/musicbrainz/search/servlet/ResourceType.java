@@ -4,23 +4,13 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.analysis.RecordingSimilarity;
 import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
-import org.musicbrainz.search.index.AnnotationIndex;
-import org.musicbrainz.search.index.ArtistIndex;
-import org.musicbrainz.search.index.CDStubIndex;
-import org.musicbrainz.search.index.FreeDBIndex;
-import org.musicbrainz.search.index.Index;
-import org.musicbrainz.search.index.LabelIndex;
-import org.musicbrainz.search.index.RecordingIndex;
-import org.musicbrainz.search.index.ReleaseGroupIndex;
-import org.musicbrainz.search.index.ReleaseIndex;
-import org.musicbrainz.search.index.TagIndex;
-import org.musicbrainz.search.index.WorkIndex;
+import org.musicbrainz.search.index.*;
 
 /**
  * Defines the name of the webservice resources as defined at http://wiki.musicbrainz.org/XML_Web_Service#The_URL_Schema
  */
 public enum ResourceType {
-
+  AREA("area", AreaIndex.class, AreaSearch.class, AreaDismaxSearch.class, MusicbrainzSimilarity.class, false),
   ARTIST("artist", ArtistIndex.class, ArtistSearch.class, ArtistDismaxSearch.class, MusicbrainzSimilarity.class, true),
   LABEL("label", LabelIndex.class, LabelSearch.class, LabelDismaxSearch.class, MusicbrainzSimilarity.class, true),
   RELEASE("release", ReleaseIndex.class, ReleaseSearch.class, ReleaseDismaxSearch.class, true),

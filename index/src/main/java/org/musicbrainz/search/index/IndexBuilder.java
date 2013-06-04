@@ -120,6 +120,7 @@ public class IndexBuilder
                 new ArtistIndex(mainDbConn),
                 new ReleaseGroupIndex(mainDbConn),
                 new LabelIndex(mainDbConn),
+                new AreaIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
                 new TagIndex(mainDbConn),
                 new CDStubIndex(mainDbConn), //Note different db
