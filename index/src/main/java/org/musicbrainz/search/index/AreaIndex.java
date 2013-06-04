@@ -85,7 +85,9 @@ public class AreaIndex extends DatabaseIndex {
 
 
         addPreparedStatement("AREA",
-                        "SELECT a.id, a.gid, a.name, a.sort_name, at.name as type " +
+                        "SELECT a.id, a.gid, a.name, a.sort_name, at.name as type, " +
+                        "   begin_date_year, begin_date_month, begin_date_day, " +
+                        "  end_date_year, end_date_month, end_date_day, ended" +
                         " FROM area a" +
                         "  LEFT JOIN area_type at ON a.type = at.id " +
                         " WHERE a.id BETWEEN ? AND ? " +
@@ -191,6 +193,26 @@ public class AreaIndex extends DatabaseIndex {
         if (!Strings.isNullOrEmpty(type)) {
             area.setType(type);
         }
+
+        boolean ended = rs.getBoolean("ended");
+        doc.addFieldOrUnknown(ArtistIndexField.ENDED, Boolean.toString(ended));
+
+        String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+        doc.addNonEmptyField(ArtistIndexField.BEGIN, begin);
+
+        String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+        doc.addNonEmptyField(ArtistIndexField.END, end);
+
+        LifeSpan lifespan = of.createLifeSpan();
+        area.setLifeSpan(lifespan);
+        if(!Strings.isNullOrEmpty(begin)) {
+            lifespan.setBegin(begin);
+        }
+        if(!Strings.isNullOrEmpty(end)) {
+            lifespan.setEnd(end);
+        }
+        lifespan.setEnded(Boolean.toString(ended));
+
 
         if (aliases.containsKey(areaId)) {
             AliasList aliasList = of.createAliasList();

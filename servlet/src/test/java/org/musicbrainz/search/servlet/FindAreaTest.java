@@ -62,10 +62,6 @@ public class FindAreaTest {
             alias.setSortName("Afghan");
             area.setAliasList(aliasList);
 
-            /*
-            doc.addField(AreaIndexField.CODE, 1234);
-            area.setAreaCode(BigInteger.valueOf(1234));
-
             doc.addField(AreaIndexField.BEGIN, "1993");
             doc.addField(AreaIndexField.END, "2004");
             doc.addField(AreaIndexField.ENDED, "true");
@@ -74,6 +70,12 @@ public class FindAreaTest {
             lifespan.setBegin("1993");
             lifespan.setEnd("2004");
             lifespan.setEnded("true");
+
+            /*
+            doc.addField(AreaIndexField.CODE, 1234);
+            area.setAreaCode(BigInteger.valueOf(1234));
+
+
            */
             area.setType("Country");
 
@@ -141,6 +143,35 @@ public class FindAreaTest {
         assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
     }
 
+    @Test
+    public void testFindAreaByBegin() throws Exception {
+        Results res = ss.search("begin:1993", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
+    @Test
+    public void testFindAreaByEnd() throws Exception {
+        Results res = ss.search("end:2004", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
+    @Test
+    public void testFindAreaByEnded() throws Exception {
+        Results res = ss.search("ended:true", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
 
     @Test
     public void testFindAreaByDismax1() throws Exception {
@@ -178,15 +209,10 @@ public class FindAreaTest {
         assertTrue(output.contains("<name>Afghanistan</name>"));
         assertTrue(output.contains("<sort-name>Afghanistan</sort-name>"));
         assertTrue(output.contains("<alias sort-name=\"Afghan\">Afghany</alias></alias-list>"));
-        /*
+
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
-        assertTrue(output.contains("<area-code>1234</area-code>"));
-        assertTrue(output.contains("<country>GB</country>"));
         assertTrue(output.contains("<ended>true</ended>"));
-        assertTrue(output.contains("dance</name>"));
-        assertTrue(output.contains("<ipi-list><ipi>1001</ipi></ipi-list>"));
-  */
 
     }
 
@@ -212,13 +238,10 @@ public class FindAreaTest {
         assertTrue(output.contains("\"type\":\"Country\""));
         assertTrue(output.contains("name\":\"Afghanistan\""));
         assertTrue(output.contains("\"sort-name\":\"Afghanistan\""));
-        /*
+
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
-        assertTrue(output.contains("\"area-code\":1234"));
-        assertTrue(output.contains("\"country\":\"GB\""));
-        assertTrue(output.contains("tag-list\":{\"tag\":[{\"count\":22,\"name\":\"dance\"}"));
         assertTrue(output.contains("\"ended\":\"true\""));
-        */
+
     }
 
     /**
@@ -242,17 +265,9 @@ public class FindAreaTest {
         assertTrue(output.contains("name\":\"Afghanistan\""));
         assertTrue(output.contains("\"sort-name\":\"Afghanistan\""));
         assertTrue(output.contains("\"aliases\":[{\"locale\":\"\",\"sort-name\":\"Afghan\",\"type\":\"\",\"primary\":\"false\",\"begin-date\":\"\",\"end-date\":\"\",\"value\":\"Afghany\""));
-
-        /*
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
-        assertTrue(output.contains("\"country\":\"GB\""));
-        assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"dance\"}]"));
         assertTrue(output.contains("\"ended\":true"));
-        assertTrue(output.contains("\"ipis\":[\"1001\""));
         assertTrue(output.contains("\"end\":\"2004\""));
-        assertTrue(output.contains("\"area-code\":1234"));
-        assertTrue(output.contains("\"count\":1"));
-        assertTrue(output.contains("\"offset\":0,"));      */
 
     }
 

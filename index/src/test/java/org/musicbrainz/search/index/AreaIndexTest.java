@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.musicbrainz.mmd2.Alias;
 import org.musicbrainz.mmd2.AreaList;
 import org.musicbrainz.mmd2.DefAreaElementInner;
+import org.musicbrainz.mmd2.LifeSpan;
 
 import java.sql.Statement;
 
@@ -36,7 +37,7 @@ public class AreaIndexTest extends AbstractIndexTest {
     private void addAreaOne() throws Exception {
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO area (id, gid,name,sort_name, type) VALUES (1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Afghanistan','Afghanistan', 1)");
+        stmt.addBatch("INSERT INTO area (id, gid,name,sort_name, type, begin_date_year, end_date_year) VALUES (1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Afghanistan','Afghanistan',1,1830,2020)");
         stmt.addBatch("INSERT INTO area_type(id, name) VALUES (1, 'Country')");
         stmt.addBatch("INSERT INTO area_alias (id, area, sort_name, name, primary_for_locale, locale, type ) VALUES (3, 1, 'Afghan', 'Afghany', true, 'en',1)");
 
@@ -109,6 +110,38 @@ public class AreaIndexTest extends AbstractIndexTest {
     }
 
     @Test
+    public void testIndexAreaBegin() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, AreaIndexField.BEGIN, "1830");
+
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexAreaEnd() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, AreaIndexField.END, "2020");
+
+        }
+        ir.close();
+    }
+
+    @Test
     public void testStoredIndexArea() throws Exception {
 
         addAreaOne();
@@ -131,9 +164,16 @@ public class AreaIndexTest extends AbstractIndexTest {
 
             Alias alias =  area.getAliasList().getAlias().get(0);
             assertEquals("Afghany",alias.getContent());
-            assertEquals("Afghan",alias.getSortName());
+            assertEquals("Afghan", alias.getSortName());
             assertEquals("en",alias.getLocale());
             assertEquals("AliasType",alias.getType());
+
+            assertNotNull(area.getLifeSpan());
+            LifeSpan lifeSpan = area.getLifeSpan();
+            assertEquals("1830",lifeSpan.getBegin());
+            assertEquals("2020",lifeSpan.getEnd());
+            assertEquals("false",lifeSpan.getEnded());
+
         }
         ir.close();
     }
