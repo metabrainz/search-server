@@ -142,7 +142,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
     }
 
     /**
-     * Write the results to provider writer as Xml
+     * Write the results to provider writer in required format
      *
      *
      * @param out

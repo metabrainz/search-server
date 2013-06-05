@@ -31,8 +31,10 @@ package org.musicbrainz.search.index;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
+import org.musicbrainz.mmd2.DefAreaElementInner;
 import org.musicbrainz.mmd2.ReleaseEvent;
 
+import java.awt.geom.Area;
 import java.util.Comparator;
 
 public class ReleaseEventComparator implements Comparator<ReleaseEvent> {
@@ -57,10 +59,25 @@ public class ReleaseEventComparator implements Comparator<ReleaseEvent> {
         String date1 = padDate(Strings.nullToEmpty(releaseEvent1.getDate()));
         String date2 = padDate(Strings.nullToEmpty(releaseEvent2.getDate()));
 
+        int result;
         try {
             Integer date1Number = Integer.parseInt(date1);
             Integer date2Number = Integer.parseInt(date2);
-            return date1Number.compareTo(date2Number);
+            result= date1Number.compareTo(date2Number);
+            if(result!=0) {
+                return result;
+            }
+
+            DefAreaElementInner a1=releaseEvent1.getArea();
+            DefAreaElementInner a2=releaseEvent2.getArea();
+
+            if(a1!=null && a2!=null) {
+                return Strings.nullToEmpty(a1.getName()).compareTo(Strings.nullToEmpty(a2.getName()));
+            }
+            else {
+                return 0;
+            }
+
         }
         catch(NumberFormatException nfe) {
             return 0;

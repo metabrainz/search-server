@@ -174,16 +174,21 @@ public class CommonTables  {
         StopWatch clock = new StopWatch();
         clock.start();
 
+        //Note:assumes a release country always only maps to an area with a single 3166_1 code
         getDbConnection().createStatement().execute(
                 "CREATE TEMPORARY TABLE tmp_release_event AS " +
-                        " SELECT release, r2.code as country, " +
-                        "  date_year, date_month, date_day"+
+                        " SELECT r1.release, r2.code as country, " +
+                        "  r1.date_year, r1.date_month, r1.date_day," +
+                        "  a1.gid as gid, a1.name as name, a1.sort_name as sort_name" +
                         " FROM release_country r1 " +
+                        " LEFT JOIN area a1 " +
+                        " ON r1.country = a1.id" +
                         " LEFT JOIN iso_3166_1 r2 " +
-                        " ON r1.country = r2.area " +
+                        " ON a1.id = r2.area " +
                         " UNION" +
                         " SELECT release, null as country, " +
-                        "  date_year, date_month, date_day"+
+                        "  date_year, date_month, date_day," +
+                        "  null as gid, null as name, null as sort_name"+
                         " FROM release_unknown_country r1 ");
         clock.stop();
         System.out.println("tmp_release_event     :Finished:" + Utils.formatClock(clock));

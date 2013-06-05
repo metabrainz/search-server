@@ -56,13 +56,19 @@ public class ReleaseEventHelper {
                 releaseEventList = releaseEvents.get(entityId);
             }
 
-            String iso_code = rs.getString("country");
+            String iso_code  = rs.getString("country");
+            String gid       = rs.getString("gid");
+            String name      = rs.getString("name");
+            String sort_name = rs.getString("sort_name");
             ReleaseEvent releaseEvent = of.createReleaseEvent();
             if(iso_code!=null) {
                 Iso31661CodeList isoList = of.createIso31661CodeList();
                 isoList.getIso31661Code().add(iso_code);
                 DefAreaElementInner area = of.createDefAreaElementInner();
                 area.setIso31661CodeList(isoList);
+                area.setId(gid);
+                area.setName(name);
+                area.setSortName(sort_name);
                 releaseEvent.setArea(area);
             }
             releaseEvent.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));

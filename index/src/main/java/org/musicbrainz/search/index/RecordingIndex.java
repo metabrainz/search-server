@@ -200,7 +200,7 @@ public class RecordingIndex extends DatabaseIndex {
 
         releaseEvents =
                 " SELECT release, country, " +
-                        "   date_year, date_month, date_day"+
+                        "   date_year, date_month, date_day, name, sort_name, gid"+
                         " FROM tmp_release_event r " +
                         " WHERE r.release in ";
 
@@ -593,12 +593,18 @@ public class RecordingIndex extends DatabaseIndex {
             ReleaseEvent re = of.createReleaseEvent();
             re.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));
             String iso_code=rs.getString("country");
+            String gid       = rs.getString("gid");
+            String name      = rs.getString("name");
+            String sort_name = rs.getString("sort_name");
             if(iso_code!=null) {
                 Iso31661CodeList isoList = of.createIso31661CodeList();
                 isoList.getIso31661Code().add(iso_code);
                 DefAreaElementInner area = of.createDefAreaElementInner();
                 area.setIso31661CodeList(isoList);
                 re.setArea(area);
+                area.setId(gid);
+                area.setName(name);
+                area.setSortName(sort_name);
             }
             release.getReleaseEventList().getReleaseEvent().add(re);
         }
