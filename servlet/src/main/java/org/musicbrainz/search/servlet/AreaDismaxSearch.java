@@ -41,7 +41,9 @@ public class AreaDismaxSearch extends AbstractDismaxSearchServer {
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(3);
     fieldBoosts.put(AreaIndexField.AREA.getName(), new DismaxAlias.AliasField(true, 1.3f));
     fieldBoosts.put(AreaIndexField.SORTNAME.getName(), new DismaxAlias.AliasField(true, 1.1f));
-    //fieldBoosts.put(AreaIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
+    fieldBoosts.put(AreaIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
+    fieldBoosts.put(AreaIndexField.ISO.getName(), new DismaxAlias.AliasField(true, 0.9f));
+
     DismaxAlias dismaxAlias = new DismaxAlias();
     dismaxAlias.setFields(fieldBoosts);
     dismaxAlias.setTie(0.1f);

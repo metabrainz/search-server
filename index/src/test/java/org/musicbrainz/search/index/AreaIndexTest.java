@@ -40,7 +40,10 @@ public class AreaIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO area (id, gid,name,sort_name, type, begin_date_year, end_date_year) VALUES (1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Afghanistan','Afghanistan',1,1830,2020)");
         stmt.addBatch("INSERT INTO area_type(id, name) VALUES (1, 'Country')");
         stmt.addBatch("INSERT INTO area_alias (id, area, sort_name, name, primary_for_locale, locale, type ) VALUES (3, 1, 'Afghan', 'Afghany', true, 'en',1)");
-
+        stmt.addBatch("INSERT INTO iso_3166_1(area, code) VALUES (1,'AF')");
+        stmt.addBatch("INSERT INTO iso_3166_2(area, code) VALUES (1,'North')");
+        stmt.addBatch("INSERT INTO iso_3166_2(area, code) VALUES (1,'West')");
+        stmt.addBatch("INSERT INTO iso_3166_3(area, code) VALUES (1,'Kabu')");
         stmt.executeBatch();
         stmt.close();
     }
@@ -142,6 +145,70 @@ public class AreaIndexTest extends AbstractIndexTest {
     }
 
     @Test
+    public void testIndexAreaIso1() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, AreaIndexField.ISO1, "af");
+
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexAreaIso2() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, AreaIndexField.ISO2, "north");
+
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexAreaIso3() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, AreaIndexField.ISO3, "kabu");
+
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexAreaIso() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, AreaIndexField.ISO, "af");
+
+        }
+        ir.close();
+    }
+
+    @Test
     public void testStoredIndexArea() throws Exception {
 
         addAreaOne();
@@ -173,6 +240,17 @@ public class AreaIndexTest extends AbstractIndexTest {
             assertEquals("1830",lifeSpan.getBegin());
             assertEquals("2020",lifeSpan.getEnd());
             assertEquals("false",lifeSpan.getEnded());
+
+            assertNotNull(area.getIso31661CodeList());
+            assertEquals("AF", area.getIso31661CodeList().getIso31661Code().get(0));
+
+            assertNotNull(area.getIso31662CodeList());
+            assertEquals("North", area.getIso31662CodeList().getIso31662Code().get(0));
+            assertEquals("West", area.getIso31662CodeList().getIso31662Code().get(1));
+
+            assertNotNull(area.getIso31663CodeList());
+            assertEquals("Kabu", area.getIso31663CodeList().getIso31663Code().get(0));
+
 
         }
         ir.close();

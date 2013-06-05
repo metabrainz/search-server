@@ -101,6 +101,14 @@ public class AreaIndex extends DatabaseIndex {
                         " WHERE area BETWEEN ? AND ?" +
                         " ORDER BY area, alias, alias_sortname");
 
+        addPreparedStatement("ISO1",
+                "SELECT area, code from iso_3166_1 WHERE area BETWEEN ? AND ? ORDER BY area, code");
+
+        addPreparedStatement("ISO2",
+                "SELECT area, code from iso_3166_2 WHERE area BETWEEN ? AND ? ORDER BY area, code");
+
+        addPreparedStatement("ISO3",
+                "SELECT area, code from iso_3166_3 WHERE area BETWEEN ? AND ? ORDER BY area, code");
     }
 
 
@@ -152,19 +160,79 @@ public class AreaIndex extends DatabaseIndex {
         }
         rs.close();
 
+        //Iso1Code
+        Map<Integer, Iso31661CodeList> iso1 = new HashMap<Integer, Iso31661CodeList>();
+        st = getPreparedStatement("ISO1");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int areaId = rs.getInt("area");
+            Iso31661CodeList iso1List;
+            if(!iso1.containsKey(areaId)) {
+                iso1List = of.createIso31661CodeList();
+                iso1.put(areaId, iso1List);
+            }
+            else {
+                iso1List = iso1.get(areaId);
+            }
+            iso1List.getIso31661Code().add(rs.getString("code"));
+        }
+
+        //Iso2Code
+        Map<Integer, Iso31662CodeList> iso2 = new HashMap<Integer, Iso31662CodeList>();
+        st = getPreparedStatement("ISO2");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int areaId = rs.getInt("area");
+            Iso31662CodeList iso2List;
+            if(!iso2.containsKey(areaId)) {
+                iso2List = of.createIso31662CodeList();
+                iso2.put(areaId, iso2List);
+            }
+            else {
+                iso2List = iso2.get(areaId);
+            }
+            iso2List.getIso31662Code().add(rs.getString("code"));
+        }
+
+        //Iso3Code
+        Map<Integer, Iso31663CodeList> iso3 = new HashMap<Integer, Iso31663CodeList>();
+        st = getPreparedStatement("ISO3");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int areaId = rs.getInt("area");
+            Iso31663CodeList iso3List;
+            if(!iso3.containsKey(areaId)) {
+                iso3List = of.createIso31663CodeList();
+                iso3.put(areaId, iso3List);
+            }
+            else {
+                iso3List = iso3.get(areaId);
+            }
+            iso3List.getIso31663Code().add(rs.getString("code"));
+        }
+
         st = getPreparedStatement("AREA");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, aliases, iso1, iso2, iso3));
         }
         rs.close();
 
     }
 
     public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer, Set<Alias>> aliases) throws SQLException {
+                                          Map<Integer, Set<Alias>> aliases,
+                                          Map<Integer, Iso31661CodeList> iso1,
+                                          Map<Integer, Iso31662CodeList> iso2,
+                                          Map<Integer, Iso31663CodeList> iso3) throws SQLException {
         MbDocument doc = new MbDocument();
 
         ObjectFactory of = new ObjectFactory();
@@ -224,6 +292,31 @@ public class AreaIndex extends DatabaseIndex {
                 aliasList.getAlias().add(nextAlias);
             }
             area.setAliasList(aliasList);
+        }
+
+        if(iso1.containsKey(areaId)) {
+            area.setIso31661CodeList(iso1.get(areaId));
+            for(String iso:iso1.get(areaId).getIso31661Code()) {
+                doc.addField(AreaIndexField.ISO, iso);
+                doc.addField(AreaIndexField.ISO1, iso);
+            }
+
+        }
+
+        if(iso2.containsKey(areaId)) {
+            area.setIso31662CodeList(iso2.get(areaId));
+            for(String iso:iso2.get(areaId).getIso31662Code()) {
+                doc.addField(AreaIndexField.ISO, iso);
+                doc.addField(AreaIndexField.ISO2, iso);
+            }
+        }
+
+        if(iso3.containsKey(areaId)) {
+            area.setIso31663CodeList(iso3.get(areaId));
+            for(String iso:iso3.get(areaId).getIso31663Code()) {
+                doc.addField(AreaIndexField.ISO, iso);
+                doc.addField(AreaIndexField.ISO3, iso);
+            }
         }
 
         String store = MMDSerializer.serialize(areaList);

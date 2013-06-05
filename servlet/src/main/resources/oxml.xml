@@ -38,6 +38,16 @@
                 <xml-element java-attribute="iso31661CodeList" xml-path="."/>
             </java-attributes>
         </java-type>
+        <java-type name="DefAreaElementInner">
+            <java-attributes>
+                <xml-element java-attribute="iso31662CodeList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="DefAreaElementInner">
+            <java-attributes>
+                <xml-element java-attribute="iso31663CodeList" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="Metadata">
             <java-attributes>
                 <xml-element java-attribute="releaseList" xml-path="."/>
@@ -351,6 +361,16 @@
         <java-type name="Iso31661CodeList">
             <java-attributes>
                 <xml-element java-attribute="iso31661Code" name="iso-3166-1-codes"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Iso31662CodeList">
+            <java-attributes>
+                <xml-element java-attribute="iso31662Code" name="iso-3166-2-codes"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Iso31663CodeList">
+            <java-attributes>
+                <xml-element java-attribute="iso31663Code" name="iso-3166-3-codes"/>
             </java-attributes>
         </java-type>
     </java-types>
