@@ -66,7 +66,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO area (id, name) VALUES (38, 'Canada')");
+        stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','Canada','Canada')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (38, 'CA')");
 	    stmt.addBatch("INSERT INTO label_name (id, name) VALUES (3, 'MusicBrainz Data Testing Label')");
 	    stmt.addBatch("INSERT INTO label_name (id, name) VALUES (4, 'Data Testing Label, MusicBrainz')");
@@ -418,6 +418,21 @@ public class LabelIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    @Test
+    public void testIndexLabelWithArea() throws Exception {
+
+        addLabelTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, LabelIndexField.AREA, "canada");
+        }
+        ir.close();
+    }
+
     /**
      * @throws Exception exception
      */
@@ -473,7 +488,10 @@ public class LabelIndexTest extends AbstractIndexTest {
             assertEquals("2009-01-01",lifespan.getBegin());
             assertEquals("false",lifespan.getEnded());
             assertEquals("2009-04",lifespan.getEnd());
-
+            assertNotNull(label.getArea());
+            assertEquals("b8caa692-704d-412b-a410-4fbcf5b9c796",label.getArea().getId());
+            assertEquals("Canada",label.getArea().getName());
+            assertEquals("Canada",label.getArea().getSortName());
         }
         ir.close();
     }

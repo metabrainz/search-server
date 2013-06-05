@@ -73,6 +73,23 @@ public class FindArtistTest {
             artist.setType("Group");
             artist.setDisambiguation("the real one");
             artist.setCountry("AF");
+
+            DefAreaElementInner area =  of.createDefAreaElementInner();
+            area.setId("5302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            area.setName("Afghanistan");
+            area.setSortName("Afghanistan");
+            artist.setArea(area);
+            doc.addField(ArtistIndexField.AREA, "Afghanistan");
+
+            DefAreaElementInner beginArea =  of.createDefAreaElementInner();
+            beginArea.setId("6302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            beginArea.setName("Canada");
+            beginArea.setSortName("Canada");
+            artist.setBeginArea(beginArea);
+            doc.addField(ArtistIndexField.BEGIN_AREA, "Canada");
+
+            doc.addField(ArtistIndexField.END_AREA, "-");
+
             artist.setGender("male");
             TagList tagList = of.createTagList();
             Tag tag = of.createTag();
@@ -195,6 +212,28 @@ public class FindArtistTest {
         assertEquals(1, res.getTotalHits());
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", getArtistId(res.results.get(0).getDoc()));
     }
+
+    @Test
+    public void testFindArtistByArea() throws Exception {
+        Results res = ss.search("area:\"Afghanistan\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", getArtistId(res.results.get(0).getDoc()));
+    }
+
+    @Test
+    public void testFindArtistByBeginArea() throws Exception {
+        Results res = ss.search("beginarea:\"Canada\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", getArtistId(res.results.get(0).getDoc()));
+    }
+
+    @Test
+    public void testFindArtistByNoEndArea() throws Exception {
+        Results res = ss.search("endarea:\"-\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", getArtistId(res.results.get(0).getDoc()));
+    }
+
 
     @Test
     public void testFindArtistDismaxSingleTerm() throws Exception {
@@ -444,6 +483,10 @@ public class FindArtistTest {
         assertTrue(output.contains("güth</name>"));
         assertFalse(output.contains("alias"));
         assertFalse(output.contains("disambugation"));
+        assertTrue(output.contains("<area id=\"5302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Afghanistan</name><sort-name>Afghanistan</sort-name></area>"));
+        assertTrue(output.contains("<begin-area id=\"6302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Canada</name><sort-name>Canada</sort-name></begin-area>"));
+        assertFalse(output.contains("end-area"));
+
     }
 
     /**
@@ -543,6 +586,13 @@ public class FindArtistTest {
         assertTrue(output.contains("\"country\":\"AF\""));
         assertTrue(output.contains("\"gender\":\"male\""));
         assertTrue(output.contains("\"tag\":[{\"count\":5,\"name\":\"thrash\"},{\"count\":11,\"name\":\"güth\"}"));
+        assertTrue(output.contains("\"id\":\"5302e264-1cf0-4d1f-aca7-2a6f89e34b36\","));
+        assertTrue(output.contains("\"name\":\"Afghanistan\","));
+        assertTrue(output.contains("\"sort-name\":\"Afghanistan\""));
+        assertTrue(output.contains("\"id\":\"6302e264-1cf0-4d1f-aca7-2a6f89e34b36\","));
+        assertTrue(output.contains("\"name\":\"Canada\","));
+        assertTrue(output.contains("\"sort-name\":\"Canada\""));
+
     }
 
 
@@ -590,6 +640,12 @@ public class FindArtistTest {
         assertTrue(output.contains("\"name\":\"güth\""));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0"));
+        assertTrue(output.contains("\"id\":\"5302e264-1cf0-4d1f-aca7-2a6f89e34b36\","));
+        assertTrue(output.contains("\"name\":\"Afghanistan\","));
+        assertTrue(output.contains("\"sort-name\":\"Afghanistan\""));
+        assertTrue(output.contains("\"id\":\"6302e264-1cf0-4d1f-aca7-2a6f89e34b36\","));
+        assertTrue(output.contains("\"name\":\"Canada\","));
+        assertTrue(output.contains("\"sort-name\":\"Canada\""));
 
     }
 

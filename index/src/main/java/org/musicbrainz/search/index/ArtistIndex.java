@@ -126,17 +126,23 @@ public class ArtistIndex extends DatabaseIndex {
 
 
         addPreparedStatement("ARTISTS",
-                "SELECT artist.id, gid, n0.name as name, n1.name as sort_name, " +
-                        "  artist_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
-                        "  end_date_year, end_date_month, end_date_day,ended, " +
-                        "  comment, lower(i.code) as country, lower(gender.name) as gender " +
-                        " FROM artist " +
-                        "  LEFT JOIN artist_name n0 ON artist.name = n0.id " +
-                        "  LEFT JOIN artist_name n1 ON artist.sort_name = n1.id " +
-                        "  LEFT JOIN artist_type ON artist.type = artist_type.id " +
-                        "  LEFT JOIN iso_3166_1 i on artist.area=i.area" +
-                        "  LEFT JOIN gender ON artist.gender=gender.id " +
-                        " WHERE artist.id BETWEEN ? AND ?");
+                "SELECT a.id, a.gid as gid, n0.name as name, n1.name as sort_name, " +
+                        "  artist_type.name as type, a.begin_date_year, a.begin_date_month, a.begin_date_day, " +
+                        "  a.end_date_year, a.end_date_month, a.end_date_day,a.ended, " +
+                        "  comment, lower(i.code) as country, lower(gender.name) as gender," +
+                        "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname, " +
+                        "  a2.gid as beginarea_gid, a2.name as beginarea_name, a2.sort_name as beginarea_sortname, " +
+                        "  a3.gid as endarea_gid, a3.name as endarea_name, a3.sort_name as endarea_sortname" +
+                        " FROM artist a " +
+                        "  LEFT JOIN artist_name n0 ON a.name = n0.id " +
+                        "  LEFT JOIN artist_name n1 ON a.sort_name = n1.id " +
+                        "  LEFT JOIN artist_type ON a.type = artist_type.id " +
+                        "  LEFT JOIN iso_3166_1 i on a.area=i.area" +
+                        "  LEFT JOIN gender ON a.gender=gender.id " +
+                        "  LEFT JOIN area a1 on a.area = a1.id" +
+                        "  LEFT JOIN area a2 on a.begin_area = a2.id" +
+                        "  LEFT JOIN area a3 on a.end_area = a3.id" +
+                " WHERE a.id BETWEEN ? AND ?");
 
         addPreparedStatement("IPICODES",
                 "SELECT ipi, artist " +
@@ -321,6 +327,52 @@ public class ArtistIndex extends DatabaseIndex {
         doc.addFieldOrUnknown(ArtistIndexField.COUNTRY, country);
         if (!Strings.isNullOrEmpty(country)) {
             artist.setCountry(country.toUpperCase(Locale.US));
+        }
+
+        String areaId = rs.getString("area_gid");
+        if(areaId!=null) {
+            DefAreaElementInner area = of.createDefAreaElementInner();
+            area.setId(areaId);
+            String areaName = rs.getString("area_name");
+            doc.addFieldOrNoValue(ArtistIndexField.AREA, areaName);
+            area.setName(areaName);
+            String areaSortName = rs.getString("area_sortname");
+            area.setSortName(areaSortName);
+            artist.setArea(area);
+        }
+        else {
+            doc.addField(ArtistIndexField.AREA, Index.NO_VALUE);
+        }
+
+        String beginAreaId = rs.getString("beginarea_gid");
+        if(beginAreaId!=null) {
+            DefAreaElementInner area = of.createDefAreaElementInner();
+            area.setId(beginAreaId);
+            String areaName = rs.getString("beginarea_name");
+            doc.addFieldOrNoValue(ArtistIndexField.BEGIN_AREA, areaName);
+            area.setName(areaName);
+            String areaSortName = rs.getString("beginarea_sortname");
+            area.setSortName(areaSortName);
+            artist.setBeginArea(area);
+        }
+        else {
+            doc.addField(ArtistIndexField.BEGIN_AREA, Index.NO_VALUE);
+        }
+
+
+        String endAreaId = rs.getString("endarea_gid");
+        if(endAreaId!=null) {
+            DefAreaElementInner area = of.createDefAreaElementInner();
+            area.setId(endAreaId);
+            String areaName = rs.getString("endarea_name");
+            doc.addFieldOrNoValue(ArtistIndexField.END_AREA, areaName);
+            area.setName(areaName);
+            String areaSortName = rs.getString("endarea_sortname");
+            area.setSortName(areaSortName);
+            artist.setEndArea(area);
+        }
+        else {
+            doc.addField(ArtistIndexField.END_AREA, Index.NO_VALUE);
         }
 
         String gender = rs.getString("gender");

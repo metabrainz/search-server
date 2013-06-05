@@ -57,6 +57,9 @@ public enum ArtistIndexField implements IndexField {
     SORTNAME	    ("sortname",	MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
     TAG		        ("tag",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TYPE		    ("type",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    AREA		    ("area",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
+    BEGIN_AREA		("beginarea",   MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
+    END_AREA		("endarea",	    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     ARTIST_STORE    ("artiststore", MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ;
 

@@ -80,6 +80,13 @@ public class FindLabelTest {
             doc.addField(LabelIndexField.COUNTRY, "GB");
             label.setCountry("GB");
 
+            DefAreaElementInner area =  of.createDefAreaElementInner();
+            area.setId("5302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+            area.setName("United Kingdom");
+            area.setSortName("Kingdom United");
+            label.setArea(area);
+            doc.addField(ArtistIndexField.AREA, "United Kingdom");
+
             doc.addField(LabelIndexField.TAG, "dance");
             TagList tagList = of.createTagList();
             Tag tag = of.createTag();
@@ -187,6 +194,16 @@ public class FindLabelTest {
     @Test
     public void testFindLabelByName() throws Exception {
         Results res = ss.search("label:\"Jockey Slut\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
+        assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
+    }
+
+    @Test
+    public void testFindLabelByArea() throws Exception {
+        Results res = ss.search("area:\"United Kingdom\"", 0, 10);
         assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
         MbDocument doc = result.getDoc();
@@ -484,6 +501,7 @@ public class FindLabelTest {
         assertTrue(output.contains("<ended>true</ended>"));
         assertTrue(output.contains("dance</name>"));
         assertTrue(output.contains("<ipi-list><ipi>1001</ipi></ipi-list>"));
+        assertTrue(output.contains("<area id=\"5302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>United Kingdom</name><sort-name>Kingdom United</sort-name></area>"));
     }
 
     @Test
@@ -547,6 +565,7 @@ public class FindLabelTest {
         assertTrue(output.contains("\"country\":\"GB\""));
         assertTrue(output.contains("tag-list\":{\"tag\":[{\"count\":22,\"name\":\"dance\"}"));
         assertTrue(output.contains("\"ended\":\"true\""));
+        assertTrue(output.contains("\"area\":{\"id\":\"5302e264-1cf0-4d1f-aca7-2a6f89e34b36\",\"name\":\"United Kingdom\",\"sort-name\":\"Kingdom United\"}"));
     }
 
     /**
@@ -579,6 +598,7 @@ public class FindLabelTest {
         assertTrue(output.contains("\"label-code\":1234"));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"area\":{\"id\":\"5302e264-1cf0-4d1f-aca7-2a6f89e34b36\",\"name\":\"United Kingdom\",\"sort-name\":\"Kingdom United\"}"));
 
     }
 

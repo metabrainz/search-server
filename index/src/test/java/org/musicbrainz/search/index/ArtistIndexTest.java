@@ -15,6 +15,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ArtistIndexTest extends AbstractIndexTest {
 
@@ -39,12 +40,13 @@ public class ArtistIndexTest extends AbstractIndexTest {
         Statement stmt = conn.createStatement();
 
         stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
-        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, area,ended)" +
-            " VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, 1999, 4, 2, 1, 1,true)");
+        stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, area,begin_area,ended)" +
+            " VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1, 1999, 4, 2, 1, 1,38,true)");
         stmt.addBatch("INSERT INTO artist_ipi (artist,ipi) values(521316,'10001')");
-        stmt.addBatch("INSERT INTO area (id, name) VALUES (1, 'Afghanistan')");
+        stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36','Afghanistan','Afghanistan')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (1, 'AF')");
-
+        stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','Canada','Canada')");
+        stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (38, 'CA')");
         stmt.executeBatch();
         stmt.close();
     }
@@ -575,6 +577,62 @@ public class ArtistIndexTest extends AbstractIndexTest {
         }
     }
 
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testArea() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, ArtistIndexField.AREA, "afghanistan");
+        }
+        ir.close();
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBeginArea() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, ArtistIndexField.BEGIN_AREA, "canada");
+        }
+        ir.close();
+    }
+
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testNoEndArea() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, ArtistIndexField.END_AREA, "-");
+        }
+        ir.close();
+    }
 
     /**
      * @throws Exception exception
@@ -595,8 +653,17 @@ public class ArtistIndexTest extends AbstractIndexTest {
             assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", artist.getId());
             assertEquals("Farming Incident", artist.getName());
             assertEquals("AF", artist.getCountry());
+            assertNotNull(artist.getArea());
 
+            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36",artist.getArea().getId());
+            assertEquals("Afghanistan",artist.getArea().getName());
+            assertEquals("Afghanistan",artist.getArea().getSortName());
 
+            assertEquals("b8caa692-704d-412b-a410-4fbcf5b9c796", artist.getBeginArea().getId());
+            assertEquals("Canada",artist.getBeginArea().getName());
+            assertEquals("Canada",artist.getBeginArea().getSortName());
+
+            assertNull(artist.getEndArea());
         }
         ir.close();
     }

@@ -104,15 +104,17 @@ public class LabelIndex extends DatabaseIndex {
 
 
         addPreparedStatement("LABELS",
-                "SELECT label.id, gid, n0.name as name, n1.name as sort_name, " +
-                "  label_type.name as type, begin_date_year, begin_date_month, begin_date_day, " +
-                "  end_date_year, end_date_month, end_date_day, ended," +
-                "  comment, label_code, lower(i.code) as country " +
+                "SELECT label.id, label.gid, n0.name as name, n1.name as sort_name, " +
+                "  label_type.name as type, label.begin_date_year, label.begin_date_month, label.begin_date_day, " +
+                "  label.end_date_year, label.end_date_month, label.end_date_day, label.ended," +
+                "  comment, label_code, lower(i.code) as country, " +
+                "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname " +
                 " FROM label " +
                 "  LEFT JOIN label_name n0 ON label.name = n0.id " +
                 "  LEFT JOIN label_name n1 ON label.sort_name = n1.id " +
                 "  LEFT JOIN label_type ON label.type = label_type.id " +
                 "  LEFT JOIN iso_3166_1 i on label.area=i.area" +
+                "  LEFT JOIN area a1 on label.area = a1.id" +
                 " WHERE label.id BETWEEN ? AND ?");
 
         addPreparedStatement("IPICODES",
@@ -268,6 +270,21 @@ public class LabelIndex extends DatabaseIndex {
         doc.addFieldOrUnknown(LabelIndexField.COUNTRY, country);
         if (!Strings.isNullOrEmpty(country)) {
             label.setCountry(country.toUpperCase(Locale.US));
+        }
+
+        String areaId = rs.getString("area_gid");
+        if(areaId!=null) {
+            DefAreaElementInner area = of.createDefAreaElementInner();
+            area.setId(areaId);
+            String areaName = rs.getString("area_name");
+            area.setName(areaName);
+            doc.addFieldOrNoValue(ArtistIndexField.AREA, areaName);
+            String areaSortName = rs.getString("area_sortname");
+            area.setSortName(areaSortName);
+            label.setArea(area);
+        }
+        else {
+            doc.addField(ArtistIndexField.AREA, Index.NO_VALUE);
         }
 
         boolean ended = rs.getBoolean("ended");
