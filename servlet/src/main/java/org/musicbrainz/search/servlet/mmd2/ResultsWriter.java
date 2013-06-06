@@ -97,6 +97,7 @@ public abstract class ResultsWriter extends org.musicbrainz.search.servlet.Resul
             properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, "oxml.xml");
             properties.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
             properties.put(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
+            properties.put(JAXBContextProperties.JSON_VALUE_WRAPPER, "name");
             return JAXBContextFactory.createContext(new Class[]{Metadata.class}, properties);
         }
         catch (JAXBException ex) {

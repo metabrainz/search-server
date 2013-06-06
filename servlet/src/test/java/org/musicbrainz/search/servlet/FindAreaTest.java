@@ -371,7 +371,7 @@ public class FindAreaTest {
         assertTrue(output.contains("\"type\":\"Country\""));
         assertTrue(output.contains("name\":\"Afghanistan\""));
         assertTrue(output.contains("\"sort-name\":\"Afghanistan\""));
-        assertTrue(output.contains("\"aliases\":[{\"locale\":\"\",\"sort-name\":\"Afghan\",\"type\":\"\",\"primary\":\"false\",\"begin-date\":\"\",\"end-date\":\"\",\"value\":\"Afghany\""));
+        assertTrue(output.contains("\"aliases\":[{\"locale\":\"\",\"sort-name\":\"Afghan\",\"type\":\"\",\"primary\":\"false\",\"begin-date\":\"\",\"end-date\":\"\",\"name\":\"Afghany\""));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"ended\":true"));
         assertTrue(output.contains("\"end\":\"2004\""));

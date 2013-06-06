@@ -593,7 +593,7 @@ public class FindLabelTest {
         assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"dance\"}]"));
         assertTrue(output.contains("\"ended\":true"));
         assertTrue(output.contains("\"ipis\":[\"1001\""));
-        assertTrue(output.contains("\"aliases\":[{\"locale\":\"\",\"type\":\"\",\"primary\":\"false\",\"begin-date\":\"\",\"end-date\":\"\",\"value\":\"Jockeys\"}]"));
+        assertTrue(output.contains("\"aliases\":[{\"locale\":\"\",\"type\":\"\",\"primary\":\"false\",\"begin-date\":\"\",\"end-date\":\"\",\"name\":\"Jockeys\"}]"));
         assertTrue(output.contains("\"end\":\"2004\""));
         assertTrue(output.contains("\"label-code\":1234"));
         assertTrue(output.contains("\"count\":1"));
