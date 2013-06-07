@@ -687,11 +687,11 @@ public class FindArtistTest {
         assertTrue(output.contains("\"sort-name\" : \"Echo & The Bunnymen\""));
         assertTrue(output.contains("\"type\" : \"Artist name\","));
         assertTrue(output.contains("\"primary\" : \"true\","));
-        assertTrue(output.contains("\"begin-date\" : \"1978-05-01\","));
-        assertTrue(output.contains(" \"end-date\" : \"\","));
+        assertTrue(output.contains("\"begin-date\" : \"1978-05-01\""));
+        assertTrue(output.contains(" \"end-date\" : null"));
         assertTrue(output.contains("\"name\" : \"Echo And The Bunnymen\""));
-        assertTrue(output.contains("\"locale\" : \"\","));
-        assertTrue(output.contains("\"type\" : \"\","));
+        assertTrue(output.contains("\"locale\" : null,"));
+        assertTrue(output.contains("\"type\" : null,"));
 
     }
 

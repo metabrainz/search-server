@@ -378,5 +378,15 @@
                 <xml-element java-attribute="iso31663Code" name="iso-3166-3-codes"/>
             </java-attributes>
         </java-type>
+        <java-type name="Alias">
+            <xml-type prop-order=""/>
+            <java-attributes>
+                <xml-element java-attribute="content" name="name"/>
+                <xml-element java-attribute="beginDate" name="begin-date" nillable="true"/>
+                <xml-element java-attribute="endDate" name="end-date" nillable="true"/>
+                <xml-element java-attribute="locale" name="locale" nillable="true"/>
+                <xml-element java-attribute="type" name="type" nillable="true"/>
+            </java-attributes>
+        </java-type>
     </java-types>
 </xml-bindings>

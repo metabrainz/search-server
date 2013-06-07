@@ -100,19 +100,6 @@ public class ArtistWriter extends ResultsWriter {
             for(Artist artist:metadata.getArtistList().getArtist()) {
                 if(artist.getAliasList()!=null) {
                     for (Alias alias : artist.getAliasList().getAlias()) {
-
-                        if (alias.getBeginDate() == null) {
-                            alias.setBeginDate("");
-                        }
-                        if (alias.getEndDate() == null) {
-                            alias.setEndDate("");
-                        }
-                        if (alias.getType() == null) {
-                            alias.setType("");
-                        }
-                        if (alias.getLocale() == null) {
-                            alias.setLocale("");
-                        }
                         //On Xml output as primary, but in json they have changed to true/false
                         if (alias.getPrimary() == null) {
                             alias.setPrimary("false");
