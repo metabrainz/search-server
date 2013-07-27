@@ -587,28 +587,29 @@ public class RecordingIndex extends DatabaseIndex {
         while (rs.next()) {
             int releaseKey = rs.getInt("release");
             release = releases.get(releaseKey);
-            if (release.getReleaseEventList() == null) {
-                release.setReleaseEventList(of.createReleaseEventList());
+            if(release!=null) {
+                if (release.getReleaseEventList() == null) {
+                    release.setReleaseEventList(of.createReleaseEventList());
+                }
+                ReleaseEvent re = of.createReleaseEvent();
+                re.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));
+                String iso_code=rs.getString("country");
+                String gid       = rs.getString("gid");
+                String name      = rs.getString("name");
+                String sort_name = rs.getString("sort_name");
+                if(iso_code!=null) {
+                    Iso31661CodeList isoList = of.createIso31661CodeList();
+                    isoList.getIso31661Code().add(iso_code);
+                    DefAreaElementInner area = of.createDefAreaElementInner();
+                    area.setIso31661CodeList(isoList);
+                    re.setArea(area);
+                    area.setId(gid);
+                    area.setName(name);
+                    area.setSortName(sort_name);
+                }
+                release.getReleaseEventList().getReleaseEvent().add(re);
             }
-            ReleaseEvent re = of.createReleaseEvent();
-            re.setDate(Strings.emptyToNull(Utils.formatDate(rs.getInt("date_year"), rs.getInt("date_month"), rs.getInt("date_day"))));
-            String iso_code=rs.getString("country");
-            String gid       = rs.getString("gid");
-            String name      = rs.getString("name");
-            String sort_name = rs.getString("sort_name");
-            if(iso_code!=null) {
-                Iso31661CodeList isoList = of.createIso31661CodeList();
-                isoList.getIso31661Code().add(iso_code);
-                DefAreaElementInner area = of.createDefAreaElementInner();
-                area.setIso31661CodeList(isoList);
-                re.setArea(area);
-                area.setId(gid);
-                area.setName(name);
-                area.setSortName(sort_name);
-            }
-            release.getReleaseEventList().getReleaseEvent().add(re);
         }
-
         //Add secondary types of the releasegroup that each release is part of
         stmt = createReleaseSecondaryTypesStatement(releaseKeys.size());
         count = 1;
