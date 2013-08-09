@@ -18,7 +18,7 @@ public class AreaSearch extends AbstractSearchServer {
   protected void setupDefaultFields() {
     defaultFields = new ArrayList<String>();
     defaultFields.add(AreaIndexField.AREA.getName());
-    //defaultFields.add(AreaIndexField.ALIAS.getName());
+    defaultFields.add(AreaIndexField.ALIAS.getName());
     defaultFields.add(AreaIndexField.SORTNAME.getName());
   }
 

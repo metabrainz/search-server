@@ -152,6 +152,27 @@ public class FindAreaTest {
     }
 
     @Test
+    public void testFindAreaByDefaultName() throws Exception {
+        Results res = ss.search("\"Afghanistan\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
+
+    @Test
+    public void testFindAreaByDefaultAlias() throws Exception {
+        Results res = ss.search("\"Afghany\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
+    @Test
     public void testFindAreaByAlias() throws Exception {
         Results res = ss.search("alias:\"Afghany\"", 0, 10);
         assertEquals(1, res.getTotalHits());
