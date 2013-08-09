@@ -765,6 +765,15 @@ public class RecordingIndex extends DatabaseIndex {
                     MediumList ml = of.createMediumList();
                     release.setReleaseGroup(origRelease.getReleaseGroup());
                     release.setStatus(origRelease.getStatus());
+                    if(origRelease.getArtistCredit()!=null)
+                    {
+                        release.setArtistCredit(origRelease.getArtistCredit());
+                        doc.addField(RecordingIndexField.RELEASE_AC_VA, "1");
+                    }
+                    else {
+                        doc.addField(RecordingIndexField.RELEASE_AC_VA, Index.NO_VALUE);
+                    }
+
                     ml.setTrackCount(origRelease.getMediumList().getTrackCount());
                     release.setMediumList(ml);
                     release.setReleaseEventList(origRelease.getReleaseEventList());
@@ -850,12 +859,7 @@ public class RecordingIndex extends DatabaseIndex {
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS_RELEASE, release.getMediumList().getTrackCount().intValue());
 
 
-                    //Is Various Artist Release
-                    if (release.getArtistCredit() != null) {
-                        doc.addField(RecordingIndexField.RELEASE_AC_VA, "1");
-                    } else {
-                        doc.addField(RecordingIndexField.RELEASE_AC_VA, Index.NO_VALUE);
-                    }
+
                     trackNames.add(trackWrapper.getTrackName().toLowerCase(Locale.UK));
                     doc.addField(RecordingIndexField.POSITION, String.valueOf(trackWrapper.getMediumPosition()));
                     doc.addFieldOrNoValue(RecordingIndexField.FORMAT, trackWrapper.getMediumFormat());
