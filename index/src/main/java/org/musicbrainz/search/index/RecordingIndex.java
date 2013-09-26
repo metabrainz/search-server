@@ -45,7 +45,6 @@ public class RecordingIndex extends DatabaseIndex {
 
     private StopWatch trackClock = new StopWatch();
     private StopWatch isrcClock = new StopWatch();
-    private StopWatch puidClock = new StopWatch();
     private StopWatch artistClock = new StopWatch();
     private StopWatch trackArtistClock = new StopWatch();
     private StopWatch releaseClock = new StopWatch();
@@ -60,7 +59,6 @@ public class RecordingIndex extends DatabaseIndex {
         super(dbConnection);
         trackClock.start();
         isrcClock.start();
-        puidClock.start();
         artistClock.start();
         trackArtistClock.start();
         releaseClock.start();
@@ -69,7 +67,6 @@ public class RecordingIndex extends DatabaseIndex {
         storeClock.start();
         trackClock.suspend();
         isrcClock.suspend();
-        puidClock.suspend();
         artistClock.suspend();
         releaseClock.suspend();
         recordingClock.suspend();
@@ -120,23 +117,12 @@ public class RecordingIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
         if (!isUpdater) {
-            addPreparedStatement("PUIDS",
-                    "SELECT DISTINCT recording as recordingId, puid " +
-                            " FROM  tmp_release_puid " +
-                            " WHERE recording between ? AND ?");
-
             addPreparedStatement("TRACKS",
                     "SELECT id, gid, track_name, length as duration, recording, track_position, track_number, track_count, " +
                             "  release_id, medium_position, format " +
                             " FROM tmp_track " +
                             " WHERE recording between ? AND ?");
         } else {
-            addPreparedStatement("PUIDS",
-                    "SELECT recording as recordingId, puid.puid " +
-                            " FROM recording_puid " +
-                            " INNER JOIN puid ON recording_puid.puid = puid.id " +
-                            " AND   recording between ? AND ?");
-
             addPreparedStatement("TRACKS",
                     "SELECT t.id, t.gid, t.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, m.track_count, " +
                             "  m.release as release_id, m.position as medium_position,mf.name as format " +
@@ -226,49 +212,12 @@ public class RecordingIndex extends DatabaseIndex {
         System.out.println(this.getName() + ":Track Queries " + Utils.formatClock(trackClock));
         System.out.println(this.getName() + ":Artists Queries " + Utils.formatClock(artistClock));
         System.out.println(this.getName() + ":Track Artists Queries " + Utils.formatClock(trackArtistClock));
-        System.out.println(this.getName() + ":Puids Queries " + Utils.formatClock(puidClock));
         System.out.println(this.getName() + ":Releases Queries " + Utils.formatClock(releaseClock));
         System.out.println(this.getName() + ":Recording Queries " + Utils.formatClock(recordingClock));
         System.out.println(this.getName() + ":Build Index " + Utils.formatClock(buildClock));
         System.out.println(this.getName() + ":Build Store " + Utils.formatClock(storeClock));
 
     }
-
-    /**
-     * Get puids for the recordings
-     *
-     * @param min min recording id
-     * @param max max recording id
-     * @return A map of matches
-     * @throws SQLException
-     * @throws IOException
-     */
-    private Map<Integer, List<String>> loadPUIDs(int min, int max) throws SQLException, IOException {
-
-        //PUID
-        puidClock.resume();
-        Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
-        PreparedStatement st = getPreparedStatement("PUIDS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int recordingId = rs.getInt("recordingId");
-            List<String> list;
-            if (!puidWrapper.containsKey(recordingId)) {
-                list = new LinkedList<String>();
-                puidWrapper.put(recordingId, list);
-            } else {
-                list = puidWrapper.get(recordingId);
-            }
-            String puid = new String(rs.getString("puid"));
-            list.add(puid);
-        }
-        rs.close();
-        puidClock.suspend();
-        return puidWrapper;
-    }
-
 
     /**
      * Get tag information
@@ -639,7 +588,6 @@ public class RecordingIndex extends DatabaseIndex {
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         Map<Integer, List<Tag>> tags = loadTags(min, max);
-        Map<Integer, List<String>> puids = loadPUIDs(min, max);
         Map<Integer, List<String>> isrcs = loadISRCs(min, max);
         Map<Integer, ArtistCreditWrapper> artistCredits = loadArtists(min, max);
         Map<Integer, ArtistCreditWrapper> trackArtistCredits = loadTrackArtists(min, max);
@@ -653,14 +601,13 @@ public class RecordingIndex extends DatabaseIndex {
         ResultSet rs = st.executeQuery();
         recordingClock.suspend();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, puids, tags, isrcs, artistCredits, trackArtistCredits, tracks, releases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, isrcs, artistCredits, trackArtistCredits, tracks, releases));
         }
         rs.close();
 
     }
 
     public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer, List<String>> puids,
                                           Map<Integer, List<Tag>> tags,
                                           Map<Integer, List<String>> isrcs,
                                           Map<Integer, ArtistCreditWrapper> artistCredits,
@@ -702,18 +649,6 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addFieldOrNoValue(RecordingIndexField.COMMENT, comment);
         if (!Strings.isNullOrEmpty(comment)) {
             recording.setDisambiguation(comment);
-        }
-
-        if (puids.containsKey(id)) {
-            PuidList puidList = of.createPuidList();
-            // Add each puid for recording
-            for (String nextPuid : puids.get(id)) {
-                doc.addField(RecordingIndexField.PUID, nextPuid);
-                Puid puid = of.createPuid();
-                puid.setId(nextPuid);
-                puidList.getPuid().add(puid);
-            }
-            recording.setPuidList(puidList);
         }
 
         if (isrcs.containsKey(id)) {

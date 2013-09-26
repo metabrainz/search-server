@@ -82,13 +82,6 @@ public class FindRecordingTest {
             release.setId("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
             release.setTitle("Our Glorious 5 Year Plan");
 
-            doc.addField(RecordingIndexField.PUID, "1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
-            PuidList puidList = of.createPuidList();
-            Puid puid = of.createPuid();
-            puid.setId("1d9e8ed6-3893-4d3b-aa7d-72e79609e386");
-            puidList.getPuid().add(puid);
-            recording.setPuidList(puidList);
-
             doc.addField(RecordingIndexField.ARTIST_ID, "4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
             doc.addField(RecordingIndexField.ARTIST, "Farming Incident");
             doc.addField(RecordingIndexField.ARTIST_NAME, "Farming Incident");
@@ -467,13 +460,6 @@ public class FindRecordingTest {
     }
 
     @Test
-    public void testFindRecordingByPuid() throws Exception {
-        Results res = ss.search("puid:1d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
-        assertEquals(1, res.getTotalHits());
-        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", getRecordingId(res.results.get(0).getDoc()));
-    }
-
-    @Test
     public void testFindRecordingByTrackId() throws Exception {
         Results res = ss.search("tid:2d9e8ed6-3893-4d3b-aa7d-72e79609e386", 0, 10);
         assertEquals(1, res.getTotalHits());
@@ -549,7 +535,6 @@ public class FindRecordingTest {
         assertTrue(output.contains("<artist-credit><name-credit><artist id=\"89ad4ac3-39f7-470e-963a-56509c546377\"><name>Various Artists</name></artist></name-credit></artist-credit>"));
         assertTrue(output.contains("indie</name>"));
         assertTrue(output.contains("<track id=\"c3b8dbc9-c1ff-4743-9015-8d762819134e\"><number>A4</number><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
-        assertTrue(output.contains("<puid-list><puid id=\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"/></puid-list>"));
         assertTrue(output.contains("<area id=\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\">"));
         assertTrue(output.contains("<name>United Kingdom</name>"));
         assertTrue(output.contains("<sort-name>Kingdom of United</sort-name>"));
@@ -587,7 +572,6 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"primary-type\":\"Album\""));
         assertTrue(output.contains("{\"secondary-type\":[\"Compilation\"]}}"));
         assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
-        assertTrue(output.contains("\"puid-list\":{\"puid\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}]}"));
         assertTrue(output.contains("\"artist-credit\":{\"name-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}"));
         assertTrue(output.contains("\"release-event-list\":{\"release-event\":[{\"date\":\"1970-01-01\""));
         assertTrue(output.contains("\"id\":\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\","));
@@ -621,7 +605,6 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"primary-type\":\"Album\""));
         assertTrue(output.contains("\"secondary-types\":[\"Compilation\"]}"));
         assertTrue(output.contains("\"tags\":[{\"count\":101,\"name\":\"indie\"}"));
-        assertTrue(output.contains("puids\":[{\"id\":\"1d9e8ed6-3893-4d3b-aa7d-72e79609e386\"}"));
         assertTrue(output.contains("\"artist-credit\":[{\"artist\":{\"id\":\"89ad4ac3-39f7-470e-963a-56509c546377\",\"name\":\"Various Artists\"}}"));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));

@@ -94,40 +94,6 @@ public class CommonTables  {
         clock.reset();
     }
 
-    /**
-     * Create table mapping a release to all that puids that tracks within the release contain, then create index
-     * for the table..
-     *
-     * @throws SQLException
-     */
-    private void createReleasePuidTableUsingDb() throws SQLException
-    {
-        System.out.println("tmp_release_puid:Started at:" + Utils.formatCurrentTimeForOutput());
-        StopWatch clock = new StopWatch();
-        clock.start();
-        getDbConnection().createStatement().execute(
-            "CREATE TEMPORARY TABLE tmp_release_puid AS " +
-            "  SELECT m.release, rp.recording, p.puid " +
-            "  FROM medium m " +
-            "    INNER JOIN track t ON t.medium = m.id " +
-            "    INNER JOIN recording_puid rp ON rp.recording = t.recording " +
-            "    INNER JOIN puid p ON rp.puid = p.id");
-        clock.stop();
-        System.out.println("tmp_release_puid:Finished:"+ Utils.formatClock(clock));
-        clock.reset();
-
-        clock.start();
-        getDbConnection().createStatement().execute(
-                "CREATE INDEX tmp_release_puid_idx_release ON tmp_release_puid (release) ");
-        getDbConnection().createStatement().execute(
-             "CREATE INDEX tmp_release_puid_idx_recording ON tmp_release_puid (recording) ");
-
-        clock.stop();
-        System.out.println("tmp_release_puid:Created Indexes:"+ Utils.formatClock(clock));
-        clock.reset();
-    }
-
-
     private void createReleaseTableUsingDb() throws SQLException {
         System.out.println("tmp_release     :Started at:" + Utils.formatCurrentTimeForOutput());
         StopWatch clock = new StopWatch();
@@ -242,11 +208,6 @@ public class CommonTables  {
            (indexesToBeBuilt.contains(RecordingIndex.INDEX_NAME))
           )
         {
-            if(!isUpdater)
-            {
-                createReleasePuidTableUsingDb();
-            }
-
             createReleaseTableUsingDb();
             createReleaseEventsTableUsingDb();
         }

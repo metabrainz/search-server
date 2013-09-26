@@ -754,43 +754,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
-    /**
-     * Tets Puid Indexed (not stored)
-     * @throws Exception
-     */
-    @Test
-    public void testIndexPuid() throws Exception {
 
-        addReleaseOne();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = DirectoryReader.open(ramDir);
-        Fields fields = MultiFields.getFields(ir);
-        Terms terms = fields.terms(ReleaseIndexField.PUID.getName());
-        TermsEnum termsEnum = terms.iterator(null);
-        termsEnum.next();
-        assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", termsEnum.term().utf8ToString());
-    }
-
-    /**
-     * Tets Puid Indexed (not stored)
-     * @throws Exception
-     */
-    @Test
-    public void testIndexPuidWithoutTemporaryTables() throws Exception {
-
-        addReleaseOne();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir, false);
-
-        IndexReader ir = DirectoryReader.open(ramDir);
-        Fields fields = MultiFields.getFields(ir);
-        Terms terms = fields.terms(ReleaseIndexField.PUID.getName());
-        TermsEnum termsEnum = terms.iterator(null);
-        termsEnum.next();
-        assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e38", termsEnum.term().utf8ToString());
-    }
 
     /**
      * @throws Exception exception

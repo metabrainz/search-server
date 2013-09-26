@@ -28,6 +28,7 @@ public enum RecordingIndexField implements IndexField {
     NUM_TRACKS_RELEASE      ("tracksrelease",       MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     POSITION                ("position",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     NUMBER                  ("number",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS),
+    //TODO This does nothing but cannot remove yet for backwards compatability
     PUID    		        ("puid",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     QUANTIZED_DURATION	    ("qdur",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RECORDING_ID            ("rid",		            MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),

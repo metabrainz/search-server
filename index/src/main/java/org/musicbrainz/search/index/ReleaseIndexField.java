@@ -32,6 +32,7 @@ public enum ReleaseIndexField implements IndexField {
     NUM_TRACKS		    ("tracks",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     NUM_TRACKS_MEDIUM   ("tracksmedium",	MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     PRIMARY_TYPE        ("primarytype",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    //TODO This does nothing but cannot remove yet for backwards compatability
     PUID    		    ("puid",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RELEASE			    ("release",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new TitleAnalyzer()),
     RELEASE_ACCENT      ("releaseaccent",   MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),

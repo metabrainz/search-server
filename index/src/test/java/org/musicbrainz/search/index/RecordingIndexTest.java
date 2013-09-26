@@ -631,46 +631,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     @Test
-    public void testPuid() throws Exception {
-
-        addTrackOne();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir);
-
-        IndexReader ir = DirectoryReader.open(ramDir);
-        assertEquals(2, ir.numDocs());
-        {
-            checkTerm(ir, RecordingIndexField.PUID, "efd2ace2-b3b9-305f-8a53-9803595c0e38");
-        }
-        ir.close();
-    }
-
-    /**
-     * Test gives puid
-     *
-     * @throws Exception exception
-     */
-    @Test
-    public void testPuidWithoutTemporaryTables() throws Exception {
-
-        addTrackOne();
-        RAMDirectory ramDir = new RAMDirectory();
-        createIndex(ramDir, false);
-
-        IndexReader ir = DirectoryReader.open(ramDir);
-        assertEquals(2, ir.numDocs());
-        {
-            checkTerm(ir, RecordingIndexField.PUID, "efd2ace2-b3b9-305f-8a53-9803595c0e38");
-        }
-        ir.close();
-    }
-    
-    /**
-     * Test gives puid
-     *
-     * @throws Exception exception
-     */
-    @Test
     public void testComment() throws Exception {
 
         addTrackOne();

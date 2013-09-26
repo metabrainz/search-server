@@ -106,21 +106,6 @@ public class  ReleaseIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-        if(!isUpdater) {
-           addPreparedStatement("PUIDS",
-                "SELECT release, puid " +
-                "FROM   tmp_release_puid " +
-                "WHERE  release BETWEEN ? AND ? ");
-        }
-        else {
-            addPreparedStatement("PUIDS",
-                "SELECT m.release, p.puid " +
-                "FROM medium m " +
-                " INNER JOIN track t ON (t.medium=m.id AND m.release BETWEEN ? AND ?) " +
-                " INNER JOIN recording_puid rp ON rp.recording = t.recording " +
-                " INNER JOIN puid p ON rp.puid=p.id");
-        }
-
         addPreparedStatement("LABELINFOS",
                "SELECT rl.release as releaseId, l.gid as labelId, l.name as labelName, catalog_number " +
                " FROM release_label rl " +
@@ -330,31 +315,6 @@ public class  ReleaseIndex extends DatabaseIndex {
         rs.close();
         mediumClock.suspend();
 
-
-        //Puids
-        Map<Integer, List<String>> puidWrapper = new HashMap<Integer, List<String>>();
-        puidClock.resume();
-        st = getPreparedStatement("PUIDS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        while (rs.next()) {
-            int releaseId = rs.getInt("release");
-            List<String> list;
-            if (!puidWrapper.containsKey(releaseId)) {
-                list = new LinkedList<String>();
-                puidWrapper.put(releaseId, list);
-            } else {
-                list = puidWrapper.get(releaseId);
-            }
-            String puid = new String(rs.getString("puid"));
-            list.add(puid);
-        }
-        rs.close();
-        puidClock.suspend();
-
-
-
         //Artist Credits
         artistClock.resume();
         st = getPreparedStatement("ARTISTCREDITS");
@@ -384,18 +344,17 @@ public class  ReleaseIndex extends DatabaseIndex {
         rs = st.executeQuery();
         releaseClock.suspend();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, tags, releaseEvents, labelInfo, mediums, puidWrapper, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, secondaryTypes, tags, releaseEvents, labelInfo, mediums, artistCredits));
         }
         rs.close();
     }
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<String>> secondaryTypes,
-                                          Map<Integer,List<Tag>> tags,
-                                          Map<Integer,List<ReleaseEvent>> releaseEvents,
-                                          Map<Integer,List<List<String>>> labelInfo,
-                                          Map<Integer,List<List<String>>> mediums,
-                                          Map<Integer, List<String>> puids,
+                                          Map<Integer, List<Tag>> tags,
+                                          Map<Integer, List<ReleaseEvent>> releaseEvents,
+                                          Map<Integer, List<List<String>>> labelInfo,
+                                          Map<Integer, List<List<String>>> mediums,
                                           Map<Integer, ArtistCreditWrapper> artistCredits) throws SQLException {
         buildClock.resume();
 
@@ -581,13 +540,6 @@ public class  ReleaseIndex extends DatabaseIndex {
             //No mediums on release
             doc.addNumericField(ReleaseIndexField.NUM_MEDIUMS, 0);
         }
-
-        if (puids.containsKey(id)) {
-            for (String puid : puids.get(id)) {
-                 doc.addField(ReleaseIndexField.PUID, puid);
-            }
-        }
-
 
         ArtistCreditWrapper ac = artistCredits.get(id);
         if(ac!=null) {

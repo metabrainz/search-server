@@ -112,11 +112,7 @@ public class FindReleaseTest {
             tagList.getTag().add(tag);
             release.setTagList(tagList);
 
-            doc.addField(ReleaseIndexField.PUID, "668f3a22-03e8-e3cd-55e4-2e9a0906419a");
-            doc.addField(ReleaseIndexField.PUID, "1fa8aa07-c688-1f7c-734b-4d82e528b09a");
-
             MediumList mediumList = of.createMediumList();
-
             //Medium 1
             {
                 doc.addNumericField(ReleaseIndexField.NUM_TRACKS_MEDIUM, 10);
@@ -691,12 +687,6 @@ public class FindReleaseTest {
     public void testNumericRangeQuery() throws Exception {
         Results res = ss.search("tracksmedium:[7 TO 17]", 0, 10);
         assertEquals(2, res.getTotalHits());
-    }
-
-    @Test
-    public void testFindReleaseByPuid() throws Exception {
-        Results res = ss.search("puid:668f3a22-03e8-e3cd-55e4-2e9a0906419a", 0, 10);
-        assertEquals(1, res.getTotalHits());
     }
 
     /**
