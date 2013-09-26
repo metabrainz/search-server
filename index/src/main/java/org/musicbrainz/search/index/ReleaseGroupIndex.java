@@ -99,9 +99,8 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
 
         addPreparedStatement("RELEASES",
-                "SELECT DISTINCT release_group, release.gid as gid, n0.name as name, rs.name as status " +
+                "SELECT DISTINCT release_group, release.gid as gid, release.name, rs.name as status " +
                 " FROM release " +
-                "  LEFT JOIN release_name n0 ON release.name = n0.id " +
                 "  LEFT JOIN release_status rs ON release.status = rs.id " +
                 " WHERE release_group BETWEEN ? AND ?");
 
@@ -129,9 +128,8 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 " WHERE rgj.release_group BETWEEN ? AND ?");
 
         addPreparedStatement("RELEASEGROUPS",
-                "SELECT rg.id, rg.gid, n0.name as name, release_group_primary_type.name as type, rg.comment " +
+                "SELECT rg.id, rg.gid, rg.name as name, release_group_primary_type.name as type, rg.comment " +
                 " FROM release_group AS rg " +
-                "  LEFT JOIN release_name n0 ON rg.name = n0.id " +
                 "  LEFT JOIN release_group_primary_type ON rg.type = release_group_primary_type.id " +
                 " WHERE rg.id BETWEEN ? AND ?" +
                 " ORDER BY rg.id");

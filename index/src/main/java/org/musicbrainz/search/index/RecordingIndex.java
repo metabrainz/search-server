@@ -138,12 +138,12 @@ public class RecordingIndex extends DatabaseIndex {
                             " AND   recording between ? AND ?");
 
             addPreparedStatement("TRACKS",
-                    "SELECT t.id, t.gid, tn.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, m.track_count, " +
+                    "SELECT t.id, t.gid, t.name as track_name, t.length as duration, t.recording, t.position as track_position, t.number as track_number, m.track_count, " +
                             "  m.release as release_id, m.position as medium_position,mf.name as format " +
                             " FROM track t " +
-                            "  INNER JOIN track_name tn ON t.name=tn.id AND t.recording BETWEEN ? AND ?" +
                             "  INNER JOIN medium m ON t.medium=m.id " +
-                            "  LEFT JOIN  medium_format mf ON m.format=mf.id "
+                            "  LEFT JOIN  medium_format mf ON m.format=mf.id " +
+                            " WHERE t.recording BETWEEN ? AND ?"
             );
         }
 
@@ -214,10 +214,9 @@ public class RecordingIndex extends DatabaseIndex {
                         " WHERE r.id in ";
 
         addPreparedStatement("RECORDINGS",
-                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, tn.name as trackname, re.comment " +
+                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, re.name as trackname, re.comment " +
                         " FROM recording re " +
-                        "  INNER JOIN track_name tn ON re.name=tn.id " +
-                        "  AND re.id BETWEEN ? AND ?");
+                        " WHERE re.id BETWEEN ? AND ?");
     }
 
     public void destroy() throws SQLException {

@@ -109,24 +109,21 @@ public class ArtistIndex extends DatabaseIndex {
                         " WHERE artist between ? AND ?");
 
         addPreparedStatement("ALIASES",
-                "SELECT a.artist as artist, n.name as alias, sn.name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
+                "SELECT a.artist as artist, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
                         "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
                         " FROM artist_alias a" +
-                        "  JOIN artist_name n ON (a.name = n.id) " +
-                        "  JOIN artist_name sn ON (a.sort_name = sn.id) " +
                         "  LEFT JOIN artist_alias_type att on (a.type=att.id)" +
                         " WHERE artist BETWEEN ? AND ?" +
                         " ORDER BY artist, alias, alias_sortname");
 
         addPreparedStatement("ARTISTCREDITS",
-                        "SELECT artist as artist, n.name as artistcredit " +
+                        "SELECT artist as artist, name as artistcredit " +
                         " FROM artist_credit_name " +
-                        "  JOIN artist_name n ON n.id = artist_credit_name.name " +
                         " WHERE artist BETWEEN ? AND ? ");
 
 
         addPreparedStatement("ARTISTS",
-                "SELECT a.id, a.gid as gid, n0.name as name, n1.name as sort_name, " +
+                "SELECT a.id, a.gid as gid, a.name, a.sort_name, " +
                         "  artist_type.name as type, a.begin_date_year, a.begin_date_month, a.begin_date_day, " +
                         "  a.end_date_year, a.end_date_month, a.end_date_day,a.ended, " +
                         "  comment, lower(i.code) as country, lower(gender.name) as gender," +
@@ -134,8 +131,6 @@ public class ArtistIndex extends DatabaseIndex {
                         "  a2.gid as beginarea_gid, a2.name as beginarea_name, a2.sort_name as beginarea_sortname, " +
                         "  a3.gid as endarea_gid, a3.name as endarea_name, a3.sort_name as endarea_sortname" +
                         " FROM artist a " +
-                        "  LEFT JOIN artist_name n0 ON a.name = n0.id " +
-                        "  LEFT JOIN artist_name n1 ON a.sort_name = n1.id " +
                         "  LEFT JOIN artist_type ON a.type = artist_type.id " +
                         "  LEFT JOIN iso_3166_1 i on a.area=i.area" +
                         "  LEFT JOIN gender ON a.gender=gender.id " +

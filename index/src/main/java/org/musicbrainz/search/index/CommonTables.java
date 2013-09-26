@@ -70,19 +70,15 @@ public class CommonTables  {
                 "  acn.join_phrase as joinphrase, " +
                 "  a.gid as artistId,  " +
                 "  a.comment as comment, " +
-                "  an.name as artistName, " +
-                "  an2.name as artistCreditName, " +
-                "  an3.name as artistSortName, " +
+                "  a.name as artistName, " +
+                "  acn.name as artistCreditName, " +
+                "  a.sort_name as artistSortName, " +
                 "  aa1.aliasName " +
                 " FROM artist_credit_name acn  " +
                 "  INNER JOIN artist a ON a.id=acn.artist " +
-                "  INNER JOIN artist_name an ON a.name=an.id " +
-                "  INNER JOIN artist_name an2 ON acn.name=an2.id " +
-                "  INNER JOIN artist_name an3 ON a.sort_name=an3.id " +
-                "  LEFT JOIN ( SELECT aa.artist, MAX(an4.name) AS aliasName FROM" +
+                "  LEFT JOIN ( SELECT aa.artist, MAX(aa.name) AS aliasName FROM" +
                 "     artist_alias aa " +
-                "     INNER JOIN artist_name an4 ON aa.name=an4.id " +
-                    "     WHERE aa.locale='" + ENGLISH_ISO_CODE + "'" +
+                "     WHERE aa.locale='" + ENGLISH_ISO_CODE + "'" +
                 "     GROUP BY aa.artist) AS aa1"  +
                 "     ON a.id=aa1.artist " +
                 " ORDER BY acn.artist_credit,acn.position ");
@@ -139,7 +135,7 @@ public class CommonTables  {
 
         getDbConnection().createStatement().execute(
             "CREATE TEMPORARY TABLE tmp_release AS " +
-                "SELECT r.id, r.gid, rn.name as name, " +
+                "SELECT r.id, r.gid, r.name as name, " +
                 "  barcode, " +
                 "  rgt.name as type, rg.id as rg_id, rg.gid as rg_gid, rm.amazon_asin, " +
                 "  language.iso_code_3 as language, language.iso_code_2t as language_2t, script.iso_code as script, rs.name as status, " +
@@ -150,12 +146,11 @@ public class CommonTables  {
                 "  LEFT JOIN release_meta rm ON r.id = rm.id " +
                 "  LEFT JOIN release_group rg ON rg.id = r.release_group " +
                 "  LEFT JOIN release_group_primary_type rgt  ON rg.type = rgt.id " +
-                "  LEFT JOIN release_name rn ON r.name = rn.id " +
                 "  LEFT JOIN release_status rs ON r.status = rs.id " +
                 "  LEFT JOIN language ON r.language=language.id " +
                 "  LEFT JOIN script ON r.script=script.id " +
                 "  LEFT JOIN medium m ON m.release=r.id" +
-                " GROUP BY r.id,r.gid,rn.name,barcode,rgt.name,rg.id, rg.gid," +
+                " GROUP BY r.id,r.gid,r.name,barcode,rgt.name,rg.id, rg.gid," +
                 "  rm.amazon_asin, language.iso_code_3, language.iso_code_2t, script.iso_code,rs.name,r.artist_credit, r.comment");
         clock.stop();
         System.out.println("tmp_release     :Finished:" + Utils.formatClock(clock));
@@ -210,10 +205,9 @@ public class CommonTables  {
 
         getDbConnection().createStatement().execute(
             "CREATE TEMPORARY TABLE tmp_track AS " +
-                "SELECT t.id, t.gid, t.recording, t.length, tn.name as track_name, t.position as track_position, t.number as track_number, m.track_count, " +
+                "SELECT t.id, t.gid, t.recording, t.length, t.name as track_name, t.position as track_position, t.number as track_number, m.track_count, " +
                 "  m.release as release_id, m.position as medium_position, mf.name as format " +
                 " FROM track t " +
-                "  INNER JOIN track_name tn ON t.name=tn.id" +
                 "  INNER JOIN medium m ON t.medium=m.id " +
                 "  LEFT JOIN  medium_format mf ON m.format=mf.id ");
 

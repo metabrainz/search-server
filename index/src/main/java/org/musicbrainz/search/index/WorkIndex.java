@@ -82,13 +82,11 @@ public class WorkIndex extends DatabaseIndex {
                         " WHERE work between ? AND ?");
 
         addPreparedStatement("ARTISTS",
-                " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, an.name as artist_name, sn.name as artist_sortname," +
+                " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as artist_name, a.sort_name as artist_sortname," +
                         " lt.name as link, lat.name as attribute" +
                         " FROM l_artist_work aw" +
                         " INNER JOIN artist a ON a.id    = aw.entity0" +
                         " INNER JOIN work   w ON w.id     = aw.entity1" +
-                        " INNER JOIN artist_name an ON an.id = a.name" +
-                        " INNER JOIN artist_name sn ON sn.id = a.sort_name" +
                         " INNER JOIN link l ON aw.link = l.id " +
                         " INNER JOIN link_type lt on l.link_type=lt.id" +
                         " LEFT JOIN  link_attribute la on la.link=l.id" +
@@ -97,9 +95,8 @@ public class WorkIndex extends DatabaseIndex {
                         " ORDER BY aw.id");
 
         addPreparedStatement("ALIASES",
-                "SELECT work_alias.work as work, n.name as alias " +
+                "SELECT work_alias.work as work, work_alias.name as alias " +
                         " FROM work_alias " +
-                        "  JOIN work_name n ON (work_alias.name = n.id) " +
                         " WHERE work BETWEEN ? AND ?");
 
         addPreparedStatement("ISWCS",
@@ -108,9 +105,8 @@ public class WorkIndex extends DatabaseIndex {
                         " WHERE work BETWEEN ? AND ?");
 
         addPreparedStatement("WORKS",
-                "SELECT w.id as wid, w.gid, wn.name as name, wt.name as type, l.iso_code_3 as language, comment " +
+                "SELECT w.id as wid, w.gid, w.name as name, wt.name as type, l.iso_code_3 as language, comment " +
                         " FROM work AS w " +
-                        "  LEFT JOIN work_name wn ON w.name = wn.id " +
                         "  LEFT JOIN work_type wt ON w.type = wt.id " +
                         "  LEFT JOIN language l on w.language = l.id " +
                         " WHERE w.id BETWEEN ? AND ? " +

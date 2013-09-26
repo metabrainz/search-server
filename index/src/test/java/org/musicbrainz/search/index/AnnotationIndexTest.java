@@ -35,9 +35,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group) " +
-                "  VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240)");
+                "  VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240)");
         
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
         	"  VALUES (1, 1, 'release annotation', 'change', now())");
@@ -54,10 +53,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
-                    "  VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
-         
+                    "  VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1)");
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
                     "  VALUES (1, 1, 'release group annotation', 'change', now())");
         stmt.addBatch("INSERT INTO release_group_annotation (release_group, annotation) VALUES (491240, 1)");
@@ -74,9 +71,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
         stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name)" +
-                    "  VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1)");
+                    "  VALUES (521316, 'Farming Incident', '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 'Farming Incident')");
 
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
                     "  VALUES (1, 1, 'artist annotation', 'change', now())");
@@ -97,10 +93,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
         stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name)" +
-                "  VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1)");
-
+                "  VALUES (521316, 'Farming Incident', '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 'Farming Incident')");
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
                 "  VALUES (1, 1, '', 'change', now())");
         stmt.addBatch("INSERT INTO artist_annotation (artist, annotation) VALUES (521316, 1)");
@@ -116,9 +110,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Farming Incident')");
         stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name)" +
-                "  VALUES (521316, 1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 1)");
+                "  VALUES (521316, 'Farming Incident', '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 'Farming Incident')");
 
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
                 "  VALUES (1, 1, null, 'change', now())");
@@ -134,9 +127,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, '4AD')");
         stmt.addBatch("INSERT INTO label (id, gid, name, sort_name) " +
-                "  VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1)");
+                "  VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', '4AD', '4AD')");
         
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
         	"  VALUES (1, 1, 'label annotation', 'change', now())");
@@ -157,9 +149,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO track_name (id, name) VALUES (1, 'Do It Clean') ");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit)"
-                       + "VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1)");
+                       + "VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Do It Clean', 1)");
         
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
         	"  VALUES (1, 1, 'recording annotation', 'change', now())");

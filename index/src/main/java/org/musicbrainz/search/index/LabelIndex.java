@@ -93,25 +93,21 @@ public class LabelIndex extends DatabaseIndex {
                 " WHERE label between ? AND ?");
 
         addPreparedStatement("ALIASES",
-                "SELECT a.label as label, n.name as alias, sn.name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
+                "SELECT a.label as label, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
                         "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
                         " FROM label_alias a" +
-                        "  JOIN label_name n ON (a.name = n.id) " +
-                        "  JOIN label_name sn ON (a.sort_name = sn.id) " +
                         "  LEFT JOIN label_alias_type att on (a.type=att.id)" +
                         " WHERE label BETWEEN ? AND ?" +
                         " ORDER BY label, alias, alias_sortname");
 
 
         addPreparedStatement("LABELS",
-                "SELECT label.id, label.gid, n0.name as name, n1.name as sort_name, " +
+                "SELECT label.id, label.gid, label.name as name, label.sort_name, " +
                 "  label_type.name as type, label.begin_date_year, label.begin_date_month, label.begin_date_day, " +
                 "  label.end_date_year, label.end_date_month, label.end_date_day, label.ended," +
                 "  comment, label_code, lower(i.code) as country, " +
                 "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname " +
                 " FROM label " +
-                "  LEFT JOIN label_name n0 ON label.name = n0.id " +
-                "  LEFT JOIN label_name n1 ON label.sort_name = n1.id " +
                 "  LEFT JOIN label_type ON label.type = label_type.id " +
                 "  LEFT JOIN iso_3166_1 i on label.area=i.area" +
                 "  LEFT JOIN area a1 on label.area = a1.id" +

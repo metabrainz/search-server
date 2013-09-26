@@ -16,10 +16,9 @@ public class AnnotationIndex extends DatabaseIndex {
     // Private class for storing specific information about each annotation type
     private class AnnotationTypeInfo {
         public String entityDbName;
-        public String nameTable;
-        public AnnotationTypeInfo(String entityDbName, String nameTable) {
+
+        public AnnotationTypeInfo(String entityDbName) {
             this.entityDbName = entityDbName;
-            this.nameTable = nameTable;
         }
     }
     protected EnumMap<AnnotationType, AnnotationTypeInfo> annotationTypeInfos;
@@ -57,18 +56,18 @@ public class AnnotationIndex extends DatabaseIndex {
 
         // Register all information for each annotation type
         annotationTypeInfos = new EnumMap<AnnotationType, AnnotationTypeInfo>(AnnotationType.class);
-        annotationTypeInfos.put(AnnotationType.ARTIST, new AnnotationTypeInfo("artist", "artist_name"));
-        annotationTypeInfos.put(AnnotationType.LABEL, new AnnotationTypeInfo("label", "label_name"));
-        annotationTypeInfos.put(AnnotationType.RECORDING, new AnnotationTypeInfo("recording", "track_name"));
-        annotationTypeInfos.put(AnnotationType.RELEASE, new AnnotationTypeInfo("release", "release_name"));
-        annotationTypeInfos.put(AnnotationType.RELEASE_GROUP, new AnnotationTypeInfo("release_group", "release_name"));
-        annotationTypeInfos.put(AnnotationType.WORK, new AnnotationTypeInfo("work", "work_name"));
+        annotationTypeInfos.put(AnnotationType.ARTIST, new AnnotationTypeInfo("artist"));
+        annotationTypeInfos.put(AnnotationType.LABEL, new AnnotationTypeInfo("label"));
+        annotationTypeInfos.put(AnnotationType.RECORDING, new AnnotationTypeInfo("recording"));
+        annotationTypeInfos.put(AnnotationType.RELEASE, new AnnotationTypeInfo("release"));
+        annotationTypeInfos.put(AnnotationType.RELEASE_GROUP, new AnnotationTypeInfo("release_group"));
+        annotationTypeInfos.put(AnnotationType.WORK, new AnnotationTypeInfo("work"));
         
         // Build prepared statement for each annotation type
         for (AnnotationType type : annotationTypeInfos.keySet()) {
             AnnotationTypeInfo info = annotationTypeInfos.get(type);
             addPreparedStatement(type.getName(), 
-                "SELECT a.id, e.gid, a.text, en.name " +
+                "SELECT a.id, e.gid, a.text, e.name " +
                 " FROM annotation a " +
                 "  INNER JOIN " + info.entityDbName + "_annotation ea ON a.id=ea.annotation " +
                 "  INNER JOIN (SELECT DISTINCT ea2." + info.entityDbName + " as id, max(created) as created_date " +
@@ -76,7 +75,6 @@ public class AnnotationIndex extends DatabaseIndex {
                 "                INNER JOIN " + info.entityDbName + "_annotation ea2 on a2.id=ea2.annotation GROUP BY ea2." + info.entityDbName +
                 "              ) AS last_ann ON ea." + info.entityDbName + "=last_ann.id AND a.created=last_ann.created_date "  +
                 "  INNER JOIN " + info.entityDbName + " e ON ea." + info.entityDbName + "=e.id " +
-                "  INNER JOIN " + info.nameTable + " en ON e.name=en.id " +
                 " WHERE a.id BETWEEN ? and ? AND length(a.text) > 0"
             );
         }

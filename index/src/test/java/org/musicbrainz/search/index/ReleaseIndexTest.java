@@ -43,23 +43,20 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     private void addReleaseOne() throws Exception {
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (2, 'Echo and The Bunnymen')");
-
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 2, 'a comment')");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Echo & The Bunnymen', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
-                " VALUES (1, 0, 16153, 1, '')");
+                " VALUES (1, 0, 16153, 'Echo & The Bunnymen', '')");
 
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type) " +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 3)");
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1, 3)");
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
                 "  language, script, comment) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1,'demo')");
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1, 1,'demo')");
+
+
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 1, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO medium_cdtoc (id, medium, cdtoc) VALUES (1, 1, 1)");
@@ -67,11 +64,10 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO recording_puid (id, puid, recording) VALUES (1, 1, 2)");
 
         stmt.addBatch("INSERT INTO track (id, recording, medium, position, name, artist_credit, length) "
-                        + " VALUES (1, 2, 1, 4, 2, 1, 33100)");
+                        + " VALUES (1, 2, 1, 4, 'Crocodiles (bonus disc)', 1, 33100)");
 
         stmt.addBatch("INSERT INTO recording(id, gid, name, artist_credit, length)"
-                        + " VALUES (2, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 1, 1, 33000)");
-
+                        + " VALUES (2, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Crocodiles', 1, 33000)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -84,22 +80,19 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     private void addReleaseTwo() throws Exception {
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id ,name) VALUES (1, 'Echo & The Bunnymen')");
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
-        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name,join_phrase) " +
-                " VALUES (1, 0, 16153, 1, '')");
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Echo & The Bunnymen', 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
+                " VALUES (1, 0, 16153, 'Echo & The Bunnymen', '')");
 
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
-        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit) " +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging," +
-                "  language, script) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
+                "  language, script, comment) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1, 1,'demo')");
 
         stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491241, 221, 1970,1,1)");
         stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
@@ -120,22 +113,18 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     private void addReleaseThree() throws Exception {
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
-
-        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment,)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Echo & The Bunnymen', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
-                " VALUES (1, 0, 16153, 1,'')");
+                " VALUES (1, 0, 16153, 'Echo & The Bunnymen', '')");
 
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
-        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit) " +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1)");
 
-        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, packaging," +
-                "  language, script) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, packaging, " +
+                "  language, script, comment) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1, 'demo')");
 
         stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 221, 1970,1,1)");
         stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (221, 'c3b8dbc9-c1ff-4743-9015-8d762819134g','United Kingdom','Kingdom of UK')");
@@ -168,18 +157,15 @@ public class ReleaseIndexTest extends AbstractIndexTest {
     private void addReleaseFour() throws Exception {
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Echo & The Bunnymen', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
-                " VALUES (1, 0, 16153, 1,'')");
+                " VALUES (1, 0, 16153, 'Echo & The Bunnymen', '')");
 
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
-        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1, 1)");
+        stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit,type ) " +
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1, 1)");
 
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,1)");
         stmt.addBatch("INSERT INTO release_group_secondary_type_join (release_group, secondary_type) VALUES (491240,2)");
@@ -219,18 +205,15 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO artist_name (id, name) VALUES (1, 'Echo & The Bunnymen')");
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
-                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 1, 1, 'a comment')");
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
+                " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Echo & The Bunnymen', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
-                " VALUES (1, 0, 16153, 1, '')");
+                " VALUES (1, 0, 16153, 'Echo & The Bunnymen', '')");
 
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (1, 'Crocodiles')");
-        stmt.addBatch("INSERT INTO release_name (id, name) VALUES (2, 'Crocodiles (bonus disc)')");
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit) " +
-                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 1, 1)");
+                " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1)");
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
                 "  language, script, barcode) " +
@@ -243,11 +226,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
 
-
-        stmt.addBatch("INSERT INTO label_name (id, name) VALUES (1, 'korova')");
-
         stmt.addBatch("INSERT INTO label (id, gid, name, sort_name,area) " +
-                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 1, 1, 1)");
+                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 'korova', 'korova', 1)");
 
         stmt.addBatch("INSERT INTO release_label (id, release, label, catalog_number) VALUES (1, 491240, 1, 'ECHO1')");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");

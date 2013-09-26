@@ -122,10 +122,9 @@ public class  ReleaseIndex extends DatabaseIndex {
         }
 
         addPreparedStatement("LABELINFOS",
-               "SELECT rl.release as releaseId, l.gid as labelId, ln.name as labelName, catalog_number " +
+               "SELECT rl.release as releaseId, l.gid as labelId, l.name as labelName, catalog_number " +
                " FROM release_label rl " +
                "  LEFT JOIN label l ON rl.label=l.id " +
-               "  LEFT JOIN label_name ln ON l.name = ln.id " +
                " WHERE rl.release BETWEEN ? AND ?");
 
         addPreparedStatement("MEDIUMS",
