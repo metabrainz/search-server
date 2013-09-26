@@ -79,34 +79,21 @@
 			</join>
 		</table>
 	</index>
-	
+
 	<!-- Release  -->
 	<index name='release'>
 		<table name='release'>
+            <!-- TODO this code and also cdtoc not working gives nullpointerexception 145 ChangesAnalyzer
+            <join src_field='id' target_field='release'>
+                <table name='medium' used_fields='name'/>
+            </join>
+            -->
 			<join src_field='id' target_field='release'>
 				<table name='release_label'>
 					<join src_field='label' target_field='id'>
-						<table name='label' used_fields='name' />
+						<table name='label' used_fields='name'/>
 					</join>
 				</table>
-			</join>
-			<join src_field='id' target_field='release'>
-				<table name='medium' used_fields='tracklist,release,format'>
-					<join src_field='tracklist' target_field='id'>
-						<table name='tracklist'>
-							<join src_field='id' target_field='tracklist'>
-								<table name='track' used_fields='tracklist,recording'>
-									<join src_field='recording' target_field='recording'>
-										<table name ='recording_puid' />
-									</join>
-								</table>
-							</join>						
-						</table>
-					</join>
-					<join src_field='id' target_field='medium'>
-						<table name='medium_cdtoc' />
-					</join>
-				</table>					
 			</join>
 			<join src_field='id' target_field='id'>
 				<table name='release_meta' />
@@ -127,7 +114,7 @@
 			</join>
 		</table>
 	</index>
-	
+
 	<!-- Recording  -->
 	<index name='recording'>
 		<table name='recording'>
@@ -142,26 +129,22 @@
 			</join>
 			<join src_field='id' target_field='recording'>
 				<table name='track'>
-					<join src_field='tracklist' target_field='id'>
-						<table name='tracklist'>
-							<join src_field='id' target_field='tracklist'>
-								<table name='medium' used_fields='tracklist,release' >
-									<join src_field='release' target_field='id'>
-										<table name='release'>
-											<join src_field='release_group' target_field='id'>
-												<table name='release_group' used_fields='type'>
-													<join src_field='id' target_field='release_group'>
-														<table name='release_group_secondary_type_join' />
-													</join>
-												</table>
-											</join>
-										</table>
-									</join>
-								</table>
-							</join>
-						</table>
-					</join>
-				</table>					
+                    <join src_field='medium' target_field='id'>
+                        <table name='medium' used_fields='release' >
+                            <join src_field='release' target_field='id'>
+                                <table name='release'>
+                                    <join src_field='release_group' target_field='id'>
+                                        <table name='release_group' used_fields='type'>
+                                            <join src_field='id' target_field='release_group'>
+                                                <table name='release_group_secondary_type_join' />
+                                            </join>
+                                        </table>
+                                    </join>
+                                </table>
+                            </join>
+                        </table>
+                    </join>
+                </table>
 			</join>
 			<join src_field='artist_credit' target_field='artist_credit'>
 				<table name='artist_credit_name'>
