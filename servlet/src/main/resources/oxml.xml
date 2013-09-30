@@ -5,6 +5,11 @@
     <java-types>
         <java-type name="Metadata">
             <java-attributes>
+                <xml-element java-attribute="placeList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Metadata">
+            <java-attributes>
                 <xml-element java-attribute="areaList" xml-path="."/>
             </java-attributes>
         </java-type>
@@ -195,6 +200,11 @@
                 <xml-element java-attribute="area" name="areas"/>
             </java-attributes>
         </java-type>
+        <java-type name="PlaceList">
+            <java-attributes>
+                <xml-element java-attribute="place" name="places"/>
+            </java-attributes>
+        </java-type>
         <java-type name="ReleaseList">
             <java-attributes>
                 <xml-element java-attribute="release" name="releases"/>
@@ -281,6 +291,11 @@
             </java-attributes>
         </java-type>
         <java-type name="DefAreaElementInner">
+            <java-attributes>
+                <xml-element java-attribute="aliasList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Place">
             <java-attributes>
                 <xml-element java-attribute="aliasList" xml-path="."/>
             </java-attributes>

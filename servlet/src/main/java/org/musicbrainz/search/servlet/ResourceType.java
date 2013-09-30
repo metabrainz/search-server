@@ -13,6 +13,7 @@ public enum ResourceType {
   AREA("area", AreaIndex.class, AreaSearch.class, AreaDismaxSearch.class, MusicbrainzSimilarity.class, false),
   ARTIST("artist", ArtistIndex.class, ArtistSearch.class, ArtistDismaxSearch.class, MusicbrainzSimilarity.class, true),
   LABEL("label", LabelIndex.class, LabelSearch.class, LabelDismaxSearch.class, MusicbrainzSimilarity.class, true),
+  PLACE("place", PlaceIndex.class, PlaceSearch.class, PlaceDismaxSearch.class, MusicbrainzSimilarity.class, false),
   RELEASE("release", ReleaseIndex.class, ReleaseSearch.class, ReleaseDismaxSearch.class, true),
   RELEASE_GROUP("release-group", ReleaseGroupIndex.class, ReleaseGroupSearch.class, ReleaseGroupDismaxSearch.class, ReleaseGroupSimilarity.class, true),
   RECORDING("recording", RecordingIndex.class, RecordingSearch.class, RecordingDismaxSearch.class, RecordingSimilarity.class, true),

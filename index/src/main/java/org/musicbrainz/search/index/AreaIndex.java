@@ -63,7 +63,7 @@ public class AreaIndex extends DatabaseIndex {
 	}
 	
     public Analyzer getAnalyzer() {
-        return DatabaseIndex.getAnalyzer(TagIndexField.class);
+        return DatabaseIndex.getAnalyzer(AreaIndexField.class);
     }
 
     public int getMaxId() throws SQLException {
@@ -84,7 +84,7 @@ public class AreaIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
 
-        addPreparedStatement("AREA",
+        addPreparedStatement("PLACE",
                         "SELECT a.id, a.gid, a.name, a.sort_name, at.name as type, " +
                         "   begin_date_year, begin_date_month, begin_date_day, " +
                         "  end_date_year, end_date_month, end_date_day, ended" +
@@ -217,7 +217,7 @@ public class AreaIndex extends DatabaseIndex {
             iso3List.getIso31663Code().add(rs.getString("code"));
         }
 
-        st = getPreparedStatement("AREA");
+        st = getPreparedStatement("PLACE");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();

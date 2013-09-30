@@ -1,0 +1,272 @@
+/* Copyright (c) 2013 Paul Taylor
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the MusicBrainz project nor the names of the
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package org.musicbrainz.search.index;
+
+import com.google.common.base.Strings;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.musicbrainz.mmd2.*;
+import org.musicbrainz.search.MbDocument;
+import org.postgresql.geometric.PGpoint;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+
+public class PlaceIndex extends DatabaseIndex {
+
+    public static final String INDEX_NAME = "place";
+
+    public static boolean isUsingH2Db = false;
+
+    public PlaceIndex(Connection dbConnection) {
+        super(dbConnection);
+    }
+
+    public PlaceIndex() { }
+
+    public String getName() {
+        return PlaceIndex.INDEX_NAME;
+    }
+
+	@Override
+	public IndexField getIdentifierField() {
+		return PlaceIndexField.ID;
+	}
+	
+    public Analyzer getAnalyzer() {
+        return DatabaseIndex.getAnalyzer(PlaceIndexField.class);
+    }
+
+    public int getMaxId() throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT MAX(id) FROM place");
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    public int getNoOfRows(int maxId) throws SQLException {
+        Statement st = dbConnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM place WHERE id<="+maxId);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    @Override
+    public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
+
+
+        addPreparedStatement("PLACE",
+                        "SELECT p.coordinates, p.id, p.gid, p.name, p.address, pt.name as type, " +
+                        "   begin_date_year, begin_date_month, begin_date_day, " +
+                        "  end_date_year, end_date_month, end_date_day, ended" +
+                        " FROM place p" +
+                        "  LEFT JOIN place_type pt ON p.type = pt.id " +
+                        " WHERE p.id BETWEEN ? AND ? " +
+                        " ORDER BY p.id");
+
+        addPreparedStatement("ALIASES",
+                "SELECT p.place as place, p.name as alias, p.sort_name as alias_sortname, p.primary_for_locale, p.locale, att.name as type," +
+                        "p.begin_date_year, p.begin_date_month, p.begin_date_day, p.end_date_year, p.end_date_month, p.end_date_day" +
+                        " FROM place_alias p" +
+                        "  LEFT JOIN place_alias_type att on (p.type=att.id)" +
+                        " WHERE place BETWEEN ? AND ?" +
+                        " ORDER BY place, alias, alias_sortname");
+
+
+    }
+
+
+    public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+
+        ObjectFactory of = new ObjectFactory();
+
+        // Get place aliases
+        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
+        PreparedStatement st = getPreparedStatement("ALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int placeId = rs.getInt("place");
+            Set<Alias> list;
+            if (!aliases.containsKey(placeId)) {
+                list = new LinkedHashSet<Alias>();
+                aliases.put(placeId, list);
+            } else {
+                list = aliases.get(placeId);
+            }
+            Alias alias = of.createAlias();
+            alias.setContent(rs.getString("alias"));
+            alias.setSortName(rs.getString("alias_sortname"));
+            boolean isPrimary = rs.getBoolean("primary_for_locale");
+            if(isPrimary) {
+                alias.setPrimary("primary");
+            }
+            String locale = rs.getString("locale");
+            if(locale!=null) {
+                alias.setLocale(locale);
+            }
+            String type = rs.getString("type");
+            if(type!=null) {
+                alias.setType(type);
+            }
+
+            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+            if(!Strings.isNullOrEmpty(begin))  {
+                alias.setBeginDate(begin);
+            }
+
+            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+            if(!Strings.isNullOrEmpty(end))  {
+                alias.setEndDate(end);
+            }
+            list.add(alias);
+        }
+        rs.close();
+
+        st = getPreparedStatement("PLACE");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            indexWriter.addDocument(documentFromResultSet(rs, aliases));
+        }
+        rs.close();
+
+    }
+
+    public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer, Set<Alias>> aliases) throws SQLException {
+
+        MbDocument doc = new MbDocument();
+
+        ObjectFactory of = new ObjectFactory();
+        Place     place = of.createPlace();
+
+        int placeId = rs.getInt("id");
+        doc.addField(PlaceIndexField.ID, placeId);
+
+        String guid = rs.getString("gid");
+        doc.addField(PlaceIndexField.PLACE_ID, guid);
+        place.setId(guid);
+
+        String name = rs.getString("name");
+        doc.addField(PlaceIndexField.PLACE, name);
+        place.setName(name);
+
+        String type = rs.getString("type");
+        doc.addFieldOrUnknown(PlaceIndexField.TYPE, type);
+        if (!Strings.isNullOrEmpty(type)) {
+            place.setType(type);
+        }
+
+
+        float latitude = 0.0f;
+        float longitude= 0.0f;
+        boolean isCoordinates = false;
+        if(!isUsingH2Db)
+        {
+            PGpoint pgPoint = (PGpoint)rs.getObject("coordinates");
+            if(pgPoint!=null)
+            {
+                latitude=(float)pgPoint.x;
+                longitude=(float)pgPoint.y;
+                isCoordinates=true;
+            }
+        }
+        else
+        {
+            Object[] coords = (Object[])rs.getObject("coordinates");
+            if(coords!=null)
+            {
+                latitude=Float.valueOf(coords[0].toString());
+                longitude=Float.valueOf(coords[1].toString());
+                isCoordinates=true;
+            }
+        }
+
+        if(isCoordinates)
+        {
+            Coordinates coordinates = of.createCoordinates();
+            coordinates.setLatitude(String.valueOf(latitude));
+            coordinates.setLongitude(String.valueOf(longitude));
+            place.setCoordinates(coordinates);
+            doc.addNumericField(PlaceIndexField.LAT,latitude);
+            doc.addNumericField(PlaceIndexField.LONG,longitude);
+        }
+
+        String address = rs.getString("address");
+        doc.addField(PlaceIndexField.ADDRESS, address);
+        place.setAddress(address);
+
+
+        boolean ended = rs.getBoolean("ended");
+        doc.addFieldOrUnknown(ArtistIndexField.ENDED, Boolean.toString(ended));
+
+        String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+        doc.addNonEmptyField(ArtistIndexField.BEGIN, begin);
+
+        String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+        doc.addNonEmptyField(ArtistIndexField.END, end);
+
+        LifeSpan lifespan = of.createLifeSpan();
+        place.setLifeSpan(lifespan);
+        if(!Strings.isNullOrEmpty(begin)) {
+            lifespan.setBegin(begin);
+        }
+        if(!Strings.isNullOrEmpty(end)) {
+            lifespan.setEnd(end);
+        }
+        lifespan.setEnded(Boolean.toString(ended));
+
+
+        if (aliases.containsKey(placeId)) {
+            AliasList aliasList = of.createAliasList();
+            for (Alias nextAlias : aliases.get(placeId)) {
+                doc.addField(PlaceIndexField.ALIAS, nextAlias.getContent());
+                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
+                    doc.addField(PlaceIndexField.ALIAS, nextAlias.getSortName());
+                }
+                aliasList.getAlias().add(nextAlias);
+            }
+            place.setAliasList(aliasList);
+        }
+
+        String store = MMDSerializer.serialize(place);
+        doc.addField(PlaceIndexField.PLACE_STORE, store);
+        return doc.getLuceneDocument();
+    }
+
+}

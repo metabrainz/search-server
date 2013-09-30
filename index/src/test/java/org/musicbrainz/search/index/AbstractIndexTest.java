@@ -71,6 +71,15 @@ public abstract class AbstractIndexTest {
         assertEquals(value, NumericUtils.prefixCodedToInt(termsEnum.term()));
     }
 
+    protected void checkTerm(IndexReader ir, IndexField field, float value) throws IOException {
+
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms(field.getName());
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(value, NumericUtils.sortableIntToFloat(NumericUtils.prefixCodedToInt(termsEnum.term())),0);
+    }
+
     /** Check nth term of given field, terms are listed lexigraphically
      *  Use when field is indexed. but not stored
      *
@@ -183,7 +192,24 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE link_type");
                 stmt.addBatch("DROP TABLE link_attribute");
                 stmt.addBatch("DROP TABLE link_attribute_type");
-                
+
+                stmt.addBatch("DROP TABLE place");
+                stmt.addBatch("DROP TABLE place_gid_redirect");
+                stmt.addBatch("DROP TABLE place_type");
+                stmt.addBatch("DROP TABLE place_alias");
+                stmt.addBatch("DROP TABLE place_alias_type");
+                stmt.addBatch("DROP TABLE place_annotation");
+                stmt.addBatch("DROP TABLE l_area_place");
+                stmt.addBatch("DROP TABLE l_artist_place");
+                stmt.addBatch("DROP TABLE l_label_place");
+                stmt.addBatch("DROP TABLE l_place_place");
+                stmt.addBatch("DROP TABLE l_place_recording");
+                stmt.addBatch("DROP TABLE l_place_release");
+                stmt.addBatch("DROP TABLE l_place_release_group");
+                stmt.addBatch("DROP TABLE l_place_url");
+                stmt.addBatch("DROP TABLE l_place_work");
+                stmt.addBatch("DROP TABLE l_place_tag");
+
                 stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE dbmirror_pending");
                 stmt.addBatch("DROP TABLE dbmirror_pendingdata");
@@ -211,6 +237,7 @@ public abstract class AbstractIndexTest {
             setupAnnotationTables(stmt);
             setupCDStubTables(stmt);
             setupWorkTables(stmt);
+            setupPlaceTables(stmt);
             setupReplicationTables(stmt);
             
             insertReferenceData(stmt);
@@ -859,6 +886,178 @@ public abstract class AbstractIndexTest {
                 "  last_updated timestamp" +
                 ")");
     }
+
+    protected void setupPlaceTables(Statement stmt) throws Exception {
+
+        PlaceIndex.isUsingH2Db=true;
+
+        stmt.addBatch("create domain point as array check (array_length(value) = 2)");
+        stmt.addBatch("CREATE TABLE place (" +
+                "    id                  SERIAL," +
+                "    gid                 uuid," +
+                "    name                VARCHAR," +
+                "    type                INTEGER," +
+                "    address             VARCHAR  ," +
+                "    area                INTEGER," +
+                "    coordinates         POINT," +
+                "    comment             VARCHAR(255)," +
+                "    edits_pending       INTEGER  ," +
+                "    last_updated        TIMESTAMP," +
+                "    begin_date_year     SMALLINT," +
+                "    begin_date_month    SMALLINT," +
+                "    begin_date_day      SMALLINT," +
+                "    end_date_year       SMALLINT," +
+                "    end_date_month      SMALLINT," +
+                "    end_date_day        SMALLINT," +
+                "    ended               BOOLEAN " +
+                ")");
+
+        stmt.addBatch("CREATE TABLE place_gid_redirect" +
+                "(" +
+                "    gid                 UUID NOT NULL," +
+                "    new_id              INTEGER NOT NULL," +
+                "    created             TIMESTAMP" +
+                ")");
+
+
+
+        stmt.addBatch("CREATE TABLE place_type (" +
+                "    id                  SERIAL," +
+                "    name                VARCHAR(255) NOT NULL" +
+                ")");
+
+
+        stmt.addBatch("CREATE TABLE place_alias" +
+                "(" +
+                "    id                  SERIAL," +
+                "    place               INTEGER NOT NULL," +
+                "    name                VARCHAR NOT NULL," +
+                "    locale              VARCHAR," +
+                "    edits_pending       INTEGER ," +
+                "    last_updated        TIMESTAMP," +
+                "    type                INTEGER," +
+                "    sort_name           VARCHAR ," +
+                "    begin_date_year     SMALLINT," +
+                "    begin_date_month    SMALLINT," +
+                "    begin_date_day      SMALLINT," +
+                "    end_date_year       SMALLINT," +
+                "    end_date_month      SMALLINT," +
+                "    end_date_day        SMALLINT," +
+                "    primary_for_locale  BOOLEAN ," +
+                "    ended               BOOLEAN " +
+                ")");
+
+        stmt.addBatch("CREATE TABLE place_alias_type (" +
+                "    id SERIAL," +
+                "    name TEXT NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE place_annotation" +
+                "(" +
+                "    place               INTEGER NOT NULL," +
+                "    annotation          INTEGER NOT NULL," +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_area_place" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_artist_place" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_label_place" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_place_place" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_place_recording" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_place_release" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_place_release_group" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_place_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL ," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_place_work" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE place_tag" +
+                "(" +
+                "    place               INTEGER NOT NULL," +
+                "    tag                 INTEGER NOT NULL," +
+                "    count               INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+    }
+
 
     protected void setupReplicationTables(Statement stmt) throws Exception {
         

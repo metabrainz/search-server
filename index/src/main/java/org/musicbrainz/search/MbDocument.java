@@ -94,6 +94,20 @@ public class MbDocument {
     }
 
     /**
+     * Add float numeric field, handled specially so that ranges searches work properly
+     *
+     * @param field
+     * @param value
+     */
+    public void addNumericField(IndexField field,Float value) {
+
+        BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
+        NumericUtils.intToPrefixCoded(NumericUtils.floatToSortableInt(value), 0, bytes);
+        doc.add(new Field(field.getName(),bytes.utf8ToString(), field.getFieldType()));
+    }
+
+
+    /**
      * Add long numeric field, handled specially so that ranges searches work properly
      *
      * @param field
