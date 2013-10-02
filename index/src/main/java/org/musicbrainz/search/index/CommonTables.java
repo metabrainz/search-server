@@ -54,7 +54,7 @@ public class CommonTables  {
 
     /**
      * Create table showing all artist credits, then create index
-     * for the table.
+     * for the table, a merge of required artist credit_name & artist information
      *
      * @throws SQLException
      */
@@ -68,19 +68,14 @@ public class CommonTables  {
                 "SELECT acn.artist_credit as artist_credit, " +
                 "  acn.position as pos, " +
                 "  acn.join_phrase as joinphrase, " +
+                "  a.id," +
                 "  a.gid as artistId,  " +
                 "  a.comment as comment, " +
                 "  a.name as artistName, " +
                 "  acn.name as artistCreditName, " +
-                "  a.sort_name as artistSortName, " +
-                "  aa1.aliasName " +
+                "  a.sort_name as artistSortName " +
                 " FROM artist_credit_name acn  " +
                 "  INNER JOIN artist a ON a.id=acn.artist " +
-                "  LEFT JOIN ( SELECT aa.artist, MAX(aa.name) AS aliasName FROM" +
-                "     artist_alias aa " +
-                "     WHERE aa.locale='" + ENGLISH_ISO_CODE + "'" +
-                "     GROUP BY aa.artist) AS aa1"  +
-                "     ON a.id=aa1.artist " +
                 " ORDER BY acn.artist_credit,acn.position ");
         clock.stop();
         System.out.println("tmp_artistcredit:Finished:"+ Utils.formatClock(clock));

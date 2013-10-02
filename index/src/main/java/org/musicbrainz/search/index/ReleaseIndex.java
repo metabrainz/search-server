@@ -131,12 +131,35 @@ public class  ReleaseIndex extends DatabaseIndex {
                 "  a.comment, " +
                 "  a.artistName, " +
                 "  a.artistCreditName, " +
-                "  a.artistSortName, " +
-                "  a.aliasName " +
+                "  a.artistSortName " +
                 " FROM release AS r " +
                 "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
+
+        addPreparedStatement("ARTISTCREDITALIASES",
+                "SELECT r.id as releaseId," +
+                " a.artist_credit, " +
+                " a.pos, " +
+                " aa.name," +
+                " aa.sort_name," +
+                " aa.primary_for_locale," +
+                " aa.locale," +
+                " aa.begin_date_year," +
+                " aa.begin_date_month," +
+                " aa.begin_date_day," +
+                " aa.end_date_year," +
+                " aa.end_date_month," +
+                " aa.end_date_day," +
+                " att.name as type" +
+                " FROM release AS r " +
+                "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
+                "  INNER JOIN artist_alias aa ON a.id=aa.artist" +
+                "  LEFT  JOIN artist_alias_type att on (aa.type=att.id)" +
+                " WHERE r.id BETWEEN ? AND ?  " +
+                " AND a.artistId!='" + ArtistIndex.VARIOUS_ARTIST_MBID +"'" +
+                " AND a.artistId!='" + ArtistIndex.UNKNOWN_ARTIST_MBID  +"'" +
+                " ORDER BY r.id, a.pos, aa.name");
 
         addPreparedStatement("SECONDARYTYPES",
                 "SELECT rg.name as type, r.id as rid" +
@@ -317,23 +340,7 @@ public class  ReleaseIndex extends DatabaseIndex {
 
         //Artist Credits
         artistClock.resume();
-        st = getPreparedStatement("ARTISTCREDITS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        Map<Integer, ArtistCreditWrapper> artistCredits
-                = ArtistCreditHelper.completeArtistCreditFromDbResults
-                     (rs,
-                      "releaseId",
-                      "artist_Credit",
-                      "artistId",
-                      "artistName",
-                      "artistSortName",
-                      "comment",
-                      "joinphrase",
-                      "artistCreditName",
-                      "aliasName");
-        rs.close();
+        Map<Integer, ArtistCreditWrapper> artistCredits = updateArtistCreditWithAliases(loadArtistCredits(min, max),min, max);
         artistClock.suspend();
 
         Map<Integer, List<String>> secondaryTypes = loadSecondaryTypes(min, max);
@@ -348,6 +355,53 @@ public class  ReleaseIndex extends DatabaseIndex {
         }
         rs.close();
     }
+
+    /**
+     * Load Artist Credits
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, ArtistCreditWrapper> loadArtistCredits(int min, int max) throws SQLException, IOException {
+
+        //Artist Credits
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        Map<Integer, ArtistCreditWrapper> artistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                (rs,
+                        "releaseId",
+                        "artist_Credit",
+                        "artistId",
+                        "artistName",
+                        "artistSortName",
+                        "comment",
+                        "joinphrase",
+                        "artistCreditName"
+                );
+        rs.close();
+        return artistCredits;
+    }
+
+    private Map<Integer, ArtistCreditWrapper> updateArtistCreditWithAliases(
+            Map<Integer, ArtistCreditWrapper> artistCredits,
+            int min,
+            int max)
+            throws SQLException, IOException {
+
+        //Artist Credit Aliases
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        return ArtistCreditHelper.updateArtistCreditWithAliases(artistCredits,"releaseId", rs);
+    }
+
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<String>> secondaryTypes,

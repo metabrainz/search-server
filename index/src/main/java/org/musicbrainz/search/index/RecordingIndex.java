@@ -154,12 +154,36 @@ public class RecordingIndex extends DatabaseIndex {
                         "  a.comment, " +
                         "  a.artistName, " +
                         "  a.artistCreditName, " +
-                        "  a.artistSortName, " +
-                        "  a.aliasName " +
+                        "  a.artistSortName " +
                         " FROM recording AS r " +
                         "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
                         " WHERE r.id BETWEEN ? AND ?  " +
                         " ORDER BY r.id, a.pos");
+
+        addPreparedStatement("ARTISTCREDITALIASES",
+                "SELECT r.id as recordingId," +
+                        " a.artist_credit, " +
+                        " a.pos, " +
+                        " aa.name," +
+                        " aa.sort_name," +
+                        " aa.primary_for_locale," +
+                        " aa.locale," +
+                        " aa.begin_date_year," +
+                        " aa.begin_date_month," +
+                        " aa.begin_date_day," +
+                        " aa.end_date_year," +
+                        " aa.end_date_month," +
+                        " aa.end_date_day," +
+                        " att.name as type" +
+                        " FROM recording AS r " +
+                        "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
+                        "  INNER JOIN artist_alias aa ON a.id=aa.artist" +
+                        "  LEFT  JOIN artist_alias_type att on (aa.type=att.id)" +
+                        " WHERE r.id BETWEEN ? AND ?  " +
+                        " AND a.artistId!='" + ArtistIndex.VARIOUS_ARTIST_MBID +"'" +
+                        " AND a.artistId!='" + ArtistIndex.UNKNOWN_ARTIST_MBID  +"'" +
+                        " ORDER BY r.id, a.pos, aa.name");
+
 
         addPreparedStatement("TRACKARTISTCREDITS",
                 "SELECT t.id as id, " +
@@ -170,13 +194,35 @@ public class RecordingIndex extends DatabaseIndex {
                         "  a.comment, " +
                         "  a.artistName, " +
                         "  a.artistCreditName, " +
-                        "  a.artistSortName, " +
-                        "  a.aliasName " +
+                        "  a.artistSortName " +
                         " FROM track AS t " +
                         "  INNER JOIN tmp_artistcredit a ON t.artist_credit=a.artist_credit " +
                         " WHERE t.recording BETWEEN ? AND ?  " +
                         " ORDER BY t.recording, a.pos");
 
+        addPreparedStatement("TRACKARTISTCREDITALIASES",
+                "SELECT r.id as recordingId," +
+                        " a.artist_credit, " +
+                        " a.pos, " +
+                        " aa.name," +
+                        " aa.sort_name," +
+                        " aa.primary_for_locale," +
+                        " aa.locale," +
+                        " aa.begin_date_year," +
+                        " aa.begin_date_month," +
+                        " aa.begin_date_day," +
+                        " aa.end_date_year," +
+                        " aa.end_date_month," +
+                        " aa.end_date_day," +
+                        " att.name as type" +
+                        " FROM track AS r " +
+                        "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
+                        "  INNER JOIN artist_alias aa ON a.id=aa.artist" +
+                        "  LEFT  JOIN artist_alias_type att on (aa.type=att.id)" +
+                        " WHERE r.recording BETWEEN ? AND ?  " +
+                        " AND a.artistId!='" + ArtistIndex.VARIOUS_ARTIST_MBID +"'" +
+                        " AND a.artistId!='" + ArtistIndex.UNKNOWN_ARTIST_MBID  +"'" +
+                        " ORDER BY r.id, a.pos, aa.name");
         releases =
                 "SELECT " +
                         "  id as releaseKey, gid as releaseid, name as releasename, type, " +
@@ -301,11 +347,39 @@ public class RecordingIndex extends DatabaseIndex {
                         "artistSortName",
                         "comment",
                         "joinphrase",
-                        "artistCreditName",
-                        "aliasName");
+                        "artistCreditName"
+                );
         rs.close();
         artistClock.suspend();
         return artistCredits;
+    }
+
+    private Map<Integer, ArtistCreditWrapper> updateArtistCreditWithAliases(
+            Map<Integer, ArtistCreditWrapper> artistCredits,
+            int min,
+            int max)
+            throws SQLException, IOException {
+
+        //Artist Credit Aliases
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        return ArtistCreditHelper.updateArtistCreditWithAliases(artistCredits,"recordingId", rs);
+    }
+
+    private Map<Integer, ArtistCreditWrapper> updateTrackArtistCreditWithAliases(
+            Map<Integer, ArtistCreditWrapper> artistCredits,
+            int min,
+            int max)
+            throws SQLException, IOException {
+
+        //Artist Credit Aliases
+        PreparedStatement st = getPreparedStatement("TRACKARTISTCREDITALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        return ArtistCreditHelper.updateArtistCreditWithAliases(artistCredits,"recordingId", rs);
     }
 
     /**
@@ -335,8 +409,8 @@ public class RecordingIndex extends DatabaseIndex {
                         "artistSortName",
                         "comment",
                         "joinphrase",
-                        "artistCreditName",
-                        "aliasName");
+                        "artistCreditName"
+                );
         rs.close();
         trackArtistClock.suspend();
         return artistCredits;
@@ -587,12 +661,12 @@ public class RecordingIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        Map<Integer, List<Tag>> tags = loadTags(min, max);
-        Map<Integer, List<String>> isrcs = loadISRCs(min, max);
-        Map<Integer, ArtistCreditWrapper> artistCredits = loadArtists(min, max);
-        Map<Integer, ArtistCreditWrapper> trackArtistCredits = loadTrackArtists(min, max);
-        Map<Integer, List<TrackWrapper>> tracks = loadTracks(min, max);
-        Map<Integer, Release> releases = loadReleases(tracks);
+        Map<Integer, List<Tag>>             tags                = loadTags(min, max);
+        Map<Integer, List<String>>          isrcs               = loadISRCs(min, max);
+        Map<Integer, ArtistCreditWrapper>   artistCredits       = updateArtistCreditWithAliases(loadArtists(min, max), min, max);
+        Map<Integer, ArtistCreditWrapper>   trackArtistCredits  = updateTrackArtistCreditWithAliases(loadTrackArtists(min, max), min, max);
+        Map<Integer, List<TrackWrapper>>    tracks              = loadTracks(min, max);
+        Map<Integer, Release>               releases            = loadReleases(tracks);
 
         PreparedStatement st = getPreparedStatement("RECORDINGS");
         st.setInt(1, min);

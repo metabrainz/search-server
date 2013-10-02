@@ -148,4 +148,37 @@ public class ReleaseGroupWriter extends ResultsWriter {
         }
         list.add(releaseGroup);
     }
+
+    /**
+     * Overridden to ensure all attributes are set for each alias
+     *
+     * @param metadata
+     */
+    @Override
+    public void adjustForJson(Metadata metadata) {
+
+        if (metadata.getReleaseGroupList().getReleaseGroup().size()>0) {
+            for(ReleaseGroup releaseGroup:metadata.getReleaseGroupList().getReleaseGroup()) {
+                if(releaseGroup.getArtistCredit()!=null) {
+                    for (NameCredit nc :releaseGroup.getArtistCredit().getNameCredit())
+                    {
+                        if(nc.getArtist()!=null && nc.getArtist().getAliasList()!=null)
+                        {
+                            for (Alias alias : nc.getArtist().getAliasList().getAlias()) {
+                                //On Xml output as primary, but in json they have changed to true/false
+                                if (alias.getPrimary() == null) {
+                                    alias.setPrimary("false");
+                                }
+                                else {
+                                    alias.setPrimary("true");
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
 }

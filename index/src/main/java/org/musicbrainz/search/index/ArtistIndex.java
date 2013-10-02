@@ -42,8 +42,11 @@ public class ArtistIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "artist";
 
-    //Special purpose Artist
-    private static final String DELETED_ARTIST_MBID = "c06aa285-520e-40c0-b776-83d2c9e8a6d1";
+    //Special purpose Artists
+    public  static final String DELETED_ARTIST_MBID = "c06aa285-520e-40c0-b776-83d2c9e8a6d1";
+    public  static final String VARIOUS_ARTIST_MBID = "89ad4ac3-39f7-470e-963a-56509c546377";
+    public  static final String UNKNOWN_ARTIST_MBID = "125ec42a-7229-4250-afc5-e057484327fe";
+
     private static final String PERSON = "Person";
 
     private CharsetEncoder latinEncoder;

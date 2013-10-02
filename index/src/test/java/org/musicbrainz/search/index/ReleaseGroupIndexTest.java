@@ -132,15 +132,19 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (1, '99845d0c-f239-4051-a6b1-4b5e9f7ede0b', 'Erich Kunzel', 'Kunzel, Eric', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, sort_name, locale, edits_pending, last_updated) VALUES (1, 1, 'Erich Kunzstel','Kunzstel, Erich', 'en',1,null)");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, sort_name, locale, edits_pending, last_updated) VALUES (2, 1, 'Erich Kunzstelein','Kunzstelein, Erich', 'de',1,null)");
+
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (2, 'd8fbd94c-cd06-4e8b-a559-761ad969d07e', 'The Cincinnati Pops Orchestra', 'Cincinnati Pops Orchestra, The', 'a comment')");
+
 
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Erich Kunzel and Kunzel, Eric', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase)" +
                 " VALUES (1, 0, 1, 'Erich Kunzel', ' and ')");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase)" +
                 " VALUES (1, 1, 2, 'Cincinnati Pops','')");
-        
+
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
                 "    VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Epics', 1, 1)");
 
@@ -366,6 +370,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             tr.next();
             assertEquals("kunzel", tr.term().utf8ToString());
             tr.next();
+            assertEquals("kunzstel", tr.term().utf8ToString());
+            tr.next();
             assertEquals("orchestra", tr.term().utf8ToString());
             tr.next();
             assertEquals("pops", tr.term().utf8ToString());
@@ -401,6 +407,15 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals("Erich Kunzel", ac.getNameCredit().get(0).getArtist().getName());
             assertEquals("Cincinnati Pops", ac.getNameCredit().get(1).getName());
             assertEquals("The Cincinnati Pops Orchestra", ac.getNameCredit().get(1).getArtist().getName());
+            assertEquals(2, ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().size());
+            assertNull(ac.getNameCredit().get(1).getArtist().getAliasList());
+            assertEquals("Erich Kunzstel", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(0).getContent());
+            assertEquals("Erich Kunzstelein", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(1).getContent());
+            assertEquals("Kunzstel, Erich", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(0).getSortName());
+            assertEquals("Kunzstelein, Erich", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(1).getSortName());
+            assertEquals("en", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(0).getLocale());
+            assertEquals("de", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(1).getLocale());
+
         }
         ir.close();
 

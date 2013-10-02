@@ -115,6 +115,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_alias(id, artist, name, sort_name, locale, edits_pending, last_updated) VALUES (1, 16153, 'Echo & Bunneymen','Bunneymen & Echo', 'en',1,null)");
+
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Echo & The Bunnymen', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
                 " VALUES (1, 0, 16153, 'Echo & The Bunnymen', '')");
@@ -863,6 +865,10 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertNotNull(release.getMediumList());
             assertEquals(1,release.getMediumList().getCount().intValue());
             assertEquals(10,release.getMediumList().getTrackCount().intValue());
+
+            ArtistCredit ac = release.getArtistCredit();
+            assertEquals("Echo & Bunneymen", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(0).getContent());
+            assertEquals("Bunneymen & Echo", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(0).getSortName());
 
             ReleaseEventList rel = release.getReleaseEventList();
             assertNotNull(rel);

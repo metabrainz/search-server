@@ -32,7 +32,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.similarities.Similarity;
-import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
 
@@ -113,12 +113,35 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                 "  a.comment, " +
                 "  a.artistName, " +
                 "  a.artistCreditName, " +
-                "  a.artistSortName, " +
-                "  a.aliasName " +
+                "  a.artistSortName " +
                 " FROM release_group AS r " +
                 "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
                 " WHERE r.id BETWEEN ? AND ?  " +
                 " ORDER BY r.id, a.pos");
+
+        addPreparedStatement("ARTISTCREDITALIASES",
+                "SELECT r.id as releaseGroupId," +
+                " a.artist_credit, " +
+                " a.pos, " +
+                " aa.name," +
+                " aa.sort_name," +
+                " aa.primary_for_locale," +
+                " aa.locale," +
+                " aa.begin_date_year," +
+                " aa.begin_date_month," +
+                " aa.begin_date_day," +
+                " aa.end_date_year," +
+                " aa.end_date_month," +
+                " aa.end_date_day," +
+                " att.name as type" +
+                " FROM release_group AS r " +
+                "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
+                "  INNER JOIN artist_alias aa ON a.id=aa.artist" +
+                "  LEFT  JOIN artist_alias_type att on (aa.type=att.id)" +
+                " WHERE r.id BETWEEN ? AND ?  " +
+                " AND a.artistId!='" + ArtistIndex.VARIOUS_ARTIST_MBID +"'" +
+                " AND a.artistId!='" + ArtistIndex.UNKNOWN_ARTIST_MBID  +"'" +
+                " ORDER BY r.id, a.pos, aa.name");
 
         addPreparedStatement("SECONDARYTYPES",
                 "SELECT rg.name as type, rgj.release_group as release_group " +
@@ -138,10 +161,10 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        Map<Integer, List<Tag>> tags                        = loadTags(min, max);
-        Map<Integer, List<ReleaseWrapper>> releases         = loadReleases(min, max);
-        Map<Integer, ArtistCreditWrapper> artistCredits     = loadArtistCredits(min, max);
-        Map<Integer, List<String>> secondaryTypes           = loadSecondaryTypes(min, max);
+        Map<Integer, List<Tag>> tags                            = loadTags(min, max);
+        Map<Integer, List<ReleaseWrapper>> releases             = loadReleases(min, max);
+        Map<Integer, ArtistCreditWrapper> artistCredits         = updateArtistCreditWithAliases(loadArtistCredits(min, max),min, max);
+        Map<Integer, List<String>> secondaryTypes               = loadSecondaryTypes(min, max);
         //ReleaseGroups
         PreparedStatement st = getPreparedStatement("RELEASEGROUPS");
         st.setInt(1, min);
@@ -239,10 +262,24 @@ public class ReleaseGroupIndex extends DatabaseIndex {
                         "artistSortName",
                         "comment",
                         "joinphrase",
-                        "artistCreditName",
-                        "aliasName");
+                        "artistCreditName"
+                );
         rs.close();
         return artistCredits;
+    }
+
+    private Map<Integer, ArtistCreditWrapper> updateArtistCreditWithAliases(
+            Map<Integer, ArtistCreditWrapper> artistCredits,
+            int min,
+            int max)
+            throws SQLException, IOException {
+
+        //Artist Credit Aliases
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITALIASES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        return ArtistCreditHelper.updateArtistCreditWithAliases(artistCredits,"releaseGroupId", rs);
     }
 
     /**
