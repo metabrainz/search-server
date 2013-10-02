@@ -799,6 +799,7 @@ public abstract class AbstractIndexTest {
                 "  id serial NOT NULL," +
                 "  work integer NOT NULL," +
                 "  name character varying(255)," +
+                "  locale text," +
                 "  sort_name character varying(255)," +
                 "  type                INTEGER," +
                 "  begin_date_year     SMALLINT," +
@@ -807,6 +808,7 @@ public abstract class AbstractIndexTest {
                 "  end_date_year       SMALLINT," +
                 "  end_date_month      SMALLINT," +
                 "  end_date_day        SMALLINT," +
+                "  primary_for_locale  BOOLEAN,"  +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");

@@ -6,7 +6,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
+import org.musicbrainz.mmd2.Label;
 import org.musicbrainz.mmd2.RelationList;
+import org.musicbrainz.mmd2.Work;
 
 import java.sql.Statement;
 
@@ -47,7 +49,7 @@ public class WorkIndexTest extends AbstractIndexTest {
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 'Work', 1,  'demo', 1)");
         stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
                 " VALUES (1, 'eng', 'eng', 'eng', 'en', 'English', 1)");
-        stmt.addBatch("INSERT INTO work_alias (work, name) VALUES (1, 'Play')");
+        stmt.addBatch("INSERT INTO work_alias (work, name, sort_name) VALUES (1, 'Play', '')");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Classical', 2);");
         stmt.addBatch("INSERT INTO work_tag (work, tag, count) VALUES (1, 1, 10)");
@@ -105,7 +107,6 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(WorkIndexField.ISWC.getName()).length);
             assertEquals(1, doc.getFields(WorkIndexField.TYPE.getName()).length);
             assertEquals("-", doc.getField(WorkIndexField.TYPE.getName()).stringValue());
-            assertEquals(1, doc.getFields(WorkIndexField.ARTIST_RELATION.getName()).length);
             ir.close();
         }
     }
@@ -217,12 +218,11 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            RelationList rc = (RelationList) MMDSerializer
-                    .unserialize(doc.get(WorkIndexField.ARTIST_RELATION.getName()), RelationList.class);
-            assertNotNull(rc);
-            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245",rc.getRelation().get(0).getArtist().getId());
-            assertEquals("Echo & The Bunnymen",rc.getRelation().get(0).getArtist().getName());
-            assertEquals("composer",rc.getRelation().get(0).getType());
+            Work work = (Work) MMDSerializer
+                    .unserialize(doc.get(WorkIndexField.WORK_STORE.getName()), Work.class);
+            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", work.getRelationList().get(0).getRelation().get(0).getArtist().getId());
+            assertEquals("Echo & The Bunnymen", work.getRelationList().get(0).getRelation().get(0).getArtist().getName());
+            assertEquals("composer", work.getRelationList().get(0).getRelation().get(0).getType());
 
             ir.close();
         }
@@ -238,13 +238,13 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            RelationList rc = (RelationList) MMDSerializer
-                    .unserialize(doc.get(WorkIndexField.ARTIST_RELATION.getName()), RelationList.class);
-            assertNotNull(rc);
-            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245",rc.getRelation().get(0).getArtist().getId());
-            assertEquals("Echo & The Bunnymen",rc.getRelation().get(0).getArtist().getName());
-            assertEquals("composer",rc.getRelation().get(0).getType());
-            assertEquals("additional",rc.getRelation().get(0).getAttributeList().getAttribute().get(0));
+            Work work = (Work) MMDSerializer
+                    .unserialize(doc.get(WorkIndexField.WORK_STORE.getName()), Work.class);
+            assertNotNull(work);
+            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", work.getRelationList().get(0).getRelation().get(0).getArtist().getId());
+            assertEquals("Echo & The Bunnymen",work.getRelationList().get(0).getRelation().get(0).getArtist().getName());
+            assertEquals("composer",work.getRelationList().get(0).getRelation().get(0).getType());
+            assertEquals("additional",work.getRelationList().get(0).getRelation().get(0).getAttributeList().getAttribute().get(0));
             ir.close();
         }
     }
@@ -300,8 +300,10 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals(1, doc.getFields(WorkIndexField.WORK.getName()).length);
             assertEquals(1, doc.getFields(WorkIndexField.TAG.getName()).length);
             assertEquals("Classical", doc.getField(WorkIndexField.TAG.getName()).stringValue());
-            assertEquals(1, doc.getFields(WorkIndexField.TAGCOUNT.getName()).length);
-            assertEquals("10", doc.getField(WorkIndexField.TAGCOUNT.getName()).stringValue());
+
+            Work work = (Work) MMDSerializer.unserialize(doc.get(WorkIndexField.WORK_STORE.getName()), Work.class);
+            assertNotNull(work);
+            assertEquals(10, work.getTagList().getTag().get(0).getCount().intValue());
         }
         ir.close();
     }

@@ -19,6 +19,7 @@
 
 package org.musicbrainz.search.index;
 
+import com.google.common.base.Strings;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -26,11 +27,9 @@ import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class WorkIndex extends DatabaseIndex {
@@ -95,9 +94,12 @@ public class WorkIndex extends DatabaseIndex {
                         " ORDER BY aw.id");
 
         addPreparedStatement("ALIASES",
-                "SELECT work_alias.work as work, work_alias.name as alias " +
-                        " FROM work_alias " +
-                        " WHERE work BETWEEN ? AND ?");
+                "SELECT a.work as work, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
+                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
+                        " FROM work_alias a" +
+                        "  LEFT JOIN work_alias_type att on (a.type=att.id)" +
+                        " WHERE work BETWEEN ? AND ?" +
+                        " ORDER BY work, alias, alias_sortname");
 
         addPreparedStatement("ISWCS",
                 "SELECT work, iswc" +
@@ -212,23 +214,52 @@ public class WorkIndex extends DatabaseIndex {
      * @throws SQLException
      * @throws IOException
      */
-    private Map<Integer, List<String>> loadAliases(int min, int max) throws SQLException, IOException {
-        Map<Integer, List<String>> aliases = new HashMap<Integer, List<String>>();
+    private  Map<Integer, Set<Alias>> loadAliases(int min, int max) throws SQLException, IOException {
+
+        ObjectFactory of = new ObjectFactory();
+
+        // Get labels aliases
+        //Aliases
+        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
         PreparedStatement st = getPreparedStatement("ALIASES");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            int workId = rs.getInt("work");
-
-            List<String> list;
-            if (!aliases.containsKey(workId)) {
-                list = new LinkedList<String>();
-                aliases.put(workId, list);
+            int artistId = rs.getInt("work");
+            Set<Alias> list;
+            if (!aliases.containsKey(artistId)) {
+                list = new LinkedHashSet<Alias>();
+                aliases.put(artistId, list);
             } else {
-                list = aliases.get(workId);
+                list = aliases.get(artistId);
             }
-            list.add(rs.getString("alias"));
+            Alias alias = of.createAlias();
+            alias.setContent(rs.getString("alias"));
+            alias.setSortName(rs.getString("alias_sortname"));
+            boolean isPrimary = rs.getBoolean("primary_for_locale");
+            if(isPrimary) {
+                alias.setPrimary("primary");
+            }
+            String locale = rs.getString("locale");
+            if(locale!=null) {
+                alias.setLocale(locale);
+            }
+            String type = rs.getString("type");
+            if(type!=null) {
+                alias.setType(type);
+            }
+
+            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+            if(!Strings.isNullOrEmpty(begin))  {
+                alias.setBeginDate(begin);
+            }
+
+            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+            if(!Strings.isNullOrEmpty(end))  {
+                alias.setEndDate(end);
+            }
+            list.add(alias);
         }
         rs.close();
         return aliases;
@@ -277,7 +308,7 @@ public class WorkIndex extends DatabaseIndex {
 
         Map<Integer, List<Tag>>    tags             = loadTags(min, max);
         Map<Integer, RelationList> artistRelations  = loadArtistRelations(min, max);
-        Map<Integer, List<String>> aliases          = loadAliases(min, max);
+        Map<Integer, Set<Alias>> aliases            = loadAliases(min, max);
         Map<Integer, List<String>> iswcs            = loadISWCs(min,max);
 
         //Works
@@ -295,24 +326,47 @@ public class WorkIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<Tag>> tags,
                                           Map<Integer, RelationList> artists,
-                                          Map<Integer, List<String>> aliases,
+                                          Map<Integer, Set<Alias>>   aliases,
                                           Map<Integer, List<String>> iswcs
                                           ) throws SQLException {
         MbDocument doc = new MbDocument();
+
+        ObjectFactory of = new ObjectFactory();
+        Work work = of.createWork();
+
         int id = rs.getInt("wid");
+        String guid = rs.getString("gid");
         doc.addField(WorkIndexField.ID, id);
-        doc.addField(WorkIndexField.WORK_ID, rs.getString("gid"));
+        doc.addField(WorkIndexField.WORK_ID, guid);
+        work.setId(guid);
+
         String name = rs.getString("name");
         doc.addField(WorkIndexField.WORK, name);
         doc.addField(WorkIndexField.WORK_ACCENT, name);
-        doc.addFieldOrNoValue(WorkIndexField.LYRICS_LANG,rs.getString("language"));
-        doc.addFieldOrNoValue(WorkIndexField.TYPE, rs.getString("type"));
-        doc.addFieldOrNoValue(WorkIndexField.COMMENT, rs.getString("comment"));
+        work.setTitle(name);
+
+        String language = rs.getString("language");
+        doc.addFieldOrNoValue(WorkIndexField.LYRICS_LANG,language);
+        if (!Strings.isNullOrEmpty(language)) {
+            work.setLanguage(language);
+        }
+
+        String type = rs.getString("type");
+        doc.addFieldOrNoValue(WorkIndexField.TYPE, type);
+        if (!Strings.isNullOrEmpty(type)) {
+            work.setType(type);
+        }
+
+        String comment = rs.getString("comment");
+        doc.addFieldOrNoValue(WorkIndexField.COMMENT, comment);
+        if (!Strings.isNullOrEmpty(comment)) {
+            work.setDisambiguation(comment);
+        }
 
         if (artists.containsKey(id)) {
             RelationList rl = artists.get(id);
+            work.getRelationList().add(rl);
             if (rl.getRelation().size() > 0) {
-                doc.addField(WorkIndexField.ARTIST_RELATION, MMDSerializer.serialize(rl));
                 for (Relation r : artists.get(id).getRelation()) {
                     doc.addField(WorkIndexField.ARTIST_ID, r.getArtist().getId());
                     doc.addField(WorkIndexField.ARTIST, r.getArtist().getName());
@@ -321,26 +375,47 @@ public class WorkIndex extends DatabaseIndex {
         }
 
         if (aliases.containsKey(id)) {
-            for (String alias : aliases.get(id)) {
-                doc.addField(WorkIndexField.ALIAS, alias);
+            AliasList aliasList = of.createAliasList();
+            for (Alias nextAlias : aliases.get(id)) {
+                doc.addField(WorkIndexField.ALIAS, nextAlias.getContent());
+                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
+                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
+                        doc.addField(WorkIndexField.ALIAS, nextAlias.getSortName());
+                    }
+                }
+                aliasList.getAlias().add(nextAlias);
             }
+            work.setAliasList(aliasList);
         }
 
         if (iswcs.containsKey(id)) {
-            for (String iswc : iswcs.get(id)) {
-                doc.addField(WorkIndexField.ISWC, iswc);
+            IswcList iswcList = of.createIswcList();
+            for (String iswcCode : iswcs.get(id)) {
+                doc.addField(WorkIndexField.ISWC, iswcCode);
+                iswcList.getIswc().add(iswcCode);
             }
+            work.setIswcList(iswcList);
         }
-        else {
+        else
+        {
             doc.addFieldOrNoValue(WorkIndexField.ISWC, null);
         }
 
         if (tags.containsKey(id)) {
-            for (Tag tag : tags.get(id)) {
-                doc.addField(WorkIndexField.TAG, tag.getName());
-                doc.addField(WorkIndexField.TAGCOUNT, tag.getCount().toString());
+            TagList tagList = of.createTagList();
+            for (Tag nextTag : tags.get(id)) {
+                Tag tag = of.createTag();
+                doc.addField(WorkIndexField.TAG, nextTag.getName());
+                tag.setName(nextTag.getName());
+                tag.setCount(new BigInteger(nextTag.getCount().toString()));
+                tagList.getTag().add(tag);
             }
+            work.setTagList(tagList);
         }
+
+        String store = MMDSerializer.serialize(work);
+        doc.addField(WorkIndexField.WORK_STORE, store);
+
         return doc.getLuceneDocument();
     }
 

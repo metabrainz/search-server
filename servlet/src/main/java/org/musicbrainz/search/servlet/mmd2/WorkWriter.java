@@ -30,6 +30,7 @@ package org.musicbrainz.search.servlet.mmd2;
 
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
@@ -86,89 +87,11 @@ public class WorkWriter extends ResultsWriter
      * @param result
      * @throws IOException
      */
-    public void write(List list, Result result) throws IOException
-    {
-
-        ObjectFactory of = new ObjectFactory();
-
+    public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
-        Work work = of.createWork();
-        work.setId(doc.get(WorkIndexField.WORK_ID));
+        Work work = (Work) MMDSerializer.unserialize(doc.get(WorkIndexField.WORK_STORE), Work.class);
         work.setScore(String.valueOf(result.getNormalizedScore()));
-
-        String name = doc.get(WorkIndexField.WORK);
-        if (name != null)
-        {
-            work.setTitle(name);
-        }
-
-        String comment = doc.get(WorkIndexField.COMMENT);
-        if (isNotNoValue(comment))
-        {
-            work.setDisambiguation(comment);
-        }
-
-        String type = doc.get(WorkIndexField.TYPE);
-        if (isNotNoValue(type))
-        {
-            work.setType(type);
-        }
-
-        String lyricsLanguage = doc.get(WorkIndexField.LYRICS_LANG);
-        if (isNotNoValue(lyricsLanguage))
-        {
-            work.setLanguage(lyricsLanguage);
-        }
-
-        String[] iswcs = doc.getValues(WorkIndexField.ISWC);
-        if (iswcs.length > 0)
-        {
-            IswcList iswcList = of.createIswcList();
-            for (int i = 0; i < iswcs.length; i++)
-            {
-                if (isNotNoValue(iswcs[i])) {
-                    iswcList.getIswc().add(iswcs[i]);
-                }
-            }
-            if(iswcList.getIswc().size()>0) {
-                work.setIswcList(iswcList);
-            }
-        }
-
-        String artistRelation = doc.get(WorkIndexField.ARTIST_RELATION);
-        if (artistRelation != null)
-        {
-            RelationList rc = (RelationList) MMDSerializer.unserialize(artistRelation, RelationList.class);
-            work.getRelationList().add(rc);
-        }
-
-        String[] aliases = doc.getValues(WorkIndexField.ALIAS);
-        if (aliases.length > 0)
-        {
-            AliasList aliasList = of.createAliasList();
-            for (int i = 0; i < aliases.length; i++)
-            {
-                Alias alias = of.createAlias();
-                alias.setContent(aliases[i]);
-                aliasList.getAlias().add(alias);
-            }
-            work.setAliasList(aliasList);
-        }
-
-        String[] tags = doc.getValues(WorkIndexField.TAG);
-        String[] tagCounts = doc.getValues(WorkIndexField.TAGCOUNT);
-        if (tags.length > 0)
-        {
-            TagList tagList = of.createTagList();
-            for (int i = 0; i < tags.length; i++)
-            {
-                Tag tag = of.createTag();
-                tag.setName(tags[i]);
-                tag.setCount(new BigInteger(tagCounts[i]));
-                tagList.getTag().add(tag);
-            }
-            work.setTagList(tagList);
-        }
         list.add(work);
     }
+
 }

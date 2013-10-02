@@ -387,8 +387,10 @@ public class ArtistIndex extends DatabaseIndex {
             AliasList aliasList = of.createAliasList();
             for (Alias nextAlias : aliases.get(artistId)) {
                 doc.addField(ArtistIndexField.ALIAS, nextAlias.getContent());
-                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                    doc.addField(ArtistIndexField.ALIAS, nextAlias.getSortName());
+                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
+                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
+                        doc.addField(ArtistIndexField.ALIAS, nextAlias.getSortName());
+                    }
                 }
                 aliasList.getAlias().add(nextAlias);
             }

@@ -18,16 +18,15 @@ public enum WorkIndexField implements IndexField {
     ALIAS		        ("alias",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_ID		    ("arid",			MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST              ("artist",          MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    ARTIST_RELATION     ("artistrelation",  MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     COMMENT		        ("comment",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
     ISWC		        ("iswc",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     LYRICS_LANG		    ("lang",	        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TYPE		        ("type",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     TAG		            ("tag",		        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
-    TAGCOUNT            ("tagcount",	    MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     WORK			    ("work",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new TitleAnalyzer()),
     WORK_ACCENT         ("workaccent",      MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
     WORK_ID		        ("wid",		        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    WORK_STORE		    ("workstore",       MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ;
 
     private String name;

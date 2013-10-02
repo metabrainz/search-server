@@ -316,8 +316,10 @@ public class LabelIndex extends DatabaseIndex {
             AliasList aliasList = of.createAliasList();
             for (Alias nextAlias : aliases.get(labelId)) {
                 doc.addField(LabelIndexField.ALIAS, nextAlias.getContent());
-                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                    doc.addField(LabelIndexField.ALIAS, nextAlias.getSortName());
+                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
+                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
+                        doc.addField(LabelIndexField.ALIAS, nextAlias.getSortName());
+                    }
                 }
                 aliasList.getAlias().add(nextAlias);
             }
