@@ -214,9 +214,21 @@ public class FindPlaceTest {
         assertEquals("Afghanistan", doc.get(PlaceIndexField.PLACE));
     }
 
+
+
     @Test
     public void testFindPlaceByDismax2() throws Exception {
         Results res = sd.search("afghany", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(PlaceIndexField.PLACE_ID));
+        assertEquals("Afghanistan", doc.get(PlaceIndexField.PLACE));
+    }
+
+    @Test
+    public void testFindPlaceByDismax3() throws Exception {
+        Results res = sd.search("new", 0, 10);
         assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
         MbDocument doc = result.getDoc();

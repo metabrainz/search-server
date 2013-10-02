@@ -19,6 +19,7 @@ public class PlaceSearch extends AbstractSearchServer {
     defaultFields = new ArrayList<String>();
     defaultFields.add(PlaceIndexField.PLACE.getName());
     defaultFields.add(PlaceIndexField.ALIAS.getName());
+    defaultFields.add(PlaceIndexField.ADDRESS.getName());
   }
 
   public PlaceSearch() throws Exception {
