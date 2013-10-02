@@ -84,8 +84,8 @@ public class AreaIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
 
-        addPreparedStatement("PLACE",
-                        "SELECT a.id, a.gid, a.name, a.sort_name, at.name as type, " +
+        addPreparedStatement("AREA",
+                        "SELECT a.id, a.gid, a.name, a.sort_name, a.comment as comment, at.name as type, " +
                         "   begin_date_year, begin_date_month, begin_date_day, " +
                         "  end_date_year, end_date_month, end_date_day, ended" +
                         " FROM area a" +
@@ -217,7 +217,7 @@ public class AreaIndex extends DatabaseIndex {
             iso3List.getIso31663Code().add(rs.getString("code"));
         }
 
-        st = getPreparedStatement("PLACE");
+        st = getPreparedStatement("AREA");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
@@ -256,6 +256,13 @@ public class AreaIndex extends DatabaseIndex {
         doc.addField(AreaIndexField.SORTNAME,sortName);
         area.setSortName(sortName);
 
+        String comment = rs.getString("comment");
+        doc.addFieldOrNoValue(AreaIndexField.COMMENT, comment);
+        /* TODO waiting on schema
+        if (!Strings.isNullOrEmpty(comment)) {
+            area.setDisambiguation(comment);
+        }
+        */
         String type = rs.getString("type");
         doc.addFieldOrUnknown(AreaIndexField.TYPE, type);
         if (!Strings.isNullOrEmpty(type)) {

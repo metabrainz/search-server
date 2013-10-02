@@ -32,7 +32,6 @@ import java.util.List;
  */
 public class CommonTables  {
 
-    private static final String ENGLISH_ISO_CODE = "en";
     protected Connection dbConnection;
     private   List<String> indexesToBeBuilt ;
 

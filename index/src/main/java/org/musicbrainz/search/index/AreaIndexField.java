@@ -45,6 +45,7 @@ public enum AreaIndexField implements IndexField {
     ALIAS		("alias",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     AREA        ("area",        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     BEGIN		("begin",		MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    COMMENT		("comment",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
     END			("end",			MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ENDED       ("ended",       MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     SORTNAME    ("sortname",    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),

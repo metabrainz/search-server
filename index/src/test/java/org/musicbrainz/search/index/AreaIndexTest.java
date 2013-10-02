@@ -37,7 +37,7 @@ public class AreaIndexTest extends AbstractIndexTest {
     private void addAreaOne() throws Exception {
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO area (id, gid,name,sort_name, type, begin_date_year, end_date_year) VALUES (1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Afghanistan','Afghanistan',1,1830,2020)");
+        stmt.addBatch("INSERT INTO area (id, gid,name,sort_name, comment, type, begin_date_year, end_date_year) VALUES (1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Afghanistan','Afghanistan','A Country in Asia',1,1830,2020)");
         stmt.addBatch("INSERT INTO area_type(id, name) VALUES (1, 'Country')");
         stmt.addBatch("INSERT INTO area_alias (id, area, sort_name, name, primary_for_locale, locale, type ) VALUES (3, 1, 'Afghan', 'Afghany', true, 'en',1)");
         stmt.addBatch("INSERT INTO iso_3166_1(area, code) VALUES (1,'AF')");
@@ -60,6 +60,24 @@ public class AreaIndexTest extends AbstractIndexTest {
         {
             checkTerm(ir, AreaIndexField.AREA, "afghanistan");
 
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexAreaComment() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, AreaIndexField.COMMENT, "a");
+            checkTermX(ir, AreaIndexField.COMMENT, "asia",1);
+            checkTermX(ir, AreaIndexField.COMMENT, "country",2);
+            checkTermX(ir, AreaIndexField.COMMENT, "in",3);
         }
         ir.close();
     }
@@ -225,6 +243,9 @@ public class AreaIndexTest extends AbstractIndexTest {
             assertEquals("aa95182f-df0a-3ad6-8bfb-4b63482cd276", area.getId());
             assertEquals("Afghanistan", area.getName());
             assertEquals("Afghanistan", area.getSortName());
+            /* TODO
+            assertEquals("A Country in Asia", area.getDisambuguation())
+             */
             assertEquals("Country", area.getType());
             assertNotNull(area.getAliasList());
             assertEquals(1,area.getAliasList().getAlias().size());

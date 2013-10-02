@@ -129,7 +129,7 @@ public class ArtistIndex extends DatabaseIndex {
                 "SELECT a.id, a.gid as gid, a.name, a.sort_name, " +
                         "  artist_type.name as type, a.begin_date_year, a.begin_date_month, a.begin_date_day, " +
                         "  a.end_date_year, a.end_date_month, a.end_date_day,a.ended, " +
-                        "  comment, lower(i.code) as country, lower(gender.name) as gender," +
+                        "  a.comment, lower(i.code) as country, lower(gender.name) as gender," +
                         "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname, " +
                         "  a2.gid as beginarea_gid, a2.name as beginarea_name, a2.sort_name as beginarea_sortname, " +
                         "  a3.gid as endarea_gid, a3.name as endarea_name, a3.sort_name as endarea_sortname" +

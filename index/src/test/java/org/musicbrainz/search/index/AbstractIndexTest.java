@@ -262,6 +262,7 @@ public abstract class AbstractIndexTest {
                 "                   gid               uuid," +
                 "                   name              VARCHAR ," +
                 "                   sort_name         VARCHAR ," +
+                "                   comment           VARCHAR ," +
                 "                   type              INTEGER," +
                 "                   edits_pending     INTEGER NOT NULL DEFAULT 0," +
                 "                   last_updated      TIMESTAMP," +

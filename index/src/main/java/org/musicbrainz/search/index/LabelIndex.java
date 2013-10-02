@@ -105,7 +105,7 @@ public class LabelIndex extends DatabaseIndex {
                 "SELECT label.id, label.gid, label.name as name, label.sort_name, " +
                 "  label_type.name as type, label.begin_date_year, label.begin_date_month, label.begin_date_day, " +
                 "  label.end_date_year, label.end_date_month, label.end_date_day, label.ended," +
-                "  comment, label_code, lower(i.code) as country, " +
+                "  label.comment, label_code, lower(i.code) as country, " +
                 "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname " +
                 " FROM label " +
                 "  LEFT JOIN label_type ON label.type = label_type.id " +
