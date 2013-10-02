@@ -254,16 +254,12 @@ public class ArtistCreditHelper {
                 doc.addField(artistId, nc.getArtist().getId());
                 doc.addField(artistName, nc.getArtist().getName());
 
-                //If there is an english locale based alias we add this to help when looking up releases
-                //by artists who name is in non-latin script
+                //Add all aliases
                 if(nc.getArtist().getAliasList()!=null && nc.getArtist().getAliasList().getAlias().size()>0)
                 {
                     for(Alias alias:nc.getArtist().getAliasList().getAlias())
                     {
-                        if(alias.getLocale()!=null)
-                        {
-                            aliasWithLocales.add(alias.getContent());
-                        }
+                        aliasWithLocales.add(alias.getContent());
                     }
                 }
 

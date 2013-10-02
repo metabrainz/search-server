@@ -67,7 +67,7 @@ public class AnnotationIndex extends DatabaseIndex {
         for (AnnotationType type : annotationTypeInfos.keySet()) {
             AnnotationTypeInfo info = annotationTypeInfos.get(type);
             addPreparedStatement(type.getName(), 
-                "SELECT a.id, e.gid, a.text, e.name " +
+                "SELECT a.id, e.gid, a.text, e.name, e.comment " +
                 " FROM annotation a " +
                 "  INNER JOIN " + info.entityDbName + "_annotation ea ON a.id=ea.annotation " +
                 "  INNER JOIN (SELECT DISTINCT ea2." + info.entityDbName + " as id, max(created) as created_date " +
