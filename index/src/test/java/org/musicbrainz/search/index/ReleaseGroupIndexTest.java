@@ -372,6 +372,8 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             tr.next();
             assertEquals("kunzstel", tr.term().utf8ToString());
             tr.next();
+            assertEquals("kunzstelein", tr.term().utf8ToString());
+            tr.next();
             assertEquals("orchestra", tr.term().utf8ToString());
             tr.next();
             assertEquals("pops", tr.term().utf8ToString());
