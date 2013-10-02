@@ -79,8 +79,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, number, name, artist_credit, length) "
                 + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 4, 'A4', 'Do It Cleans', 1, 33100)");
-        stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment)"
-                + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Do It Clean', 1, 33000, 'demo')");
+        stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment, video)"
+                + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Do It Clean', 1, 33000, 'demo', true)");
 
         stmt.addBatch("INSERT INTO isrc (id, recording, isrc) VALUES (1, 1, 'FRAAA9000038')");
         stmt.addBatch("INSERT INTO isrc (id, recording, isrc) VALUES (2, 1, 'FRAAA9100082')");
@@ -300,6 +300,26 @@ public class RecordingIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             checkTerm(ir, RecordingIndexField.RELEASEGROUP_ID, "efd2ace2-b3b9-305f-8a53-9803595c0e37");
+        }
+        ir.close();
+    }
+
+    /**
+     * Release Group Field
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testIsVideo() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, RecordingIndexField.VIDEO, "true");
         }
         ir.close();
     }

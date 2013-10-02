@@ -246,7 +246,7 @@ public class RecordingIndex extends DatabaseIndex {
                         " WHERE r.id in ";
 
         addPreparedStatement("RECORDINGS",
-                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, re.name as trackname, re.comment " +
+                "SELECT re.id as recordingId, re.gid as trackid, re.length as duration, re.name as trackname, re.comment, re.video " +
                         " FROM recording re " +
                         " WHERE re.id BETWEEN ? AND ?");
     }
@@ -723,6 +723,13 @@ public class RecordingIndex extends DatabaseIndex {
         doc.addFieldOrNoValue(RecordingIndexField.COMMENT, comment);
         if (!Strings.isNullOrEmpty(comment)) {
             recording.setDisambiguation(comment);
+        }
+
+        boolean video = rs.getBoolean("video");
+        if(video) {
+            doc.addField(RecordingIndexField.VIDEO, Boolean.toString(video));
+            //TODO waiting on schema
+            //recording.setVideo("true);
         }
 
         if (isrcs.containsKey(id)) {

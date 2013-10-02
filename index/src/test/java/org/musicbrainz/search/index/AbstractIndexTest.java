@@ -659,7 +659,8 @@ public abstract class AbstractIndexTest {
                 "  length integer," +
                 "  comment character varying(255)," +
                 "  last_updated timestamp," +
-                "  edits_pending integer NOT NULL DEFAULT 0" +
+                "  edits_pending integer NOT NULL DEFAULT 0," +
+                "  video BOOLEAN NOT NULL DEFAULT FALSE" +
                 ")");
 
         stmt.addBatch("CREATE TABLE recording_tag" +
