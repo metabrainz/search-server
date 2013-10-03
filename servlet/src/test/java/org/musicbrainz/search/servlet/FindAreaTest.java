@@ -53,6 +53,8 @@ public class FindAreaTest {
             doc.addField(AreaIndexField.SORTNAME, "Afghanistan");
             area.setSortName("Afghanistan");
 
+            doc.addField(AreaIndexField.COMMENT, "A comment");
+            area.setDisambiguation("A comment");
 
             doc.addField(AreaIndexField.ALIAS, "Afghany");
             AliasList aliasList = of.createAliasList();
@@ -124,6 +126,16 @@ public class FindAreaTest {
     @Test
     public void testFindAreaById() throws Exception {
         Results res = ss.search("aid:\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
+    @Test
+    public void testFindAreaByComment() throws Exception {
+        Results res = ss.search("comment:\"a comment\"", 0, 10);
         assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
         MbDocument doc = result.getDoc();
@@ -324,7 +336,7 @@ public class FindAreaTest {
         assertTrue(output.contains("<iso-3166-1-code-list><iso-3166-1-code>AF</iso-3166-1-code>"));
         assertTrue(output.contains("<iso-3166-2-code-list><iso-3166-2-code>North</iso-3166-2-code>"));
         assertTrue(output.contains("<iso-3166-3-code-list><iso-3166-3-code>Kabu</iso-3166-3-code>"));
-
+        assertTrue(output.contains("<disambiguation>A comment</disambiguation"));
 
     }
 
@@ -369,6 +381,7 @@ public class FindAreaTest {
         assertTrue(output.contains("\"iso-3166-1-code-list\":{\"iso-3166-1-code\":[\"AF\"]}"));
         assertTrue(output.contains("\"iso-3166-2-code-list\":{\"iso-3166-2-code\":[\"North\"]}"));
         assertTrue(output.contains("\"iso-3166-3-code-list\":{\"iso-3166-3-code\":[\"Kabu\"]}"));
+        assertTrue(output.contains("\"disambiguation\":\"A comment\","));
 
     }
 
@@ -399,6 +412,7 @@ public class FindAreaTest {
         assertTrue(output.contains("\"iso-3166-1-codes\":[\"AF\"]"));
         assertTrue(output.contains("\"iso-3166-2-codes\":[\"North\"]"));
         assertTrue(output.contains("\"iso-3166-3-codes\":[\"Kabu\"]"));
+        assertTrue(output.contains("\"disambiguation\":\"A comment\","));
     }
 
     /**

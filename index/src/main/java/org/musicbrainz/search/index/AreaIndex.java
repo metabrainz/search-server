@@ -258,11 +258,10 @@ public class AreaIndex extends DatabaseIndex {
 
         String comment = rs.getString("comment");
         doc.addFieldOrNoValue(AreaIndexField.COMMENT, comment);
-        /* TODO waiting on schema
         if (!Strings.isNullOrEmpty(comment)) {
             area.setDisambiguation(comment);
         }
-        */
+
         String type = rs.getString("type");
         doc.addFieldOrUnknown(AreaIndexField.TYPE, type);
         if (!Strings.isNullOrEmpty(type)) {

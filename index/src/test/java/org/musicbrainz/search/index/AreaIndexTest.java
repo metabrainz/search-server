@@ -243,9 +243,7 @@ public class AreaIndexTest extends AbstractIndexTest {
             assertEquals("aa95182f-df0a-3ad6-8bfb-4b63482cd276", area.getId());
             assertEquals("Afghanistan", area.getName());
             assertEquals("Afghanistan", area.getSortName());
-            /* TODO
-            assertEquals("A Country in Asia", area.getDisambuguation())
-             */
+            assertEquals("A Country in Asia", area.getDisambiguation());
             assertEquals("Country", area.getType());
             assertNotNull(area.getAliasList());
             assertEquals(1,area.getAliasList().getAlias().size());
