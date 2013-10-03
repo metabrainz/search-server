@@ -65,7 +65,7 @@
         </java-type>
         <java-type name="LifeSpan">
             <java-attributes>
-                <xml-element java-attribute="ended">
+                <xml-element java-attribute="ended"  nillable="true">
                     <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.BooleanStringAdapter"/>
                 </xml-element>
             </java-attributes>
@@ -401,6 +401,9 @@
                 <xml-element java-attribute="endDate" name="end-date" nillable="true"/>
                 <xml-element java-attribute="locale" name="locale" nillable="true"/>
                 <xml-element java-attribute="type" name="type" nillable="true"/>
+                <xml-element java-attribute="primary" nillable="true">
+                    <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.BooleanStringAdapter"/>
+                </xml-element>
             </java-attributes>
         </java-type>
     </java-types>

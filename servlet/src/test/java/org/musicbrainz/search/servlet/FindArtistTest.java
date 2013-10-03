@@ -686,7 +686,7 @@ public class FindArtistTest {
         System.out.println("JSON New Pretty is" + output);
         assertTrue(output.contains("\"sort-name\" : \"Echo & The Bunnymen\""));
         assertTrue(output.contains("\"type\" : \"Artist name\","));
-        assertTrue(output.contains("\"primary\" : \"true\","));
+        assertTrue(output.contains("\"primary\" : true,"));
         assertTrue(output.contains("\"begin-date\" : \"1978-05-01\""));
         assertTrue(output.contains(" \"end-date\" : null"));
         assertTrue(output.contains("\"name\" : \"Echo And The Bunnymen\""));

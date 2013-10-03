@@ -364,7 +364,7 @@ public class FindPlaceTest {
         assertTrue(output.contains("id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("\"type\":\"Country\""));
         assertTrue(output.contains("name\":\"Afghanistan\""));
-        assertTrue(output.contains("\"sort-name\":\"Afghan\",\"name\":\"Afghany\",\"locale\":null,\"type\":null,\"begin-date\":null,\"end-date\":null}"));
+        assertTrue(output.contains("{\"sort-name\":\"Afghan\",\"name\":\"Afghany\",\"locale\":null,\"type\":null,\"primary\":null,\"begin-date\":null,\"end-date\":null}]"));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"ended\":true"));
         assertTrue(output.contains("\"end\":\"2004\""));

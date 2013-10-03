@@ -11,7 +11,12 @@ public class BooleanStringAdapter extends XmlAdapter<Boolean, String> {
 
     @Override
     public Boolean marshal(String v) throws Exception {
-        return Boolean.valueOf(v);
+        boolean result = Boolean.valueOf(v);
+        if(result)
+        {
+            return result;
+        }
+        return null;
     }
 
 }

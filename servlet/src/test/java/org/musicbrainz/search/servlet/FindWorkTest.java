@@ -447,7 +447,7 @@ public class FindWorkTest {
         assertTrue(output.contains("\"language\":\"eng\""));
         assertTrue(output.contains("iswcs\":[\"T-101779304-1\",\"B-101779304-1\"]"));
         assertTrue(output.contains("\"disambiguation\":\"demo\""));
-        assertTrue(output.contains("\"aliases\":[{\"name\":\"Symp5\",\"locale\":null,\"type\":null,\"begin-date\":null,\"end-date\":null}]"));
+        assertTrue(output.contains("\"aliases\":[{\"name\":\"Symp5\",\"locale\":null,\"type\":null,\"primary\":null,\"begin-date\":null,\"end-date\":null}]"));
         assertTrue(output.contains("\"relations\":[{"));
         assertTrue(output.contains("\"artist\":{\"id\":\"1f9df192-a621-4f54-8850-2c5373b7eac9\""));
         assertTrue(output.contains("\"name\":\"Пётр Ильич Чайковский\""));
