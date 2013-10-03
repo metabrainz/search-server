@@ -114,8 +114,8 @@ Place the downloaded file into /home/search.
 Now build indexes with these commands:
 
     cd /home/search
-    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar -indexes-dir /home/search/indexdata
-         -freedb-dump /home/search/<freedb tar.bz2 file>
+    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --indexes-dir /home/search/indexdata
+         --freedb-dump /home/search/<freedb tar.bz2 file>
 
 This will build all of the indexes using upto 512mb of memory using all of the defaults for connecting
 to the database servers. If your database isn't on the same server and named according to the
