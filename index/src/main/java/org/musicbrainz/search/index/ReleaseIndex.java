@@ -175,7 +175,7 @@ public class  ReleaseIndex extends DatabaseIndex {
                 " SELECT id, gid, name, " +
                 "  barcode, " +
                 "  type, rg_gid, amazon_asin, " +
-                "  language, language_2t, script, status, comment " +
+                "  language, language_2t, script, status, comment, quality " +
                 " FROM tmp_release rl " +
                 " WHERE id BETWEEN ? AND ? ");
 
@@ -514,6 +514,8 @@ public class  ReleaseIndex extends DatabaseIndex {
         if (comment!=null && !comment.isEmpty()) {
             release.setDisambiguation(comment);
         }
+
+        doc.addField(ReleaseIndexField.QUALITY,ReleaseQuality.mapReleaseQuality(rs.getInt("quality")).toString());
 
         if (labelInfo.containsKey(id)) {
             LabelInfoList labelInfoList = of.createLabelInfoList();

@@ -50,8 +50,8 @@ public class ReleaseIndexTest extends AbstractIndexTest {
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1, 3)");
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
-                "  language, script, comment) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1, 1,'demo')");
+                "  language, script, comment, quality) " +
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1, 1,'demo',2)");
 
 
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
@@ -624,6 +624,25 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testIndexReleaseQuality() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir,ReleaseIndexField.QUALITY,"high");
+        }
+        ir.close();
+    }
+
 
     /**
      * @throws Exception exception

@@ -504,6 +504,7 @@ public abstract class AbstractIndexTest {
                 "  script integer," +
                 "  barcode character varying(255)," +
                 "  comment character varying(255)," +
+                "  quality integer," +
                 "  last_updated timestamp," +
                 "  edits_pending integer DEFAULT 0" +
                 ")");

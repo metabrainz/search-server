@@ -104,6 +104,7 @@ public class FindReleaseTest {
             stl.getSecondaryType().add("Compilation");
             release.getReleaseGroup().setSecondaryTypeList(stl);
 
+            doc.addField(ReleaseIndexField.QUALITY, ReleaseQuality.HIGH.toString());
             doc.addField(ReleaseIndexField.TAG, "punk");
             TagList tagList = of.createTagList();
             Tag tag = of.createTag();
@@ -364,6 +365,28 @@ public class FindReleaseTest {
         assertEquals(1, res.getTotalHits());
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", getReleaseId(res.results.get(0).getDoc()));
 
+    }
+
+    @Test
+    public void testFindReleaseByQuality() throws Exception {
+        Results res = ss.search("quality:high", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", getReleaseId(res.results.get(0).getDoc()));
+
+    }
+
+    @Test
+    public void testFindReleaseByQuality2() throws Exception {
+        Results res = ss.search("quality:HIGH", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", getReleaseId(res.results.get(0).getDoc()));
+
+    }
+
+    @Test
+    public void testFindReleaseByQuality3() throws Exception {
+        Results res = ss.search("quality:low", 0, 10);
+        assertEquals(0, res.getTotalHits());
     }
 
     @Test
