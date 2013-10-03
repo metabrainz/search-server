@@ -899,6 +899,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             ArtistCredit ac = recording.getArtistCredit();
             assertEquals("Echo & Bunneymen", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(0).getContent());
             assertEquals("Bunneymen & Echo", ac.getNameCredit().get(0).getArtist().getAliasList().getAlias().get(0).getSortName());
+            assertEquals("true",recording.getVideo());
 
             ReleaseList releaseList = recording.getReleaseList();
             Release     release     = releaseList.getRelease().get(0);
@@ -959,6 +960,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertNull(track.getPosition());  //We dont currently output this, but perhaps should
             assertEquals("A4", track.getNumber());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e",track.getId());
+
+
 
         }
         ir.close();

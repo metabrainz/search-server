@@ -810,8 +810,7 @@ public class RecordingIndex extends DatabaseIndex {
         boolean video = rs.getBoolean("video");
         if(video) {
             doc.addField(RecordingIndexField.VIDEO, Boolean.toString(video));
-            //TODO waiting on schema
-            //recording.setVideo("true);
+            recording.setVideo("true");
         }
 
         if (isrcs.containsKey(id)) {

@@ -60,7 +60,8 @@ public class FindRecordingTest {
             doc.addField(RecordingIndexField.RELEASE_ID, "1d9e8ed6-3893-4d3b-aa7d-6cd79609e386");
             doc.addField(RecordingIndexField.RELEASE, "Our Glorious 5 Year Plan");
 
-
+            doc.addField(RecordingIndexField.VIDEO,"true");
+            recording.setVideo("true");
 
             doc.addField(RecordingIndexField.FORMAT, "Vinyl");
             ReleaseList releaseList = of.createReleaseList();
@@ -264,6 +265,13 @@ public class FindRecordingTest {
     @Test
     public void testFindRecordingByReleaseId() throws Exception {
         Results res = ss.search("reid:\"1d9e8ed6-3893-4d3b-aa7d-6cd79609e386\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", getRecordingId(res.results.get(0).getDoc()));
+    }
+
+    @Test
+    public void testFindRecordingByVideo() throws Exception {
+        Results res = ss.search("video:\"true\"", 0, 10);
         assertEquals(1, res.getTotalHits());
         assertEquals("7ca7782b-a602-448b-b108-bb881a7be2d6", getRecordingId(res.results.get(0).getDoc()));
     }
@@ -538,7 +546,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("<name>United Kingdom</name>"));
         assertTrue(output.contains("<sort-name>Kingdom of United</sort-name>"));
         assertTrue(output.contains("<iso-3166-1-code-list><iso-3166-1-code>UK</iso-3166-1-code></iso-3166-1-code-list>"));
-
+        assertTrue(output.contains("<video>true</video>"));
     }
 
 
@@ -577,6 +585,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"name\":\"United Kingdom\","));
         assertTrue(output.contains("\"sort-name\":\"Kingdom of United\","));
         assertTrue(output.contains("\"iso-3166-1-code-list\":{\"iso-3166-1-code\":[\"UK\"]}"));
+        assertTrue(output.contains("\"video\":\"true\""));
     }
 
     @Test
@@ -617,6 +626,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"name\":\"United Kingdom\","));
         assertTrue(output.contains("\"sort-name\":\"Kingdom of United\","));
         assertTrue(output.contains("\"iso-3166-1-codes\":[\"UK\"]"));
+        assertTrue(output.contains("\"video\":true"));
     }
 
     @Test

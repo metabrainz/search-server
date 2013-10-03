@@ -98,6 +98,9 @@
         <java-type name="Recording">
             <java-attributes>
                 <xml-element java-attribute="artistCredit" xml-path="."/>
+                <xml-element java-attribute="video" nillable="true">
+                    <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.BooleanStringAdapter"/>
+                </xml-element>
             </java-attributes>
         </java-type>
         <java-type name="IpiList">

@@ -166,10 +166,7 @@ public class ReleaseGroupWriter extends ResultsWriter {
                         {
                             for (Alias alias : nc.getArtist().getAliasList().getAlias()) {
                                 //On Xml output as primary, but in json they have changed to true/false
-                                if (alias.getPrimary() == null) {
-                                    alias.setPrimary("false");
-                                }
-                                else {
+                                if (alias.getPrimary() != null) {
                                     alias.setPrimary("true");
                                 }
                             }
