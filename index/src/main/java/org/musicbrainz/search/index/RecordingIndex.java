@@ -106,6 +106,7 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     String releases;
+    String releaseArtistCredits;
     String releaseEvents;
     String releaseSecondaryTypes;
 
@@ -223,6 +224,22 @@ public class RecordingIndex extends DatabaseIndex {
                         " AND a.artistId!='" + ArtistIndex.VARIOUS_ARTIST_MBID +"'" +
                         " AND a.artistId!='" + ArtistIndex.UNKNOWN_ARTIST_MBID  +"'" +
                         " ORDER BY r.id, a.pos, aa.name");
+
+        releaseArtistCredits =
+                "SELECT r.id as releaseKey, " +
+                        "  a.artist_credit, " +
+                        "  a.pos, " +
+                        "  a.joinphrase, " +
+                        "  a.artistId,  " +
+                        "  a.comment, " +
+                        "  a.artistName, " +
+                        "  a.artistCreditName, " +
+                        "  a.artistSortName " +
+                        " FROM release AS r " +
+                        "  INNER JOIN tmp_artistcredit a ON r.artist_credit=a.artist_credit " +
+                        " WHERE a.artistId!='" + ArtistIndex.VARIOUS_ARTIST_MBID +"'" +
+                        " AND r.id in ";
+
         releases =
                 "SELECT " +
                         "  id as releaseKey, gid as releaseid, name as releasename, type, " +
@@ -417,6 +434,42 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     /**
+     * Get Release Artist Credit
+     *
+     * @param min min recording id
+     * @param max max recording id
+     * @return A map of matches
+     * @throws SQLException if sql problem
+     * @throws IOException  if io exception
+     */
+    private Map<Integer, ArtistCreditWrapper> loadReleaseArtists(Map<Integer, Release> releases,int min, int max) throws SQLException, IOException {
+
+        //Add release artists
+        PreparedStatement stmt = createReleaseArtistCreditsStatement(releases.size());
+        int count = 1;
+        for (Integer key : releases.keySet()) {
+            stmt.setInt(count, key);
+            count++;
+        }
+
+        ResultSet rs = stmt.executeQuery();
+        Map<Integer, ArtistCreditWrapper> releaseArtistCredits
+                = ArtistCreditHelper.completeArtistCreditFromDbResults
+                (rs,
+                        "releaseKey",
+                        "artist_Credit",
+                        "artistId",
+                        "artistName",
+                        "artistSortName",
+                        "comment",
+                        "joinphrase",
+                        "artistCreditName"
+                );
+        rs.close();
+        return  releaseArtistCredits;
+    }
+
+    /**
      * Get track  information for recordings
      * <p/>
      * One recording can be linked to by multiple tracks
@@ -529,6 +582,31 @@ public class RecordingIndex extends DatabaseIndex {
     }
 
     /**
+     * Create the release artist credits statement
+     *
+     * @param noOfElements
+     * @return
+     * @throws SQLException
+     */
+    private PreparedStatement createReleaseArtistCreditsStatement(int noOfElements) throws SQLException {
+        StringBuilder inClause = new StringBuilder();
+        boolean firstValue = true;
+        for (int i = 0; i < noOfElements; i++) {
+            if (firstValue) {
+                firstValue = false;
+            } else {
+                inClause.append(',');
+            }
+            inClause.append('?');
+        }
+        PreparedStatement stmt = dbConnection.prepareStatement(
+                releaseArtistCredits + "(" + inClause.toString() + ')');
+        return stmt;
+
+    }
+
+
+    /**
      * Get release information for recordings
      *
      * @param tracks
@@ -590,13 +668,15 @@ public class RecordingIndex extends DatabaseIndex {
             ml.setTrackCount(BigInteger.valueOf(rs.getInt("tracks")));
             release.setReleaseGroup(rg);
             release.setMediumList(ml);
-
+            //Manually create various artist artists they are not retrieved from the database
+            //for performance reasons
             if (rs.getInt("artist_credit") == VARIOUS_ARTIST_CREDIT_ID) {
                 ArtistCredit ac = createVariousArtistsCredit();
                 release.setArtistCredit(ac);
             }
         }
         rs.close();
+
 
         //Add ReleaseEvents for each Release
         stmt = createReleaseEventStatement(releaseKeys.size());
@@ -667,6 +747,7 @@ public class RecordingIndex extends DatabaseIndex {
         Map<Integer, ArtistCreditWrapper>   trackArtistCredits  = updateTrackArtistCreditWithAliases(loadTrackArtists(min, max), min, max);
         Map<Integer, List<TrackWrapper>>    tracks              = loadTracks(min, max);
         Map<Integer, Release>               releases            = loadReleases(tracks);
+        Map<Integer, ArtistCreditWrapper>   releaseArtists      = loadReleaseArtists(releases, min, max);
 
         PreparedStatement st = getPreparedStatement("RECORDINGS");
         st.setInt(1, min);
@@ -675,7 +756,7 @@ public class RecordingIndex extends DatabaseIndex {
         ResultSet rs = st.executeQuery();
         recordingClock.suspend();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, isrcs, artistCredits, trackArtistCredits, tracks, releases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, isrcs, artistCredits, trackArtistCredits, tracks, releases, releaseArtists));
         }
         rs.close();
 
@@ -687,7 +768,8 @@ public class RecordingIndex extends DatabaseIndex {
                                           Map<Integer, ArtistCreditWrapper> artistCredits,
                                           Map<Integer, ArtistCreditWrapper> trackArtistCredits,
                                           Map<Integer, List<TrackWrapper>> tracks,
-                                          Map<Integer, Release> releases) throws SQLException {
+                                          Map<Integer, Release> releases,
+                                          Map<Integer, ArtistCreditWrapper>   releaseArtists) throws SQLException {
 
         buildClock.resume();
         Set<Integer> durations = new HashSet<Integer>();
@@ -772,6 +854,10 @@ public class RecordingIndex extends DatabaseIndex {
 
 
                 if (origRelease != null) {
+
+                    //Get Artist Credit for Track
+                    ArtistCreditWrapper taw = trackArtistCredits.get(trackWrapper.getTrackId());
+
                     //This release instance will be shared by all recordings that have a track on the release so we need
                     //to copy details so we can append track specific details
                     Release release = of.createRelease();
@@ -780,13 +866,33 @@ public class RecordingIndex extends DatabaseIndex {
                     MediumList ml = of.createMediumList();
                     release.setReleaseGroup(origRelease.getReleaseGroup());
                     release.setStatus(origRelease.getStatus());
+                    //This will be a va release
                     if(origRelease.getArtistCredit()!=null)
                     {
                         release.setArtistCredit(origRelease.getArtistCredit());
-                        doc.addField(RecordingIndexField.RELEASE_AC_VA, "1");
                     }
-                    else {
-                        doc.addField(RecordingIndexField.RELEASE_AC_VA, Index.NO_VALUE);
+                    //Only add if release artist credit is different to track artist, or if that not set
+                    //because same as recording artist only set if different to recording artist
+                    else
+                    {
+                        ArtistCreditWrapper racWrapper = releaseArtists.get(trackWrapper.getReleaseId());
+                        if(racWrapper!=null)
+                        {
+                            if(taw!=null)
+                            {
+                                if(taw.getArtistCreditId()!=racWrapper.getArtistCreditId())
+                                {
+                                    release.setArtistCredit(racWrapper.getArtistCredit());
+                                }
+                            }
+                            else if(ac!=null)
+                            {
+                                if(ac.getArtistCreditId()!=racWrapper.getArtistCreditId())
+                                {
+                                    release.setArtistCredit(racWrapper.getArtistCredit());
+                                }
+                            }
+                        }
                     }
 
                     ml.setTrackCount(origRelease.getMediumList().getTrackCount());
@@ -879,8 +985,6 @@ public class RecordingIndex extends DatabaseIndex {
                     doc.addField(RecordingIndexField.POSITION, String.valueOf(trackWrapper.getMediumPosition()));
                     doc.addFieldOrNoValue(RecordingIndexField.FORMAT, trackWrapper.getMediumFormat());
 
-                    //Get Artist Credit for Track
-                    ArtistCreditWrapper taw = trackArtistCredits.get(trackWrapper.getTrackId());
                     //If different to the Artist Credit for the recording
                     if (taw != null &&
                             (

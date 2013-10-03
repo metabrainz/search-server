@@ -36,7 +36,6 @@ public enum RecordingIndexField implements IndexField {
     RECORDING_ACCENT        ("recordingaccent",     MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzKeepAccentsAnalyzer()),
     RELEASE				    ("release",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new TitleWithPosGapAnalyzer()),
     RELEASE_DATE	        ("date",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    RELEASE_AC_VA           ("release_ac_va",       MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     RELEASE_ID			    ("reid",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     RELEASE_PRIMARY_TYPE    ("primarytype",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     RELEASE_SECONDARY_TYPE  ("secondarytype",       MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),

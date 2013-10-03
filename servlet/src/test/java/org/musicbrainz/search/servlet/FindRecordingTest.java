@@ -179,7 +179,6 @@ public class FindRecordingTest {
             tagList.getTag().add(tag);
             release.setTagList(tagList);
 
-            doc.addField(RecordingIndexField.RELEASE_AC_VA, "1");
             Artist vaArtist = of.createArtist();
             vaArtist.setId("89ad4ac3-39f7-470e-963a-56509c546377");
             vaArtist.setName("Various Artists");

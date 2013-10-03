@@ -47,9 +47,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen','')");
         stmt.addBatch("INSERT INTO artist_alias(id, artist, name, sort_name, locale, edits_pending, last_updated) VALUES (1, 16153, 'Echo & Bunneymen','Bunneymen & Echo', 'en',1,null)");
 
-        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1,  'Echo & The Bunnymen', 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (3,  'Echo & The Bunnymen', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
-                " VALUES (1, 0, 16153, 'Echo & The Bunnymen', '')");
+                " VALUES (3, 0, 16153, 'Echo & The Bunnymen', '')");
 
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit, type)" +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles', 1, 1)");
@@ -59,7 +59,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
                 "  language, script) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1, 1)");
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 3, 491240, 1, 1, 1, 1)");
 
         stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 221, 1970,1,1)");
         stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (221, 'c3b8dbc9-c1ff-4743-9015-8d762819134g','United Kingdom','Kingdom of UK')");
@@ -80,13 +80,11 @@ public class RecordingIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, number, name, artist_credit, length) "
                 + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 4, 'A4', 'Do It Cleans', 1, 33100)");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment, video)"
-                + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Do It Clean', 1, 33000, 'demo', true)");
+                + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Do It Clean', 3, 33000, 'demo', true)");
 
         stmt.addBatch("INSERT INTO isrc (id, recording, isrc) VALUES (1, 1, 'FRAAA9000038')");
         stmt.addBatch("INSERT INTO isrc (id, recording, isrc) VALUES (2, 1, 'FRAAA9100082')");
 
-        stmt.addBatch("INSERT INTO puid (id, puid) VALUES (1, 'efd2ace2-b3b9-305f-8a53-9803595c0e38')");
-        stmt.addBatch("INSERT INTO recording_puid (id, puid, recording) VALUES (1, 1, 1)");
 
         stmt.addBatch("INSERT INTO area (id, name) VALUES (1, 'United Kingdom')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (1, 'UK')");
@@ -96,7 +94,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
     }
 
     /**
-     * All Basic Fields Plus Release Events and different track artist to recording artist
+     * All Basic Fields Plus Release Events and different release artist and track artist to recording artist
      *
      * @throws Exception exception
      */
@@ -104,24 +102,34 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
+        //Recording
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 1, 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 'Echo & The Bunnymen', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name, join_phrase) " +
                 " VALUES (1, 0, 16153, 'Echo & The Bunnymen','')");
 
+        //Track
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (2, 'ddd4879c-5e88-4385-b131-bf65296bf245', 'Pixies','Pixies', 'a comment')");
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (2, 'Pixies', 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
                 " VALUES (2, 0, 2, 'Pixies')");
 
+        //Release
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
+                " VALUES (3, 'eee4879c-5e88-4385-b131-bf65296bf245', 'Poxies','Poxies', 'a comment')");
+        stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (3, 'The Poxies', 1, 1)");
+        stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
+                " VALUES (3, 0, 3, 'The Poxies')");
+
+
         stmt.addBatch("INSERT INTO release_group (id, gid, name, artist_credit)" +
                 " VALUES (491240, 'efd2ace2-b3b9-305f-8a53-9803595c0e37',  'Crocodiles', 1)");
 
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, packaging, " +
                 "  language, script) " +
-                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1)");
+                " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 3, 491240, 1, 1, 1)");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 2, 491240, 1, 7)");
         stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, name, artist_credit, length) "
                 + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 4, 'Do It Clean', 2, 33100)");
@@ -568,6 +576,93 @@ public class RecordingIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testReleaseArtist() throws Exception {
+
+        addTrackTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+
+
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
+            assertNotNull(ac);
+            assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
+
+
+            ac = recording.getReleaseList().getRelease().get(0).getArtistCredit();
+            assertNotNull(ac);
+            assertEquals("Poxies", ac.getNameCredit().get(0).getArtist().getName());
+            assertEquals("The Poxies", ac.getNameCredit().get(0).getName());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testNoReleaseArtistBecauseSameAsRecordingArtist() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+
+
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
+            assertNotNull(ac);
+            assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
+
+
+            ac = recording.getReleaseList().getRelease().get(0).getArtistCredit();
+            assertNull(ac);
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testNoTrackArtistBecauseSameAsRecordingArtist() throws Exception {
+
+        addTrackOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+
+
+            Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE.getName()), Recording.class);
+            ArtistCredit ac = recording.getArtistCredit();
+            assertNotNull(ac);
+            assertEquals("Echo & The Bunnymen", ac.getNameCredit().get(0).getArtist().getName());
+
+
+            ac = recording.getReleaseList().getRelease().get(0).getMediumList().getMedium().get(0).getTrackList().getDefTrack().get(0).getArtistCredit();
+            assertNull(ac);
+        }
+        ir.close();
+    }
+
 
     /**
      * @throws Exception exception
