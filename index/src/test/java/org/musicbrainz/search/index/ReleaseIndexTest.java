@@ -5,10 +5,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
-import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.Release;
-import org.musicbrainz.mmd2.ReleaseEvent;
-import org.musicbrainz.mmd2.ReleaseEventList;
+import org.musicbrainz.mmd2.*;
 
 import java.sql.Statement;
 
@@ -231,7 +228,12 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO label (id, gid, name, sort_name,area) " +
                 " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 'korova', 'korova', 1)");
 
-        stmt.addBatch("INSERT INTO release_label (id, release, label, catalog_number) VALUES (1, 491240, 1, 'ECHO1')");
+        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name,area) " +
+                " VALUES (2, 'bbbbbbbb-f2e1-4b45-9db8-8053841e7503', 'wea', 'wea', 1)");
+
+
+        stmt.addBatch("INSERT INTO release_label (id, release, label, catalog_number) VALUES (1, 491240, 1, 'FRED')");
+        stmt.addBatch("INSERT INTO release_label (id, release, label, catalog_number) VALUES (2, 491240, 2, 'ECHO1')");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 1, 491240, 1, 7)");
 
@@ -896,6 +898,35 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134f", rel.getReleaseEvent().get(3).getArea().getId());
             assertEquals("Afghanistan", rel.getReleaseEvent().get(3).getArea().getName());
             assertEquals("Afghanistan", rel.getReleaseEvent().get(3).getArea().getSortName());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testStoredRelease3() throws Exception {
+
+        addReleaseFive();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+
+            Document doc = ir.document(1);
+            Release release = (Release) MMDSerializer.unserialize(doc.get(ReleaseIndexField.RELEASE_STORE.getName()), Release.class);
+            assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
+            assertEquals("B00005NTQ7", release.getAsin());
+
+
+            LabelInfoList labellist = release.getLabelInfoList();
+            assertNotNull(labellist);
+            assertEquals(2, labellist.getLabelInfo().size());
+            assertEquals("ECHO1", labellist.getLabelInfo().get(0).getCatalogNumber());
+            assertEquals("FRED", labellist.getLabelInfo().get(1).getCatalogNumber());
         }
         ir.close();
     }

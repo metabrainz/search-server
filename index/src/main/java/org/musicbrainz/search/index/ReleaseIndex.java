@@ -110,7 +110,8 @@ public class  ReleaseIndex extends DatabaseIndex {
                "SELECT rl.release as releaseId, l.gid as labelId, l.name as labelName, catalog_number " +
                " FROM release_label rl " +
                "  LEFT JOIN label l ON rl.label=l.id " +
-               " WHERE rl.release BETWEEN ? AND ?");
+               " WHERE rl.release BETWEEN ? AND ?" +
+               " ORDER BY catalog_number, labelName");
 
         addPreparedStatement("MEDIUMS",
               "SELECT m.release as releaseId, mf.name as format, m.track_count as numTracksOnMedium, count(mc.id) as discidsOnMedium " +
