@@ -1,12 +1,17 @@
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
+import org.musicbrainz.mmd2.Label;
+import org.musicbrainz.mmd2.Place;
+
 import java.sql.Statement;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PlaceIndexTest extends AbstractIndexTest {
 
@@ -178,7 +183,7 @@ public class PlaceIndexTest extends AbstractIndexTest {
 
 
 
-    /*
+
     @Test
     public void testStoredIndexPlace() throws Exception {
 
@@ -191,41 +196,22 @@ public class PlaceIndexTest extends AbstractIndexTest {
         {
 
             Document doc = ir.document(1);
-            PlaceList arealist = (PlaceList) MMDSerializer.unserialize(doc.get(PlaceIndexField.PLACE_STORE.getName()), PlaceList.class);
-            DefPlaceElementInner area = arealist.getPlace().get(0);
-            assertEquals("aa95182f-df0a-3ad6-8bfb-4b63482cd276", area.getId());
-            assertEquals("Afghanistan", area.getName());
-            assertEquals("Afghanistan", area.getSortName());
-            assertEquals("Country", area.getType());
-            assertNotNull(area.getAliasList());
-            assertEquals(1,area.getAliasList().getAlias().size());
+            Place place = (Place) MMDSerializer.unserialize(doc.get(PlaceIndexField.PLACE_STORE.getName()), Place.class);
+            assertEquals("aa95182f-df0a-3ad6-8bfb-4b63482cd276", place.getId());
+            assertEquals("Manor Studios", place.getName());
+            assertEquals("1 New Street", place.getAddress());
+            assertEquals("180.56", place.getCoordinates().getLatitude());
+            assertEquals("120.0", place.getCoordinates().getLongitude());
 
-            Alias alias =  area.getAliasList().getAlias().get(0);
-            assertEquals("Afghany",alias.getContent());
-            assertEquals("Afghan", alias.getSortName());
-            assertEquals("en",alias.getLocale());
-            assertEquals("AliasType",alias.getType());
-
-            assertNotNull(area.getLifeSpan());
-            LifeSpan lifeSpan = area.getLifeSpan();
-            assertEquals("1830",lifeSpan.getBegin());
-            assertEquals("2020",lifeSpan.getEnd());
-            assertEquals("false",lifeSpan.getEnded());
-
-            assertNotNull(area.getIso31661CodeList());
-            assertEquals("AF", area.getIso31661CodeList().getIso31661Code().get(0));
-
-            assertNotNull(area.getIso31662CodeList());
-            assertEquals("North", area.getIso31662CodeList().getIso31662Code().get(0));
-            assertEquals("West", area.getIso31662CodeList().getIso31662Code().get(1));
-
-            assertNotNull(area.getIso31663CodeList());
-            assertEquals("Kabu", area.getIso31663CodeList().getIso31663Code().get(0));
+            assertNull(place.getDisambiguation());
+            assertEquals("Studio", place.getType());
+            assertEquals("Manox",place.getAliasList().getAlias().get(0).getContent());
+            assertEquals("Manoy",place.getAliasList().getAlias().get(0).getSortName());
+            assertEquals("en",place.getAliasList().getAlias().get(0).getLocale());
 
 
         }
         ir.close();
     }
-      */
 
 }
