@@ -181,6 +181,16 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE cdtoc_raw");
                 stmt.addBatch("DROP TABLE track_raw");
 
+                stmt.addBatch("DROP TABLE url");
+                stmt.addBatch("DROP TABLE l_area_url");
+                stmt.addBatch("DROP TABLE l_artist_url");
+                stmt.addBatch("DROP TABLE l_place_url");
+                stmt.addBatch("DROP TABLE l_recording_url");
+                stmt.addBatch("DROP TABLE l_release_url");
+                stmt.addBatch("DROP TABLE l_release_group_url");
+                stmt.addBatch("DROP TABLE l_url_url");
+                stmt.addBatch("DROP TABLE l_work_url");
+
                 stmt.addBatch("DROP TABLE work");
                 stmt.addBatch("DROP TABLE iswc");
                 stmt.addBatch("DROP TABLE work_alias");
@@ -238,6 +248,7 @@ public abstract class AbstractIndexTest {
             setupCDStubTables(stmt);
             setupWorkTables(stmt);
             setupPlaceTables(stmt);
+            setupUrlTables(stmt);
             setupReplicationTables(stmt);
             
             insertReferenceData(stmt);
@@ -1032,15 +1043,7 @@ public abstract class AbstractIndexTest {
                 "    last_updated        TIMESTAMP" +
                 ")");
 
-        stmt.addBatch("CREATE TABLE l_place_url" +
-                "(" +
-                "    id                  SERIAL," +
-                "    link                INTEGER NOT NULL," +
-                "    entity0             INTEGER NOT NULL," +
-                "    entity1             INTEGER NOT NULL," +
-                "    edits_pending       INTEGER NOT NULL ," +
-                "    last_updated        TIMESTAMP" +
-                ")");
+
 
         stmt.addBatch("CREATE TABLE l_place_work" +
                 "(" +
@@ -1060,6 +1063,99 @@ public abstract class AbstractIndexTest {
                 "    last_updated        TIMESTAMP" +
                 ")");
 
+    }
+
+
+    protected void setupUrlTables(Statement stmt) throws Exception {
+
+        stmt.addBatch("CREATE TABLE url" +
+                "(" +
+                "    id                INTEGER," +
+                "    gid               UUID," +
+                "    url               TEXT," +
+                "    last_updated      TIMESTAMP" +
+                ")");
+
+
+        stmt.addBatch("CREATE TABLE l_area_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE l_artist_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE l_label_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE l_place_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL ," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_release_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE l_recording_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE l_release_group_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE l_url_url" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ");");
     }
 
 
@@ -1086,7 +1182,8 @@ public abstract class AbstractIndexTest {
                 ")");
 
     }
-    
+
+
     protected void insertReferenceData(Statement stmt) throws Exception {
 
         stmt.addBatch("INSERT INTO gender (id, name) VALUES " + 

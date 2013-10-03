@@ -69,8 +69,8 @@ public class IndexOptions {
     public String getFreeDBDump() { return freeDBDump; }
 
     // Selection of indexes to build
-    @Option(name="--indexes", usage="A comma-separated list of indexes to build (area,artist,place,releasegroup,release,recording,label,work,tag,annotation,cdstub,freedb)")
-    private String indexes = "area,artist,label,place,release,recording,releasegroup,work,tag,annotation,cdstub,freedb";
+    @Option(name="--indexes", usage="A comma-separated list of indexes to build (annotation,area,artist,place,releasegroup,release,recording,label,work,tag,url,cdstub,freedb)")
+    private String indexes = "annotation,area,artist,label,place,release,recording,releasegroup,work,tag,url,cdstub,freedb";
     public ArrayList<String> selectedIndexes() { return new ArrayList<String>(Arrays.asList(indexes.split(","))); }
     public boolean buildIndex(String indexName) { return selectedIndexes().contains(indexName); }
 

@@ -123,6 +123,7 @@ public class IndexBuilder
                 new AreaIndex(mainDbConn),
                 new PlaceIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
+                new UrlIndex(mainDbConn),
                 new TagIndex(mainDbConn),
                 new CDStubIndex(mainDbConn), //Note different db
         };
