@@ -80,6 +80,16 @@ public class FindPlaceTest {
             doc.addField(PlaceIndexField.TYPE,"Country");
             place.setType("Country");
 
+            doc.addField(PlaceIndexField.COMMENT,"A comment");
+            place.setDisambiguation("A comment");
+
+            doc.addField(PlaceIndexField.AREA,"Afghanistan");
+            DefAreaElementInner area = of.createDefAreaElementInner();
+            area.setId("ff571ff4-04cb-4b9c-8a1c-354c330f863c");
+            area.setName("Afghanistan");
+            area.setSortName("Afghanistan");
+            place.setArea(area);
+
 
             doc.addField(PlaceIndexField.PLACE_STORE, MMDSerializer.serialize(place));
             writer.addDocument(doc.getLuceneDocument());
@@ -173,6 +183,27 @@ public class FindPlaceTest {
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(PlaceIndexField.PLACE_ID));
         assertEquals("Afghanistan", doc.get(PlaceIndexField.PLACE));
     }
+
+    @Test
+    public void testFindPlaceByArea() throws Exception {
+        Results res = ss.search("area:afghanistan", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(PlaceIndexField.PLACE_ID));
+        assertEquals("Afghanistan", doc.get(PlaceIndexField.PLACE));
+    }
+
+    @Test
+    public void testFindPlaceByComment() throws Exception {
+        Results res = ss.search("comment:comment", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(PlaceIndexField.PLACE_ID));
+        assertEquals("Afghanistan", doc.get(PlaceIndexField.PLACE));
+    }
+
 
     @Test
     public void testFindPlaceByBegin() throws Exception {
@@ -296,11 +327,12 @@ public class FindPlaceTest {
         assertTrue(output.contains("type=\"Country\""));
         assertTrue(output.contains("<name>Afghanistan</name>"));
         assertTrue(output.contains("<alias sort-name=\"Afghan\">Afghany</alias></alias-list>"));
-
-        assertTrue(output.contains("<begin>1993</begin"));
+        assertTrue(output.contains("<begin>1993</begin>"));
         assertTrue(output.contains("<end>2004</end>"));
         assertTrue(output.contains("<ended>true</ended>"));
         assertTrue(output.contains("<coordinates><latitude>-180.45</latitude><longitude>120</longitude></coordinates>"));
+        assertTrue(output.contains("<disambiguation>A comment</disambiguation>"));
+        assertTrue(output.contains("<area id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\">"));
 
     }
 
@@ -342,6 +374,8 @@ public class FindPlaceTest {
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"ended\":\"true\""));
         assertTrue(output.contains("\"coordinates\":{\"latitude\":\"-180.45\",\"longitude\":\"120\"},"));
+        assertTrue(output.contains("\"disambiguation\":\"A comment\","));
+        assertTrue(output.contains("\"area\":{\"id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\","));
 
     }
 
@@ -369,6 +403,8 @@ public class FindPlaceTest {
         assertTrue(output.contains("\"ended\":true"));
         assertTrue(output.contains("\"end\":\"2004\""));
         assertTrue(output.contains("coordinates\":{\"latitude\":\"-180.45\",\"longitude\":\"120\"}"));
+        assertTrue(output.contains("\"disambiguation\":\"A comment\","));
+        assertTrue(output.contains("\"area\":{\"id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\","));
     }
 
     /**

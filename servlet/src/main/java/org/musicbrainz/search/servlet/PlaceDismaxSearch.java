@@ -40,6 +40,7 @@ public class PlaceDismaxSearch extends AbstractDismaxSearchServer {
   protected DismaxSearcher initDismaxSearcher() {
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(3);
     fieldBoosts.put(PlaceIndexField.PLACE.getName(), new DismaxAlias.AliasField(true, 1.3f));
+    fieldBoosts.put(PlaceIndexField.AREA.getName(), new DismaxAlias.AliasField(true, 1.1f));
     fieldBoosts.put(PlaceIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
     fieldBoosts.put(PlaceIndexField.ADDRESS.getName(), new DismaxAlias.AliasField(true, 0.8f));
 

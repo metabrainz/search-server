@@ -89,10 +89,12 @@ public class PlaceIndex extends DatabaseIndex {
 
         addPreparedStatement("PLACE",
                         "SELECT p.coordinates, p.id, p.gid, p.name, p.address, pt.name as type, " +
-                        "   begin_date_year, begin_date_month, begin_date_day, " +
-                        "  end_date_year, end_date_month, end_date_day, ended" +
+                        "  p.begin_date_year, p.begin_date_month, p.begin_date_day, " +
+                        "  p.end_date_year, p.end_date_month, p.end_date_day, p.ended, p.comment, " +
+                        "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname " +
                         " FROM place p" +
                         "  LEFT JOIN place_type pt ON p.type = pt.id " +
+                        "  LEFT JOIN area a1 on p.area = a1.id" +
                         " WHERE p.id BETWEEN ? AND ? " +
                         " ORDER BY p.id");
 
@@ -186,6 +188,12 @@ public class PlaceIndex extends DatabaseIndex {
         doc.addField(PlaceIndexField.PLACE, name);
         place.setName(name);
 
+        String comment = rs.getString("comment");
+        if (!Strings.isNullOrEmpty(comment)) {
+            doc.addField(PlaceIndexField.COMMENT, comment);
+            place.setDisambiguation(comment);
+        }
+
         String type = rs.getString("type");
         doc.addFieldOrUnknown(PlaceIndexField.TYPE, type);
         if (!Strings.isNullOrEmpty(type)) {
@@ -232,6 +240,21 @@ public class PlaceIndex extends DatabaseIndex {
             doc.addField(PlaceIndexField.ADDRESS, address);
             place.setAddress(address);
         }
+        String areaId = rs.getString("area_gid");
+        if(areaId!=null) {
+            DefAreaElementInner area = of.createDefAreaElementInner();
+            area.setId(areaId);
+            String areaName = rs.getString("area_name");
+            area.setName(areaName);
+            doc.addFieldOrNoValue(ArtistIndexField.AREA, areaName);
+            String areaSortName = rs.getString("area_sortname");
+            area.setSortName(areaSortName);
+            place.setArea(area);
+        }
+        else {
+            doc.addField(ArtistIndexField.AREA, Index.NO_VALUE);
+        }
+
 
         boolean ended = rs.getBoolean("ended");
         doc.addFieldOrUnknown(ArtistIndexField.ENDED, Boolean.toString(ended));
