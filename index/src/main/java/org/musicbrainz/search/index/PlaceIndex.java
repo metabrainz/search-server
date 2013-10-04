@@ -228,9 +228,10 @@ public class PlaceIndex extends DatabaseIndex {
         }
 
         String address = rs.getString("address");
-        doc.addField(PlaceIndexField.ADDRESS, address);
-        place.setAddress(address);
-
+        if (!Strings.isNullOrEmpty(address)) {
+            doc.addField(PlaceIndexField.ADDRESS, address);
+            place.setAddress(address);
+        }
 
         boolean ended = rs.getBoolean("ended");
         doc.addFieldOrUnknown(ArtistIndexField.ENDED, Boolean.toString(ended));
