@@ -40,12 +40,13 @@ import org.musicbrainz.search.analysis.MusicbrainzWithPosGapAnalyzer;
  */
 public enum UrlIndexField implements IndexField {
 
-	ID		    ("_id",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    URL_ID      ("uid",		    MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    URL         ("url",         MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS,  new KeywordAnalyzer()),
-    TARGET_ID   ("targetid",    MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS,  new KeywordAnalyzer()),
-    TARGET_TYPE ("targettype",  MusicBrainzFieldTypes.TEXT_STORED_ANALYZED,  new MusicbrainzAnalyzer()),
-    URL_STORE   ("urlstore",    MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
+	ID		        ("_id",		        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    URL_ID          ("uid",		        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    URL             ("url",             MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS,  new KeywordAnalyzer()),
+    RELATION_TYPE   ("relationtype",    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED,  new MusicbrainzAnalyzer()),
+    TARGET_ID       ("targetid",        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS,  new KeywordAnalyzer()),
+    TARGET_TYPE     ("targettype",      MusicBrainzFieldTypes.TEXT_STORED_ANALYZED,  new MusicbrainzAnalyzer()),
+    URL_STORE       ("urlstore",        MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ;
 
     private String name;

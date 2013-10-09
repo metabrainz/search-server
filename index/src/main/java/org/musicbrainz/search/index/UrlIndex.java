@@ -123,9 +123,12 @@ public class UrlIndex extends DatabaseIndex {
         artist.setId(artistId);
         artist.setName(rs.getString("artist_name"));
         artist.setSortName(rs.getString("artist_sortname"));
+
         Relation relation = of.createRelation();
         relation.setArtist(artist);
-        relation.setType(rs.getString("link"));
+        String relationType = rs.getString("link");
+        relation.setType(relationType);
+        doc.addField(UrlIndexField.RELATION_TYPE,relationType);
 
         Target target = of.createTarget();
         target.setId(artistId);

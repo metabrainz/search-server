@@ -76,6 +76,38 @@ public class UrlIndexTest extends AbstractIndexTest {
     }
 
     @Test
+    public void testIndexUrlTargetType() throws Exception {
+
+        addUrlOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, UrlIndexField.TARGET_TYPE, "artist");
+
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexUrlRelationType() throws Exception {
+
+        addUrlOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, UrlIndexField.RELATION_TYPE, "wikipedia");
+
+        }
+        ir.close();
+    }
+
+    @Test
     public void testIndexUrlStore() throws Exception {
 
         addUrlOne();

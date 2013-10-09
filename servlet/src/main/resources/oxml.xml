@@ -38,6 +38,11 @@
                 <xml-element java-attribute="recordingList" xml-path="."/>
             </java-attributes>
         </java-type>
+        <java-type name="Metadata">
+            <java-attributes>
+                <xml-element java-attribute="urlList" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="DefAreaElementInner">
             <java-attributes>
                 <xml-element java-attribute="iso31661CodeList" xml-path="."/>
@@ -156,6 +161,11 @@
         <java-type name="IswcList">
             <java-attributes>
                 <xml-element java-attribute="iswc" name="iswcs"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="UrlList">
+            <java-attributes>
+                <xml-element java-attribute="url" name="urls"/>
             </java-attributes>
         </java-type>
         <java-type name="Work">
