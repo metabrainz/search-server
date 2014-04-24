@@ -154,6 +154,7 @@ public class FindAreaTest {
     }
 
     @Test
+    //Always the same as name
     public void testFindAreaBySortName() throws Exception {
         Results res = ss.search("sortname:\"Afghanistan\"", 0, 10);
         assertEquals(1, res.getTotalHits());

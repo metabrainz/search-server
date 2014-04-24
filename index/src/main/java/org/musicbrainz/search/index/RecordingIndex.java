@@ -249,7 +249,7 @@ public class RecordingIndex extends DatabaseIndex {
 
         releaseEvents =
                 " SELECT release, country, " +
-                        "   date_year, date_month, date_day, name, sort_name, gid"+
+                        "   date_year, date_month, date_day, name, gid"+
                         " FROM tmp_release_event r " +
                         " WHERE r.release in ";
 
@@ -698,7 +698,7 @@ public class RecordingIndex extends DatabaseIndex {
                 String iso_code=rs.getString("country");
                 String gid       = rs.getString("gid");
                 String name      = rs.getString("name");
-                String sort_name = rs.getString("sort_name");
+                String sort_name = name;
                 if(iso_code!=null) {
                     Iso31661CodeList isoList = of.createIso31661CodeList();
                     isoList.getIso31661Code().add(iso_code);

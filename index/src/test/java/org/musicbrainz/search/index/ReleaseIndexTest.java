@@ -126,15 +126,15 @@ public class ReleaseIndexTest extends AbstractIndexTest {
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 'Crocodiles (bonus disc)', 1, 491240, 1, 1, 1, 'demo')");
 
         stmt.addBatch("INSERT INTO release_country (release, country, date_year, date_month, date_day) values (491240, 221, 1970,1,1)");
-        stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (221, 'c3b8dbc9-c1ff-4743-9015-8d762819134g','United Kingdom','Kingdom of UK')");
+        stmt.addBatch("INSERT INTO area (id, gid, name) VALUES (221, 'c3b8dbc9-c1ff-4743-9015-8d762819134g','United Kingdom')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
 
         stmt.addBatch("INSERT INTO release_country (release, country) values (491240, 222)");
-        stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (222, 'c3b8dbc9-c1ff-4743-9015-8d762819134e','Abania','Albania')");
+        stmt.addBatch("INSERT INTO area (id, gid, name) VALUES (222, 'c3b8dbc9-c1ff-4743-9015-8d762819134e','Abania')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (222, 'AF')");
 
         stmt.addBatch("INSERT INTO release_country (release, country) values (491240, 2)");
-        stmt.addBatch("INSERT INTO area (id, gid,name, sort_name) VALUES (2,  'c3b8dbc9-c1ff-4743-9015-8d762819134f','Afghanistan','Afghanistan')");
+        stmt.addBatch("INSERT INTO area (id, gid,name) VALUES (2,  'c3b8dbc9-c1ff-4743-9015-8d762819134f','Afghanistan')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (2, 'AN')");
 
         stmt.addBatch("INSERT INTO release_unknown_country (release, date_year) values (491240, 1950)");
@@ -903,14 +903,14 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("1970-01-01", rel.getReleaseEvent().get(1).getDate());
             assertEquals("c3b8dbc9-c1ff-4743-0901-58d762819134", rel.getReleaseEvent().get(1).getArea().getId());
             assertEquals("United Kingdom", rel.getReleaseEvent().get(1).getArea().getName());
-            assertEquals("Kingdom of UK", rel.getReleaseEvent().get(1).getArea().getSortName());
+            assertEquals("United Kingdom", rel.getReleaseEvent().get(1).getArea().getSortName());
 
 
             assertEquals("AF", rel.getReleaseEvent().get(2).getArea().getIso31661CodeList().getIso31661Code().get(0));
             assertEquals(null, rel.getReleaseEvent().get(2).getDate());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", rel.getReleaseEvent().get(2).getArea().getId());
             assertEquals("Abania", rel.getReleaseEvent().get(2).getArea().getName());
-            assertEquals("Albania", rel.getReleaseEvent().get(2).getArea().getSortName());
+            assertEquals("Abania", rel.getReleaseEvent().get(2).getArea().getSortName());
 
             assertEquals("AN", rel.getReleaseEvent().get(3).getArea().getIso31661CodeList().getIso31661Code().get(0));
             assertEquals(null, rel.getReleaseEvent().get(3).getDate());

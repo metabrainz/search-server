@@ -37,7 +37,7 @@ public class AreaIndexTest extends AbstractIndexTest {
     private void addAreaOne() throws Exception {
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO area (id, gid,name,sort_name, comment, type, begin_date_year, end_date_year) VALUES (1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Afghanistan','Afghanistan','A Country in Asia',1,1830,2020)");
+        stmt.addBatch("INSERT INTO area (id, gid,name, comment, type, begin_date_year, end_date_year) VALUES (1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Afghanistan','A Country in Asia',1,1830,2020)");
         stmt.addBatch("INSERT INTO area_type(id, name) VALUES (1, 'Country')");
         stmt.addBatch("INSERT INTO area_alias (id, area, sort_name, name, primary_for_locale, locale, type ) VALUES (3, 1, 'Afghan', 'Afghany', true, 'en',1)");
         stmt.addBatch("INSERT INTO iso_3166_1(area, code) VALUES (1,'AF')");

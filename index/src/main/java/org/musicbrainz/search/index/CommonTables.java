@@ -134,7 +134,7 @@ public class CommonTables  {
                 "CREATE TEMPORARY TABLE tmp_release_event AS " +
                         " SELECT r1.release, r2.code as country, " +
                         "  r1.date_year, r1.date_month, r1.date_day," +
-                        "  a1.gid as gid, a1.name as name, a1.sort_name as sort_name" +
+                        "  a1.gid as gid, a1.name as name" +
                         " FROM release_country r1 " +
                         " LEFT JOIN area a1 " +
                         " ON r1.country = a1.id" +
@@ -143,7 +143,7 @@ public class CommonTables  {
                         " UNION" +
                         " SELECT release, null as country, " +
                         "  date_year, date_month, date_day," +
-                        "  null as gid, null as name, null as sort_name"+
+                        "  null as gid, null as name"+
                         " FROM release_unknown_country r1 ");
         clock.stop();
         System.out.println("tmp_release_event     :Finished:" + Utils.formatClock(clock));

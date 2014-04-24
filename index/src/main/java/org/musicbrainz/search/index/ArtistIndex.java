@@ -130,9 +130,9 @@ public class ArtistIndex extends DatabaseIndex {
                         "  artist_type.name as type, a.begin_date_year, a.begin_date_month, a.begin_date_day, " +
                         "  a.end_date_year, a.end_date_month, a.end_date_day,a.ended, " +
                         "  a.comment, lower(i.code) as country, lower(gender.name) as gender," +
-                        "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname, " +
-                        "  a2.gid as beginarea_gid, a2.name as beginarea_name, a2.sort_name as beginarea_sortname, " +
-                        "  a3.gid as endarea_gid, a3.name as endarea_name, a3.sort_name as endarea_sortname" +
+                        "  a1.gid as area_gid, a1.name as area_name,  " +
+                        "  a2.gid as beginarea_gid, a2.name as beginarea_name,  " +
+                        "  a3.gid as endarea_gid, a3.name as endarea_name" +
                         " FROM artist a " +
                         "  LEFT JOIN artist_type ON a.type = artist_type.id " +
                         "  LEFT JOIN iso_3166_1 i on a.area=i.area" +
@@ -334,8 +334,7 @@ public class ArtistIndex extends DatabaseIndex {
             String areaName = rs.getString("area_name");
             doc.addFieldOrNoValue(ArtistIndexField.AREA, areaName);
             area.setName(areaName);
-            String areaSortName = rs.getString("area_sortname");
-            area.setSortName(areaSortName);
+            area.setSortName(areaName);
             artist.setArea(area);
         }
         else {
@@ -349,7 +348,7 @@ public class ArtistIndex extends DatabaseIndex {
             String areaName = rs.getString("beginarea_name");
             doc.addFieldOrNoValue(ArtistIndexField.BEGIN_AREA, areaName);
             area.setName(areaName);
-            String areaSortName = rs.getString("beginarea_sortname");
+            String areaSortName = rs.getString("beginarea_name");
             area.setSortName(areaSortName);
             artist.setBeginArea(area);
         }
@@ -365,7 +364,7 @@ public class ArtistIndex extends DatabaseIndex {
             String areaName = rs.getString("endarea_name");
             doc.addFieldOrNoValue(ArtistIndexField.END_AREA, areaName);
             area.setName(areaName);
-            String areaSortName = rs.getString("endarea_sortname");
+            String areaSortName = rs.getString("endarea_name");
             area.setSortName(areaSortName);
             artist.setEndArea(area);
         }

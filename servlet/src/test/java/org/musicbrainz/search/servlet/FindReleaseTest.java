@@ -167,7 +167,7 @@ public class FindReleaseTest {
             areaInner.setIso31661CodeList(isoList);
             areaInner.setId("1fa8aa07-c688-1f7c-734b-4d82e528b09b");
             areaInner.setName("United Kingdom");
-            areaInner.setSortName("Kingdom of United");
+            areaInner.setSortName("United Kingdom");
             re.setDate("2005");
             re.setArea(areaInner);
             rel.getReleaseEvent().add(re);
@@ -789,7 +789,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("<country>GB</country>"));
         assertTrue(output.contains("<area id=\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\">"));
         assertTrue(output.contains("<name>United Kingdom</name>"));
-        assertTrue(output.contains("<sort-name>Kingdom of United</sort-name>"));
+        assertTrue(output.contains("<sort-name>United Kingdom</sort-name>"));
         assertTrue(output.contains("<format>Vinyl</format>"));
         assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
         assertTrue(output.contains("<track-count>17</track-count>"));
@@ -830,7 +830,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"secondary-type-list\":{\"secondary-type\":[\"Live\",\"Compilation\"]}}"));
         assertTrue(output.contains("{\"release-event\":[{\"date\":\"2005\""));
         assertTrue(output.contains("\"name\":\"United Kingdom\","));
-        assertTrue(output.contains("\"sort-name\":\"Kingdom of United\","));
+        assertTrue(output.contains("\"sort-name\":\"United Kingdom\","));
         assertTrue(output.contains("\"id\":\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\","));
     }
 
@@ -867,7 +867,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"release-events\":[{\"date\":\"2005\""));
         assertTrue(output.contains("\"secondary-types\":[\"Live\",\"Compilation\"]}"));
         assertTrue(output.contains("\"name\":\"United Kingdom\","));
-        assertTrue(output.contains("\"sort-name\":\"Kingdom of United\","));
+        assertTrue(output.contains("\"sort-name\":\"United Kingdom\","));
         assertTrue(output.contains("\"id\":\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\","));
 
     }

@@ -62,7 +62,7 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','Canada','Canada')");
+        stmt.addBatch("INSERT INTO area (id, gid, name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','Canada')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (38, 'CA')");
 	    stmt.addBatch("INSERT INTO label(id, gid, name, type, label_code, area, comment, " +
 					"	begin_date_year, begin_date_month, begin_date_day, end_date_year, end_date_month,ended) " +

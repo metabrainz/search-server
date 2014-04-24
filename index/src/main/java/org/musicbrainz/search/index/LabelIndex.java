@@ -106,7 +106,7 @@ public class LabelIndex extends DatabaseIndex {
                 "  label_type.name as type, label.begin_date_year, label.begin_date_month, label.begin_date_day, " +
                 "  label.end_date_year, label.end_date_month, label.end_date_day, label.ended," +
                 "  label.comment, label_code, lower(i.code) as country, " +
-                "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname " +
+                "  a1.gid as area_gid, a1.name as area_name " +
                 " FROM label " +
                 "  LEFT JOIN label_type ON label.type = label_type.id " +
                 "  LEFT JOIN iso_3166_1 i on label.area=i.area" +
@@ -274,8 +274,7 @@ public class LabelIndex extends DatabaseIndex {
             String areaName = rs.getString("area_name");
             area.setName(areaName);
             doc.addFieldOrNoValue(ArtistIndexField.AREA, areaName);
-            String areaSortName = rs.getString("area_sortname");
-            area.setSortName(areaSortName);
+            area.setSortName(areaName);
             label.setArea(area);
         }
         else {

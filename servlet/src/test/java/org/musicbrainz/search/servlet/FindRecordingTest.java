@@ -151,7 +151,7 @@ public class FindRecordingTest {
             areaInner.setIso31661CodeList(isoList);
             areaInner.setId("1fa8aa07-c688-1f7c-734b-4d82e528b09b");
             areaInner.setName("United Kingdom");
-            areaInner.setSortName("Kingdom of United");
+            areaInner.setSortName("United Kingdom");
             re.setArea(areaInner);
             re.setDate("1970-01-01");
             rel.getReleaseEvent().add(re);
@@ -544,7 +544,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("<track id=\"c3b8dbc9-c1ff-4743-9015-8d762819134e\"><number>A4</number><title>Gravitational Lens</title><length>233000</length><artist-credit><name-credit><artist id=\"2302e264-1cf0-4d1f-aca7-2a6f89e34b36\"><name>Pig Incident</name><sort-name>Incident, Pig</sort-name></artist></name-credit></artist-credit></track>"));
         assertTrue(output.contains("<area id=\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\">"));
         assertTrue(output.contains("<name>United Kingdom</name>"));
-        assertTrue(output.contains("<sort-name>Kingdom of United</sort-name>"));
+        assertTrue(output.contains("<sort-name>United Kingdom</sort-name>"));
         assertTrue(output.contains("<iso-3166-1-code-list><iso-3166-1-code>UK</iso-3166-1-code></iso-3166-1-code-list>"));
         assertTrue(output.contains("<video>true</video>"));
     }
@@ -583,7 +583,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"release-event-list\":{\"release-event\":[{\"date\":\"1970-01-01\""));
         assertTrue(output.contains("\"id\":\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\","));
         assertTrue(output.contains("\"name\":\"United Kingdom\","));
-        assertTrue(output.contains("\"sort-name\":\"Kingdom of United\","));
+        assertTrue(output.contains("\"sort-name\":\"United Kingdom\","));
         assertTrue(output.contains("\"iso-3166-1-code-list\":{\"iso-3166-1-code\":[\"UK\"]}"));
         assertTrue(output.contains("\"video\":\"true\""));
     }
@@ -624,7 +624,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("{\"id\":\"c3b8dbc9-c1ff-4743-9015-8d762819134e\""));
         assertTrue(output.contains("\"id\":\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\","));
         assertTrue(output.contains("\"name\":\"United Kingdom\","));
-        assertTrue(output.contains("\"sort-name\":\"Kingdom of United\","));
+        assertTrue(output.contains("\"sort-name\":\"United Kingdom\","));
         assertTrue(output.contains("\"iso-3166-1-codes\":[\"UK\"]"));
         assertTrue(output.contains("\"video\":true"));
     }

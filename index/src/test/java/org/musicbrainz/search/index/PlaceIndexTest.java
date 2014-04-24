@@ -35,7 +35,7 @@ public class PlaceIndexTest extends AbstractIndexTest {
     private void addPlaceOne() throws Exception {
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','County of OxfordShire','Oxfordshire County')");
+        stmt.addBatch("INSERT INTO area (id, gid, name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','County of OxfordShire')");
         stmt.addBatch("INSERT INTO place (comment,coordinates, id, gid,name,address,type, begin_date_year, end_date_year,area) VALUES ('comment',(180.56,120),1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Manor Studios','1 New Street',1,1830,2020,38)");
         stmt.addBatch("INSERT INTO place_type(id, name) VALUES (1, 'Studio')");
         stmt.addBatch("INSERT INTO place_alias (id, place, name, sort_name, primary_for_locale, locale, type ) VALUES (3, 1, 'Manox','Manoy', true, 'en',1)");
@@ -238,7 +238,7 @@ public class PlaceIndexTest extends AbstractIndexTest {
             assertNotNull(area);
             assertEquals("b8caa692-704d-412b-a410-4fbcf5b9c796", area.getId());
             assertEquals("County of OxfordShire", area.getName());
-            assertEquals("Oxfordshire County", area.getSortName());
+            assertEquals("County of OxfordShire", area.getSortName());
 
 
 

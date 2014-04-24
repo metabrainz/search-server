@@ -59,7 +59,7 @@ public class ReleaseEventHelper {
             String iso_code  = rs.getString("country");
             String gid       = rs.getString("gid");
             String name      = rs.getString("name");
-            String sort_name = rs.getString("sort_name");
+            String sort_name = name;
             ReleaseEvent releaseEvent = of.createReleaseEvent();
             if(iso_code!=null) {
                 Iso31661CodeList isoList = of.createIso31661CodeList();

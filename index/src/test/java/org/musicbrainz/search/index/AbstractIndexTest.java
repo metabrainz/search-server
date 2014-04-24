@@ -272,7 +272,6 @@ public abstract class AbstractIndexTest {
         stmt.addBatch("CREATE TABLE area (id          INTEGER PRIMARY KEY," +
                 "                   gid               uuid," +
                 "                   name              VARCHAR ," +
-                "                   sort_name         VARCHAR ," +
                 "                   comment           VARCHAR ," +
                 "                   type              INTEGER," +
                 "                   edits_pending     INTEGER NOT NULL DEFAULT 0," +

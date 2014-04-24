@@ -85,7 +85,7 @@ public class AreaIndex extends DatabaseIndex {
 
 
         addPreparedStatement("AREA",
-                        "SELECT a.id, a.gid, a.name, a.sort_name, a.comment as comment, at.name as type, " +
+                        "SELECT a.id, a.gid, a.name, a.comment as comment, at.name as type, " +
                         "   begin_date_year, begin_date_month, begin_date_day, " +
                         "  end_date_year, end_date_month, end_date_day, ended" +
                         " FROM area a" +
@@ -252,9 +252,8 @@ public class AreaIndex extends DatabaseIndex {
         doc.addField(AreaIndexField.AREA, name);
         area.setName(name);
 
-        String sortName = rs.getString("sort_name");
-        doc.addField(AreaIndexField.SORTNAME,sortName);
-        area.setSortName(sortName);
+        doc.addField(AreaIndexField.SORTNAME,name);
+        area.setSortName(name);
 
         String comment = rs.getString("comment");
         doc.addFieldOrNoValue(AreaIndexField.COMMENT, comment);

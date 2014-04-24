@@ -181,7 +181,7 @@ public class  ReleaseIndex extends DatabaseIndex {
 
         addPreparedStatement("RELEASE_EVENTS",
                 " SELECT release, country, " +
-                "   date_year, date_month, date_day, name, sort_name, gid"+
+                "   date_year, date_month, date_day, name, gid"+
                 " FROM tmp_release_event r1 " +
                 " WHERE release BETWEEN ? AND ? ");
 

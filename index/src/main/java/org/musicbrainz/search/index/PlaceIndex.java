@@ -91,7 +91,7 @@ public class PlaceIndex extends DatabaseIndex {
                         "SELECT p.coordinates, p.id, p.gid, p.name, p.address, pt.name as type, " +
                         "  p.begin_date_year, p.begin_date_month, p.begin_date_day, " +
                         "  p.end_date_year, p.end_date_month, p.end_date_day, p.ended, p.comment, " +
-                        "  a1.gid as area_gid, a1.name as area_name, a1.sort_name as area_sortname " +
+                        "  a1.gid as area_gid, a1.name as area_name " +
                         " FROM place p" +
                         "  LEFT JOIN place_type pt ON p.type = pt.id " +
                         "  LEFT JOIN area a1 on p.area = a1.id" +
@@ -247,8 +247,7 @@ public class PlaceIndex extends DatabaseIndex {
             String areaName = rs.getString("area_name");
             area.setName(areaName);
             doc.addFieldOrNoValue(ArtistIndexField.AREA, areaName);
-            String areaSortName = rs.getString("area_sortname");
-            area.setSortName(areaSortName);
+            area.setSortName(areaName);
             place.setArea(area);
         }
         else {
