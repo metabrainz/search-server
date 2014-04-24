@@ -102,7 +102,7 @@ public class LabelIndex extends DatabaseIndex {
 
 
         addPreparedStatement("LABELS",
-                "SELECT label.id, label.gid, label.name as name, label.sort_name, " +
+                "SELECT label.id, label.gid, label.name as name," +
                 "  label_type.name as type, label.begin_date_year, label.begin_date_month, label.begin_date_day, " +
                 "  label.end_date_year, label.end_date_month, label.end_date_day, label.ended," +
                 "  label.comment, label_code, lower(i.code) as country, " +
@@ -241,13 +241,12 @@ public class LabelIndex extends DatabaseIndex {
         String name=rs.getString("name");
         doc.addField(LabelIndexField.LABEL,name );
         label.setName(name);
+        doc.addField(LabelIndexField.SORTNAME, name);
+        label.setSortName(name);
+
 
         //Accented artist
         doc.addField(LabelIndexField.LABEL_ACCENT, name );
-
-        String sortName = rs.getString("sort_name");
-        doc.addField(LabelIndexField.SORTNAME, sortName);
-        label.setSortName(sortName);
 
 
         String type = rs.getString("type");
@@ -352,6 +351,8 @@ public class LabelIndex extends DatabaseIndex {
 
         String store = MMDSerializer.serialize(label);
         doc.addField(LabelIndexField.LABEL_STORE, store);
+
+
 
         return doc.getLuceneDocument();
     }

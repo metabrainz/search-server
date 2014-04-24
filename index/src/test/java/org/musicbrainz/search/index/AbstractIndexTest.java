@@ -429,7 +429,6 @@ public abstract class AbstractIndexTest {
                 "  id serial NOT NULL," +
                 "  gid uuid NOT NULL," +
                 "  name character varying(255)," +
-                "  sort_name character varying(255)," +
                 "  begin_date_year integer," +
                 "  begin_date_month integer," +
                 "  begin_date_day integer," +

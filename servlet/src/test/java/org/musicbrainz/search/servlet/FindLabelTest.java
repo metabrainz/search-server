@@ -52,8 +52,8 @@ public class FindLabelTest {
             doc.addField(LabelIndexField.LABEL, "Jockey Slut");
             label.setName("Jockey Slut");
 
-            doc.addField(LabelIndexField.SORTNAME, "Slut, Jockey");
-            label.setSortName("Slut, Jockey");
+            doc.addField(LabelIndexField.SORTNAME, "Jockey Slut");
+            label.setSortName("Jockey Slut");
 
             doc.addField(LabelIndexField.ALIAS, "Jockeys");
             AliasList aliasList = of.createAliasList();
@@ -253,14 +253,6 @@ public class FindLabelTest {
             assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
         }
 
-        {
-            Results res = ss.search("\"Slut Jockey\"", 0, 10);
-            assertEquals(1, res.getTotalHits());
-            Result result = res.results.get(0);
-            MbDocument doc = result.getDoc();
-            assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(LabelIndexField.LABEL_ID));
-            assertEquals("Jockey Slut", doc.get(LabelIndexField.LABEL));
-        }
 
         {
             Results res = ss.search("\"Jockeys\"", 0, 10);
@@ -309,8 +301,9 @@ public class FindLabelTest {
     }
 
     @Test
+    //Pointless because always same value as anme now
     public void testFindLabelBySortname() throws Exception {
-        Results res = ss.search("sortname:\"Slut, Jockey\"", 0, 10);
+        Results res = ss.search("sortname:\"Jockey Slut\"", 0, 10);
         assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
         MbDocument doc = result.getDoc();
@@ -464,7 +457,7 @@ public class FindLabelTest {
         assertTrue(output.contains("id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("type=\"Production\""));
         assertTrue(output.contains("<name>Jockey Slut</name>"));
-        assertTrue(output.contains("<sort-name>Slut, Jockey</sort-name>"));
+        assertTrue(output.contains("<sort-name>Jockey Slut</sort-name>"));
         assertTrue(output.contains("begin=\"1993\""));
         assertTrue(output.contains("end=\"2004\""));
     }
@@ -492,7 +485,7 @@ public class FindLabelTest {
         assertTrue(output.contains("id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("type=\"Production\""));
         assertTrue(output.contains("<name>Jockey Slut</name>"));
-        assertTrue(output.contains("<sort-name>Slut, Jockey</sort-name>"));
+        assertTrue(output.contains("<sort-name>Jockey Slut</sort-name>"));
         assertTrue(output.contains("<alias>Jockeys</alias>"));
         assertTrue(output.contains("<begin>1993</begin"));
         assertTrue(output.contains("<end>2004</end>"));
@@ -559,7 +552,7 @@ public class FindLabelTest {
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"type\":\"Production\""));
         assertTrue(output.contains("name\":\"Jockey Slut\""));
-        assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
+        assertTrue(output.contains("\"sort-name\":\"Jockey Slut\""));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"label-code\":1234"));
         assertTrue(output.contains("\"country\":\"GB\""));
@@ -587,7 +580,7 @@ public class FindLabelTest {
         assertTrue(output.contains("id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("\"type\":\"Production\""));
         assertTrue(output.contains("name\":\"Jockey Slut\""));
-        assertTrue(output.contains("\"sort-name\":\"Slut, Jockey\""));
+        assertTrue(output.contains("\"sort-name\":\"Jockey Slut\""));
         assertTrue(output.contains("life-span\":{\"begin\":\"1993\""));
         assertTrue(output.contains("\"country\":\"GB\""));
         assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"dance\"}]"));

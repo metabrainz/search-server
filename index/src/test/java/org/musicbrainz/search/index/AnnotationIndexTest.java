@@ -127,8 +127,8 @@ public class AnnotationIndexTest extends AbstractIndexTest {
 
         Statement stmt = conn.createStatement();
 
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name) " +
-                "  VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', '4AD', '4AD')");
+        stmt.addBatch("INSERT INTO label (id, gid, name) " +
+                "  VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', '4AD')");
         
         stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
         	"  VALUES (1, 1, 'label annotation', 'change', now())");

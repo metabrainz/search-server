@@ -43,8 +43,8 @@ public class LabelIndexTest extends AbstractIndexTest {
     private void addLabelOne() throws Exception {
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, type, label_code, begin_date_year, ended) " +
-					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', '4AD', '4AD US', 4, 5807, 1979, true)");
+        stmt.addBatch("INSERT INTO label (id, gid, name,  type, label_code, begin_date_year, ended) " +
+					"VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', '4AD', 4, 5807, 1979, true)");
         stmt.addBatch("INSERT INTO label_ipi (label, ipi) values(1,'1001')");
         stmt.addBatch("INSERT INTO label_alias (label, name, sort_name) VALUES (1, '4AD', '4AD US')");
 
@@ -64,9 +64,9 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO area (id, gid, name, sort_name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','Canada','Canada')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (38, 'CA')");
-	    stmt.addBatch("INSERT INTO label(id, gid, name, sort_name, type, label_code, area, comment, " +
+	    stmt.addBatch("INSERT INTO label(id, gid, name, type, label_code, area, comment, " +
 					"	begin_date_year, begin_date_month, begin_date_day, end_date_year, end_date_month,ended) " +
-					"VALUES (2, 'd8caa692-704d-412b-a410-4fbcf5b9c796', 'MusicBrainz Data Testing Label', 'Data Testing Label, MusicBrainz', 1, 0099998, 38, 'DO NOT EDIT THIS LABEL', " +
+					"VALUES (2, 'd8caa692-704d-412b-a410-4fbcf5b9c796', 'MusicBrainz Data Testing Label', 1, 0099998, 38, 'DO NOT EDIT THIS LABEL', " +
 					"	2009, 1, 1, 2009, 4,false)");
 
         stmt.executeBatch();
@@ -84,8 +84,8 @@ public class LabelIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO area (id, name) VALUES (1, 'Afghanistan')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (1, 'AF')");
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name, area, ended)" +
-					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', '4AD', '4AD US', 1, true)");
+        stmt.addBatch("INSERT INTO label (id, gid, name, area, ended)" +
+					"VALUES (3, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', '4AD', 1, true)");
         stmt.addBatch("INSERT INTO label_alias (label, name,sort_name) VALUES (3, 2, 2)");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Goth', 2);");
@@ -443,7 +443,7 @@ public class LabelIndexTest extends AbstractIndexTest {
             assertEquals("a539bb1e-f2e1-4b45-9db8-8053841e7503", label.getId());
             assertEquals("4AD", label.getName());
             assertNull(label.getCountry());
-            assertEquals("4AD US", label.getSortName());
+            assertEquals("4AD", label.getSortName());
             assertNull(label.getDisambiguation());
             assertEquals("Original Production",label.getType());
         }
@@ -469,10 +469,9 @@ public class LabelIndexTest extends AbstractIndexTest {
             assertEquals("d8caa692-704d-412b-a410-4fbcf5b9c796", label.getId());
             assertEquals("MusicBrainz Data Testing Label", label.getName());
             assertEquals("CA", label.getCountry());
-            assertEquals("Data Testing Label, MusicBrainz",label.getSortName());
+            assertEquals("MusicBrainz Data Testing Label",label.getSortName());
             assertEquals("DO NOT EDIT THIS LABEL", label.getDisambiguation());
             assertEquals("Distributor",label.getType());
-            assertEquals("Data Testing Label, MusicBrainz",label.getSortName());
             LifeSpan lifespan = label.getLifeSpan();
             assertNotNull(lifespan);
             assertEquals("2009-01-01",lifespan.getBegin());

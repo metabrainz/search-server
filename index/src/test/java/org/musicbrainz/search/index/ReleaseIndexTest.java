@@ -225,11 +225,11 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO area (id, name) VALUES (221, 'United Kingdom')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (221, 'GB')");
 
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name,area) " +
-                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 'korova', 'korova', 1)");
+        stmt.addBatch("INSERT INTO label (id, gid, name,area) " +
+                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 'korova', 1)");
 
-        stmt.addBatch("INSERT INTO label (id, gid, name, sort_name,area) " +
-                " VALUES (2, 'bbbbbbbb-f2e1-4b45-9db8-8053841e7503', 'wea', 'wea', 1)");
+        stmt.addBatch("INSERT INTO label (id, gid, name, area) " +
+                " VALUES (2, 'bbbbbbbb-f2e1-4b45-9db8-8053841e7503', 'wea', 1)");
 
 
         stmt.addBatch("INSERT INTO release_label (id, release, label, catalog_number) VALUES (1, 491240, 1, 'FRED')");
