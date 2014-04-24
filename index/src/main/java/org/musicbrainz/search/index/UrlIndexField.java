@@ -43,9 +43,9 @@ public enum UrlIndexField implements IndexField {
 	ID		        ("_id",		        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     URL_ID          ("uid",		        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     URL             ("url",             MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS,  new KeywordAnalyzer()),
-    RELATION_TYPE   ("relationtype",    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED,  new MusicbrainzAnalyzer()),
+    RELATION_TYPE   ("relationtype",    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED,  new CaseInsensitiveKeywordAnalyzer()),
     TARGET_ID       ("targetid",        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS,  new KeywordAnalyzer()),
-    TARGET_TYPE     ("targettype",      MusicBrainzFieldTypes.TEXT_STORED_ANALYZED,  new MusicbrainzAnalyzer()),
+    TARGET_TYPE     ("targettype",      MusicBrainzFieldTypes.TEXT_STORED_ANALYZED,  new CaseInsensitiveKeywordAnalyzer()),
     URL_STORE       ("urlstore",        MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ;
 

@@ -8,10 +8,6 @@
   <name>MusicBrainz Search Server's Index</name>
   <repositories>
     <repository>
-      <id>juniversalchardet-repository</id>
-      <url>http://projects.iplantc.org/archiva/repository/internal/</url>
-    </repository>
-    <repository>
       <id>java.net</id>
       <url>http://download.java.net/maven/2</url>
     </repository>
@@ -49,12 +45,12 @@
       <groupId>org.musicbrainz.mmd2</groupId>
       <artifactId>mmd2</artifactId>
       <version>2.0.0</version>
-    </dependency>  
+    </dependency>
     <dependency>
-      <groupId>org.mozilla.universalchardet</groupId>
-      <artifactId>juniversalcharset</artifactId>
-      <version>1.0.3</version>
-    </dependency>  
+          <groupId>com.googlecode.juniversalchardet</groupId>
+          <artifactId>juniversalchardet</artifactId>
+          <version>1.0.3</version>
+    </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
