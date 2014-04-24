@@ -338,6 +338,19 @@ public class FindReleaseTest {
     }
 
     @Test
+    public void testFindReleaseByDismax3Short() throws Exception {
+        Results res = sd.search("Inci", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", getReleaseId(res.results.get(0).getDoc()));
+    }
+
+    @Test
+    public void testFindReleaseByDismax3TooShort() throws Exception {
+        Results res = sd.search("Inc", 0, 10);
+        assertEquals(0, res.getTotalHits());
+    }
+
+    @Test
     public void testFindReleaseByDismax4() throws Exception {
         Results res = sd.search("Our Glorious", 0, 10);
         assertEquals(1, res.getTotalHits());

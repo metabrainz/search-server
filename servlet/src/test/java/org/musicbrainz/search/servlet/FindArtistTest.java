@@ -258,6 +258,14 @@ public class FindArtistTest {
     }
 
     @Test
+    public void testFindArtistDismaxFuzzyShort() throws Exception {
+        Results res = sd.search("Fa", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", getArtistId(res.results.get(0).getDoc()));
+
+    }
+
+    @Test
     public void testFindArtistBySortName() throws Exception {
         Results res = ss.search("sortname:\"Incident, Farming\"", 0, 10);
         assertEquals(1, res.getTotalHits());

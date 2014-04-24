@@ -17,7 +17,7 @@ public class ArtistDismaxSearch extends AbstractDismaxSearchServer {
     DismaxAlias dismaxAlias = new DismaxAlias();
     dismaxAlias.setFields(fieldBoosts);
     dismaxAlias.setTie(0.1f);
-    return new DismaxSearcher(dismaxAlias);
+    return new ArtistDismaxSearcher(dismaxAlias);
   }
 
   /**

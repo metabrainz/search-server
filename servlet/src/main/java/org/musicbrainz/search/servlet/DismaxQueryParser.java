@@ -152,8 +152,14 @@ public class DismaxQueryParser {
             return fq;
         }
 
-
+        @Override
         protected Query getFieldQuery(String field, String queryText, boolean quoted)
+                throws ParseException
+        {
+            return getFieldQuery(field, queryText, quoted, MIN_FIELD_LENGTH_TO_MAKE_FUZZY);
+        }
+
+        protected Query getFieldQuery(String field, String queryText, boolean quoted, int fuzzyFieldLength)
                 throws ParseException
         {
             //If field is an alias
@@ -171,7 +177,7 @@ public class DismaxQueryParser {
                     Query queryFuzzy = null;
 
                     DismaxAlias.AliasField af = a.getFields().get(f);
-                    if (!quoted && queryText.length() >= MIN_FIELD_LENGTH_TO_MAKE_FUZZY) {
+                    if (!quoted && queryText.length() >= fuzzyFieldLength) {
                         querySub = getFieldQuery(f, queryText, quoted);
                         if (querySub instanceof TermQuery) {
 

@@ -379,13 +379,13 @@ public class IssueSearch167Test {
     }
 
     @Test
-    public void testFindArtistDismaxTooShortForWildcard() throws Exception {
+    public void testFindArtistDismaxShortWildcard() throws Exception {
         SearcherManager searcherManager = sd.getSearcherManager();
         IndexSearcher searcher = searcherManager.acquire();
         try {
             Query q = sd.parseQuery("Rep");
             TopDocs topdocs = searcher.search(q, 10);
-            assertEquals(0, topdocs.scoreDocs.length);
+            assertEquals(4, topdocs.scoreDocs.length);
         } finally {
             searcherManager.release(searcher);
         }
