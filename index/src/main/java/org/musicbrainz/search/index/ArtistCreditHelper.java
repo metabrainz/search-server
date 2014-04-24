@@ -153,6 +153,13 @@ public class ArtistCreditHelper {
             if(currEntityId!=entityId || currPosition!=position)
             {
                 ArtistCreditWrapper acw = artistCredits.get(currEntityId);
+                //SEARCH-348
+                //Timing problem new entity added since artistcredit query so artist credit cant be found for alias,
+                //ignore and move onto next entry
+                if(acw==null)
+                {
+                    continue;
+                }
                 nc = acw.getArtistCredit().getNameCredit().get(currPosition);
                 entityId = currEntityId;
                 position = currPosition;
