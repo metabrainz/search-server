@@ -55,6 +55,8 @@ public class LabelBoostDoc {
         labelGuIdSet.add("590538e9-b183-4163-ab5a-171fb021ed12"); //Universal Records
         labelGuIdSet.add("9e6b4d7f-4958-4db7-8504-d89e315836af"); //Sony Music Entertainment
         labelGuIdSet.add("f9ada3ae-3081-44df-8581-ca27a3462b68"); //Sony BMG Music Entertainment
+        labelGuIdSet.add("13a464dc-b9fd-4d16-a4f4-d4316f6a46c7"); //Universal Music
+
     }
 
 
