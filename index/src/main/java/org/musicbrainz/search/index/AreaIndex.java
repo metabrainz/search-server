@@ -403,6 +403,8 @@ public class AreaIndex extends DatabaseIndex {
 
         String store = MMDSerializer.serialize(areaList);
         doc.addField(AreaIndexField.AREA_STORE, store);
+
+        AreaBoostDoc.boost(area.getType(), doc.getLuceneDocument());
         return doc.getLuceneDocument();
     }
 
