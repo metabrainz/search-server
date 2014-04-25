@@ -34,6 +34,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.charfilter.MappingCharFilter;
 import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
+import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.musicbrainz.search.LuceneVersion;
 
@@ -68,9 +69,9 @@ public class NewMusicbrainzAnalyzer extends Analyzer {
         Tokenizer source = new StandardTokenizer(LuceneVersion.LUCENE_VERSION,reader);
         //TokenStream filter = new ICUTransformFilter(source, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         //filter = new ICUTransformFilter(filter, Transliterator.getInstance("Traditional-Simplified"));
-        //filter = new MusicbrainzTokenizerFilter(filter);
+        TokenStream filter = new StandardFilter(LuceneVersion.LUCENE_VERSION,source);
         //filter = new AccentFilter(filter);
-        TokenStream filter = new LowercaseFilter(source);
+        filter = new LowercaseFilter(filter);
         /*filter = new MusicbrainzWordDelimiterFilter(filter,
                 WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,
                 1,
