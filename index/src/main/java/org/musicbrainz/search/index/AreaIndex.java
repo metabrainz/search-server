@@ -35,6 +35,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 
+import java.awt.geom.Area;
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
@@ -46,6 +47,8 @@ import java.util.Set;
 public class AreaIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "area";
+
+    private static final String AREA_RELATION_TYPE = "area";
 
     public AreaIndex(Connection dbConnection) {
         super(dbConnection);
@@ -92,6 +95,19 @@ public class AreaIndex extends DatabaseIndex {
                         "  LEFT JOIN area_type at ON a.type = at.id " +
                         " WHERE a.id BETWEEN ? AND ? " +
                         " ORDER BY a.id");
+
+        addPreparedStatement("AREA_PARENT",
+                "SELECT a2.id as areaid, a.id, a.gid, a.name, a.comment as comment, at.name as type, " +
+                        "   a.begin_date_year, a.begin_date_month, a.begin_date_day, " +
+                        "  a.end_date_year, a.end_date_month, a.end_date_day, a.ended, lt.name as link, lt.gid as linkid" +
+                        " FROM area a" +
+                        " INNER JOIN l_area_area laa on a.id=laa.entity0" +
+                        " INNER JOIN area a2         on a2.id=laa.entity1" +
+                        " INNER JOIN link l          ON laa.link   = l.id " +
+                        " INNER JOIN link_type lt    ON l.link_type=lt.id" +
+                        " LEFT JOIN area_type at ON a.type = at.id " +
+                        " WHERE a2.id BETWEEN ? AND ? " +
+                        " ORDER BY a2.id");
 
         addPreparedStatement("ALIASES",
                 "SELECT a.area as area, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
@@ -217,18 +233,75 @@ public class AreaIndex extends DatabaseIndex {
             iso3List.getIso31663Code().add(rs.getString("code"));
         }
 
+        //Linked area id to a relation containing the parent (if has one)
+        Map<Integer,RelationList> areaParent = new HashMap<Integer, RelationList>();
+        st = getPreparedStatement("AREA_PARENT");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        while (rs.next()) {
+            int areaId = rs.getInt("areaid");
+
+            DefAreaElementInner area = of.createDefAreaElementInner();
+            String guid = rs.getString("gid");
+            area.setId(guid);
+
+            String name = rs.getString("name");
+            area.setName(name);
+
+            area.setSortName(name);
+
+            String comment = rs.getString("comment");
+            if (!Strings.isNullOrEmpty(comment)) {
+                area.setDisambiguation(comment);
+            }
+
+            String type = rs.getString("type");
+            if (!Strings.isNullOrEmpty(type)) {
+                area.setType(type);
+            }
+
+            boolean ended = rs.getBoolean("ended");
+
+            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
+            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
+            LifeSpan lifespan = of.createLifeSpan();
+            area.setLifeSpan(lifespan);
+            if(!Strings.isNullOrEmpty(begin)) {
+                lifespan.setBegin(begin);
+            }
+            if(!Strings.isNullOrEmpty(end)) {
+                lifespan.setEnd(end);
+            }
+            lifespan.setEnded(Boolean.toString(ended));
+
+            RelationList rl   = of.createRelationList();
+            rl.setTargetType(AREA_RELATION_TYPE);
+            Relation relation = of.createRelation();
+            relation.setArea(area);
+            Target target = of.createTarget();
+            target.setValue(area.getId());
+            relation.setTarget(target);
+            relation.setType(rs.getString("link"));
+            relation.setTypeId(rs.getString("linkid"));
+            relation.setDirection(DefDirection.BACKWARD);
+            rl.getRelation().add(relation);
+            areaParent.put(areaId, rl);
+        }
         st = getPreparedStatement("AREA");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases, iso1, iso2, iso3));
+            indexWriter.addDocument(documentFromResultSet(rs, areaParent, aliases, iso1, iso2, iso3));
         }
         rs.close();
 
     }
 
+
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,RelationList> areaParents,
                                           Map<Integer, Set<Alias>> aliases,
                                           Map<Integer, Iso31661CodeList> iso1,
                                           Map<Integer, Iso31662CodeList> iso2,
@@ -286,6 +359,10 @@ public class AreaIndex extends DatabaseIndex {
         }
         lifespan.setEnded(Boolean.toString(ended));
 
+        if(areaParents.containsKey(areaId)) {
+            RelationList rl = areaParents.get(areaId);
+            area.getRelationList().add(rl);
+        }
 
         if (aliases.containsKey(areaId)) {
             AliasList aliasList = of.createAliasList();

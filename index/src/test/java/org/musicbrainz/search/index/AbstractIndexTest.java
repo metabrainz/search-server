@@ -122,6 +122,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE area_alias_type");
                 stmt.addBatch("DROP TABLE area_alias");
                 stmt.addBatch("DROP TABLE tag");
+                stmt.addBatch("DROP TABLE l_area_area");
 
                 stmt.addBatch("DROP TABLE artist");
                 stmt.addBatch("DROP TABLE artist_alias");
@@ -321,6 +322,16 @@ public abstract class AbstractIndexTest {
                 "                         end_date_day        SMALLINT," +
                 "                         primary_for_locale  BOOLEAN NOT NULL DEFAULT false"+
                 ");");
+
+        stmt.addBatch("CREATE TABLE l_area_area" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0," +
+                "    last_updated        TIMESTAMP" +
+                ")");
 
         stmt.addBatch("CREATE TABLE tag (" +
                 "  id serial NOT NULL," +
