@@ -157,9 +157,9 @@ public class WorkIndex extends DatabaseIndex {
 
             if(linkId==lastLinkId) {
                 String attribute = rs.getString("attribute");
-                AttributeList attributeList=lastRelation.getAttributeList();
+                Relation.AttributeList attributeList=lastRelation.getAttributeList();
                 if(attributeList==null) {
-                    attributeList = new ObjectFactory().createAttributeList();
+                    attributeList = new ObjectFactory().createRelationAttributeList();
                     lastRelation.setAttributeList(attributeList);
                 }
                 attributeList.getAttribute().add(attribute);
@@ -185,12 +185,11 @@ public class WorkIndex extends DatabaseIndex {
                 relation.setType(rs.getString("link"));
                 relation.setDirection(DefDirection.BACKWARD);
                 list.getRelation().add(relation);
-
                 String attribute = rs.getString("attribute");
                 if(attribute!=null) {
-                    AttributeList attributeList=relation.getAttributeList();
+                    Relation.AttributeList attributeList=relation.getAttributeList();
                     if(attributeList==null) {
-                        attributeList = new ObjectFactory().createAttributeList();
+                        attributeList = new ObjectFactory().createRelationAttributeList();
                         relation.setAttributeList(attributeList);
                     }
                     attributeList.getAttribute().add(attribute);

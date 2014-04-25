@@ -89,7 +89,7 @@ public class FindWorkTest {
             rl.setTargetType("artist");
             {
                 Relation relation = of.createRelation();
-                AttributeList al = of.createAttributeList();
+                Relation.AttributeList al = of.createRelationAttributeList();
                 Artist artist1 = of.createArtist();
                 artist1.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
                 artist1.setName("Пётр Ильич Чайковский");
@@ -103,7 +103,7 @@ public class FindWorkTest {
             }
             {
                 Relation relation = of.createRelation();
-                AttributeList al = of.createAttributeList();
+                Relation.AttributeList al = of.createRelationAttributeList();
                 Artist artist1 = of.createArtist();
                 artist1.setId("abcdefgh-a621-4f54-8850-2c5373b7eac9");
                 artist1.setName("frank");
@@ -148,7 +148,7 @@ public class FindWorkTest {
             rl.setTargetType("artist");
             {
                 Relation relation = of.createRelation();
-                AttributeList al = of.createAttributeList();
+                Relation.AttributeList al = of.createRelationAttributeList();
                 Artist artist = of.createArtist();
                 artist.setId("789f6768-5830-4b08-8b4f-f38566b2eb1d");
                 artist.setName("Black Francis");
