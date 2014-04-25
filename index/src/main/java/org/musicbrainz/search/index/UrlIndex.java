@@ -131,7 +131,7 @@ public class UrlIndex extends DatabaseIndex {
         doc.addField(UrlIndexField.RELATION_TYPE,relationType);
 
         Target target = of.createTarget();
-        target.setId(artistId);
+        target.setValue(artistId);
         doc.addField(UrlIndexField.TARGET_ID, artistId);
         relation.setTarget(target);
 

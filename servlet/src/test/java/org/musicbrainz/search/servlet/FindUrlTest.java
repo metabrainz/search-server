@@ -53,6 +53,9 @@ public class FindUrlTest {
             doc.addField(UrlIndexField.RELATION_TYPE, "Wikipedia");
             {
                 Relation relation = of.createRelation();
+                Target   target   = of.createTarget();
+                target.setValue("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
+                relation.setTarget(target);
                 Artist artist1 = of.createArtist();
                 artist1.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
                 artist1.setName("Nine Inch Nails");
@@ -117,6 +120,15 @@ public class FindUrlTest {
     }
 
     @Test
+    public void testFindUrlByTargetTypeUppercase() throws Exception {
+        Results res = ss.search("targettype:ARTIST", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(UrlIndexField.URL_ID));
+        assertEquals("http://en.wikipedia.org/wiki/Nine_Inch_Nails", doc.get(UrlIndexField.URL));
+    }
+    @Test
     public void testFindUrlByRelationType() throws Exception {
         Results res = ss.search("relationtype:wikipedia", 0, 10);
         assertEquals(1, res.getTotalHits());
@@ -148,7 +160,7 @@ public class FindUrlTest {
         assertTrue(output.contains("<resource>http://en.wikipedia.org/wiki/Nine_Inch_Nails</resource>"));
         assertTrue(output.contains("<relation-list target-type=\"artist\">"));
         assertTrue(output.contains("<relation type=\"Wikipedia\">"));
-
+        assertTrue(output.contains("<target>4302e264-1cf0-4d1f-aca7-2a6f89e34b36</target>"));
     }
 
     /**

@@ -124,7 +124,7 @@ public class UrlIndexTest extends AbstractIndexTest {
             assertEquals("artist", url.getRelationList().get(0).getTargetType());
             Relation relation = url.getRelationList().get(0).getRelation().get(0);
             assertEquals("Wikipedia", relation.getType());
-            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", relation.getTarget().getId());
+            assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", relation.getTarget().getValue());
             assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", relation.getArtist().getId());
             assertEquals("Nine Inch Nails", relation.getArtist().getName());
             assertEquals("Nails, Nine Inch", relation.getArtist().getSortName());
