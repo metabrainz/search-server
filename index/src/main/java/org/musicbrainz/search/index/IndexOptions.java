@@ -16,7 +16,6 @@ public class IndexOptions {
 
     // Lucene parameters
     public static final int MAX_BUFFERED_DOCS = 10000;
-    public static final int MERGE_FACTOR = 10;
 
     // PostgreSQL schema that holds MB data
 	public static final String DB_SCHEMA = "musicbrainz";
@@ -100,11 +99,6 @@ public class IndexOptions {
     @Option(name="--debug", usage="Debug Mode, provides additional info, only use for debugging because runs slower.")
     private boolean debug = false;
     public boolean isDebug() { return debug; }
-
-    // Merge Factor
-    @Option(name="--mergefactor", usage="The Merge factor used during Indexing. (default: "+MERGE_FACTOR+")")
-    private int mergeFactor = MERGE_FACTOR;
-    public int getMergeFactor() { return mergeFactor; }
 
     // Max Buffered Docs
     @Option(name="--maxbuffereddocs", usage="The Max Buffered docs before writing to index segment during Indexing. (default: "+MAX_BUFFERED_DOCS+")")
