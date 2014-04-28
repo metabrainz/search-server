@@ -32,6 +32,7 @@ package org.musicbrainz.search.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.index.WorkIndexField;
 
 public class WorkDismaxSearch extends AbstractDismaxSearchServer {
@@ -39,8 +40,9 @@ public class WorkDismaxSearch extends AbstractDismaxSearchServer {
   @Override
   protected DismaxSearcher initDismaxSearcher() {
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(2);
-    fieldBoosts.put(WorkIndexField.WORK.getName(), new DismaxAlias.AliasField(true, 1.3f));
-    fieldBoosts.put(WorkIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
+    fieldBoosts.put(WorkIndexField.WORK.getName(),      new DismaxAlias.AliasField(true, 1.3f));
+    fieldBoosts.put(WorkIndexField.ALIAS.getName(),     new DismaxAlias.AliasField(true, 0.9f));
+    fieldBoosts.put(WorkIndexField.COMMENT.getName(),   new DismaxAlias.AliasField(true, 0.7f));
     DismaxAlias dismaxAlias = new DismaxAlias();
     dismaxAlias.setFields(fieldBoosts);
     dismaxAlias.setTie(0.1f);

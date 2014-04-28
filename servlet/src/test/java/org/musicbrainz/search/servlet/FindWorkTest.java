@@ -239,6 +239,15 @@ public class FindWorkTest {
     }
 
     @Test
+    public void testFindWorkByDismax3() throws Exception {
+        Results res = sd.search("demo", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+    @Test
     public void testFindWorkByComment() throws Exception {
         Results res = ss.search("comment:demo", 0, 10);
         assertEquals(1, res.getTotalHits());
