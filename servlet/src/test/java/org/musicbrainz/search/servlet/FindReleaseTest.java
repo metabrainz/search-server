@@ -104,6 +104,10 @@ public class FindReleaseTest {
             stl.getSecondaryType().add("Compilation");
             release.getReleaseGroup().setSecondaryTypeList(stl);
 
+
+            doc.addField(ReleaseIndexField.PACKAGING, "Jewel Case");
+            release.setPackaging("Jewel Case");
+
             doc.addField(ReleaseIndexField.QUALITY, ReleaseQuality.HIGH.toString());
             doc.addField(ReleaseIndexField.TAG, "punk");
             TagList tagList = of.createTagList();
@@ -500,6 +504,13 @@ public class FindReleaseTest {
         assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", getReleaseId(res.results.get(0).getDoc()));
     }
 
+    @Test
+    public void testFindReleaseByPackaging() throws Exception {
+        Results res = ss.search("packaging:\"jewel case\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("1d9e8ed6-3893-4d3b-aa7d-6cd79609e386", getReleaseId(res.results.get(0).getDoc()));
+    }
+
     /**
      * Works as is even though lang code not analysed because lang code always lowercase
      *
@@ -804,6 +815,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("<name>United Kingdom</name>"));
         assertTrue(output.contains("<sort-name>United Kingdom</sort-name>"));
         assertTrue(output.contains("<format>Vinyl</format>"));
+        assertTrue(output.contains("<packaging>Jewel Case</packaging>"));
         assertTrue(output.contains("<asin>B00004Y6O9</asin>"));
         assertTrue(output.contains("<track-count>17</track-count>"));
         assertTrue(output.contains("<name>Wrath Records</name>"));
@@ -843,6 +855,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"secondary-type-list\":{\"secondary-type\":[\"Live\",\"Compilation\"]}}"));
         assertTrue(output.contains("{\"release-event\":[{\"date\":\"2005\""));
         assertTrue(output.contains("\"name\":\"United Kingdom\","));
+        assertTrue(output.contains("\"packaging\":\"Jewel Case\","));
         assertTrue(output.contains("\"sort-name\":\"United Kingdom\","));
         assertTrue(output.contains("\"id\":\"1fa8aa07-c688-1f7c-734b-4d82e528b09b\","));
     }
@@ -876,6 +889,7 @@ public class FindReleaseTest {
         assertTrue(output.contains("\"track-count\":7"));
         assertTrue(output.contains("\"label-info\""));
         assertTrue(output.contains("\"catalog-number\":\"WRATHCD-25\""));
+        assertTrue(output.contains("\"packaging\":\"Jewel Case\","));
         assertTrue(output.contains("\"primary-type\":\"Album\""));
         assertTrue(output.contains("\"release-events\":[{\"date\":\"2005\""));
         assertTrue(output.contains("\"secondary-types\":[\"Live\",\"Compilation\"]}"));

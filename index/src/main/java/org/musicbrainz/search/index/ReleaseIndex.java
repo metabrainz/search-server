@@ -175,7 +175,7 @@ public class  ReleaseIndex extends DatabaseIndex {
                 " SELECT id, gid, name, " +
                 "  barcode, " +
                 "  type, rg_gid, amazon_asin, " +
-                "  language, language_2t, script, status, comment, quality " +
+                "  language, language_2t, script, status, comment, quality, packaging " +
                 " FROM tmp_release rl " +
                 " WHERE id BETWEEN ? AND ? ");
 
@@ -431,7 +431,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         doc.addFieldOrUnknown(ReleaseIndexField.PRIMARY_TYPE, primaryType);
         ReleaseGroup rg = of.createReleaseGroup();
         release.setReleaseGroup(rg);
-        if (primaryType!=null && !primaryType.isEmpty()){
+        if (!Strings.isNullOrEmpty(primaryType)){
             release.getReleaseGroup().setPrimaryType(primaryType);
         }
 
@@ -446,7 +446,7 @@ public class  ReleaseIndex extends DatabaseIndex {
 
         String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType, secondaryTypes.get(id));
         doc.addFieldOrUnknown(ReleaseIndexField.TYPE, type);
-        if (type!=null && !type.isEmpty()) {
+        if (!Strings.isNullOrEmpty(type)) {
             release.getReleaseGroup().setType(type);
         }
 
@@ -456,7 +456,7 @@ public class  ReleaseIndex extends DatabaseIndex {
 
         String status = rs.getString("status");
         doc.addFieldOrUnknown(ReleaseIndexField.STATUS, status);
-        if (status!=null && !status.isEmpty()) {
+        if (!Strings.isNullOrEmpty(status)) {
             release.setStatus(status);
         }
 
@@ -475,7 +475,7 @@ public class  ReleaseIndex extends DatabaseIndex {
 
         String asin = rs.getString("amazon_asin");
         doc.addFieldOrNoValue(ReleaseIndexField.AMAZON_ID, asin);
-        if (asin!=null && !asin.isEmpty()) {
+        if (!Strings.isNullOrEmpty(asin)) {
             release.setAsin(asin);
         }
 
@@ -483,7 +483,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         TextRepresentation tr = of.createTextRepresentation();
         String script = rs.getString("script");
         doc.addFieldOrUnknown(ReleaseIndexField.SCRIPT, script) ;
-        if (script!=null && !script.isEmpty()) {
+        if (!Strings.isNullOrEmpty(script)) {
             tr.setScript(script);
             isScriptOrLanguage=true;
         }
@@ -509,9 +509,15 @@ public class  ReleaseIndex extends DatabaseIndex {
             release.setTextRepresentation(tr);
         }
 
+        String packaging = rs.getString("packaging");
+        doc.addFieldOrUnknown(ReleaseIndexField.PACKAGING, packaging);
+        if (!Strings.isNullOrEmpty(packaging)) {
+            release.setPackaging(packaging);
+        }
+
         String comment = rs.getString("comment");
         doc.addFieldOrNoValue(ReleaseIndexField.COMMENT, comment);
-        if (comment!=null && !comment.isEmpty()) {
+        if (!Strings.isNullOrEmpty(comment)) {
             release.setDisambiguation(comment);
         }
 
@@ -654,6 +660,8 @@ public class  ReleaseIndex extends DatabaseIndex {
             doc.addFieldOrUnknown(ReleaseIndexField.COUNTRY, null);
             doc.addFieldOrUnknown(ReleaseIndexField.DATE, null );
         }
+
+
         buildClock.suspend();
         storeClock.resume();
         String store = MMDSerializer.serialize(release);

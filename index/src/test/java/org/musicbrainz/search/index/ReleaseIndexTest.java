@@ -629,6 +629,23 @@ public class ReleaseIndexTest extends AbstractIndexTest {
      * @throws Exception exception
      */
     @Test
+    public void testIndexReleasePackaging() throws Exception {
+
+        addReleaseOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir,ReleaseIndexField.PACKAGING,"jewel case");
+        }
+        ir.close();
+    }
+    /**
+     * @throws Exception exception
+     */
+    @Test
     public void testIndexReleaseQuality() throws Exception {
 
         addReleaseOne();
@@ -855,6 +872,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
             assertEquals("Official", release.getStatus());
             assertEquals("EP", release.getReleaseGroup().getPrimaryType());
             assertEquals("EP", release.getReleaseGroup().getType());
+            assertEquals("Jewel Case", release.getPackaging());
             assertNotNull(release.getMediumList());
             assertEquals(1,release.getMediumList().getCount().intValue());
             assertEquals(1,release.getMediumList().getTrackCount().intValue());

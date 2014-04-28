@@ -100,7 +100,7 @@ public class CommonTables  {
                 "  rgt.name as type, rg.id as rg_id, rg.gid as rg_gid, rm.amazon_asin, " +
                 "  language.iso_code_3 as language, language.iso_code_2t as language_2t, script.iso_code as script, rs.name as status, " +
                 "  sum(m.track_count) as tracks," +
-                "  r.artist_credit, r.quality," +
+                "  r.artist_credit, r.quality,rp.name as packaging," +
                 "  r.comment" +
                 " FROM release r " +
                 "  LEFT JOIN release_meta rm ON r.id = rm.id " +
@@ -110,8 +110,9 @@ public class CommonTables  {
                 "  LEFT JOIN language ON r.language=language.id " +
                 "  LEFT JOIN script ON r.script=script.id " +
                 "  LEFT JOIN medium m ON m.release=r.id" +
+                "  LEFT JOIN release_packaging rp ON r.packaging = rp.id " +
                 " GROUP BY r.id,r.gid,r.name,barcode,rgt.name,rg.id, rg.gid," +
-                "  rm.amazon_asin, language.iso_code_3, language.iso_code_2t, script.iso_code,rs.name,r.artist_credit, r.quality, r.comment");
+                "  rm.amazon_asin, language.iso_code_3, language.iso_code_2t, script.iso_code,rs.name,r.artist_credit, r.quality, rp.name,r.comment");
         clock.stop();
         System.out.println("tmp_release     :Finished:" + Utils.formatClock(clock));
         clock.reset();
