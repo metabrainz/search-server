@@ -221,6 +221,11 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE l_place_work");
                 stmt.addBatch("DROP TABLE l_place_tag");
 
+                stmt.addBatch("DROP TABLE instrument_type");
+                stmt.addBatch("DROP TABLE instrument");
+                stmt.addBatch("DROP TABLE instrument_alias_type");
+                stmt.addBatch("DROP TABLE instrument_alias");
+
                 stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE dbmirror_pending");
                 stmt.addBatch("DROP TABLE dbmirror_pendingdata");
@@ -250,6 +255,7 @@ public abstract class AbstractIndexTest {
             setupWorkTables(stmt);
             setupPlaceTables(stmt);
             setupUrlTables(stmt);
+            setupInstrumentTables(stmt);
             setupReplicationTables(stmt);
             
             insertReferenceData(stmt);
@@ -1075,6 +1081,55 @@ public abstract class AbstractIndexTest {
 
     }
 
+    protected void setupInstrumentTables(Statement stmt) throws Exception {
+        stmt.addBatch("CREATE TABLE instrument_type (\n" +
+                "    id                  SERIAL, -- PK\n" +
+                "    name                VARCHAR(255) NOT NULL,\n" +
+                "    parent              INTEGER, \n" +
+                "    child_order         INTEGER NOT NULL DEFAULT 0,\n" +
+                "    description         TEXT\n" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE instrument (\n" +
+                "    id                  SERIAL, -- PK\n" +
+                "    gid                 uuid NOT NULL,\n" +
+                "    name                VARCHAR NOT NULL,\n" +
+                "    type                INTEGER, -- references instrument_type.id\n" +
+                "    edits_pending       INTEGER NOT NULL DEFAULT 0 ,\n" +
+                "    last_updated        TIMESTAMP ,\n" +
+                "    comment             VARCHAR(255) NOT NULL DEFAULT '',\n" +
+                "    description         TEXT NOT NULL DEFAULT ''\n" +
+                ");");
+
+
+        stmt.addBatch("CREATE TABLE instrument_alias_type (\n" +
+                "    id SERIAL, -- PK,\n" +
+                "    name TEXT NOT NULL,\n" +
+                "    parent              INTEGER, \n" +
+                "    child_order         INTEGER NOT NULL DEFAULT 0,\n" +
+                "    description         TEXT\n" +
+                ");");
+
+        stmt.addBatch("CREATE TABLE instrument_alias (\n" +
+                "    id                  SERIAL, \n" +
+                "    instrument          INTEGER NOT NULL, \n" +
+                "    name                VARCHAR NOT NULL,\n" +
+                "    locale              TEXT,\n" +
+                "    edits_pending       INTEGER ,\n" +
+                "    last_updated        TIMESTAMP  ,\n" +
+                "    type                INTEGER, \n" +
+                "    sort_name           VARCHAR ,\n" +
+                "    begin_date_year     SMALLINT,\n" +
+                "    begin_date_month    SMALLINT,\n" +
+                "    begin_date_day      SMALLINT,\n" +
+                "    end_date_year       SMALLINT,\n" +
+                "    end_date_month      SMALLINT,\n" +
+                "    end_date_day        SMALLINT,\n" +
+                "    primary_for_locale  BOOLEAN,\n" +
+                "    ended               BOOLEAN  \n" +
+                ");");
+
+    }
 
     protected void setupUrlTables(Statement stmt) throws Exception {
 

@@ -12,6 +12,7 @@ import org.musicbrainz.search.index.*;
 public enum ResourceType {
   AREA("area", AreaIndex.class, AreaSearch.class, AreaDismaxSearch.class, MusicbrainzSimilarity.class, false),
   ARTIST("artist", ArtistIndex.class, ArtistSearch.class, ArtistDismaxSearch.class, MusicbrainzSimilarity.class, true),
+  INSTRUMENT("instrument", InstrumentIndex.class, InstrumentSearch.class, InstrumentDismaxSearch.class, MusicbrainzSimilarity.class, true),
   LABEL("label", LabelIndex.class, LabelSearch.class, LabelDismaxSearch.class, MusicbrainzSimilarity.class, true),
   PLACE("place", PlaceIndex.class, PlaceSearch.class, PlaceDismaxSearch.class, MusicbrainzSimilarity.class, false),
   RELEASE("release", ReleaseIndex.class, ReleaseSearch.class, ReleaseDismaxSearch.class, true),

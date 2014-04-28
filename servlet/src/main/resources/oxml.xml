@@ -5,6 +5,11 @@
     <java-types>
         <java-type name="Metadata">
             <java-attributes>
+                <xml-element java-attribute="instrumentList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Metadata">
+            <java-attributes>
                 <xml-element java-attribute="placeList" xml-path="."/>
             </java-attributes>
         </java-type>
@@ -216,6 +221,11 @@
         <java-type name="PlaceList">
             <java-attributes>
                 <xml-element java-attribute="place" name="places"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="InstrumentList">
+            <java-attributes>
+                <xml-element java-attribute="instrument" name="instruments"/>
             </java-attributes>
         </java-type>
         <java-type name="ReleaseList">
