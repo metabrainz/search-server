@@ -1,0 +1,70 @@
+package org.musicbrainz.search.index;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.RAMDirectory;
+import org.junit.Test;
+
+import java.sql.Statement;
+
+import static org.junit.Assert.assertEquals;
+
+public class EditorIndexTest extends AbstractIndexTest {
+
+
+    private void createIndex(RAMDirectory ramDir) throws Exception {
+        IndexWriter writer = createIndexWriter(ramDir,EditorIndexField.class);
+        EditorIndex ti = new EditorIndex(conn);
+        CommonTables ct = new CommonTables(conn, ti.getName());
+        ct.createTemporaryTables(false);
+
+        ti.init(writer, false);
+        ti.addMetaInformation(writer);
+        ti.indexData(writer, 0, Integer.MAX_VALUE);
+        ti.destroy();
+        writer.close();
+
+    }
+
+    private void addEditorOne() throws Exception {
+
+        Statement stmt = conn.createStatement();
+        stmt.addBatch("INSERT INTO editor (id, name, bio) VALUES (1,'frankf','frank the f')");
+ 
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    @Test
+    public void testIndexEditorName() throws Exception {
+
+        addEditorOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, EditorIndexField.EDITOR, "frankf");
+
+        }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexEditorDescription() throws Exception {
+
+        addEditorOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, EditorIndexField.DESCRIPTION, "f");
+        }
+        ir.close();
+    }
+}

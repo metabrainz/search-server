@@ -133,14 +133,13 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE gender");
                 stmt.addBatch("DROP TABLE artist_tag");
                 stmt.addBatch("DROP TABLE artist_ipi");
-
+                stmt.addBatch("DROP TABLE editor");
                 stmt.addBatch("DROP TABLE label");
                 stmt.addBatch("DROP TABLE label_alias");
                 stmt.addBatch("DROP TABLE label_alias_type");
                 stmt.addBatch("DROP TABLE label_type");
                 stmt.addBatch("DROP TABLE label_tag");
                 stmt.addBatch("DROP TABLE label_ipi");
-
                 stmt.addBatch("DROP TABLE release");
                 stmt.addBatch("DROP TABLE release_meta");
                 stmt.addBatch("DROP TABLE release_status");
@@ -265,6 +264,7 @@ public abstract class AbstractIndexTest {
             setupUrlTables(stmt);
             setupInstrumentTables(stmt);
             setupSeriesTables(stmt);
+            setupEditorTables(stmt);
             setupReplicationTables(stmt);
             
             insertReferenceData(stmt);
@@ -1212,6 +1212,31 @@ public abstract class AbstractIndexTest {
                 "    primary_for_locale  BOOLEAN,\n" +
                 "    ended               BOOLEAN  \n" +
                 ");");
+
+    }
+
+    protected void setupEditorTables(Statement stmt) throws Exception {
+        stmt.addBatch("CREATE TABLE editor\n" +
+                "(\n" +
+                "    id                  SERIAL,\n" +
+                "    name                VARCHAR(64) NOT NULL,\n" +
+                "    password            VARCHAR(64),\n" +
+                "    privs               INTEGER ,\n" +
+                "    email               VARCHAR(64) ,\n" +
+                "    website             VARCHAR(255) ,\n" +
+                "    bio                 TEXT,\n" +
+                "    member_since        TIMESTAMP,\n" +
+                "    email_confirm_date  TIMESTAMP,\n" +
+                "    last_login_date     TIMESTAMP,\n" +
+                "    edits_accepted      INTEGER DEFAULT 0,\n" +
+                "    edits_rejected      INTEGER DEFAULT 0,\n" +
+                "    auto_edits_accepted INTEGER DEFAULT 0,\n" +
+                "    edits_failed        INTEGER DEFAULT 0,\n" +
+                "    last_updated        TIMESTAMP,\n" +
+                "    birth_date          DATE,\n" +
+                "    gender              INTEGER,\n" +
+                "    area                INTEGER\n" +
+                ");\n");
 
     }
 
