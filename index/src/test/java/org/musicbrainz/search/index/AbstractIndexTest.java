@@ -226,6 +226,14 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE instrument_alias_type");
                 stmt.addBatch("DROP TABLE instrument_alias");
 
+                stmt.addBatch("DROP TABLE series_type");
+                stmt.addBatch("DROP TABLE series");
+                stmt.addBatch("DROP TABLE series_alias_type");
+                stmt.addBatch("DROP TABLE series_alias");
+                stmt.addBatch("DROP TABLE series_ordering_type");
+                stmt.addBatch("DROP TABLE series_deletion");
+
+
                 stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE dbmirror_pending");
                 stmt.addBatch("DROP TABLE dbmirror_pendingdata");
@@ -256,6 +264,7 @@ public abstract class AbstractIndexTest {
             setupPlaceTables(stmt);
             setupUrlTables(stmt);
             setupInstrumentTables(stmt);
+            setupSeriesTables(stmt);
             setupReplicationTables(stmt);
             
             insertReferenceData(stmt);
@@ -1077,6 +1086,81 @@ public abstract class AbstractIndexTest {
                 "    tag                 INTEGER NOT NULL," +
                 "    count               INTEGER NOT NULL," +
                 "    last_updated        TIMESTAMP" +
+                ")");
+
+    }
+
+    protected void setupSeriesTables(Statement stmt) throws Exception {
+
+        stmt.addBatch("CREATE TABLE series" +
+                "(\n" +
+                "    id                  SERIAL,\n" +
+                "    gid                 UUID ,\n" +
+                "    name                VARCHAR,\n" +
+                "    comment             VARCHAR(255) ,\n" +
+                "    type                INTEGER,\n" +
+                "    ordering_attribute  INTEGER,\n" +
+                "    ordering_type       INTEGER,\n" +
+                "    edits_pending       INTEGER,\n" +
+                "    last_updated        TIMESTAMP\n" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE series_type" +
+                "(\n" +
+                "    id                  SERIAL,\n" +
+                "    name                VARCHAR(255) ,\n" +
+                "    entity_type         VARCHAR(50),\n" +
+                "    parent              INTEGER,\n" +
+                "    child_order         INTEGER,\n" +
+                "    description         TEXT\n" +
+                ")");
+
+
+        stmt.addBatch("CREATE TABLE series_ordering_type" +
+                "(\n" +
+                "    id                  SERIAL,\n" +
+                "    name                VARCHAR(255),\n" +
+                "    parent              INTEGER,\n" +
+                "    child_order         INTEGER,\n" +
+                "    description         TEXT\n" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE series_deletion\n" +
+                "(\n" +
+                "    gid                 UUID,\n" +
+                "    last_known_name     VARCHAR,\n" +
+                "    last_known_comment  TEXT,\n" +
+                "    deleted_at          timestamp \n" +
+                ")");
+
+
+        stmt.addBatch("CREATE TABLE series_alias_type\n" +
+                "(\n" +
+                "    id                  SERIAL, \n" +
+                "    name                TEXT ,\n" +
+                "    parent              INTEGER,\n" +
+                "    child_order         INTEGER,\n" +
+                "    description         TEXT\n" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE series_alias\n" +
+                "(\n" +
+                "    id                  SERIAL,\n" +
+                "    series              INTEGER,\n" +
+                "    name                VARCHAR,\n" +
+                "    locale              TEXT,\n" +
+                "    edits_pending       INTEGER,\n" +
+                "    last_updated        TIMESTAMP,\n" +
+                "    type                INTEGER,\n" +
+                "    sort_name           VARCHAR ,\n" +
+                "    begin_date_year     SMALLINT,\n" +
+                "    begin_date_month    SMALLINT,\n" +
+                "    begin_date_day      SMALLINT,\n" +
+                "    end_date_year       SMALLINT,\n" +
+                "    end_date_month      SMALLINT,\n" +
+                "    end_date_day        SMALLINT,\n" +
+                "    primary_for_locale  BOOLEAN DEFAULT FALSE,\n" +
+                "    ended               BOOLEAN \n" +
                 ")");
 
     }

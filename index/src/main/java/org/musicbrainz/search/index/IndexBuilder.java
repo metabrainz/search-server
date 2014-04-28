@@ -125,6 +125,7 @@ public class IndexBuilder
                 new AnnotationIndex(mainDbConn),
                 new UrlIndex(mainDbConn),
                 new InstrumentIndex(mainDbConn),
+                new SeriesIndex(mainDbConn),
                 new TagIndex(mainDbConn),
                 new CDStubIndex(mainDbConn), //Note different db
         };
