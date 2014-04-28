@@ -27,6 +27,7 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.Alias;
 import org.musicbrainz.mmd2.AliasList;
 import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.mmd2.Series;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 
@@ -178,29 +179,29 @@ public class SeriesIndex extends DatabaseIndex {
         MbDocument doc = new MbDocument();
 
         ObjectFactory of = new ObjectFactory();
-        //Series series = of.createSeries();
+        Series series = of.createSeries();
 
         int seriesId = rs.getInt("id");
         doc.addField(SeriesIndexField.ID, seriesId);
 
         String seriesGuid = rs.getString("gid");
         doc.addField(SeriesIndexField.SERIES_ID, seriesGuid);
-        //series.setId(seriesGuid);
+        series.setId(seriesGuid);
 
         String name=rs.getString("name");
         doc.addField(SeriesIndexField.SERIES,name );
-        //series.setName(name);
+        series.setName(name);
 
         String type = rs.getString("type");
         doc.addFieldOrUnknown(SeriesIndexField.TYPE, type);
         if (!Strings.isNullOrEmpty(type)) {
-       //     series.setType(type);
+            series.setType(type);
         }
 
         String comment = rs.getString("comment");
         doc.addFieldOrNoValue(SeriesIndexField.COMMENT, comment);
         if (!Strings.isNullOrEmpty(comment)) {
-       //     series.setDisambiguation(comment);
+            series.setDisambiguation(comment);
         }
 
         String orderAttr = rs.getString("ordering_attribute");
@@ -217,11 +218,11 @@ public class SeriesIndex extends DatabaseIndex {
                 }
                 aliasList.getAlias().add(nextAlias);
             }
-      //      series.setAliasList(aliasList);
+            series.setAliasList(aliasList);
         }
 
-        //String store = MMDSerializer.serialize(series);
-        //doc.addField(SeriesIndexField.INSTRUMENT_STORE, store);
+        String store = MMDSerializer.serialize(series);
+        doc.addField(SeriesIndexField.SERIES_STORE, store);
         return doc.getLuceneDocument();
     }
 

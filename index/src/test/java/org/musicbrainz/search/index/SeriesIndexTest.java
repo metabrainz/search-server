@@ -1,10 +1,12 @@
 package org.musicbrainz.search.index;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
+import org.musicbrainz.mmd2.Series;
 
 import java.sql.Statement;
 
@@ -123,7 +125,7 @@ public class SeriesIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
-    /*
+
     @Test
     public void testStoredIndexSeries() throws Exception {
 
@@ -149,5 +151,4 @@ public class SeriesIndexTest extends AbstractIndexTest {
         }
         ir.close();
     }
-    */
 }
