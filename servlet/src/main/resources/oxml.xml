@@ -10,6 +10,16 @@
         </java-type>
         <java-type name="Metadata">
             <java-attributes>
+                <xml-element java-attribute="seriesList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Metadata">
+            <java-attributes>
+                <xml-element java-attribute="editorList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Metadata">
+            <java-attributes>
                 <xml-element java-attribute="placeList" xml-path="."/>
             </java-attributes>
         </java-type>
@@ -153,6 +163,11 @@
                 <xml-element java-attribute="aliasList" xml-path="."/>
             </java-attributes>
         </java-type>
+        <java-type name="Series">
+            <java-attributes>
+                <xml-element java-attribute="aliasList" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="Work">
             <java-attributes>
                 <xml-element java-attribute="iswcList" xml-path="."/>
@@ -226,6 +241,11 @@
         <java-type name="InstrumentList">
             <java-attributes>
                 <xml-element java-attribute="instrument" name="instruments"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="EditorList">
+            <java-attributes>
+                <xml-element java-attribute="editor" name="editors"/>
             </java-attributes>
         </java-type>
         <java-type name="ReleaseList">

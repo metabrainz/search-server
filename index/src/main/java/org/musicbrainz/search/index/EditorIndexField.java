@@ -42,7 +42,7 @@ public enum EditorIndexField implements IndexField {
 
 	ID		            ("_id",		        MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     EDITOR              ("editor",          MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
-    DESCRIPTION         ("description",     MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
+    BIO                 ("bio",             MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     EDITOR_STORE        ("editorstore",     MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
      ;
 

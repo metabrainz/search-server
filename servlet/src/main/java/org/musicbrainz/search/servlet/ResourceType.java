@@ -22,6 +22,7 @@ public enum ResourceType {
   FREEDB("freedb", FreeDBIndex.class, FreeDBSearch.class, FreeDBDismaxSearch.class, false),
   ANNOTATION("annotation", AnnotationIndex.class, AnnotationSearch.class, AnnotationDismaxSearch.class, false),
   SERIES("series", SeriesIndex.class, SeriesSearch.class, SeriesDismaxSearch.class, MusicbrainzSimilarity.class, true),
+  EDITOR("editor", EditorIndex.class, EditorSearch.class, EditorDismaxSearch.class, MusicbrainzSimilarity.class, true),
   WORK("work", WorkIndex.class, WorkSearch.class, WorkDismaxSearch.class, true),
   TAG("tag", TagIndex.class, TagSearch.class, TagDismaxSearch.class, false),
   URL("url", UrlIndex.class, UrlSearch.class, UrlDismaxSearch.class, false),

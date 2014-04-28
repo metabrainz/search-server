@@ -1,6 +1,5 @@
 package org.musicbrainz.search.index;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -63,7 +62,7 @@ public class EditorIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            checkTerm(ir, EditorIndexField.DESCRIPTION, "f");
+            checkTerm(ir, EditorIndexField.BIO, "f");
         }
         ir.close();
     }

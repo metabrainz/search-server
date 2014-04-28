@@ -24,6 +24,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.similarities.Similarity;
+import org.musicbrainz.mmd2.Editor;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
@@ -84,7 +85,7 @@ public class EditorIndex extends DatabaseIndex {
 
         addPreparedStatement("EDITORS",
                 "SELECT editor.id, editor.name as name," +
-                  "  editor.bio as description  " +
+                  "  editor.bio  " +
                 " FROM editor " +
                 " WHERE editor.id BETWEEN ? AND ?");
 
@@ -112,7 +113,7 @@ public class EditorIndex extends DatabaseIndex {
         MbDocument doc = new MbDocument();
 
         ObjectFactory of = new ObjectFactory();
-        //Editor editor = of.createEditor();
+        Editor editor = of.createEditor();
 
         int editorId = rs.getInt("id");
         doc.addField(EditorIndexField.ID, editorId);
@@ -120,17 +121,16 @@ public class EditorIndex extends DatabaseIndex {
 
         String name=rs.getString("name");
         doc.addField(EditorIndexField.EDITOR,name );
-        //editor.setName(name);
+        editor.setName(name);
 
-        String description = rs.getString("description");
-        doc.addFieldOrNoValue(EditorIndexField.DESCRIPTION, description);
-        if (!Strings.isNullOrEmpty(description)) {
-        //    editor.setDescription(description);
+        String bio = rs.getString("bio");
+        doc.addFieldOrNoValue(EditorIndexField.BIO, bio);
+        if (!Strings.isNullOrEmpty(bio)) {
+            editor.setBio(bio);
         }
 
-
-        //String store = MMDSerializer.serialize(editor);
-        //doc.addField(EditorIndexField.EDITOR_STORE, store);
+        String store = MMDSerializer.serialize(editor);
+        doc.addField(EditorIndexField.EDITOR_STORE, store);
         return doc.getLuceneDocument();
     }
 

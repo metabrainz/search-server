@@ -15,35 +15,4 @@ public class InstrumentQueryParser extends MultiFieldQueryParser
     {
         super(LuceneVersion.LUCENE_VERSION, strings, analyzer);
     }
-
-    @Override
-    protected Query newTermQuery(Term term)
-    {
-
-        if ((term.field().equals(LabelIndexField.TYPE.getName())))
-        {
-            try
-            {
-                int typeId = Integer.parseInt(term.text());
-                if (typeId >= LabelType.getMinSearchId() && typeId <= LabelType.getMaxSearchId())
-                {
-                    TermQuery tq = new TermQuery(new Term(term.field(), LabelType.getBySearchId(typeId).getName()));
-                    return tq;
-                } else
-                {
-                    return super.newTermQuery(term);
-                }
-            }
-            catch (NumberFormatException nfe)
-            {
-                return super.newTermQuery(term);
-
-            }
-        }
-        else
-        {
-            return super.newTermQuery(term);
-
-        }
-    }
 }
