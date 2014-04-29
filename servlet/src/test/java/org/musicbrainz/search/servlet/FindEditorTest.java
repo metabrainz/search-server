@@ -162,7 +162,7 @@ public class FindEditorTest {
         String output = sw.toString();
         System.out.println("Json New is" + output);
 
-//TODO        assertTrue(output.contains("\"editor\""));
+        assertTrue(output.contains("\"editors\""));
         assertTrue(output.contains("name\":\"fred\""));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));

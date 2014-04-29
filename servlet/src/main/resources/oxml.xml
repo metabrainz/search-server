@@ -163,6 +163,11 @@
                 <xml-element java-attribute="aliasList" xml-path="."/>
             </java-attributes>
         </java-type>
+        <java-type name="Instrument">
+            <java-attributes>
+                <xml-element java-attribute="aliasList" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="Series">
             <java-attributes>
                 <xml-element java-attribute="aliasList" xml-path="."/>
@@ -398,7 +403,7 @@
                 <xml-element java-attribute="attributeList" xml-path="."/>
             </java-attributes>
         </java-type>
-        <java-type name="AttributeList">
+        <java-type name="Relation$AttributeList">
             <java-attributes>
                 <xml-element java-attribute="attribute" name="attributes"/>
             </java-attributes>
