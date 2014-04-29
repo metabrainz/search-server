@@ -30,8 +30,17 @@ public class EditorIndexTest extends AbstractIndexTest {
     private void addEditorOne() throws Exception {
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO editor (id, name, bio) VALUES (1,'frankf','frank the f')");
+        stmt.addBatch("INSERT INTO editor (id, name, bio, email_confirm_date) VALUES (1,'frankf','frank the f', '2012-09-17 18:47:52.69')");
  
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    private void addEditorTwo() throws Exception {
+
+        Statement stmt = conn.createStatement();
+        stmt.addBatch("INSERT INTO editor (id, name, bio) VALUES (1,'jane','janet')");
+
         stmt.executeBatch();
         stmt.close();
     }
@@ -53,7 +62,7 @@ public class EditorIndexTest extends AbstractIndexTest {
     }
 
     @Test
-    public void testIndexEditorDescription() throws Exception {
+    public void testIndexEditorBio() throws Exception {
 
         addEditorOne();
         RAMDirectory ramDir = new RAMDirectory();
@@ -64,6 +73,18 @@ public class EditorIndexTest extends AbstractIndexTest {
         {
             checkTerm(ir, EditorIndexField.BIO, "f");
         }
+        ir.close();
+    }
+
+    @Test
+    public void testIndexEditorIgnoreBioIfNotConfirmed() throws Exception {
+
+        addEditorTwo();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(1, ir.numDocs());
         ir.close();
     }
 }
