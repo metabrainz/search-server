@@ -87,10 +87,7 @@ public class EditorIndex extends DatabaseIndex {
                 "SELECT editor.id, editor.name as name," +
                   "  editor.bio  " +
                 " FROM editor " +
-                " WHERE editor.id BETWEEN ? AND ?" +
-                " AND email_confirm_date is not NULL");
-
-
+                " WHERE editor.id BETWEEN ? AND ?");
     }
 
 

@@ -77,14 +77,17 @@ public class EditorIndexTest extends AbstractIndexTest {
     }
 
     @Test
-    public void testIndexEditorIgnoreBioIfNotConfirmed() throws Exception {
+    public void testIndexEditorDontIgnoreBioIfNotConfirmed() throws Exception {
 
         addEditorTwo();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
 
         IndexReader ir = DirectoryReader.open(ramDir);
-        assertEquals(1, ir.numDocs());
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, EditorIndexField.BIO, "janet");
+        }
         ir.close();
     }
 }
