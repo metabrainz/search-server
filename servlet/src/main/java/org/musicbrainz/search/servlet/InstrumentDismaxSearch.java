@@ -40,6 +40,7 @@ public class InstrumentDismaxSearch extends AbstractDismaxSearchServer {
   protected DismaxSearcher initDismaxSearcher() {
     Map<String, DismaxAlias.AliasField> fieldBoosts = new HashMap<String, DismaxAlias.AliasField>(3);
     fieldBoosts.put(InstrumentIndexField.INSTRUMENT.getName(), new DismaxAlias.AliasField(true, 1.3f));
+    fieldBoosts.put(InstrumentIndexField.DESCRIPTION.getName(), new DismaxAlias.AliasField(true, 0.9f));
     fieldBoosts.put(InstrumentIndexField.ALIAS.getName(), new DismaxAlias.AliasField(true, 0.9f));
     DismaxAlias dismaxAlias = new DismaxAlias();
     dismaxAlias.setFields(fieldBoosts);

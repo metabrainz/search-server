@@ -96,7 +96,8 @@ public class InstrumentIndex extends DatabaseIndex {
         addPreparedStatement("INSTRUMENTS",
                 "SELECT instrument.id, instrument.gid, instrument.name as name," +
                 "  instrument_type.name as type, " +
-                "  instrument.comment  " +
+                "  instrument.comment,  " +
+                "  instrument.description " +
                 " FROM instrument " +
                 "  LEFT JOIN instrument_type ON instrument.type = instrument_type.id " +
                 " WHERE instrument.id BETWEEN ? AND ?");
@@ -197,6 +198,12 @@ public class InstrumentIndex extends DatabaseIndex {
         doc.addFieldOrNoValue(InstrumentIndexField.COMMENT, comment);
         if (!Strings.isNullOrEmpty(comment)) {
             instrument.setDisambiguation(comment);
+        }
+
+        String description = rs.getString("description");
+        doc.addFieldOrNoValue(InstrumentIndexField.DESCRIPTION, description);
+        if (!Strings.isNullOrEmpty(description)) {
+            instrument.setDescription(description);
         }
 
         if (aliases.containsKey(instrumentId)) {

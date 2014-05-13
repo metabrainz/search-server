@@ -47,6 +47,12 @@ public class FindInstrumentTest {
             doc.addField(InstrumentIndexField.INSTRUMENT, "Trombone");
             instrument.setName("Trombone");
 
+            doc.addField(InstrumentIndexField.DESCRIPTION, "Brassy");
+            instrument.setDescription("Brassy");
+
+            doc.addField(InstrumentIndexField.COMMENT, "series 2 was best");
+            instrument.setDisambiguation("series 2 was best");
+
             doc.addField(InstrumentIndexField.ALIAS, "Tromba");
             AliasList aliasList = of.createAliasList();
             Alias alias = of.createAlias();
@@ -97,6 +103,26 @@ public class FindInstrumentTest {
         assertEquals("Trombone", doc.get(InstrumentIndexField.INSTRUMENT));
     }
 
+
+    @Test
+    public void testFindInstrumentByDesciption() throws Exception {
+        Results res = ss.search("description:\"Brassy\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(InstrumentIndexField.INSTRUMENT_ID));
+        assertEquals("Trombone", doc.get(InstrumentIndexField.INSTRUMENT));
+    }
+
+    @Test
+    public void testFindInstrumentByComment() throws Exception {
+        Results res = ss.search("comment:\"series 2 was best\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(InstrumentIndexField.INSTRUMENT_ID));
+        assertEquals("Trombone", doc.get(InstrumentIndexField.INSTRUMENT));
+    }
 
     @Test
     public void testFindInstrumentByDismax1() throws Exception {
@@ -158,6 +184,8 @@ public class FindInstrumentTest {
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"type\":\"Brass\""));
         assertTrue(output.contains("name\":\"Trombone\""));
+        assertTrue(output.contains("\"description\":\"Brassy\""));
+        assertTrue(output.contains("\"disambiguation\":\"series 2 was best\""));
     }
 
     /**
@@ -180,9 +208,11 @@ public class FindInstrumentTest {
         assertTrue(output.contains("\"instruments\""));
         assertTrue(output.contains("\"type\":\"Brass\""));
         assertTrue(output.contains("name\":\"Trombone\""));
+        assertTrue(output.contains("\"description\":\"Brassy\""));
         assertTrue(output.contains("\"aliases\":[{\"name\":\"Tromba\",\"locale\":null,\"type\":null,\"primary\":null,\"begin-date\":null,\"end-date\":null}]"));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"disambiguation\":\"series 2 was best\""));
 
     }
 
@@ -202,6 +232,55 @@ public class FindInstrumentTest {
         String output = sw.toString();
         System.out.println("Json New Ident is" + output);
         assertTrue(output.contains("\"offset\" : 0"));
+
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testOutputXmlIdent() throws Exception {
+
+        Results res = ss.search("instrument:\"Trombone\"", 0, 10);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_XML, true);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Xml Ident is" + output);
+        assertTrue(output.contains("<instrument id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\" type=\"Brass\" ext:score=\"100\">"));
+        assertTrue(output.contains("<instrument-list count=\"1\" offset=\"0\">"));
+        assertTrue(output.contains("<name>Trombone</name>"));
+        assertTrue(output.contains("<description>Brassy</description>"));
+        assertTrue(output.contains("<disambiguation>series 2 was best</disambiguation>"));
+        assertTrue(output.contains("<alias>Tromba</alias>"));
+
+
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    @Test
+    public void testOutputXml() throws Exception {
+
+        Results res = ss.search("instrument:\"Trombone\"", 0, 10);
+        org.musicbrainz.search.servlet.mmd2.ResultsWriter writer = ss.getMmd2Writer();
+        StringWriter sw = new StringWriter();
+        PrintWriter pr = new PrintWriter(sw);
+        writer.write(pr, res, SearchServerServlet.RESPONSE_XML);
+        pr.close();
+
+        String output = sw.toString();
+        System.out.println("Xml Ident is" + output);
+        assertTrue(output.contains("<instrument id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\" type=\"Brass\" ext:score=\"100\">"));
+        assertTrue(output.contains("<instrument-list count=\"1\" offset=\"0\">"));
+        assertTrue(output.contains("<name>Trombone</name>"));
+        assertTrue(output.contains("<description>Brassy</description>"));
+        assertTrue(output.contains("<disambiguation>series 2 was best</disambiguation>"));
+        assertTrue(output.contains("<alias>Tromba</alias>"));
 
     }
 }

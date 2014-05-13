@@ -32,7 +32,7 @@ public class InstrumentIndexTest extends AbstractIndexTest {
     private void addInstrumentOne() throws Exception {
 
         Statement stmt = conn.createStatement();
-        stmt.addBatch("INSERT INTO instrument (comment, id, gid,name,type, description) VALUES ('comment',1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Trumpet',1,'Brass instruument')");
+        stmt.addBatch("INSERT INTO instrument (comment, id, gid,name,type, description) VALUES ('comment',1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Trumpet',1,'Brass instrument')");
         stmt.addBatch("INSERT INTO instrument_type(id, name) VALUES (1, 'Brass')");
         stmt.addBatch("INSERT INTO instrument_alias (id, name, sort_name, instrument, primary_for_locale, locale, type ) VALUES (3,  'tromba','tromba sort', 1, true, 'it',1)");
 
@@ -108,6 +108,22 @@ public class InstrumentIndexTest extends AbstractIndexTest {
     }
 
     @Test
+    public void testIndexInstrumentDescription() throws Exception {
+
+        addInstrumentOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, InstrumentIndexField.DESCRIPTION, "brass");
+            checkTermX(ir, InstrumentIndexField.DESCRIPTION, "instrument", 1);
+        }
+        ir.close();
+    }
+
+    @Test
     public void testStoredIndexInstrument() throws Exception {
 
         addInstrumentOne();
@@ -122,7 +138,7 @@ public class InstrumentIndexTest extends AbstractIndexTest {
             Instrument instrument = (Instrument) MMDSerializer.unserialize(doc.get(InstrumentIndexField.INSTRUMENT_STORE.getName()), Instrument.class);
             assertEquals("aa95182f-df0a-3ad6-8bfb-4b63482cd276", instrument.getId());
             assertEquals("Trumpet", instrument.getName());
-
+            assertEquals("Brass instrument", instrument.getDescription());
             assertEquals("comment",instrument.getDisambiguation());
             assertEquals("Brass", instrument.getType());
             assertEquals("tromba",instrument.getAliasList().getAlias().get(0).getContent());
