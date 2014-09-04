@@ -634,6 +634,7 @@ public class FindArtistTest {
         String output = sw.toString();
         System.out.println("JNew is" + output);
 
+        assertTrue(output.contains("artists"));
         assertTrue(output.contains("id\":\"4302e264-1cf0-4d1f-aca7-2a6f89e34b36\""));
         assertTrue(output.contains("\"type\":\"Group\""));
         assertTrue(output.contains("name\":\"Farming Incident\""));

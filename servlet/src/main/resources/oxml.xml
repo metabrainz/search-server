@@ -253,6 +253,11 @@
                 <xml-element java-attribute="editor" name="editors"/>
             </java-attributes>
         </java-type>
+        <java-type name="ArtistList">
+            <java-attributes>
+                <xml-element java-attribute="artist" name="artists"/>
+            </java-attributes>
+        </java-type>
         <java-type name="ReleaseList">
             <java-attributes>
                 <xml-element java-attribute="release" name="releases"/>
