@@ -601,6 +601,7 @@ public class FindRecordingTest {
         String output = sw.toString();
         System.out.println("Json New is" + output);
 
+        assertTrue(output.contains("recordings"));
         assertTrue(output.contains("id\":\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
         assertTrue(output.contains("\"score\":\"100\""));
         assertTrue(output.contains("title\":\"Gravitational Lenz\""));

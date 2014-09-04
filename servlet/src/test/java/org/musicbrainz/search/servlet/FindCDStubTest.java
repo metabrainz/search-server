@@ -224,7 +224,7 @@ public class FindCDStubTest {
     String output = sw.toString();
     System.out.println("Json New is" + output);
 
-
+    assertTrue(output.contains("cdstubs"));
     assertTrue(output.contains("\"count\":1"));
     assertTrue(output.contains("\"offset\":0,"));
     assertTrue(output.contains("\"score\":\"100\","));

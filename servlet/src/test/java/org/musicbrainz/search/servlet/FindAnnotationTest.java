@@ -260,7 +260,7 @@ public class FindAnnotationTest {
     String output = sw.toString();
     System.out.println("Json New is" + output);
 
-
+    assertTrue(output.contains("annotations"));
     assertTrue(output.contains("\"score\":\"100\","));
     assertTrue(output.contains("\"name\":\"Pieds nus sur la braise\""));
     assertTrue(output.contains("\"type\":\"release\""));

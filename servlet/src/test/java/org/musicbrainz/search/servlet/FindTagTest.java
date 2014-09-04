@@ -119,7 +119,7 @@ public class FindTagTest {
 
     String output = sw.toString();
     System.out.println("Json New is" + output);
-
+    assertTrue(output.contains("tags"));
     assertTrue(output.contains("\"name\":\"rock\""));
     assertTrue(output.contains("\"name\":\"classic rock\""));
     assertTrue(output.contains("\"count\":2"));

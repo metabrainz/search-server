@@ -180,7 +180,7 @@ public class FindUrlTest {
 
         String output = sw.toString();
         System.out.println("Json New Pretty is" + output);
-
+        assertTrue(output.contains("urls"));
         assertTrue(output.contains("\"count\" : 1"));
         assertTrue(output.contains(""));
     }

@@ -263,6 +263,11 @@
                 <xml-element java-attribute="release" name="releases"/>
             </java-attributes>
         </java-type>
+        <java-type name="RecordingList">
+            <java-attributes>
+                <xml-element java-attribute="recording" name="recordings"/>
+            </java-attributes>
+        </java-type>
         <java-type name="ReleaseGroupList">
             <java-attributes>
                 <xml-element java-attribute="releaseGroup" name="release-groups"/>
@@ -415,7 +420,7 @@
         </java-type>
         <java-type name="WorkList">
             <java-attributes>
-                <xml-element java-attribute="work">
+                <xml-element java-attribute="work" name="works">
                     <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.WorkAdapter"/>
                 </xml-element>
             </java-attributes>

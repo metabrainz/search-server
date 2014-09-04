@@ -394,7 +394,7 @@ public class FindPlaceTest {
 
         String output = sw.toString();
         System.out.println("Json New is" + output);
-
+        assertTrue(output.contains("places"));
         assertTrue(output.contains("id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\""));
         assertTrue(output.contains("\"type\":\"Country\""));
         assertTrue(output.contains("name\":\"Afghanistan\""));
