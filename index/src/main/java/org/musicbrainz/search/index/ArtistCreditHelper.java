@@ -156,9 +156,14 @@ public class ArtistCreditHelper {
                 //SEARCH-348
                 //Timing problem new entity added since artistcredit query so artist credit cant be found for alias,
                 //ignore and move onto next entry
-                if(acw==null)
+                if (acw == null)
                 {
                     continue;
+                }
+                //SEARCH-387:protect against timing error because indexing from live database
+                if (currPosition >= acw.getArtistCredit().getNameCredit().size())
+                {
+                    return artistCredits;
                 }
                 nc = acw.getArtistCredit().getNameCredit().get(currPosition);
                 entityId = currEntityId;
