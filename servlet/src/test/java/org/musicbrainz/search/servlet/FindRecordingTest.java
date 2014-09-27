@@ -628,6 +628,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("\"sort-name\":\"United Kingdom\","));
         assertTrue(output.contains("\"iso-3166-1-codes\":[\"UK\"]"));
         assertTrue(output.contains("\"video\":true"));
+        assertTrue(output.contains("\"length\":233000,\"artist-credit\""));
     }
 
     @Test

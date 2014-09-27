@@ -123,6 +123,11 @@
                 </xml-element>
             </java-attributes>
         </java-type>
+        <java-type name="Medium$TrackList$Track">
+            <java-attributes>
+                <xml-element java-attribute="artistCredit" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="IpiList">
             <java-attributes>
                 <xml-element java-attribute="ipi" name="ipis"/>
