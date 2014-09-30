@@ -1,31 +1,3 @@
-/* Copyright (c) 2008 Lukas Lalinsky
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the MusicBrainz project nor the names of the
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
- * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.TokenFilter;
@@ -33,83 +5,56 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.IOException;
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 /**
- * A filter that replaces accented characters by their unaccented equivalents.
+ * Decomposes text so that diacritics are separated out from the character itself and then removed.
+ * It also removes some symbolics and phonetic modifier letters
+ *
+ * Using this filter means that searches with and without these characters are treated the same, it also means that usually different representations
+ * of the same complex character are treated the same because both derived to the same simpler character.
+ *
+ * Usually this will provide better results
+ * however if the character removed is intrinic to what it is being searched for it may make the search worse, In these cases you should
+ * use an anlayser that doesnt use this filter.
+ *
+ * InCombiningDiacriticalMarks: special marks that are part of "normal" ä, ö, î etc..
+ * IsSk: Symbol, Modifier see http://www.fileformat.info/info/unicode/category/Sk/list.htm
+ * IsLm: Letter, Modifier see http://www.fileformat.info/info/unicode/category/Lm/list.htm
  */
-public class AccentFilter extends TokenFilter {
+public final class AccentFilter extends TokenFilter
+{
 
-    private char[] output = new char[256];
-    private int outputPos;
+    public static final Pattern DIACRITICS_AND_FRIENDS
+            = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
 
-    private CharTermAttribute termAttr;
+
+    private CharTermAttribute termAtt;
 
     public AccentFilter(TokenStream input) {
         super(input);
-        termAttr = (CharTermAttribute) addAttribute(CharTermAttribute.class);
+        termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     }
 
     @Override
-    public final boolean incrementToken() throws IOException {
-        if (!input.incrementToken())
+    public final boolean incrementToken() throws IOException
+    {
+        if (input.incrementToken()) {
+            String result = stripDiacritics(new String(termAtt.buffer()).substring(0,termAtt.length()));
+            char[] newBuffer = result.toCharArray();
+            termAtt.copyBuffer(newBuffer, 0, newBuffer.length);
+            termAtt.setLength(newBuffer.length);
+            return true;
+        } else {
             return false;
-
-        final char[] buffer = termAttr.buffer();
-        final int length    = termAttr.length();
-        if (removeAccents(buffer, length))  {
-            termAttr.copyBuffer(output,0,outputPos);
         }
-        return true;
     }
 
-    protected final boolean removeAccents(char[] input, int length) {
-        final int maxSizeNeeded = 2 * length;
-        int size = output.length;
-        while (size < maxSizeNeeded)
-            size *= 2;
-
-        int inputPos = 0;
-        outputPos = 0;
-
-        for (int i = 0; i < length; i++) {
-            int c = (int) input[i];
-
-            int block = UnaccentIndexes.indexes[c >> UnaccentData.BLOCK_SHIFT];
-            int position = c & UnaccentData.BLOCK_MASK;
-
-            short[] positions = UnaccentPositions.positions[block];
-            int unacPosition = positions[position];
-            int unacLength = positions[position + 1] - unacPosition;
-
-            if (unacLength > 0) {
-                // allocate a new char array, if necessary
-                if (size != output.length)
-                    output = new char[size];
-                // copy front of the input
-                if (inputPos < i) {
-                    System.arraycopy(input, inputPos, output, outputPos, i - inputPos);
-                    outputPos += i - inputPos;
-                }
-                // copy unaccented data
-                System.arraycopy(UnaccentData.data[block], unacPosition,
-                        output, outputPos, unacLength);
-                outputPos += unacLength;
-                inputPos = i + 1;
-            }
-        }
-
-        // no conversion needed...
-        if (inputPos == 0)
-            return false;
-
-        // copy rest of the input
-        int copyLength = length - inputPos;
-        if (copyLength > 0) {
-            System.arraycopy(input, inputPos, output, outputPos, copyLength);
-            outputPos += copyLength;
-        }
-
-        return true;
+    private static String stripDiacritics(String str) {
+        String normalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
+        String simplifiedString = DIACRITICS_AND_FRIENDS.matcher(normalizedString).replaceAll("");
+        System.out.println(str+":"+normalizedString+":"+simplifiedString);
+        return simplifiedString;
     }
-
 }
