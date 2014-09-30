@@ -54,7 +54,7 @@ public final class AccentFilter extends TokenFilter
     private static String stripDiacritics(String str) {
         String normalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
         String simplifiedString = DIACRITICS_AND_FRIENDS.matcher(normalizedString).replaceAll("");
-        System.out.println(str+":"+normalizedString+":"+simplifiedString);
+        //System.out.println(str+":"+normalizedString+":"+simplifiedString);
         return simplifiedString;
     }
 }
