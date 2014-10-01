@@ -50,7 +50,7 @@ public class ArtistCreditHelper {
                 sb.append(nameCredit.getArtist().getName());
             }
             if (nameCredit.getJoinphrase() != null) {
-                sb.append(' ' + nameCredit.getJoinphrase() + ' ');
+                sb.append( nameCredit.getJoinphrase());
             }
         }
         return sb.toString();
