@@ -35,6 +35,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.charfilter.MappingCharFilter;
 import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
+import org.apache.lucene.analysis.cjk.CJKBigramFilter;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
@@ -69,6 +70,7 @@ public class MusicbrainzAnalyzer extends Analyzer {
         filter = new ICUTransformFilter(filter, Transliterator.getInstance("Traditional-Simplified"));
         filter = new AccentFilter(filter);
         filter = new MusicbrainzTokenizerFilter(filter);
+        filter = new CJKBigramFilter(filter);
         filter = new LowercaseFilter(filter);
         filter = new MusicbrainzWordDelimiterFilter(filter,
                 WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,

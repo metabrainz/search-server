@@ -183,14 +183,11 @@ public class IssueSearch328Test
         assertEquals("t", termsEnum.term().utf8ToString());
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
-        assertEquals("奈", termsEnum.term().utf8ToString());
+        assertEquals("树奈", termsEnum.term().utf8ToString());
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
-        assertEquals("树", termsEnum.term().utf8ToString());
+        assertEquals("水树", termsEnum.term().utf8ToString());
         termsEnum.next();
-        assertEquals(1, termsEnum.docFreq());
-        assertEquals("水", termsEnum.term().utf8ToString());
-        assertNull(termsEnum.next());
 
         //Now add another document without the cross, this still matches because we remove punctuation
         writer = new IndexWriter(dir, writerConfig);

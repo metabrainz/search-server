@@ -50,6 +50,11 @@ public class MusicbrainzTokenizerFilter extends TokenFilter {
         final int bufferLength = termAtt.length();
         final String type = typeAtt.type();
 
+        //SEARCH-386 - We need to change name so works with CJKFilter
+        if (type == MusicbrainzTokenizer.TOKEN_TYPES[MusicbrainzTokenizer.CJ]) {
+            typeAtt.setType("<IDEOGRAPHIC>");
+        }
+
         if (type == APOSTROPHE_TYPE) {      // remove apostrophe
             int upto = 0;
             for (int i = 0; i < bufferLength; i++) {
