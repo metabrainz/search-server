@@ -38,8 +38,12 @@ public class CharEquivToCharHelper {
 
     public static void addToMap(NormalizeCharMap.Builder charConvertMap)
     {
-
         charConvertMap.add("’","'");
+        charConvertMap.add("‐","-");
         charConvertMap.add("–","-");
+        charConvertMap.add("‒","-");
+        charConvertMap.add("—","-");
+        charConvertMap.add("−","-");
+        charConvertMap.add("_","-");
     }
 }

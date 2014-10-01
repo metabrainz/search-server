@@ -47,13 +47,12 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Test treats unicode hyphen the same as hyphen
- * TODO this testcase not hightlighting the problem, i expected it to fail
  *
  */
 public class IssueSearch258Test {
 
     @Test
-    public void testAccentsMustMatch() throws Exception {
+    public void testHyphensMustMatch() throws Exception {
 
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
@@ -67,18 +66,41 @@ public class IssueSearch258Test {
         writer.addDocument(doc);
         writer.close();
 
-        //Search unicode hyphen
+        //Search hyphen 1
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink‐182\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
-        //Search hyphen
+        //Search hyphen 2
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink-182\"");
-            assertEquals(0, searcher.search(q,10).totalHits);
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink–182\"");
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+        //Search hyphen 3
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink‒182\"");
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+        //Search hyphen 4
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink—182\"");
+            assertEquals(1, searcher.search(q,10).totalHits);
+        }
+
+        //Search hyphen 5
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink−182\"");
+            assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
+
 }
