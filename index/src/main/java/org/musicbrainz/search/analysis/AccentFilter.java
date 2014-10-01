@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
  * of the same complex character are treated the same because both derived to the same simpler character.
  *
  * Usually this will provide better results
- * however if the character removed is intrinic to what it is being searched for it may make the search worse, In these cases you should
- * use an anlayser that doesnt use this filter.
+ * however if the character removed is intrinsic to what it is being searched for it may make the search worse, In these cases you should
+ * use an analyser that doesn't use this filter.
  *
  * InCombiningDiacriticalMarks: special marks that are part of "normal" ä, ö, î etc..
  * IsSk: Symbol, Modifier see http://www.fileformat.info/info/unicode/category/Sk/list.htm
