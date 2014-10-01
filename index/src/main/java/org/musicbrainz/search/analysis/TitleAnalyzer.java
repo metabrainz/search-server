@@ -76,8 +76,8 @@ public class TitleAnalyzer extends Analyzer {
         Tokenizer source = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, reader);
         TokenStream filter = new ICUTransformFilter(source, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         filter = new ICUTransformFilter(filter, Transliterator.getInstance("Traditional-Simplified"));
-        filter = new MusicbrainzTokenizerFilter(filter);
         filter = new AccentFilter(filter);
+        filter = new MusicbrainzTokenizerFilter(filter);
         filter = new LowercaseFilter(filter);
         filter = new MusicbrainzWordDelimiterFilter(filter,
                 WordDelimiterIterator.DEFAULT_WORD_DELIM_TABLE,
