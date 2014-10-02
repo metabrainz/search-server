@@ -38,8 +38,8 @@ public class HebrewCharMappingHelper {
     public static void addToMap(NormalizeCharMap.Builder charConvertMap)
     {
 
-        charConvertMap.add("\u05f3","'");
-        charConvertMap.add("\u05be","-");
-        charConvertMap.add("\u05f4","\"");
+        charConvertMap.add("׳","'"); //u0f53 HEBREW PUNCTUATION GERESH
+        charConvertMap.add("\u05be","-"); //u05be HEBREW PUNCTUATION MAQAF
+        charConvertMap.add("״","\""); //u05f4 HEBREW PUNCTUATION GERSHAYIM
     }
 }

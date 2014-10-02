@@ -1,13 +1,14 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -18,7 +19,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 
+import java.io.StringReader;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class AccentFilterTest  {
 
@@ -95,24 +100,24 @@ public class AccentFilterTest  {
         assertEquals(1, docs.totalHits);
         assertEquals("ábcáef", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
     }
-                /*
+
+    @Test
     public void testSearchAccented3() throws Exception {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser("name", analyzer).parse("NaJiAsn");
+        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION,"name", analyzer).parse("NaJiAsn");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
         assertEquals("ŃåᴊıÃšņ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
-        q = new QueryParser("name", analyzer).parse("ŃåᴊıÃšņ");
+        q = new QueryParser(LuceneVersion.LUCENE_VERSION,"name", analyzer).parse("ŃåᴊıÃšņ");
         docs = searcher.search(q,10);
         scoredocs = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
         assertEquals("ŃåᴊıÃšņ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
-    }             */
-
+    }
 
     /**
      * Only one doc matches (even though two terms within doc that match)
@@ -143,4 +148,36 @@ public class AccentFilterTest  {
         assertEquals("aaa", values[2]);
     }
 
+    @Test
+    public void testShowHowAccentsAndSpecialCharsConverted()throws Exception
+    {
+        //Tokenizer on its won has no effect
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ŃåᴊıÃšņ"));
+        tokenizer.reset();
+        assertTrue(tokenizer.incrementToken());
+        CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
+        TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
+        assertEquals("<ALPHANUM>", type.type());
+        assertEquals("ŃåᴊıÃšņ", new String(term.buffer(), 0, term.length()));
+
+        //Analyse field
+        Analyzer analyzer = new MusicbrainzAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "ŃåᴊıÃšņ", TextField.TYPE_STORED));
+        writer.addDocument(doc);
+        writer.close();
+
+        //Show how it has been converted
+        IndexReader ir = DirectoryReader.open(dir);
+        Fields fields = MultiFields.getFields(ir);
+        Terms terms = fields.terms("name");
+        TermsEnum termsEnum = terms.iterator(null);
+        termsEnum.next();
+        assertEquals(1, termsEnum.docFreq());
+        assertEquals("najiasn", termsEnum.term().utf8ToString());
+        assertNull(termsEnum.next());
+    }
 }
