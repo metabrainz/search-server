@@ -203,6 +203,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE link_attribute");
                 stmt.addBatch("DROP TABLE link_attribute_type");
 
+                stmt.addBatch("DROP TABLE place_tag");
                 stmt.addBatch("DROP TABLE place");
                 stmt.addBatch("DROP TABLE place_gid_redirect");
                 stmt.addBatch("DROP TABLE place_type");

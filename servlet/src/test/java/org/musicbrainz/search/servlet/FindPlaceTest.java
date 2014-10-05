@@ -15,6 +15,7 @@ import org.musicbrainz.search.index.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -89,6 +90,15 @@ public class FindPlaceTest {
             area.setName("Afghanistan");
             area.setSortName("Afghanistan");
             place.setArea(area);
+
+
+            doc.addField(LabelIndexField.TAG, "desert");
+            TagList tagList = of.createTagList();
+            Tag tag = of.createTag();
+            tag.setName("desert");
+            tag.setCount(BigInteger.valueOf(22));
+            tagList.getTag().add(tag);
+            place.setTagList(tagList);
 
 
             doc.addField(PlaceIndexField.PLACE_STORE, MMDSerializer.serialize(place));
@@ -303,6 +313,16 @@ public class FindPlaceTest {
         assertEquals(0, res.getTotalHits());
     }
 
+    @Test
+    public void testFindPlaceByTag() throws Exception {
+        Results res = ss.search("tag:desert", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(PlaceIndexField.PLACE_ID));
+        assertEquals("Afghanistan", doc.get(PlaceIndexField.PLACE));
+    }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/place/?type=xml&query=%22Jockey%20Slut%22
@@ -333,7 +353,7 @@ public class FindPlaceTest {
         assertTrue(output.contains("<coordinates><latitude>-180.45</latitude><longitude>120</longitude></coordinates>"));
         assertTrue(output.contains("<disambiguation>A comment</disambiguation>"));
         assertTrue(output.contains("<area id=\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\">"));
-
+        assertTrue(output.contains("<tag-list><tag count=\"22\"><name>desert</name></tag></tag-list>"));
     }
 
     @Test
@@ -376,7 +396,7 @@ public class FindPlaceTest {
         assertTrue(output.contains("\"coordinates\":{\"latitude\":\"-180.45\",\"longitude\":\"120\"},"));
         assertTrue(output.contains("\"disambiguation\":\"A comment\","));
         assertTrue(output.contains("\"area\":{\"id\":\"ff571ff4-04cb-4b9c-8a1c-354c330f863c\","));
-
+        assertTrue(output.contains("\"tag-list\":{\"tag\":[{\"count\":22,\"name\":\"desert\"}]}"));
     }
 
     /**

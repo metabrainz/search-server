@@ -39,6 +39,10 @@ public class PlaceIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO place (comment,coordinates, id, gid,name,address,type, begin_date_year, end_date_year,area) VALUES ('comment',(180.56,120),1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Manor Studios','1 New Street',1,1830,2020,38)");
         stmt.addBatch("INSERT INTO place_type(id, name) VALUES (1, 'Studio')");
         stmt.addBatch("INSERT INTO place_alias (id, place, name, sort_name, primary_for_locale, locale, type ) VALUES (3, 1, 'Manox','Manoy', true, 'en',1)");
+
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Groovy', 2);");
+        stmt.addBatch("INSERT INTO place_tag (place, tag, count) VALUES (1, 1, 10)");
+
         stmt.executeBatch();
         stmt.close();
     }
@@ -209,6 +213,27 @@ public class PlaceIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+    /**
+     * Checks fields with different sort name to name is indexed correctly
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testIndexPlaceWithTag() throws Exception {
+
+        addPlaceOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, PlaceIndexField.TAG, "groovy");
+        }
+        ir.close();
+    }
+
+
     @Test
     public void testStoredIndexPlace() throws Exception {
 
@@ -240,7 +265,7 @@ public class PlaceIndexTest extends AbstractIndexTest {
             assertEquals("County of OxfordShire", area.getName());
             assertEquals("County of OxfordShire", area.getSortName());
 
-
+            assertEquals("Groovy",place.getTagList().getTag().get(0).getName());
 
         }
         ir.close();

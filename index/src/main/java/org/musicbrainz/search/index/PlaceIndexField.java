@@ -53,6 +53,7 @@ public enum PlaceIndexField implements IndexField {
     TYPE		("type",		MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     LAT		    ("lat",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     LONG		("long",		MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    TAG		    ("tag",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     PLACE_STORE ("placestore",  MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ;
 

@@ -37,11 +37,9 @@ import org.musicbrainz.search.MbDocument;
 import org.postgresql.geometric.PGpoint;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class PlaceIndex extends DatabaseIndex {
@@ -106,6 +104,12 @@ public class PlaceIndex extends DatabaseIndex {
                         " WHERE place BETWEEN ? AND ?" +
                         " ORDER BY place, alias, alias_sortname");
 
+        addPreparedStatement("TAGS",
+                "SELECT place_tag.place, tag.name as tag, place_tag.count as count " +
+                        " FROM place_tag " +
+                        "  INNER JOIN tag ON tag=id " +
+                        " WHERE place between ? AND ?");
+
 
     }
 
@@ -158,18 +162,27 @@ public class PlaceIndex extends DatabaseIndex {
         }
         rs.close();
 
+        // Get Tags
+        st = getPreparedStatement("TAGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"place");
+        rs.close();
+
         st = getPreparedStatement("PLACE");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
         rs.close();
 
     }
 
     public Document documentFromResultSet(ResultSet rs,
+                                          Map<Integer,List<Tag>> tags,
                                           Map<Integer, Set<Alias>> aliases) throws SQLException {
 
         MbDocument doc = new MbDocument();
@@ -285,6 +298,18 @@ public class PlaceIndex extends DatabaseIndex {
                 aliasList.getAlias().add(nextAlias);
             }
             place.setAliasList(aliasList);
+        }
+
+        if (tags.containsKey(placeId)) {
+            TagList tagList = of.createTagList();
+            for (Tag nextTag : tags.get(placeId)) {
+                Tag tag = of.createTag();
+                doc.addField(LabelIndexField.TAG, nextTag.getName());
+                tag.setName(nextTag.getName());
+                tag.setCount(new BigInteger(nextTag.getCount().toString()));
+                tagList.getTag().add(tag);
+            }
+            place.setTagList(tagList);
         }
 
         String store = MMDSerializer.serialize(place);
