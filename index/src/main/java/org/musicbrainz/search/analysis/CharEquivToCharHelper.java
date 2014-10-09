@@ -43,6 +43,10 @@ public class CharEquivToCharHelper
 
     public static void addToMap(NormalizeCharMap.Builder charConvertMap)
     {
+        //SEARCH-220:Lucene can't match fullwidth and halfwidth spaces (anymore ?)
+        //FullWidth Space to Half-width-space so treated as word separator
+        charConvertMap.add("\u3000"," ");
+
         //Apostrophes
         charConvertMap.add("’", "'");
 

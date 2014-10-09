@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 public class IssueSearch220Test {
 
-    /*
+
     @Test
     public void testWhitespaceHandling() throws Exception {
 
@@ -73,7 +73,7 @@ public class IssueSearch220Test {
 
         }
     }
-      */
+
     @Test
     public void testWhitespaceHandling3() throws Exception {
 
@@ -101,4 +101,30 @@ public class IssueSearch220Test {
         }
     }
 
+    @Test
+    public void testWhitespaceHandling4() throws Exception {
+
+        Analyzer analyzer = new TitleAnalyzer();
+        RAMDirectory dir = new RAMDirectory();
+        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriter writer = new IndexWriter(dir, writerConfig);
+        Document doc = new Document();
+        doc.add(new Field("name", "\"マキシマム　ザ　ホルモン\"", TextField.TYPE_STORED));
+        writer.addDocument(doc);
+        writer.close();
+
+        IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"マキシマム　ザ　ホルモン\"");
+            assertEquals(1, searcher.search(q,10).totalHits);
+
+        }
+
+        searcher = new IndexSearcher(DirectoryReader.open(dir));
+        {
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"マキシマム ザ ホルモン\"");
+            assertEquals(1, searcher.search(q,10).totalHits);
+
+        }
+    }
 }

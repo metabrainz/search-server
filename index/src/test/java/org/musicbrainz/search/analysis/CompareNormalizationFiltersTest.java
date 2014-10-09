@@ -60,8 +60,6 @@ public class CompareNormalizationFiltersTest {
 
         TokenStream result1 = new AccentFilter(tokenizer1);
         TokenStream result2 = new ASCIIFoldingFilter(tokenizer2);
-        TokenStream result3 = new ICUNormalizationFilter(tokenizer3, Normalizer.NFKD);
-        TokenStream result4 = new ASCIIFoldingFilter(new ICUNormalizationFilter(tokenizer4, Normalizer.NFKD));
         Token t0;
         Token t;
         Token t2;
@@ -80,21 +78,15 @@ public class CompareNormalizationFiltersTest {
         CharTermAttribute term  = tokenizer0.addAttribute(CharTermAttribute.class);
         CharTermAttribute term1 = result1.addAttribute(CharTermAttribute.class);
         CharTermAttribute term2 = result2.addAttribute(CharTermAttribute.class);
-        CharTermAttribute term3 = result3.addAttribute(CharTermAttribute.class);
-        CharTermAttribute term4 = result4.addAttribute(CharTermAttribute.class);
 
         tokenizer0.reset();
         result1.reset();
         result2.reset();
-        result3.reset();
-        result4.reset();
 
         while(tokenizer0.incrementToken())
         {
             result1.incrementToken();
             result2.incrementToken();
-            result3.incrementToken();
-            result4.incrementToken();
 
 
             if(!new String(term1.buffer(),0,term1.length()).equals(new String(term.buffer(), 0, term.length())))
@@ -105,29 +97,8 @@ public class CompareNormalizationFiltersTest {
                         {
                 changedByASCII ++;
             }
-            if(!new String(term3.buffer(),0,term3.length()).equals(new String(term.buffer(), 0, term.length())))
-                        {
-                changedByNFKC ++;
-            }
-            if(!new String(term4.buffer(),0,term4.length()).equals(new String(term.buffer(), 0, term.length())))
-                        {
-                changedByASCIIAndNFKC ++;
-            }
-            if(
-                    (!new String(term.buffer(),0,term.length()).equals(new String(term2.buffer(), 0, term2.length())))
-                    &&
-                    (new String(term.buffer(),0,term.length()).equals(new String(term4.buffer(), 0, term4.length())))
-                    )
 
 
-            {
-                //printAsHexAndValue(t0.term());
-                //printAsHexAndValue(t.term());
-                //printAsHexAndValue(t2.term());
-                //printAsHexAndValue(t3.term());
-                //System.out.println();
-                
-            }
         }
         System.out.println("Accent      Filter changed "+ changedByAccent + " chars");
         System.out.println("ASCII       Filter changed "+ changedByASCII + " chars");
