@@ -36,6 +36,7 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.charfilter.MappingCharFilter;
 import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
 import org.apache.lucene.analysis.cjk.CJKBigramFilter;
+import org.apache.lucene.analysis.icu.ICUTransformFilter;
 import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
