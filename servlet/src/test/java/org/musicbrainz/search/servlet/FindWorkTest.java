@@ -97,7 +97,9 @@ public class FindWorkTest {
                 relation.setArtist(artist1);
                 relation.setType("composer");
                 relation.setDirection(DefDirection.BACKWARD);
-                al.getAttribute().add("additional");
+                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
+                attribute.setContent("additional");
+                al.getAttribute().add(attribute);
                 relation.setAttributeList(al);
                 rl.getRelation().add(relation);
             }
@@ -158,7 +160,9 @@ public class FindWorkTest {
                 relation.setArtist(artist);
                 relation.setType("composer");
                 relation.setDirection(DefDirection.BACKWARD);
-                al.getAttribute().add("additional");
+                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
+                attribute.setContent("additional");
+                al.getAttribute().add(attribute);
                 relation.setAttributeList(al);
                 rl.getRelation().add(relation);
             }

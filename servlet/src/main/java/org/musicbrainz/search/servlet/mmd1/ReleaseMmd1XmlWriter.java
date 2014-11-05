@@ -32,6 +32,7 @@ import com.google.common.base.Strings;
 import com.jthink.brainz.mmd.*;
 import com.jthink.brainz.mmd.Artist;
 import com.jthink.brainz.mmd.DiscList;
+import com.jthink.brainz.mmd.Event;
 import com.jthink.brainz.mmd.Label;
 import com.jthink.brainz.mmd.Metadata;
 import com.jthink.brainz.mmd.ObjectFactory;

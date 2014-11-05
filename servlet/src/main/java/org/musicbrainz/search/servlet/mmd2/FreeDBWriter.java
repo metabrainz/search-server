@@ -29,10 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
-import org.musicbrainz.mmd2.FreedbDisc;
-import org.musicbrainz.mmd2.FreedbDiscList;
-import org.musicbrainz.mmd2.Metadata;
-import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.FreeDBIndexField;
 import org.musicbrainz.search.servlet.Result;
@@ -67,7 +64,7 @@ public class FreeDBWriter extends ResultsWriter {
 
             result.setNormalizedScore(results.getMaxScore());
             freeDB.setScore(String.valueOf(result.getNormalizedScore()));
-            org.musicbrainz.mmd2.FreedbDisc.TrackList trackList = of.createFreedbDiscTrackList();
+            Cdstub.TrackList trackList = of.createCdstubTrackList();
             trackList.setCount(new BigInteger(doc.get(FreeDBIndexField.TRACKS)));
             freeDB.setTrackList(trackList);
             freeDBList.getFreedbDisc().add(freeDB);

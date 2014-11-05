@@ -123,7 +123,7 @@
                 </xml-element>
             </java-attributes>
         </java-type>
-        <java-type name="Medium$TrackList$Track">
+        <java-type name="DefTrackData">
             <java-attributes>
                 <xml-element java-attribute="artistCredit" xml-path="."/>
             </java-attributes>

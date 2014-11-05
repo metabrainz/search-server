@@ -104,7 +104,7 @@ public class CDStubWriter extends ResultsWriter {
             String numTracks = doc.get(CDStubIndexField.NUM_TRACKS);
             if(numTracks!=null)
             {
-                org.musicbrainz.mmd2.FreedbDisc.TrackList trackList = of.createFreedbDiscTrackList();
+                org.musicbrainz.mmd2.Cdstub.TrackList trackList = of.createCdstubTrackList();
                 trackList.setCount(new BigInteger(numTracks));
                 cdstub.setTrackList(trackList);
             }

@@ -925,7 +925,7 @@ public class RecordingIndex extends DatabaseIndex {
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS, trackWrapper.getTrackCount());
                     doc.addNumericField(RecordingIndexField.TRACKNUM, trackWrapper.getTrackPosition());
                     doc.addFieldOrNoValue(RecordingIndexField.NUMBER, trackWrapper.getTrackNumber());
-                    org.musicbrainz.mmd2.Medium.TrackList.Track track = of.createMediumTrackListTrack();
+                    DefTrackData track = of.createDefTrackData();
                     track.setId(trackGuid);
                     track.setTitle(trackWrapper.getTrackName());
                     track.setLength(BigInteger.valueOf(trackWrapper.getDuration()));

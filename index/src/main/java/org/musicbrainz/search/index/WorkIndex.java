@@ -145,6 +145,7 @@ public class WorkIndex extends DatabaseIndex {
      * @throws IOException
      */
     private Map<Integer, RelationList> loadArtistRelations(int min, int max) throws SQLException, IOException {
+        ObjectFactory of = new ObjectFactory();
         Map<Integer, RelationList> artists = new HashMap<Integer, RelationList>();
         PreparedStatement st  = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
@@ -156,10 +157,11 @@ public class WorkIndex extends DatabaseIndex {
             int linkId = rs.getInt("awid");
 
             if(linkId==lastLinkId) {
-                String attribute = rs.getString("attribute");
+                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
+                attribute.setContent(rs.getString("attribute"));
                 Relation.AttributeList attributeList=lastRelation.getAttributeList();
                 if(attributeList==null) {
-                    attributeList = new ObjectFactory().createRelationAttributeList();
+                    attributeList = of.createRelationAttributeList();
                     lastRelation.setAttributeList(attributeList);
                 }
                 attributeList.getAttribute().add(attribute);
@@ -169,15 +171,15 @@ public class WorkIndex extends DatabaseIndex {
 
                 RelationList list;
                 if (!artists.containsKey(workId)) {
-                    list = new ObjectFactory().createRelationList();
+                    list = of.createRelationList();
                     list.setTargetType(ARTIST_RELATION_TYPE);
                     artists.put(workId, list);
                 } else {
                     list = artists.get(workId);
                 }
 
-                Relation relation = new ObjectFactory().createRelation();
-                Artist artist = new ObjectFactory().createArtist();
+                Relation relation = of.createRelation();
+                Artist artist = of.createArtist();
                 artist.setId(rs.getString("aid"));
                 artist.setName(rs.getString("artist_name"));
                 artist.setSortName(rs.getString("artist_sortname"));
@@ -185,11 +187,12 @@ public class WorkIndex extends DatabaseIndex {
                 relation.setType(rs.getString("link"));
                 relation.setDirection(DefDirection.BACKWARD);
                 list.getRelation().add(relation);
-                String attribute = rs.getString("attribute");
+                Relation.AttributeList.Attribute attribute = new ObjectFactory().createRelationAttributeListAttribute();
+                attribute.setContent(rs.getString("attribute"));
                 if(attribute!=null) {
                     Relation.AttributeList attributeList=relation.getAttributeList();
                     if(attributeList==null) {
-                        attributeList = new ObjectFactory().createRelationAttributeList();
+                        attributeList = of.createRelationAttributeList();
                         relation.setAttributeList(attributeList);
                     }
                     attributeList.getAttribute().add(attribute);

@@ -955,9 +955,9 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
             assertNotNull(trackList.getDefTrack());
 
-            Medium.TrackList.Track track = trackList.getDefTrack().get(0);
+            DefTrackData track = trackList.getDefTrack().get(0);
             assertEquals("Do It Cleans", track.getTitle());
-            assertNull(track.getPosition());  //We dont currently output this, but perhaps should
+            assertNull(track.getPosition());  //We do not currently output this, but perhaps should
             assertEquals("A4", track.getNumber());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e",track.getId());
 

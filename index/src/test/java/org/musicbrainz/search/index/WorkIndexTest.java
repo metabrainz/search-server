@@ -244,7 +244,7 @@ public class WorkIndexTest extends AbstractIndexTest {
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", work.getRelationList().get(0).getRelation().get(0).getArtist().getId());
             assertEquals("Echo & The Bunnymen",work.getRelationList().get(0).getRelation().get(0).getArtist().getName());
             assertEquals("composer",work.getRelationList().get(0).getRelation().get(0).getType());
-            assertEquals("additional",work.getRelationList().get(0).getRelation().get(0).getAttributeList().getAttribute().get(0));
+            assertEquals("additional",work.getRelationList().get(0).getRelation().get(0).getAttributeList().getAttribute().get(0).getContent());
             ir.close();
         }
     }

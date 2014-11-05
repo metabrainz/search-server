@@ -73,7 +73,7 @@ public class FindRecordingTest {
             release.setMediumList(ml);
             ml.getMedium().add(m);
             m.setTrackList(trackList);
-            Medium.TrackList.Track track = of.createMediumTrackListTrack();
+            DefTrackData track = of.createDefTrackData();
             trackList.getDefTrack().add(track);
             recording.setReleaseList(releaseList);
             m.setFormat("Vinyl");
