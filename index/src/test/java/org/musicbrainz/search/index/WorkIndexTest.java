@@ -42,6 +42,10 @@ public class WorkIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
                 " VALUES (16153, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Echo & The Bunnymen', 'Echo and The Bunnymen', 'a comment')");
+
+        stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment, video)"
+                + " VALUES (16154, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Silver', 3, 33000, 'demo', true)");
+
         stmt.addBatch("INSERT INTO artist_credit (id, name, artist_count, ref_count) VALUES (1, 1, 1, 1)");
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
                 " VALUES (1, 0, 16153, 1)");
@@ -58,6 +62,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
         stmt.addBatch("INSERT INTO link_type(id,name) VALUES (1, 'composer')");
 
+        stmt.addBatch("INSERT INTO l_recording_work(id, link, entity0, entity1) VALUES (1, 2, 16154, 1)");
+        stmt.addBatch("INSERT INTO link(id, link_type)VALUES (2, 2)");
+        stmt.addBatch("INSERT INTO link_type(id,name) VALUES (2, 'cover')");
         stmt.executeBatch();
         stmt.close();
     }
@@ -242,6 +249,7 @@ public class WorkIndexTest extends AbstractIndexTest {
             ir.close();
         }
     }
+
     @Test
     public void testIndexWorkWithArtistRelationWithNoAttributes() throws Exception {
 
@@ -256,10 +264,39 @@ public class WorkIndexTest extends AbstractIndexTest {
                     .unserialize(doc.get(WorkIndexField.WORK_STORE.getName()), Work.class);
             System.out.println(doc.get(WorkIndexField.WORK_STORE.getName()));
 
+            RelationList artistList = work.getRelationList().get(0);
+            assertNotNull(artistList);
+            assertEquals("artist", artistList.getTargetType());
             assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", work.getRelationList().get(0).getRelation().get(0).getArtist().getId());
             assertEquals("Echo & The Bunnymen", work.getRelationList().get(0).getRelation().get(0).getArtist().getName());
             assertEquals("composer", work.getRelationList().get(0).getRelation().get(0).getType());
             assertNull(work.getRelationList().get(0).getRelation().get(0).getAttributeList());
+            ir.close();
+        }
+    }
+
+    @Test
+    public void testIndexWorkWithRecordingRelationWithNoAttributes() throws Exception {
+
+        addWorkOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            Work work = (Work) MMDSerializer
+                    .unserialize(doc.get(WorkIndexField.WORK_STORE.getName()), Work.class);
+            System.out.println(doc.get(WorkIndexField.WORK_STORE.getName()));
+
+
+            RelationList recordingList = work.getRelationList().get(1);
+            assertNotNull(recordingList);
+            assertEquals("recording", recordingList.getTargetType());
+            assertEquals("2f250ed2-6285-40f1-aa2a-14f1c05e9765", recordingList.getRelation().get(0).getRecording().getId());
+            assertEquals("Silver", recordingList.getRelation().get(0).getRecording().getTitle());
+            assertEquals("cover", recordingList.getRelation().get(0).getType());
+            assertNull(recordingList.getRelation().get(0).getAttributeList());
             ir.close();
         }
     }

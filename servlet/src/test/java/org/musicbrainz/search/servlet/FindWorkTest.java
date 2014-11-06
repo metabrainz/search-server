@@ -116,6 +116,25 @@ public class FindWorkTest {
                 rl.getRelation().add(relation);
             }
             work.getRelationList().add(rl);
+
+            RelationList r2 = of.createRelationList();
+            r2.setTargetType("recording");
+            {
+                Relation relation = of.createRelation();
+                Relation.AttributeList al = of.createRelationAttributeList();
+                Recording recording1 = of.createRecording();
+                recording1.setId("abcdef");
+                recording1.setTitle("fred");
+
+                relation.setRecording(recording1);
+                relation.setType("cover");
+                r2.getRelation().add(relation);
+            }
+
+            doc.addField(WorkIndexField.RECORDING_ID, "abcdef");
+            doc.addField(WorkIndexField.RECORDING, "fred");
+            work.getRelationList().add(r2);
+
             String store = MMDSerializer.serialize(work);
             doc.addField(WorkIndexField.WORK_STORE, store);
             writer.addDocument(doc.getLuceneDocument());
@@ -273,6 +292,27 @@ public class FindWorkTest {
 
 
     @Test
+    public void testFindWorkByRecording() throws Exception {
+        Results res = ss.search("recording:fred", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+    @Test
+    public void testFindWorkByRecordingId() throws Exception {
+        Results res = ss.search("rid:abcdef", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+    }
+
+
+    @Test
     public void testFindWorkByISWC() throws Exception {
         Results res = ss.search("iswc:\"T-101779304-1\"", 0, 10);
         assertEquals(1, res.getTotalHits());
@@ -391,6 +431,9 @@ public class FindWorkTest {
         assertTrue(output.contains("<tag-list>"));
         assertTrue(output.contains("<tag count=\"10\">"));
         assertTrue(output.contains("<name>classical</name>"));
+        assertTrue(output.contains("<relation-list target-type=\"recording\">"));
+        assertTrue(output.contains("<relation type=\"cover\""));
+        assertTrue(output.contains("<recording id=\"abcdef\">"));
 
     }
 

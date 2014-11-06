@@ -85,4 +85,31 @@ public class PlaceWriter extends ResultsWriter {
         place.setScore(String.valueOf(result.getNormalizedScore()));
         list.add(place);
     }
+
+    /**
+     * Overridden to ensure all attributes are set for each alias
+     *
+     * @param metadata
+     */
+    @Override
+    public void adjustForJson(Metadata metadata) {
+
+        if (metadata.getPlaceList().getPlace().size()>0) {
+            for(Place place:metadata.getPlaceList().getPlace()) {
+                if(place.getAliasList()!=null) {
+                    for (Alias alias : place.getAliasList().getAlias()) {
+
+                        //On Xml output as primary, but in json they have changed to true/false
+                        if (alias.getPrimary() == null) {
+                            alias.setPrimary("false");
+                        }
+                        else {
+                            alias.setPrimary("true");
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 }

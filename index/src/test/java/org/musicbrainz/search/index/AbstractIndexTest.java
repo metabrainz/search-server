@@ -206,6 +206,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE work_type");
                 stmt.addBatch("DROP TABLE work_tag");
                 stmt.addBatch("DROP TABLE l_artist_work");
+                stmt.addBatch("DROP TABLE l_recording_work");
                 stmt.addBatch("DROP TABLE link");
                 stmt.addBatch("DROP TABLE link_type");
                 stmt.addBatch("DROP TABLE link_attribute");
@@ -942,6 +943,16 @@ public abstract class AbstractIndexTest {
                 ")");
 
         stmt.addBatch("CREATE TABLE l_artist_work" +
+                "(" +
+                "  id serial NOT NULL," +
+                "  link integer NOT NULL," +
+                "  entity0 integer NOT NULL," +
+                "  entity1 integer NOT NULL," +
+                "  edits_pending integer," +
+                "  last_updated timestamp" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_recording_work" +
                 "(" +
                 "  id serial NOT NULL," +
                 "  link integer NOT NULL," +

@@ -29,10 +29,7 @@
 package org.musicbrainz.search.servlet.mmd2;
 
 
-import org.musicbrainz.mmd2.Metadata;
-import org.musicbrainz.mmd2.ObjectFactory;
-import org.musicbrainz.mmd2.Event;
-import org.musicbrainz.mmd2.EventList;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.EventIndexField;
@@ -87,5 +84,33 @@ public class EventWriter extends ResultsWriter {
         Event event = (Event) MMDSerializer.unserialize(doc.get(EventIndexField.EVENT_STORE), Event.class);
         event.setScore(String.valueOf(result.getNormalizedScore()));
         list.add(event);
+    }
+
+
+    /**
+     * Overridden to ensure all attributes are set for each alias
+     *
+     * @param metadata
+     */
+    @Override
+    public void adjustForJson(Metadata metadata) {
+
+        if (metadata.getEventList().getEvent().size()>0) {
+            for(Event event:metadata.getEventList().getEvent()) {
+                if(event.getAliasList()!=null) {
+                    for (Alias alias : event.getAliasList().getAlias()) {
+
+                        //On Xml output as primary, but in json they have changed to true/false
+                        if (alias.getPrimary() == null) {
+                            alias.setPrimary("false");
+                        }
+                        else {
+                            alias.setPrimary("true");
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }

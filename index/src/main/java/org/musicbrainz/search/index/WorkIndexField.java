@@ -18,6 +18,8 @@ public enum WorkIndexField implements IndexField {
     ALIAS		        ("alias",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_ID		    ("arid",			MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST              ("artist",          MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    RECORDING_ID	    ("rid",			MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
+    RECORDING           ("recording",       MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     COMMENT		        ("comment",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
     ISWC		        ("iswc",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
     LYRICS_LANG		    ("lang",	        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),

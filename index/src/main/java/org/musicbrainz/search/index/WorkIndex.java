@@ -37,6 +37,8 @@ public class WorkIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "work";
     private static final String ARTIST_RELATION_TYPE = "artist";
+    private static final String RECORDING_RELATION_TYPE = "recording";
+
 
     public WorkIndex(Connection dbConnection) {
         super(dbConnection);
@@ -86,6 +88,19 @@ public class WorkIndex extends DatabaseIndex {
                         " lt.name as link, lat.name as attribute" +
                         " FROM l_artist_work aw" +
                         " INNER JOIN artist a ON a.id    = aw.entity0" +
+                        " INNER JOIN work   w ON w.id     = aw.entity1" +
+                        " INNER JOIN link l ON aw.link = l.id " +
+                        " INNER JOIN link_type lt on l.link_type=lt.id" +
+                        " LEFT JOIN  link_attribute la on la.link=l.id" +
+                        " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
+                        " WHERE w.id BETWEEN ? AND ?  "  +
+                        " ORDER BY aw.id");
+
+        addPreparedStatement("RECORDINGS",
+                " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as recording_name, " +
+                        " lt.name as link, lat.name as attribute" +
+                        " FROM l_recording_work aw" +
+                        " INNER JOIN recording a ON a.id    = aw.entity0" +
                         " INNER JOIN work   w ON w.id     = aw.entity1" +
                         " INNER JOIN link l ON aw.link = l.id " +
                         " INNER JOIN link_type lt on l.link_type=lt.id" +
@@ -200,6 +215,70 @@ public class WorkIndex extends DatabaseIndex {
         return artists;
     }
 
+
+    /**
+     * Load Recording Relations
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private ArrayListMultimap<Integer, Relation> loadRecordingRelations(int min, int max) throws SQLException, IOException {
+        ObjectFactory of = new ObjectFactory();
+        ArrayListMultimap<Integer, Relation> recordings = ArrayListMultimap.create();
+        PreparedStatement st  = getPreparedStatement("RECORDINGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        int lastLinkId=-1;
+        Relation lastRelation = null;
+        while (rs.next()) {
+            int linkId = rs.getInt("awid");
+
+            //If have another attribute for the same relation
+            if(linkId==lastLinkId) {
+                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
+                attribute.setContent(rs.getString("attribute"));
+                Relation.AttributeList attributeList=lastRelation.getAttributeList();
+                attributeList.getAttribute().add(attribute);
+            }
+            //New relation (may or may not be new work but doesn't matter)
+            else {
+                int workId = rs.getInt("wid");
+
+                Relation relation = of.createRelation();
+
+                Recording recording = of.createRecording();
+                recording.setId(rs.getString("aid"));
+                recording.setTitle(rs.getString("recording_name"));
+
+                relation.setRecording(recording);
+                relation.setType(rs.getString("link"));
+                relation.setDirection(DefDirection.BACKWARD);
+
+                //Each relation may contain attributes if it does needs attribute list
+                String attributeValue = rs.getString("attribute");
+                if(!Strings.isNullOrEmpty(attributeValue))
+                {
+                    Relation.AttributeList attributeList = of.createRelationAttributeList();
+                    relation.setAttributeList(attributeList);
+                    Relation.AttributeList.Attribute attribute = new ObjectFactory().createRelationAttributeListAttribute();
+                    attribute.setContent(attributeValue);
+                    attributeList.getAttribute().add(attribute);
+                }
+                //Add relation
+                recordings.put(workId, relation);
+
+                lastRelation=relation;
+                lastLinkId=linkId;
+            }
+        }
+        rs.close();
+        return recordings;
+    }
+
     /**
      * Load work aliases
      *
@@ -301,10 +380,11 @@ public class WorkIndex extends DatabaseIndex {
      */
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        Map<Integer, List<Tag>>              tags             = loadTags(min, max);
-        ArrayListMultimap<Integer, Relation> artistRelations  = loadArtistRelations(min, max);
-        Map<Integer, Set<Alias>>             aliases          = loadAliases(min, max);
-        Map<Integer, List<String>>           iswcs            = loadISWCs(min,max);
+        Map<Integer, List<Tag>>              tags               = loadTags(min, max);
+        ArrayListMultimap<Integer, Relation> artistRelations    = loadArtistRelations(min, max);
+        ArrayListMultimap<Integer, Relation> recordingRelations = loadRecordingRelations(min, max);
+        Map<Integer, Set<Alias>>             aliases            = loadAliases(min, max);
+        Map<Integer, List<String>>           iswcs              = loadISWCs(min,max);
 
         //Works
         PreparedStatement st = getPreparedStatement("WORKS");
@@ -312,7 +392,7 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, artistRelations, aliases, iswcs));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, artistRelations, recordingRelations, aliases, iswcs));
         }
         rs.close();
 
@@ -321,6 +401,7 @@ public class WorkIndex extends DatabaseIndex {
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<Tag>> tags,
                                           ArrayListMultimap<Integer, Relation> artistRelations,
+                                          ArrayListMultimap<Integer, Relation> recordingRelations,
                                           Map<Integer, Set<Alias>>   aliases,
                                           Map<Integer, List<String>> iswcs
                                           ) throws SQLException {
@@ -367,6 +448,19 @@ public class WorkIndex extends DatabaseIndex {
                 relationList.getRelation().add(r);
                 doc.addField(WorkIndexField.ARTIST_ID, r.getArtist().getId());
                 doc.addField(WorkIndexField.ARTIST, r.getArtist().getName());
+            }
+        }
+
+
+        if (recordingRelations.containsKey(id)) {
+            List<Relation> rl = recordingRelations.get(id);
+            RelationList relationList = of.createRelationList();
+            relationList.setTargetType(RECORDING_RELATION_TYPE);
+            work.getRelationList().add(relationList);
+            for (Relation r : rl) {
+                relationList.getRelation().add(r);
+                doc.addField(WorkIndexField.RECORDING_ID, r.getRecording().getId());
+                doc.addField(WorkIndexField.RECORDING, r.getRecording().getTitle());
             }
         }
 
