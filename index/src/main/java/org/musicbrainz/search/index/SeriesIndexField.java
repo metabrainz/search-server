@@ -46,8 +46,9 @@ public enum SeriesIndexField implements IndexField {
     SERIES              ("series",              MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     COMMENT		        ("comment",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
     ORDERING_ATTRIBUTE	("orderingattribute",   MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED,new CaseInsensitiveKeywordAnalyzer()),
-    SERIES_STORE        ("seriesstore",         MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     TYPE		        ("type",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    TAG		            ("tag",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    SERIES_STORE        ("seriesstore",         MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
     ;
 
     private String name;

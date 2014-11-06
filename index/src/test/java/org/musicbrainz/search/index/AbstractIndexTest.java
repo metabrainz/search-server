@@ -247,6 +247,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE instrument");
                 stmt.addBatch("DROP TABLE instrument_alias_type");
                 stmt.addBatch("DROP TABLE instrument_alias");
+                stmt.addBatch("DROP TABLE instrument_tag");
 
                 stmt.addBatch("DROP TABLE series_type");
                 stmt.addBatch("DROP TABLE series");
@@ -254,7 +255,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE series_alias");
                 stmt.addBatch("DROP TABLE series_ordering_type");
                 stmt.addBatch("DROP TABLE series_deletion");
-
+                stmt.addBatch("DROP TABLE series_tag");
 
                 stmt.addBatch("DROP TABLE replication_control");
                 stmt.addBatch("DROP TABLE dbmirror_pending");
@@ -377,6 +378,14 @@ public abstract class AbstractIndexTest {
                 "  name character varying(255) NOT NULL," +
                 "  ref_count integer NOT NULL DEFAULT 0" +
                 ")");
+
+        stmt.addBatch("CREATE TABLE area_tag (" +
+                "  instrument integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
+                ")");
+
 
     }
 
@@ -1381,6 +1390,14 @@ public abstract class AbstractIndexTest {
                 "    ended               BOOLEAN \n" +
                 ")");
 
+        stmt.addBatch("CREATE TABLE series_tag (" +
+                "  series integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
+                ")");
+
+
     }
 
     protected void setupInstrumentTables(Statement stmt) throws Exception {
@@ -1430,6 +1447,14 @@ public abstract class AbstractIndexTest {
                 "    primary_for_locale  BOOLEAN,\n" +
                 "    ended               BOOLEAN  \n" +
                 ");");
+
+        stmt.addBatch("CREATE TABLE instrument_tag (" +
+                "  instrument integer NOT NULL," +
+                "  tag integer NOT NULL," +
+                "  count integer NOT NULL," +
+                "  last_updated timestamp" +
+                ")");
+
 
     }
 

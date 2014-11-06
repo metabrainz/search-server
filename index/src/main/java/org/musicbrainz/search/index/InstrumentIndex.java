@@ -29,7 +29,6 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
 
@@ -102,6 +101,12 @@ public class InstrumentIndex extends DatabaseIndex {
                 "  LEFT JOIN instrument_type ON instrument.type = instrument_type.id " +
                 " WHERE instrument.id BETWEEN ? AND ?");
 
+        addPreparedStatement("TAGS",
+                "SELECT t1.instrument, t2.name as tag, t1.count as count " +
+                        " FROM instrument_tag t1" +
+                        "  INNER JOIN tag t2 ON tag=id " +
+                        " WHERE t1.instrument between ? AND ?");
+
 
     }
 
@@ -157,6 +162,14 @@ public class InstrumentIndex extends DatabaseIndex {
         }
         rs.close();
 
+        // Get Tags
+        st = getPreparedStatement("TAGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"instrument");
+        rs.close();
+
         // Get instruments
         st = getPreparedStatement("INSTRUMENTS");
         st.setInt(1, min);
@@ -164,13 +177,12 @@ public class InstrumentIndex extends DatabaseIndex {
         rs = st.executeQuery();
 
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
         rs.close();
     }
 
-    public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer, Set<Alias>> aliases) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<Tag>> tags, Map<Integer, Set<Alias>> aliases) throws SQLException {
 
         MbDocument doc = new MbDocument();
 
@@ -218,6 +230,13 @@ public class InstrumentIndex extends DatabaseIndex {
                 aliasList.getAlias().add(nextAlias);
             }
             instrument.setAliasList(aliasList);
+        }
+
+        if (tags.containsKey(instrumentId))
+        {
+            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, instrumentId);
+            //TODO
+            //instrument.setTagList(tagList)
         }
 
         String store = MMDSerializer.serialize(instrument);

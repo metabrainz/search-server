@@ -85,14 +85,14 @@ public class EventIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
 
-        addPreparedStatement("EVENT",
-                        "SELECT  e.id, e.gid, e.name, e.time, et.name as type, " +
+        addPreparedStatement("EVENT", "SELECT  e.id, e.gid, e.name, e.time, et.name as type, " +
                         "  e.begin_date_year, e.begin_date_month, e.begin_date_day, " +
                         "  e.end_date_year, e.end_date_month, e.end_date_day, e.ended, e.comment " +
                         " FROM event e" +
                         "  LEFT JOIN event_type et ON e.type = et.id " +
                         " WHERE e.id BETWEEN ? AND ? " +
-                        " ORDER BY e.id");
+                        " ORDER BY e.id"
+        );
 
         addPreparedStatement("ALIASES",
                 "SELECT e.event as event, e.name as alias, e.sort_name as alias_sortname, e.primary_for_locale, e.locale, att.name as type," +
@@ -103,10 +103,10 @@ public class EventIndex extends DatabaseIndex {
                         " ORDER BY event, alias, alias_sortname");
 
         addPreparedStatement("TAGS",
-                "SELECT event_tag.event, tag.name as tag, event_tag.count as count " +
-                        " FROM event_tag " +
-                        "  INNER JOIN tag ON tag=id " +
-                        " WHERE event between ? AND ?");
+                "SELECT t1.event, t2.name as tag, t1.count as count " +
+                        " FROM event_tag t1" +
+                        "  INNER JOIN tag t2 ON tag=id " +
+                        " WHERE t1.event between ? AND ?");
 
 
     }
@@ -247,16 +247,9 @@ public class EventIndex extends DatabaseIndex {
             event.setAliasList(aliasList);
         }
 
-        if (tags.containsKey(eventId)) {
-            TagList tagList = of.createTagList();
-            for (Tag nextTag : tags.get(eventId)) {
-                Tag tag = of.createTag();
-                doc.addField(LabelIndexField.TAG, nextTag.getName());
-                tag.setName(nextTag.getName());
-                tag.setCount(new BigInteger(nextTag.getCount().toString()));
-                tagList.getTag().add(tag);
-            }
-            event.setTagList(tagList);
+        if (tags.containsKey(eventId))
+        {
+            event.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, eventId));
         }
 
         String store = MMDSerializer.serialize(event);

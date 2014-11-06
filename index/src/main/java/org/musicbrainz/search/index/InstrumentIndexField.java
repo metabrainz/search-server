@@ -46,8 +46,10 @@ public enum InstrumentIndexField implements IndexField {
     INSTRUMENT          ("instrument",      MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzAnalyzer()),
     COMMENT		        ("comment",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
     DESCRIPTION		    ("description",     MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED),
-    INSTRUMENT_STORE    ("instrumentstore", MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
+    TAG		            ("tag",		        MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     TYPE		        ("type",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED_NO_NORMS, new CaseInsensitiveKeywordAnalyzer()),
+    INSTRUMENT_STORE    ("instrumentstore", MusicBrainzFieldTypes.TEXT_STORED_NOT_INDEXED),
+
     ;
 
     private String name;

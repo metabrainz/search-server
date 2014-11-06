@@ -24,19 +24,13 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.similarities.Similarity;
-import org.musicbrainz.mmd2.Alias;
-import org.musicbrainz.mmd2.AliasList;
-import org.musicbrainz.mmd2.ObjectFactory;
-import org.musicbrainz.mmd2.Series;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SeriesIndex extends DatabaseIndex {
 
@@ -108,6 +102,11 @@ public class SeriesIndex extends DatabaseIndex {
                 "  LEFT JOIN series_type ON series.type = series_type.id " +
                 " WHERE series.id BETWEEN ? AND ?");
 
+        addPreparedStatement("TAGS",
+                "SELECT t1.series, t2.name as tag, t1.count as count " +
+                " FROM series_tag t1" +
+                "  INNER JOIN tag t2 ON tag=id " +
+                " WHERE t1.series between ? AND ?");
     }
 
 
@@ -161,6 +160,14 @@ public class SeriesIndex extends DatabaseIndex {
         }
         rs.close();
 
+        // Get Tags
+        st = getPreparedStatement("TAGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"series");
+        rs.close();
+
         // Get series
         st = getPreparedStatement("SERIES");
         st.setInt(1, min);
@@ -168,13 +175,12 @@ public class SeriesIndex extends DatabaseIndex {
         rs = st.executeQuery();
 
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }
         rs.close();
     }
 
-    public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer, Set<Alias>> aliases) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<Tag>> tags, Map<Integer, Set<Alias>> aliases) throws SQLException {
 
         MbDocument doc = new MbDocument();
 
@@ -220,6 +226,14 @@ public class SeriesIndex extends DatabaseIndex {
             }
             series.setAliasList(aliasList);
         }
+
+        if (tags.containsKey(seriesId))
+        {
+            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, seriesId);
+            //TODO
+            //series.setTagList(tagList)
+        }
+
 
         String store = MMDSerializer.serialize(series);
         doc.addField(SeriesIndexField.SERIES_STORE, store);

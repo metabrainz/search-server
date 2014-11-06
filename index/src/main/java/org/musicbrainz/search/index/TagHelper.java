@@ -31,6 +31,8 @@ package org.musicbrainz.search.index;
 
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.mmd2.Tag;
+import org.musicbrainz.mmd2.TagList;
+import org.musicbrainz.search.MbDocument;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;
@@ -64,6 +66,25 @@ public class TagHelper {
         return tags;
     }
 
-
-
+    /**
+     * Add tags to search field and return tag list for adding to store object
+     *
+     * @param of
+     * @param doc
+     * @param tags
+     * @param entityId
+     * @return
+     */
+    public static TagList addTagsToDocAndConstructTagList(ObjectFactory of, MbDocument doc, Map<Integer,List<Tag>> tags, int entityId)
+    {
+        TagList tagList = of.createTagList();
+        for (Tag nextTag : tags.get(entityId)) {
+            Tag tag = of.createTag();
+            doc.addField(LabelIndexField.TAG, nextTag.getName());
+            tag.setName(nextTag.getName());
+            tag.setCount(new BigInteger(nextTag.getCount().toString()));
+            tagList.getTag().add(tag);
+        }
+        return tagList;
+    }
 }

@@ -39,6 +39,9 @@ public class SeriesIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO series (comment, id, gid,name,type,ordering_attribute) VALUES ('comment',1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Trumpet',1,1)");
         stmt.addBatch("INSERT INTO series_type(id, name) VALUES (1, 'Brass')");
         stmt.addBatch("INSERT INTO series_alias (id, name, sort_name, series, primary_for_locale, locale, type ) VALUES (3,  'tromba','tromba sort', 1, true, 'it',1)");
+
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Groovy', 2);");
+        stmt.addBatch("INSERT INTO series_tag (series, tag, count) VALUES (1, 1, 10)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -148,6 +151,27 @@ public class SeriesIndexTest extends AbstractIndexTest {
             assertEquals("tromba sort",series.getAliasList().getAlias().get(0).getSortName());
             assertEquals("it",series.getAliasList().getAlias().get(0).getLocale());
 
+        }
+        ir.close();
+    }
+
+
+    /**
+     * Checks fields with different sort name to name is indexed correctly
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testIndexInstrumentWithTag() throws Exception {
+
+        addSeriesOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, SeriesIndexField.TAG, "groovy");
         }
         ir.close();
     }

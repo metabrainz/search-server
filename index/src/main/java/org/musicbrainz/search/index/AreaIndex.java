@@ -35,13 +35,9 @@ import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 
-import java.awt.geom.Area;
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class AreaIndex extends DatabaseIndex {
@@ -125,6 +121,13 @@ public class AreaIndex extends DatabaseIndex {
 
         addPreparedStatement("ISO3",
                 "SELECT area, code from iso_3166_3 WHERE area BETWEEN ? AND ? ORDER BY area, code");
+
+        addPreparedStatement("TAGS",
+                "SELECT t1.area, t2.name as tag, t1.count as count " +
+                        " FROM area_tag t1" +
+                        "  INNER JOIN tag t2 ON tag=id " +
+                        " WHERE t1.area between ? AND ?");
+
     }
 
 
@@ -288,24 +291,28 @@ public class AreaIndex extends DatabaseIndex {
             rl.getRelation().add(relation);
             areaParent.put(areaId, rl);
         }
+
+        // Get Tags
+        st = getPreparedStatement("TAGS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        rs = st.executeQuery();
+        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"area");
+        rs.close();
+
         st = getPreparedStatement("AREA");
         st.setInt(1, min);
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, areaParent, aliases, iso1, iso2, iso3));
+            indexWriter.addDocument(documentFromResultSet(areaParent, aliases, rs, iso1, iso2, iso3, tags ));
         }
         rs.close();
 
     }
 
 
-    public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer,RelationList> areaParents,
-                                          Map<Integer, Set<Alias>> aliases,
-                                          Map<Integer, Iso31661CodeList> iso1,
-                                          Map<Integer, Iso31662CodeList> iso2,
-                                          Map<Integer, Iso31663CodeList> iso3) throws SQLException {
+    public Document documentFromResultSet(Map<Integer, RelationList> areaParents, Map<Integer, Set<Alias>> aliases, ResultSet rs, Map<Integer, Iso31661CodeList> iso1, Map<Integer, Iso31662CodeList> iso2, Map<Integer, Iso31663CodeList> iso3, Map<Integer, List<Tag>> tags) throws SQLException {
         MbDocument doc = new MbDocument();
 
         ObjectFactory of = new ObjectFactory();
@@ -399,6 +406,13 @@ public class AreaIndex extends DatabaseIndex {
                 doc.addField(AreaIndexField.ISO, iso);
                 doc.addField(AreaIndexField.ISO3, iso);
             }
+        }
+
+        if (tags.containsKey(areaId))
+        {
+            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, areaId);
+            //TODO
+            //area.setTagList(tagList)
         }
 
         String store = MMDSerializer.serialize(areaList);

@@ -42,6 +42,8 @@ public class AreaIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO iso_3166_2(area, code) VALUES (1,'North')");
         stmt.addBatch("INSERT INTO iso_3166_2(area, code) VALUES (1,'West')");
         stmt.addBatch("INSERT INTO iso_3166_3(area, code) VALUES (1,'Kabu')");
+        stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Groovy', 2);");
+        stmt.addBatch("INSERT INTO area_tag (area, tag, count) VALUES (1, 1, 10)");
         stmt.executeBatch();
         stmt.close();
     }
@@ -375,4 +377,24 @@ public class AreaIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+
+    /**
+     * Checks fields with different sort name to name is indexed correctly
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testIndexAreaWithTag() throws Exception {
+
+        addAreaOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, InstrumentIndexField.TAG, "groovy");
+        }
+        ir.close();
+    }
 }
