@@ -61,6 +61,7 @@ public class FindArtistTest {
             doc.addField(ArtistIndexField.TAG, "güth");
             doc.addField(ArtistIndexField.IPI, "1001");
             doc.addField(ArtistIndexField.IPI, "1002");
+            doc.addField(ArtistIndexField.ISNI,"abcdef");
 
             Artist artist = of.createArtist();
             artist.setId("4302e264-1cf0-4d1f-aca7-2a6f89e34b36");
@@ -285,6 +286,14 @@ public class FindArtistTest {
     @Test
     public void testFindArtistByIpi() throws Exception {
         Results res = ss.search("ipi:1001", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", getArtistId(res.results.get(0).getDoc()));
+
+    }
+
+    @Test
+    public void testFindArtistByIsni() throws Exception {
+        Results res = ss.search("isni:abcdef", 0, 10);
         assertEquals(1, res.getTotalHits());
         assertEquals("4302e264-1cf0-4d1f-aca7-2a6f89e34b36", getArtistId(res.results.get(0).getDoc()));
 

@@ -146,6 +146,11 @@ public class ArtistIndex extends DatabaseIndex {
                         " FROM artist_ipi  " +
                         " WHERE artist between ? AND ?");
 
+        addPreparedStatement("ISNICODES",
+                "SELECT isni, artist " +
+                        " FROM artist_isni " +
+                        " WHERE artist between ? AND ?");
+
     }
 
     private Map<Integer, List<String>> loadIpiCodes(int min, int max) throws SQLException, IOException {
@@ -170,6 +175,28 @@ public class ArtistIndex extends DatabaseIndex {
         return ipiCodes;
     }
 
+    private Map<Integer, List<String>> loadIsniCodes(int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> ipiCodes = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("ISNICODES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int artistId = rs.getInt("artist");
+
+            List<String> list;
+            if (!ipiCodes.containsKey(artistId)) {
+                list = new LinkedList<String>();
+                ipiCodes.put(artistId, list);
+            } else {
+                list = ipiCodes.get(artistId);
+            }
+            list.add(rs.getString("isni"));
+        }
+        rs.close();
+        return ipiCodes;
+    }
+
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         ObjectFactory of = new ObjectFactory();
@@ -184,6 +211,9 @@ public class ArtistIndex extends DatabaseIndex {
 
         // IPI Codes
         Map<Integer, List<String>> ipiCodes = loadIpiCodes(min, max);
+
+        // ISNI Codes
+        Map<Integer, List<String>> isniCodes = loadIsniCodes(min, max);
 
         //Aliases
         Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
@@ -256,16 +286,12 @@ public class ArtistIndex extends DatabaseIndex {
             if (rs.getString("gid").equals(DELETED_ARTIST_MBID)) {
                 continue;
             }
-            indexWriter.addDocument(documentFromResultSet(rs, tags, ipiCodes, aliases, artistCredits));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, ipiCodes, isniCodes, aliases, artistCredits));
         }
         rs.close();
     }
 
-    public Document documentFromResultSet(ResultSet rs,
-                                          Map<Integer, List<Tag>> tags,
-                                          Map<Integer, List<String>> ipiCodes,
-                                          Map<Integer, Set<Alias>> aliases,
-                                          Map<Integer, Set<String>> artistCredits) throws SQLException {
+    public Document documentFromResultSet(ResultSet rs, Map<Integer, List<Tag>> tags, Map<Integer, List<String>> ipiCodes, Map<Integer, List<String>> isniCodes, Map<Integer, Set<Alias>> aliases, Map<Integer, Set<String>> artistCredits) throws SQLException {
 
         MbDocument doc = new MbDocument();
 
@@ -411,6 +437,11 @@ public class ArtistIndex extends DatabaseIndex {
             artist.setIpiList(ipiList);
         }
 
+        if (isniCodes.containsKey(artistId)) {
+            for (String isniCode : isniCodes.get(artistId)) {
+                doc.addField(ArtistIndexField.ISNI, isniCode);
+            }
+        }
 
         ArtistBoostDoc.boost(artistGuid, doc);
 

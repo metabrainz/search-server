@@ -42,6 +42,7 @@ public class ArtistIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist (id, name, gid, sort_name, begin_date_year, begin_date_month, type, gender, area,begin_area,ended)" +
             " VALUES (521316, 'Farming Incident', '4302e264-1cf0-4d1f-aca7-2a6f89e34b36', 'incident', 1999, 4, 2, 1, 1,38,true)");
         stmt.addBatch("INSERT INTO artist_ipi (artist,ipi) values(521316,'10001')");
+        stmt.addBatch("INSERT INTO artist_isni (artist,isni) values(521316,'abcdef')");
         stmt.addBatch("INSERT INTO area (id, gid, name) VALUES (1, '4302e264-1cf0-4d1f-aca7-2a6f89e34b36','Afghanistan')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (1, 'AF')");
         stmt.addBatch("INSERT INTO area (id, gid, name) VALUES (38, 'b8caa692-704d-412b-a410-4fbcf5b9c796','Canada')");
@@ -189,6 +190,21 @@ public class ArtistIndexTest extends AbstractIndexTest {
                 ir.close();
             }
 
+
+    @Test
+    public void testIndexArtistWithISNI() throws Exception {
+
+        addArtistOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            checkTerm(ir, ArtistIndexField.ISNI, "abcdef");
+        }
+        ir.close();
+    }
     @Test
     public void testIndexArtistWithNoCountry() throws Exception {
 

@@ -134,13 +134,17 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE gender");
                 stmt.addBatch("DROP TABLE artist_tag");
                 stmt.addBatch("DROP TABLE artist_ipi");
+                stmt.addBatch("DROP TABLE artist_isni");
                 stmt.addBatch("DROP TABLE editor");
+
                 stmt.addBatch("DROP TABLE label");
                 stmt.addBatch("DROP TABLE label_alias");
                 stmt.addBatch("DROP TABLE label_alias_type");
                 stmt.addBatch("DROP TABLE label_type");
                 stmt.addBatch("DROP TABLE label_tag");
                 stmt.addBatch("DROP TABLE label_ipi");
+                stmt.addBatch("DROP TABLE label_isni");
+
                 stmt.addBatch("DROP TABLE release");
                 stmt.addBatch("DROP TABLE release_meta");
                 stmt.addBatch("DROP TABLE release_status");
@@ -480,6 +484,14 @@ public abstract class AbstractIndexTest {
                    " )"
                    );
 
+        stmt.addBatch("CREATE TABLE artist_isni" +
+                        "(" +
+                        " artist              INTEGER," +
+                        " isni                CHAR(16)," +
+                        " edits_pending       INTEGER," +
+                        " created             TIMESTAMP" +
+                        " )"
+        );
 
     }
 
@@ -546,6 +558,16 @@ public abstract class AbstractIndexTest {
                 " created             TIMESTAMP" +
                 " )"
         );
+
+        stmt.addBatch("CREATE TABLE label_isni" +
+                        "(" +
+                        " artist              INTEGER," +
+                        " isni                CHAR(16)," +
+                        " edits_pending       INTEGER," +
+                        " created             TIMESTAMP" +
+                        " )"
+        );
+
     }
 
     protected void setupReleaseTables(Statement stmt) throws Exception {
