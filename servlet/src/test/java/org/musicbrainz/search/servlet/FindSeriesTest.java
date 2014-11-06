@@ -7,10 +7,7 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
-import org.musicbrainz.mmd2.Alias;
-import org.musicbrainz.mmd2.AliasList;
-import org.musicbrainz.mmd2.Series;
-import org.musicbrainz.mmd2.ObjectFactory;
+import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
@@ -18,6 +15,7 @@ import org.musicbrainz.search.index.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -61,6 +59,14 @@ public class FindSeriesTest {
 
             doc.addField(SeriesIndexField.TYPE, "Various");
             series.setType("Various");
+
+            doc.addField(LabelIndexField.TAG, "desert");
+            TagList tagList = of.createTagList();
+            Tag tag = of.createTag();
+            tag.setName("desert");
+            tag.setCount(BigInteger.valueOf(22));
+            tagList.getTag().add(tag);
+            series.setTagList(tagList);
 
             doc.addField(SeriesIndexField.SERIES_STORE, MMDSerializer.serialize(series));
             writer.addDocument(doc.getLuceneDocument());
@@ -140,6 +146,15 @@ public class FindSeriesTest {
         assertEquals("Now thats what I call music !", doc.get(SeriesIndexField.SERIES));
     }
 
+    @Test
+    public void testFindSeriesByTag() throws Exception {
+        Results res = ss.search("tag:desert", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(SeriesIndexField.SERIES_ID));
+        assertEquals("Now thats what I call music !", doc.get(SeriesIndexField.SERIES));
+    }
 
     /**
      * @throws Exception exception
@@ -188,6 +203,7 @@ public class FindSeriesTest {
         assertTrue(output.contains("\"aliases\":[{\"name\":\"UK Top 40 Series\",\"locale\":null,\"type\":null,\"primary\":null,\"begin-date\":null,\"end-date\":null}]"));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
+        assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"desert\""));
 
     }
 

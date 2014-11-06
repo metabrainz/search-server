@@ -14,6 +14,7 @@ import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -62,6 +63,14 @@ public class FindInstrumentTest {
 
             doc.addField(InstrumentIndexField.TYPE, "Brass");
             instrument.setType("Brass");
+
+            doc.addField(LabelIndexField.TAG, "desert");
+            TagList tagList = of.createTagList();
+            Tag tag = of.createTag();
+            tag.setName("desert");
+            tag.setCount(BigInteger.valueOf(22));
+            tagList.getTag().add(tag);
+            instrument.setTagList(tagList);
 
             doc.addField(InstrumentIndexField.INSTRUMENT_STORE, MMDSerializer.serialize(instrument));
             writer.addDocument(doc.getLuceneDocument());
@@ -161,6 +170,15 @@ public class FindInstrumentTest {
         assertEquals("Trombone", doc.get(InstrumentIndexField.INSTRUMENT));
     }
 
+    @Test
+    public void testFindEventByTag() throws Exception {
+        Results res = ss.search("tag:desert", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(InstrumentIndexField.INSTRUMENT_ID));
+        assertEquals("Trombone", doc.get(InstrumentIndexField.INSTRUMENT));
+    }
 
     /**
      * @throws Exception exception
@@ -212,6 +230,7 @@ public class FindInstrumentTest {
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
         assertTrue(output.contains("\"disambiguation\":\"series 2 was best\""));
+        assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"desert\""));
 
     }
 

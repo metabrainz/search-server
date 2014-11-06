@@ -98,6 +98,13 @@ public class FindAreaTest {
 
             area.setIso31663CodeList(iso3);
 
+            doc.addField(LabelIndexField.TAG, "desert");
+            TagList tagList = of.createTagList();
+            Tag tag = of.createTag();
+            tag.setName("desert");
+            tag.setCount(BigInteger.valueOf(22));
+            tagList.getTag().add(tag);
+            area.setTagList(tagList);
 
             AreaList areaList = of.createAreaList();
             areaList.getArea().add(area);
@@ -305,6 +312,17 @@ public class FindAreaTest {
         assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
         assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
     }
+
+    @Test
+    public void testFindEventByTag() throws Exception {
+        Results res = ss.search("tag:desert", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(AreaIndexField.AREA_ID));
+        assertEquals("Afghanistan", doc.get(AreaIndexField.AREA));
+    }
+
     /**
      * Tests get same results as
      * http://musicbrainz.org/ws/1/area/?type=xml&query=%22Jockey%20Slut%22
@@ -415,6 +433,7 @@ public class FindAreaTest {
         assertTrue(output.contains("\"iso-3166-2-codes\":[\"North\"]"));
         assertTrue(output.contains("\"iso-3166-3-codes\":[\"Kabu\"]"));
         assertTrue(output.contains("\"disambiguation\":\"A comment\","));
+        assertTrue(output.contains("\"tags\":[{\"count\":22,\"name\":\"desert\""));
     }
 
     /**

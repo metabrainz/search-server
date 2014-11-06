@@ -7,10 +7,12 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
 import org.musicbrainz.mmd2.Series;
+import org.musicbrainz.mmd2.Tag;
 
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class SeriesIndexTest extends AbstractIndexTest {
 
@@ -151,6 +153,10 @@ public class SeriesIndexTest extends AbstractIndexTest {
             assertEquals("tromba sort",series.getAliasList().getAlias().get(0).getSortName());
             assertEquals("it",series.getAliasList().getAlias().get(0).getLocale());
 
+            assertNotNull(series.getTagList());
+            assertEquals(1, series.getTagList().getTag().size());
+            Tag tag =  series.getTagList().getTag().get(0);
+            assertEquals("Groovy",tag.getName());
         }
         ir.close();
     }

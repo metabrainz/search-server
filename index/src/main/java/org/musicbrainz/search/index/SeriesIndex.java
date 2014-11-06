@@ -221,8 +221,7 @@ public class SeriesIndex extends DatabaseIndex {
         if (tags.containsKey(seriesId))
         {
             TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, seriesId, SeriesIndexField.TAG);
-            //TODO
-            //series.setTagList(tagList)
+            series.setTagList(tagList);
         }
 
 

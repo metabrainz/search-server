@@ -153,6 +153,16 @@
                 <xml-element java-attribute="tagList" xml-path="."/>
             </java-attributes>
         </java-type>
+        <java-type name="Series">
+            <java-attributes>
+                <xml-element java-attribute="tagList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Instrument">
+            <java-attributes>
+                <xml-element java-attribute="tagList" xml-path="."/>
+            </java-attributes>
+        </java-type>
         <java-type name="TagList">
             <java-attributes>
                 <xml-element java-attribute="tag" name="tags"/>
@@ -361,6 +371,11 @@
         <java-type name="DefAreaElementInner">
             <java-attributes>
                 <xml-element java-attribute="aliasList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="DefAreaElementInner">
+            <java-attributes>
+                <xml-element java-attribute="tagList" xml-path="."/>
             </java-attributes>
         </java-type>
         <java-type name="Place">

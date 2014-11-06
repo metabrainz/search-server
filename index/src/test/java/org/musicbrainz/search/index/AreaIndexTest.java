@@ -275,6 +275,11 @@ public class AreaIndexTest extends AbstractIndexTest {
             assertEquals("en",alias.getLocale());
             assertEquals("AliasType",alias.getType());
 
+            assertNotNull(area.getTagList());
+            assertEquals(1,area.getTagList().getTag().size());
+            Tag tag =  area.getTagList().getTag().get(0);
+            assertEquals("Groovy",tag.getName());
+
             assertNotNull(area.getLifeSpan());
             LifeSpan lifeSpan = area.getLifeSpan();
             assertEquals("1830",lifeSpan.getBegin());

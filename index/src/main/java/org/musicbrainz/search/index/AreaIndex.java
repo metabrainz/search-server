@@ -404,8 +404,7 @@ public class AreaIndex extends DatabaseIndex {
         if (tags.containsKey(areaId))
         {
             TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, areaId, AreaIndexField.TAG );
-            //TODO
-            //area.setTagList(tagList)
+            area.setTagList(tagList);
         }
 
         String store = MMDSerializer.serialize(areaList);

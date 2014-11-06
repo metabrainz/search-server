@@ -226,8 +226,7 @@ public class InstrumentIndex extends DatabaseIndex {
         if (tags.containsKey(instrumentId))
         {
             TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, instrumentId, InstrumentIndexField.TAG);
-            //TODO
-            //instrument.setTagList(tagList)
+            instrument.setTagList(tagList);
         }
 
         String store = MMDSerializer.serialize(instrument);
