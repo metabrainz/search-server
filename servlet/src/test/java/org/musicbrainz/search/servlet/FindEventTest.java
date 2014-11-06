@@ -61,7 +61,6 @@ public class FindEventTest
 
             doc.addField(EventIndexField.BEGIN, "1993");
             doc.addField(EventIndexField.END, "2004");
-            doc.addField(EventIndexField.ENDED, "true");
             org.musicbrainz.mmd2.Event.LifeSpan lifespan = of.createEventLifeSpan();
             event.setLifeSpan(lifespan);
             lifespan.setBegin("1993");
@@ -200,15 +199,6 @@ public class FindEventTest
         assertEquals("Afghanistan", doc.get(EventIndexField.EVENT));
     }
 
-    @Test
-    public void testFindEventByEnded() throws Exception {
-        Results res = ss.search("ended:true", 0, 10);
-        assertEquals(1, res.getTotalHits());
-        Result result = res.results.get(0);
-        MbDocument doc = result.getDoc();
-        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(EventIndexField.EVENT_ID));
-        assertEquals("Afghanistan", doc.get(EventIndexField.EVENT));
-    }
 
     @Test
     public void testFindEventByDismax1() throws Exception {
