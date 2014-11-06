@@ -123,6 +123,7 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE area_alias");
                 stmt.addBatch("DROP TABLE tag");
                 stmt.addBatch("DROP TABLE l_area_area");
+                stmt.addBatch("DROP TABLE area_tag");
 
                 stmt.addBatch("DROP TABLE artist");
                 stmt.addBatch("DROP TABLE artist_alias");
@@ -380,7 +381,7 @@ public abstract class AbstractIndexTest {
                 ")");
 
         stmt.addBatch("CREATE TABLE area_tag (" +
-                "  instrument integer NOT NULL," +
+                "  area integer NOT NULL," +
                 "  tag integer NOT NULL," +
                 "  count integer NOT NULL," +
                 "  last_updated timestamp" +

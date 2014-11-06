@@ -393,7 +393,7 @@ public class AreaIndexTest extends AbstractIndexTest {
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            checkTerm(ir, InstrumentIndexField.TAG, "groovy");
+            checkTerm(ir, AreaIndexField.TAG, "groovy");
         }
         ir.close();
     }
