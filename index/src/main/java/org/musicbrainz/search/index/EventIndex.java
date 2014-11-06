@@ -29,6 +29,7 @@
 package org.musicbrainz.search.index;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ArrayListMultimap;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -44,8 +45,6 @@ import java.util.*;
 public class EventIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "event";
-
-    public static boolean isUsingH2Db = false;
 
     public EventIndex(Connection dbConnection) {
         super(dbConnection);
@@ -108,8 +107,84 @@ public class EventIndex extends DatabaseIndex {
                         " WHERE t1.event between ? AND ?");
 
 
+        addPreparedStatement("ARTISTS",
+                " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as artist_name, a.sort_name as artist_sortname," +
+                        " lt.name as link, lat.name as attribute" +
+                        " FROM l_artist_event aw" +
+                        " INNER JOIN artist a ON a.id    = aw.entity0" +
+                        " INNER JOIN event   w ON w.id     = aw.entity1" +
+                        " INNER JOIN link l ON aw.link = l.id " +
+                        " INNER JOIN link_type lt on l.link_type=lt.id" +
+                        " LEFT JOIN  link_attribute la on la.link=l.id" +
+                        " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
+                        " WHERE w.id BETWEEN ? AND ?  "  +
+                        " ORDER BY aw.id");
     }
 
+
+    /**
+     * Load Artist Relations
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private ArrayListMultimap<Integer, Relation> loadArtistRelations(int min, int max) throws SQLException, IOException {
+        ObjectFactory of = new ObjectFactory();
+        ArrayListMultimap<Integer, Relation> artists = ArrayListMultimap.create();
+        PreparedStatement st  = getPreparedStatement("ARTISTS");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        int lastLinkId=-1;
+        Relation lastRelation = null;
+        while (rs.next()) {
+            int linkId = rs.getInt("awid");
+
+            //If have another attribute for the same relation
+            if(linkId==lastLinkId) {
+                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
+                attribute.setContent(rs.getString("attribute"));
+                Relation.AttributeList attributeList=lastRelation.getAttributeList();
+                attributeList.getAttribute().add(attribute);
+            }
+            //New relation (may or may not be new work but doesn't matter)
+            else {
+                int workId = rs.getInt("wid");
+
+                Relation relation = of.createRelation();
+
+                Artist artist = of.createArtist();
+                artist.setId(rs.getString("aid"));
+                artist.setName(rs.getString("artist_name"));
+                artist.setSortName(rs.getString("artist_sortname"));
+
+                relation.setArtist(artist);
+                relation.setType(rs.getString("link"));
+                relation.setDirection(DefDirection.BACKWARD);
+
+                //Each relation may contain attributes if it does needs attribute list
+                String attributeValue = rs.getString("attribute");
+                if(!Strings.isNullOrEmpty(attributeValue))
+                {
+                    Relation.AttributeList attributeList = of.createRelationAttributeList();
+                    relation.setAttributeList(attributeList);
+                    Relation.AttributeList.Attribute attribute = new ObjectFactory().createRelationAttributeListAttribute();
+                    attribute.setContent(attributeValue);
+                    attributeList.getAttribute().add(attribute);
+                }
+                //Add relation
+                artists.put(workId, relation);
+
+                lastRelation=relation;
+                lastLinkId=linkId;
+            }
+        }
+        rs.close();
+        return artists;
+    }
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
@@ -159,6 +234,8 @@ public class EventIndex extends DatabaseIndex {
         }
         rs.close();
 
+        ArrayListMultimap<Integer, Relation> artistRelations    = loadArtistRelations(min, max);
+
         // Get Tags
         st = getPreparedStatement("TAGS");
         st.setInt(1, min);
@@ -172,13 +249,14 @@ public class EventIndex extends DatabaseIndex {
         st.setInt(2, max);
         rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, artistRelations, tags, aliases));
         }
         rs.close();
 
     }
 
     public Document documentFromResultSet(ResultSet rs,
+                                          ArrayListMultimap<Integer, Relation> artistRelations,
                                           Map<Integer,List<Tag>> tags,
                                           Map<Integer, Set<Alias>> aliases) throws SQLException {
 
@@ -232,6 +310,19 @@ public class EventIndex extends DatabaseIndex {
         }
         if(!Strings.isNullOrEmpty(end)) {
             lifespan.setEnd(end);
+        }
+
+
+        if (artistRelations.containsKey(eventId)) {
+            List<Relation> rl = artistRelations.get(eventId);
+            RelationList relationList = of.createRelationList();
+            relationList.setTargetType(RelationTypes.ARTIST_RELATION_TYPE);
+            event.getRelationList().add(relationList);
+            for (Relation r : rl) {
+                relationList.getRelation().add(r);
+                doc.addField(EventIndexField.ARTIST_ID, r.getArtist().getId());
+                doc.addField(EventIndexField.ARTIST, r.getArtist().getName());
+            }
         }
 
         if (aliases.containsKey(eventId))

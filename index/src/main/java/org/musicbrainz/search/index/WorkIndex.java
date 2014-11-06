@@ -36,8 +36,6 @@ import java.util.*;
 public class WorkIndex extends DatabaseIndex {
 
     public static final String INDEX_NAME = "work";
-    private static final String ARTIST_RELATION_TYPE = "artist";
-    private static final String RECORDING_RELATION_TYPE = "recording";
 
 
     public WorkIndex(Connection dbConnection) {
@@ -442,7 +440,7 @@ public class WorkIndex extends DatabaseIndex {
         if (artistRelations.containsKey(id)) {
             List<Relation> rl = artistRelations.get(id);
             RelationList relationList = of.createRelationList();
-            relationList.setTargetType(ARTIST_RELATION_TYPE);
+            relationList.setTargetType(RelationTypes.ARTIST_RELATION_TYPE);
             work.getRelationList().add(relationList);
             for (Relation r : rl) {
                 relationList.getRelation().add(r);
@@ -455,7 +453,7 @@ public class WorkIndex extends DatabaseIndex {
         if (recordingRelations.containsKey(id)) {
             List<Relation> rl = recordingRelations.get(id);
             RelationList relationList = of.createRelationList();
-            relationList.setTargetType(RECORDING_RELATION_TYPE);
+            relationList.setTargetType(RelationTypes.RECORDING_RELATION_TYPE);
             work.getRelationList().add(relationList);
             for (Relation r : rl) {
                 relationList.getRelation().add(r);

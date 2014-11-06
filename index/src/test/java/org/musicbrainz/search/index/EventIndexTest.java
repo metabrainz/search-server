@@ -7,10 +7,14 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
 import org.musicbrainz.mmd2.Event;
+import org.musicbrainz.mmd2.RelationList;
+import org.musicbrainz.mmd2.Work;
 
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class EventIndexTest extends AbstractIndexTest {
 
@@ -39,6 +43,13 @@ public class EventIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Groovy', 2);");
         stmt.addBatch("INSERT INTO event_tag (event, tag, count) VALUES (1, 1, 10)");
+
+        stmt.addBatch("INSERT INTO artist (id, gid, name, sort_name, comment)" +
+                " VALUES (1, 'ccd4879c-5e88-4385-b131-bf65296bf245', 'Blur', 'Blur', 'a comment')");
+
+        stmt.addBatch("INSERT INTO l_artist_event(id, link, entity0, entity1) VALUES (1, 1, 1, 1)");
+        stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
+        stmt.addBatch("INSERT INTO link_type(id,name) VALUES (1, 'composer')");
 
         stmt.executeBatch();
         stmt.close();
@@ -166,6 +177,33 @@ public class EventIndexTest extends AbstractIndexTest {
         ir.close();
     }
 
+
+
+    @Test
+    public void testIndexWithArtistRelationWithNoAttributes() throws Exception {
+
+        addEventOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            Event event = (Event) MMDSerializer
+                    .unserialize(doc.get(EventIndexField.EVENT_STORE.getName()), Event.class);
+            System.out.println(doc.get(EventIndexField.EVENT_STORE.getName()));
+
+
+            RelationList artistList = event.getRelationList().get(0);
+            assertNotNull(artistList);
+            assertEquals("artist", artistList.getTargetType());
+            assertEquals("ccd4879c-5e88-4385-b131-bf65296bf245", event.getRelationList().get(0).getRelation().get(0).getArtist().getId());
+            assertEquals("Blur", event.getRelationList().get(0).getRelation().get(0).getArtist().getName());
+            assertEquals("composer", event.getRelationList().get(0).getRelation().get(0).getType());
+            assertNull(event.getRelationList().get(0).getRelation().get(0).getAttributeList());
+            ir.close();
+        }
+    }
 
     @Test
     public void testStoredIndexEvent() throws Exception {

@@ -1265,7 +1265,7 @@ public abstract class AbstractIndexTest {
                 "    link                INTEGER NOT NULL," +
                 "    entity0             INTEGER NOT NULL," +
                 "    entity1             INTEGER NOT NULL," +
-                "    edits_pending       INTEGER NOT NULL," +
+                "    edits_pending       INTEGER," +
                 "    last_updated        TIMESTAMP" +
                 ")");
 

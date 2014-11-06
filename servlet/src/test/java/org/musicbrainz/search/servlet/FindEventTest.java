@@ -82,15 +82,38 @@ public class FindEventTest
             tagList.getTag().add(tag);
             event.setTagList(tagList);
 
+            RelationList rl = of.createRelationList();
+            rl.setTargetType("artist");
+            {
+                Relation relation = of.createRelation();
+                Relation.AttributeList al = of.createRelationAttributeList();
+                Artist artist1 = of.createArtist();
+                artist1.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
+                artist1.setName("Пётр Ильич Чайковский");
+                artist1.setSortName("Пётр Ильич Чайковский");
+                relation.setArtist(artist1);
+                relation.setType("composer");
+                relation.setDirection(DefDirection.BACKWARD);
+                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
+                attribute.setContent("additional");
+                al.getAttribute().add(attribute);
+                relation.setAttributeList(al);
+                rl.getRelation().add(relation);
+            }
+            event.getRelationList().add(rl);
+            doc.addField(EventIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
+            doc.addField(EventIndexField.ARTIST, "Пётр Ильич Чайковский");
+
 
             doc.addField(EventIndexField.EVENT_STORE, MMDSerializer.serialize(event));
             writer.addDocument(doc.getLuceneDocument());
         }
 
+        Event event = of.createEvent();
+        MbDocument doc = new MbDocument();
+
         {
-            MbDocument doc = new MbDocument();
             EventList eventList = of.createEventList();
-            Event event = of.createEvent();
             eventList.getEvent().add(event);
             doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
             doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
@@ -151,6 +174,16 @@ public class FindEventTest
     @Test
     public void testFindEventByAlias() throws Exception {
         Results res = ss.search("alias:\"Afghany\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(EventIndexField.EVENT_ID));
+        assertEquals("Afghanistan", doc.get(EventIndexField.EVENT));
+    }
+
+    @Test
+    public void testFindEventByArtist() throws Exception {
+        Results res = ss.search("artist:\"Пётр Ильич Чайковский\"", 0, 10);
         assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
         MbDocument doc = result.getDoc();
