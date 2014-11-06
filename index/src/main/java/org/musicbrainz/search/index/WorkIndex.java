@@ -20,6 +20,7 @@
 package org.musicbrainz.search.index;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ArrayListMultimap;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
@@ -144,9 +145,9 @@ public class WorkIndex extends DatabaseIndex {
      * @throws SQLException
      * @throws IOException
      */
-    private Map<Integer, RelationList> loadArtistRelations(int min, int max) throws SQLException, IOException {
+    private ArrayListMultimap<Integer, Relation> loadArtistRelations(int min, int max) throws SQLException, IOException {
         ObjectFactory of = new ObjectFactory();
-        Map<Integer, RelationList> artists = new HashMap<Integer, RelationList>();
+        ArrayListMultimap<Integer, Relation> artists = ArrayListMultimap.create();
         PreparedStatement st  = getPreparedStatement("ARTISTS");
         st.setInt(1, min);
         st.setInt(2, max);
@@ -156,52 +157,44 @@ public class WorkIndex extends DatabaseIndex {
         while (rs.next()) {
             int linkId = rs.getInt("awid");
 
+            //If have another attribute for the same relation
             if(linkId==lastLinkId) {
                 Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
                 attribute.setContent(rs.getString("attribute"));
                 Relation.AttributeList attributeList=lastRelation.getAttributeList();
-                if(attributeList==null) {
-                    attributeList = of.createRelationAttributeList();
-                    lastRelation.setAttributeList(attributeList);
-                }
                 attributeList.getAttribute().add(attribute);
             }
+            //New relation (may or may not be new work but doesn't matter)
             else {
                 int workId = rs.getInt("wid");
 
-                RelationList list;
-                if (!artists.containsKey(workId)) {
-                    list = of.createRelationList();
-                    list.setTargetType(ARTIST_RELATION_TYPE);
-                    artists.put(workId, list);
-                } else {
-                    list = artists.get(workId);
-                }
-
                 Relation relation = of.createRelation();
+
                 Artist artist = of.createArtist();
                 artist.setId(rs.getString("aid"));
                 artist.setName(rs.getString("artist_name"));
                 artist.setSortName(rs.getString("artist_sortname"));
+
                 relation.setArtist(artist);
                 relation.setType(rs.getString("link"));
                 relation.setDirection(DefDirection.BACKWARD);
-                list.getRelation().add(relation);
-                Relation.AttributeList.Attribute attribute = new ObjectFactory().createRelationAttributeListAttribute();
-                attribute.setContent(rs.getString("attribute"));
-                if(attribute!=null) {
-                    Relation.AttributeList attributeList=relation.getAttributeList();
-                    if(attributeList==null) {
-                        attributeList = of.createRelationAttributeList();
-                        relation.setAttributeList(attributeList);
-                    }
+
+                //Each relation may contain attributes if it does needs attribute list
+                String attributeValue = rs.getString("attribute");
+                if(!Strings.isNullOrEmpty(attributeValue))
+                {
+                    Relation.AttributeList attributeList = of.createRelationAttributeList();
+                    relation.setAttributeList(attributeList);
+                    Relation.AttributeList.Attribute attribute = new ObjectFactory().createRelationAttributeListAttribute();
+                    attribute.setContent(attributeValue);
                     attributeList.getAttribute().add(attribute);
                 }
+                //Add relation
+                artists.put(workId, relation);
 
                 lastRelation=relation;
                 lastLinkId=linkId;
             }
-
         }
         rs.close();
         return artists;
@@ -308,10 +301,10 @@ public class WorkIndex extends DatabaseIndex {
      */
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        Map<Integer, List<Tag>>    tags             = loadTags(min, max);
-        Map<Integer, RelationList> artistRelations  = loadArtistRelations(min, max);
-        Map<Integer, Set<Alias>> aliases            = loadAliases(min, max);
-        Map<Integer, List<String>> iswcs            = loadISWCs(min,max);
+        Map<Integer, List<Tag>>              tags             = loadTags(min, max);
+        ArrayListMultimap<Integer, Relation> artistRelations  = loadArtistRelations(min, max);
+        Map<Integer, Set<Alias>>             aliases          = loadAliases(min, max);
+        Map<Integer, List<String>>           iswcs            = loadISWCs(min,max);
 
         //Works
         PreparedStatement st = getPreparedStatement("WORKS");
@@ -327,7 +320,7 @@ public class WorkIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs,
                                           Map<Integer, List<Tag>> tags,
-                                          Map<Integer, RelationList> artists,
+                                          ArrayListMultimap<Integer, Relation> artistRelations,
                                           Map<Integer, Set<Alias>>   aliases,
                                           Map<Integer, List<String>> iswcs
                                           ) throws SQLException {
@@ -365,14 +358,15 @@ public class WorkIndex extends DatabaseIndex {
             work.setDisambiguation(comment);
         }
 
-        if (artists.containsKey(id)) {
-            RelationList rl = artists.get(id);
-            work.getRelationList().add(rl);
-            if (rl.getRelation().size() > 0) {
-                for (Relation r : artists.get(id).getRelation()) {
-                    doc.addField(WorkIndexField.ARTIST_ID, r.getArtist().getId());
-                    doc.addField(WorkIndexField.ARTIST, r.getArtist().getName());
-                }
+        if (artistRelations.containsKey(id)) {
+            List<Relation> rl = artistRelations.get(id);
+            RelationList relationList = of.createRelationList();
+            relationList.setTargetType(ARTIST_RELATION_TYPE);
+            work.getRelationList().add(relationList);
+            for (Relation r : rl) {
+                relationList.getRelation().add(r);
+                doc.addField(WorkIndexField.ARTIST_ID, r.getArtist().getId());
+                doc.addField(WorkIndexField.ARTIST, r.getArtist().getName());
             }
         }
 
