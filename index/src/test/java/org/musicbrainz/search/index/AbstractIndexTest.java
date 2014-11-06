@@ -221,6 +221,25 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE l_place_work");
                 stmt.addBatch("DROP TABLE l_place_tag");
 
+                stmt.addBatch("DROP TABLE event_tag");
+                stmt.addBatch("DROP TABLE event");
+                stmt.addBatch("DROP TABLE event_gid_redirect");
+                stmt.addBatch("DROP TABLE event_type");
+                stmt.addBatch("DROP TABLE event_alias");
+                stmt.addBatch("DROP TABLE event_alias_type");
+                stmt.addBatch("DROP TABLE event_annotation");
+                stmt.addBatch("DROP TABLE l_area_event");
+                stmt.addBatch("DROP TABLE l_artist_event");
+                stmt.addBatch("DROP TABLE l_label_event");
+                stmt.addBatch("DROP TABLE l_event_event");
+                stmt.addBatch("DROP TABLE l_event_place");
+                stmt.addBatch("DROP TABLE l_event_recording");
+                stmt.addBatch("DROP TABLE l_event_release");
+                stmt.addBatch("DROP TABLE l_event_release_group");
+                stmt.addBatch("DROP TABLE l_event_url");
+                stmt.addBatch("DROP TABLE l_event_work");
+                stmt.addBatch("DROP TABLE l_event_tag");
+
                 stmt.addBatch("DROP TABLE instrument_type");
                 stmt.addBatch("DROP TABLE instrument");
                 stmt.addBatch("DROP TABLE instrument_alias_type");
@@ -262,6 +281,7 @@ public abstract class AbstractIndexTest {
             setupCDStubTables(stmt);
             setupWorkTables(stmt);
             setupPlaceTables(stmt);
+            setupEventTables(stmt);
             setupUrlTables(stmt);
             setupInstrumentTables(stmt);
             setupSeriesTables(stmt);
@@ -928,6 +948,8 @@ public abstract class AbstractIndexTest {
                 ")");
     }
 
+
+
     protected void setupPlaceTables(Statement stmt) throws Exception {
 
         PlaceIndex.isUsingH2Db=true;
@@ -1084,6 +1106,180 @@ public abstract class AbstractIndexTest {
         stmt.addBatch("CREATE TABLE place_tag" +
                 "(" +
                 "    place               INTEGER NOT NULL," +
+                "    tag                 INTEGER NOT NULL," +
+                "    count               INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+    }
+
+    protected void setupEventTables(Statement stmt) throws Exception {
+        stmt.addBatch("CREATE TABLE event (" +
+                "    id                  SERIAL," +
+                "    gid                 uuid," +
+                "    name                VARCHAR," +
+                "    begin_date_year     SMALLINT," +
+                "    begin_date_month    SMALLINT," +
+                "    begin_date_day      SMALLINT," +
+                "    end_date_year       SMALLINT," +
+                "    end_date_month      SMALLINT," +
+                "    end_date_day        SMALLINT," +
+                "    ended               BOOLEAN, " +
+                "    time                TIME," +
+                "    type                INTEGER," +
+                "    cancelled           BOOLEAN," +
+                "    setlist             TEXT," +
+                "    comment             VARCHAR(255)," +
+                "    edits_pending       INTEGER," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE event_gid_redirect" +
+                "(" +
+                "    gid                 UUID NOT NULL," +
+                "    new_id              INTEGER NOT NULL," +
+                "    created             TIMESTAMP" +
+                ")");
+
+
+
+        stmt.addBatch("CREATE TABLE event_type (" +
+                "    id                  SERIAL," +
+                "    name                VARCHAR(255) NOT NULL," +
+                "    parent              INTEGER, " +
+                "    child_order         INTEGER," +
+                "    description         TEXT" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE event_alias" +
+                "(" +
+                "    id                  SERIAL," +
+                "    event               INTEGER NOT NULL," +
+                "    name                VARCHAR NOT NULL," +
+                "    locale              VARCHAR," +
+                "    edits_pending       INTEGER ," +
+                "    last_updated        TIMESTAMP," +
+                "    type                INTEGER," +
+                "    sort_name           VARCHAR ," +
+                "    begin_date_year     SMALLINT," +
+                "    begin_date_month    SMALLINT," +
+                "    begin_date_day      SMALLINT," +
+                "    end_date_year       SMALLINT," +
+                "    end_date_month      SMALLINT," +
+                "    end_date_day        SMALLINT," +
+                "    primary_for_locale  BOOLEAN ," +
+                "    ended               BOOLEAN " +
+                ")");
+        stmt.addBatch("CREATE TABLE event_alias_type (" +
+                "    id SERIAL," +
+                "    name TEXT NOT NULL," +
+                "    parent INTEGER, " +
+                "    child_order         INTEGER NOT NULL DEFAULT 0," +
+                "    description         TEXT" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE event_annotation" +
+                "(" +
+                "    event               INTEGER NOT NULL," +
+                "    annotation          INTEGER NOT NULL," +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_area_event" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_artist_event" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_label_event" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_event_event" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+
+        stmt.addBatch("CREATE TABLE l_event_place" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+        
+        stmt.addBatch("CREATE TABLE l_event_recording" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_event_release" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE l_event_release_group" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+
+
+        stmt.addBatch("CREATE TABLE l_event_work" +
+                "(" +
+                "    id                  SERIAL," +
+                "    link                INTEGER NOT NULL," +
+                "    entity0             INTEGER NOT NULL," +
+                "    entity1             INTEGER NOT NULL," +
+                "    edits_pending       INTEGER NOT NULL," +
+                "    last_updated        TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE event_tag" +
+                "(" +
+                "    event               INTEGER NOT NULL," +
                 "    tag                 INTEGER NOT NULL," +
                 "    count               INTEGER NOT NULL," +
                 "    last_updated        TIMESTAMP" +

@@ -122,6 +122,7 @@ public class IndexBuilder
                 new LabelIndex(mainDbConn),
                 new AreaIndex(mainDbConn),
                 new PlaceIndex(mainDbConn),
+                new EventIndex(mainDbConn),
                 new AnnotationIndex(mainDbConn),
                 new UrlIndex(mainDbConn),
                 new InstrumentIndex(mainDbConn),
