@@ -256,14 +256,14 @@ public class WorkIndexTest extends AbstractIndexTest {
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
         createIndex(ramDir);
+
         IndexReader ir = DirectoryReader.open(ramDir);
         assertEquals(2, ir.numDocs());
         {
-            Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(WorkIndexField.ALIAS.getName()).length);
-            assertEquals("Play", doc.getField(WorkIndexField.ALIAS.getName()).stringValue());
-            ir.close();
+            checkTerm(ir, WorkIndexField.ALIAS, "play");
+
         }
+        ir.close();
     }
 
     @Test

@@ -213,23 +213,14 @@ public class SeriesIndex extends DatabaseIndex {
         String orderAttr = rs.getString("ordering_attribute");
         doc.addFieldOrNoValue(SeriesIndexField.ORDERING_ATTRIBUTE, orderAttr);
 
-        if (aliases.containsKey(seriesId)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(seriesId)) {
-                doc.addField(SeriesIndexField.ALIAS, nextAlias.getContent());
-                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
-                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                        doc.addField(SeriesIndexField.ALIAS, nextAlias.getSortName());
-                    }
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            series.setAliasList(aliasList);
+        if (aliases.containsKey(seriesId))
+        {
+            series.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, seriesId, EventIndexField.ALIAS));
         }
 
         if (tags.containsKey(seriesId))
         {
-            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, seriesId);
+            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, seriesId, SeriesIndexField.TAG);
             //TODO
             //series.setTagList(tagList)
         }

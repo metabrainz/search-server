@@ -1006,16 +1006,9 @@ public class RecordingIndex extends DatabaseIndex {
             doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, "standalone");
         }
 
-        if (tags.containsKey(id)) {
-            TagList tagList = of.createTagList();
-            for (Tag nextTag : tags.get(id)) {
-                Tag tag = of.createTag();
-                doc.addField(RecordingIndexField.TAG, nextTag.getName());
-                tag.setName(nextTag.getName());
-                tag.setCount(new BigInteger(nextTag.getCount().toString()));
-                tagList.getTag().add(tag);
-            }
-            recording.setTagList(tagList);
+        if (tags.containsKey(id))
+        {
+            recording.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, id, RecordingIndexField.TAG));
         }
 
         //If we have no recording length in the recording itself or the track length then we add this value so

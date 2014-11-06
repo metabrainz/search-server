@@ -29,7 +29,6 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -382,18 +381,9 @@ public class ArtistIndex extends DatabaseIndex {
             }
         }
 
-        if (aliases.containsKey(artistId)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(artistId)) {
-                doc.addField(ArtistIndexField.ALIAS, nextAlias.getContent());
-                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
-                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                        doc.addField(ArtistIndexField.ALIAS, nextAlias.getSortName());
-                    }
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            artist.setAliasList(aliasList);
+        if (aliases.containsKey(artistId))
+        {
+            artist.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, artistId, ArtistIndexField.ALIAS));
         }
 
         //Artist Credits are added for search only
@@ -407,16 +397,9 @@ public class ArtistIndex extends DatabaseIndex {
 
         addArtistInitialized(type, artistName, sortName, doc);
 
-        if (tags.containsKey(artistId)) {
-            TagList tagList = of.createTagList();
-            for (Tag nextTag : tags.get(artistId)) {
-                Tag tag = of.createTag();
-                doc.addField(ArtistIndexField.TAG, nextTag.getName());
-                tag.setName(nextTag.getName());
-                tag.setCount(new BigInteger(nextTag.getCount().toString()));
-                tagList.getTag().add(tag);
-            }
-            artist.setTagList(tagList);
+        if (tags.containsKey(artistId))
+        {
+            artist.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, artistId, ArtistIndexField.TAG));
         }
 
         if (ipiCodes.containsKey(artistId)) {

@@ -310,31 +310,14 @@ public class LabelIndex extends DatabaseIndex {
             doc.addField(LabelIndexField.CODE,Index.NO_VALUE);
         }
 
-        if (aliases.containsKey(labelId)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(labelId)) {
-                doc.addField(LabelIndexField.ALIAS, nextAlias.getContent());
-                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
-                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                        doc.addField(LabelIndexField.ALIAS, nextAlias.getSortName());
-                    }
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            label.setAliasList(aliasList);
+        if (aliases.containsKey(labelId))
+        {
+            label.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, labelId, LabelIndexField.ALIAS));
         }
 
-
-        if (tags.containsKey(labelId)) {
-            TagList tagList = of.createTagList();
-            for (Tag nextTag : tags.get(labelId)) {
-                Tag tag = of.createTag();
-                doc.addField(LabelIndexField.TAG, nextTag.getName());
-                tag.setName(nextTag.getName());
-                tag.setCount(new BigInteger(nextTag.getCount().toString()));
-                tagList.getTag().add(tag);
-            }
-           label.setTagList(tagList);
+        if (tags.containsKey(labelId))
+        {
+            label.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, labelId, LabelIndexField.TAG));
         }
 
         if (ipiCodes.containsKey(labelId)) {

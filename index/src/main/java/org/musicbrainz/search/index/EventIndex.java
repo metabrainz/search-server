@@ -37,7 +37,6 @@ import org.musicbrainz.search.MbDocument;
 
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
 
@@ -235,21 +234,14 @@ public class EventIndex extends DatabaseIndex {
             lifespan.setEnd(end);
         }
 
-        if (aliases.containsKey(eventId)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(eventId)) {
-                doc.addField(EventIndexField.ALIAS, nextAlias.getContent());
-                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                    doc.addField(EventIndexField.ALIAS, nextAlias.getSortName());
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            event.setAliasList(aliasList);
+        if (aliases.containsKey(eventId))
+        {
+            event.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, eventId, EventIndexField.ALIAS));
         }
 
         if (tags.containsKey(eventId))
         {
-            event.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, eventId));
+            event.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, eventId, EventIndexField.TAG));
         }
 
         String store = MMDSerializer.serialize(event);

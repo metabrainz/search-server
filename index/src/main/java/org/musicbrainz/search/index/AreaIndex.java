@@ -371,16 +371,9 @@ public class AreaIndex extends DatabaseIndex {
             area.getRelationList().add(rl);
         }
 
-        if (aliases.containsKey(areaId)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(areaId)) {
-                doc.addField(AreaIndexField.ALIAS, nextAlias.getContent());
-                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                    doc.addField(AreaIndexField.ALIAS, nextAlias.getSortName());
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            area.setAliasList(aliasList);
+        if (aliases.containsKey(areaId))
+        {
+            area.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, areaId, AreaIndexField.ALIAS));
         }
 
         if(iso1.containsKey(areaId)) {
@@ -410,7 +403,7 @@ public class AreaIndex extends DatabaseIndex {
 
         if (tags.containsKey(areaId))
         {
-            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, areaId);
+            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, areaId, AreaIndexField.TAG );
             //TODO
             //area.setTagList(tagList)
         }

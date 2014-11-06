@@ -73,14 +73,15 @@ public class TagHelper {
      * @param doc
      * @param tags
      * @param entityId
+     * @param aliasIndexField
      * @return
      */
-    public static TagList addTagsToDocAndConstructTagList(ObjectFactory of, MbDocument doc, Map<Integer,List<Tag>> tags, int entityId)
+    public static TagList addTagsToDocAndConstructTagList(ObjectFactory of, MbDocument doc, Map<Integer, List<Tag>> tags, int entityId, IndexField aliasIndexField)
     {
         TagList tagList = of.createTagList();
         for (Tag nextTag : tags.get(entityId)) {
             Tag tag = of.createTag();
-            doc.addField(LabelIndexField.TAG, nextTag.getName());
+            doc.addField(aliasIndexField, nextTag.getName());
             tag.setName(nextTag.getName());
             tag.setCount(new BigInteger(nextTag.getCount().toString()));
             tagList.getTag().add(tag);

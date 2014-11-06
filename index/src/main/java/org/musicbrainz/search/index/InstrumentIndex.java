@@ -218,23 +218,14 @@ public class InstrumentIndex extends DatabaseIndex {
             instrument.setDescription(description);
         }
 
-        if (aliases.containsKey(instrumentId)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(instrumentId)) {
-                doc.addField(InstrumentIndexField.ALIAS, nextAlias.getContent());
-                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
-                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                        doc.addField(InstrumentIndexField.ALIAS, nextAlias.getSortName());
-                    }
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            instrument.setAliasList(aliasList);
+        if (aliases.containsKey(instrumentId))
+        {
+            instrument.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, instrumentId, InstrumentIndexField.ALIAS));
         }
 
         if (tags.containsKey(instrumentId))
         {
-            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, instrumentId);
+            TagList tagList = TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, instrumentId, InstrumentIndexField.TAG);
             //TODO
             //instrument.setTagList(tagList)
         }

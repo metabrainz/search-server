@@ -376,18 +376,9 @@ public class WorkIndex extends DatabaseIndex {
             }
         }
 
-        if (aliases.containsKey(id)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(id)) {
-                doc.addField(WorkIndexField.ALIAS, nextAlias.getContent());
-                if(!Strings.isNullOrEmpty(nextAlias.getSortName())) {
-                    if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                        doc.addField(WorkIndexField.ALIAS, nextAlias.getSortName());
-                    }
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            work.setAliasList(aliasList);
+        if (aliases.containsKey(id))
+        {
+            work.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, id, WorkIndexField.ALIAS));
         }
 
         if (iswcs.containsKey(id)) {

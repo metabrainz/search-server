@@ -37,7 +37,6 @@ import org.musicbrainz.search.MbDocument;
 import org.postgresql.geometric.PGpoint;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
 
@@ -287,29 +286,14 @@ public class PlaceIndex extends DatabaseIndex {
         }
         lifespan.setEnded(Boolean.toString(ended));
 
-
-        if (aliases.containsKey(placeId)) {
-            AliasList aliasList = of.createAliasList();
-            for (Alias nextAlias : aliases.get(placeId)) {
-                doc.addField(PlaceIndexField.ALIAS, nextAlias.getContent());
-                if(!nextAlias.getSortName().equals(nextAlias.getContent())) {
-                    doc.addField(PlaceIndexField.ALIAS, nextAlias.getSortName());
-                }
-                aliasList.getAlias().add(nextAlias);
-            }
-            place.setAliasList(aliasList);
+        if (aliases.containsKey(placeId))
+        {
+            place.setAliasList(AliasHelper.addAliasesToDocAndConstructAliasList(of, doc, aliases, placeId, SeriesIndexField.ALIAS));
         }
 
-        if (tags.containsKey(placeId)) {
-            TagList tagList = of.createTagList();
-            for (Tag nextTag : tags.get(placeId)) {
-                Tag tag = of.createTag();
-                doc.addField(LabelIndexField.TAG, nextTag.getName());
-                tag.setName(nextTag.getName());
-                tag.setCount(new BigInteger(nextTag.getCount().toString()));
-                tagList.getTag().add(tag);
-            }
-            place.setTagList(tagList);
+        if (tags.containsKey(placeId))
+        {
+            place.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, placeId, PlaceIndexField.TAG ));
         }
 
         String store = MMDSerializer.serialize(place);

@@ -15,7 +15,7 @@ import org.musicbrainz.search.analysis.TitleAnalyzer;
 public enum WorkIndexField implements IndexField {
 	
     ID		        	("_id",		        MusicBrainzFieldTypes.TEXT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
-    ALIAS		        ("alias",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
+    ALIAS		        ("alias",		    MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     ARTIST_ID		    ("arid",			MusicBrainzFieldTypes.TEXT_NOT_STORED_NOT_ANALYZED_NO_NORMS, new KeywordAnalyzer()),
     ARTIST              ("artist",          MusicBrainzFieldTypes.TEXT_NOT_STORED_ANALYZED, new MusicbrainzWithPosGapAnalyzer()),
     COMMENT		        ("comment",		    MusicBrainzFieldTypes.TEXT_STORED_ANALYZED),
