@@ -718,8 +718,9 @@ public abstract class AbstractIndexTest {
                 "  artist_credit integer NOT NULL," +
                 "  length integer," +
                 "  last_updated timestamp," +
-                "  edits_pending integer NOT NULL DEFAULT 0" +
-                ")");
+                "  edits_pending integer NOT NULL DEFAULT 0," +
+                "  is_data_track BOOLEAN NOT NULL DEFAULT FALSE" +
+               ")");
 
         stmt.addBatch("CREATE TABLE recording (" +
                 "  id serial NOT NULL," +

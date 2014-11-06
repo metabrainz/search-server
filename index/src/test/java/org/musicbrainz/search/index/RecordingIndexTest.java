@@ -77,8 +77,8 @@ public class RecordingIndexTest extends AbstractIndexTest {
 
         stmt.addBatch("INSERT INTO medium (id, track_count, release, position, format) VALUES (1, 2, 491240, 1, 7)");
 
-        stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, number, name, artist_credit, length) "
-                + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 4, 'A4', 'Do It Cleans', 1, 33100)");
+        stmt.addBatch("INSERT INTO track (id, gid, recording, medium, position, number, name, artist_credit, length,is_data_track ) "
+                + " VALUES (1, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 1, 1, 4, 'A4', 'Do It Cleans', 1, 33100,true)");
         stmt.addBatch("INSERT INTO recording (id, gid, name, artist_credit, length, comment, video)"
                 + " VALUES (1, '2f250ed2-6285-40f1-aa2a-14f1c05e9765', 'Do It Clean', 3, 33000, 'demo', true)");
 
@@ -960,7 +960,6 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertNull(track.getPosition());  //We do not currently output this, but perhaps should
             assertEquals("A4", track.getNumber());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e",track.getId());
-
 
 
         }
