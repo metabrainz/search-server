@@ -165,6 +165,49 @@ public class AnnotationIndexTest extends AbstractIndexTest {
     }
 
     /**
+     * @throws Exception exception
+     */
+    private void addSeriesAnnotation() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO series (id, gid, name)" +
+                "  VALUES (2, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles')");
+        stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
+                "  VALUES (1, 1, 'series annotation', 'change', now())");
+        stmt.addBatch("INSERT INTO series_annotation (series, annotation) VALUES (2, 1)");
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    /**
+     * Basic test for Release Group Annotation
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testSeriesIndexAnnotationFields() throws Exception {
+        addSeriesAnnotation();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Crocodiles", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("series annotation", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("series", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
      * Basic test for Release Annotation
      *
      * @throws Exception exception
@@ -345,6 +388,180 @@ public class AnnotationIndexTest extends AbstractIndexTest {
         assertNull(AnnotationType.getByDbId(0));
         assertEquals(AnnotationType.ARTIST,AnnotationType.getByDbId(1));
     }
+
+
+    /**
+     * @throws Exception exception
+     */
+    private void addInstrumentAnnotation() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO instrument (id, gid, name)" +
+                "  VALUES (2, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles')");
+        stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
+                "  VALUES (1, 1, 'instrument annotation', 'change', now())");
+        stmt.addBatch("INSERT INTO instrument_annotation (instrument, annotation) VALUES (2, 1)");
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    /**
+     * Basic test for Release Group Annotation
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testInstrumentIndexAnnotationFields() throws Exception {
+        addInstrumentAnnotation();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Crocodiles", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("instrument annotation", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("instrument", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    private void addAreaAnnotation() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO area (id, gid, name)" +
+                "  VALUES (2, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles')");
+        stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
+                "  VALUES (1, 1, 'area annotation', 'change', now())");
+        stmt.addBatch("INSERT INTO area_annotation (area, annotation) VALUES (2, 1)");
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    /**
+     * Basic test for Release Group Annotation
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testAreaIndexAnnotationFields() throws Exception {
+        addAreaAnnotation();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Crocodiles", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("area annotation", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("area", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    private void addPlaceAnnotation() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO place (id, gid, name)" +
+                "  VALUES (2, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles')");
+        stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
+                "  VALUES (1, 1, 'place annotation', 'change', now())");
+        stmt.addBatch("INSERT INTO place_annotation (place, annotation) VALUES (2, 1)");
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    /**
+     * Basic test for Release Group Annotation
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testPlaceIndexAnnotationFields() throws Exception {
+        addPlaceAnnotation();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Crocodiles", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("place annotation", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("place", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+
+    /**
+     * @throws Exception exception
+     */
+    private void addEventAnnotation() throws Exception {
+
+        Statement stmt = conn.createStatement();
+
+        stmt.addBatch("INSERT INTO event (id, gid, name)" +
+                "  VALUES (2, 'efd2ace2-b3b9-305f-8a53-9803595c0e37', 'Crocodiles')");
+        stmt.addBatch("INSERT INTO annotation (id, editor, text, changelog, created) " +
+                "  VALUES (1, 1, 'event annotation', 'change', now())");
+        stmt.addBatch("INSERT INTO event_annotation (event, annotation) VALUES (2, 1)");
+        stmt.executeBatch();
+        stmt.close();
+    }
+
+    /**
+     * Basic test for Release Group Annotation
+     *
+     * @throws Exception exception
+     */
+    @Test
+    public void testEventIndexAnnotationFields() throws Exception {
+        addEventAnnotation();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            assertEquals(1, doc.getFields(AnnotationIndexField.ENTITY.getName()).length);
+            assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37", doc.getField(AnnotationIndexField.ENTITY.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.NAME.getName()).length);
+            assertEquals("Crocodiles", doc.getField(AnnotationIndexField.NAME.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TEXT.getName()).length);
+            assertEquals("event annotation", doc.getField(AnnotationIndexField.TEXT.getName()).stringValue());
+            assertEquals(1, doc.getFields(AnnotationIndexField.TYPE.getName()).length);
+            assertEquals("event", doc.getField(AnnotationIndexField.TYPE.getName()).stringValue());
+        }
+        ir.close();
+    }
+    
 }
 
 

@@ -26,7 +26,14 @@ public enum AnnotationType {
     LABEL(3, "label"),
     RECORDING(4, "recording"),
     RELEASE_GROUP(5,"release-group"),
-    WORK(6,"work");
+    WORK(6,"work"),
+    INSTRUMENT(7,"instrument"),
+    SERIES(8,"series"),
+    AREA(9,"area"),
+    PLACE(10,"place"),
+    EVENT(11,"event"),
+    ;
+
 
     private Integer dbId;
     private String name;

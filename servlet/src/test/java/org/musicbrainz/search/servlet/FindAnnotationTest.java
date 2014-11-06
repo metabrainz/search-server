@@ -97,7 +97,58 @@ public class FindAnnotationTest {
       writer.addDocument(doc.getLuceneDocument());
     }
 
-    {
+      //A complete Area Annotation entry
+      {
+          MbDocument doc = new MbDocument();
+          doc.addField(AnnotationIndexField.TYPE, AnnotationType.AREA.getName());
+          doc.addField(AnnotationIndexField.NAME, "Song 2");
+          doc.addField(AnnotationIndexField.ENTITY, "DDDD24cb5-404b-4f60-bba4-7b730325ae47");
+          doc.addField(AnnotationIndexField.TEXT, "There was no Song 1");
+          writer.addDocument(doc.getLuceneDocument());
+      }
+
+      //A complete Series Annotation entry
+      {
+          MbDocument doc = new MbDocument();
+          doc.addField(AnnotationIndexField.TYPE, AnnotationType.SERIES.getName());
+          doc.addField(AnnotationIndexField.NAME, "Song 2");
+          doc.addField(AnnotationIndexField.ENTITY, "DDDD24cb5-404b-4f60-bba4-7b730325ae47");
+          doc.addField(AnnotationIndexField.TEXT, "There was no Song 1");
+          writer.addDocument(doc.getLuceneDocument());
+      }
+
+      //A complete Instrument Annotation entry
+      {
+          MbDocument doc = new MbDocument();
+          doc.addField(AnnotationIndexField.TYPE, AnnotationType.INSTRUMENT.getName());
+          doc.addField(AnnotationIndexField.NAME, "Song 2");
+          doc.addField(AnnotationIndexField.ENTITY, "DDDD24cb5-404b-4f60-bba4-7b730325ae47");
+          doc.addField(AnnotationIndexField.TEXT, "There was no Song 1");
+          writer.addDocument(doc.getLuceneDocument());
+      }
+
+      //A complete Place Annotation entry
+      {
+          MbDocument doc = new MbDocument();
+          doc.addField(AnnotationIndexField.TYPE, AnnotationType.PLACE.getName());
+          doc.addField(AnnotationIndexField.NAME, "Song 2");
+          doc.addField(AnnotationIndexField.ENTITY, "DDDD24cb5-404b-4f60-bba4-7b730325ae47");
+          doc.addField(AnnotationIndexField.TEXT, "There was no Song 1");
+          writer.addDocument(doc.getLuceneDocument());
+      }
+
+
+      //A complete Event Annotation entry
+      {
+          MbDocument doc = new MbDocument();
+          doc.addField(AnnotationIndexField.TYPE, AnnotationType.EVENT.getName());
+          doc.addField(AnnotationIndexField.NAME, "Song 2");
+          doc.addField(AnnotationIndexField.ENTITY, "DDDD24cb5-404b-4f60-bba4-7b730325ae47");
+          doc.addField(AnnotationIndexField.TEXT, "There was no Song 1");
+          writer.addDocument(doc.getLuceneDocument());
+      }
+
+      {
       MbDocument doc = new MbDocument();
       doc.addField(MetaIndexField.META, MetaIndexField.META_VALUE);
       doc.addNumericField(MetaIndexField.LAST_UPDATED, new Date().getTime());
@@ -155,7 +206,37 @@ public class FindAnnotationTest {
     assertEquals(1, res.getTotalHits());
   }
 
-  @Test
+    @Test
+    public void testSearchByTypeArea() throws Exception {
+        Results res = ss.search("type:area", 0, 10);
+        assertEquals(1, res.getTotalHits());
+    }
+
+    @Test
+    public void testSearchByTypeSeries() throws Exception {
+        Results res = ss.search("type:series", 0, 10);
+        assertEquals(1, res.getTotalHits());
+    }
+
+    @Test
+    public void testSearchByTypeInstrument() throws Exception {
+        Results res = ss.search("type:instrument", 0, 10);
+        assertEquals(1, res.getTotalHits());
+    }
+
+    @Test
+    public void testSearchByTypePlace() throws Exception {
+        Results res = ss.search("type:place", 0, 10);
+        assertEquals(1, res.getTotalHits());
+    }
+
+    @Test
+    public void testSearchByTypeEvent() throws Exception {
+        Results res = ss.search("type:event", 0, 10);
+        assertEquals(1, res.getTotalHits());
+    }
+
+    @Test
   public void testSearchByName() throws Exception {
     Results res = ss.search("name:Pieds nus sur la braise", 0, 10);
     assertEquals(1, res.getTotalHits());

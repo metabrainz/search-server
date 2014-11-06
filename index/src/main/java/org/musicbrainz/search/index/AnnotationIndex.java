@@ -62,6 +62,11 @@ public class AnnotationIndex extends DatabaseIndex {
         annotationTypeInfos.put(AnnotationType.RELEASE, new AnnotationTypeInfo("release"));
         annotationTypeInfos.put(AnnotationType.RELEASE_GROUP, new AnnotationTypeInfo("release_group"));
         annotationTypeInfos.put(AnnotationType.WORK, new AnnotationTypeInfo("work"));
+        annotationTypeInfos.put(AnnotationType.INSTRUMENT, new AnnotationTypeInfo("instrument"));
+        annotationTypeInfos.put(AnnotationType.SERIES, new AnnotationTypeInfo("series"));
+        annotationTypeInfos.put(AnnotationType.AREA, new AnnotationTypeInfo("area"));
+        annotationTypeInfos.put(AnnotationType.PLACE, new AnnotationTypeInfo("place"));
+        annotationTypeInfos.put(AnnotationType.EVENT, new AnnotationTypeInfo("event"));
         
         // Build prepared statement for each annotation type
         for (AnnotationType type : annotationTypeInfos.keySet()) {

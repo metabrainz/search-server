@@ -176,6 +176,9 @@ public abstract class AbstractIndexTest {
                 stmt.addBatch("DROP TABLE release_annotation");
                 stmt.addBatch("DROP TABLE release_group_annotation");
                 stmt.addBatch("DROP TABLE work_annotation");
+                stmt.addBatch("DROP TABLE series_annotation");
+                stmt.addBatch("DROP TABLE area_annotation");
+                stmt.addBatch("DROP TABLE instrument_annotation");
 
                 stmt.addBatch("DROP TABLE release_raw");
                 stmt.addBatch("DROP TABLE cdtoc_raw");
@@ -793,6 +796,24 @@ public abstract class AbstractIndexTest {
         stmt.addBatch("CREATE TABLE work_annotation (" +
                 "  work integer NOT NULL," +
                 "  annotation integer NOT NULL" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE series_annotation" +
+                "(" +
+                "    series              INTEGER NOT NULL," +
+                "    annotation          INTEGER NOT NULL," +
+                ")");
+
+        stmt.addBatch("CREATE TABLE area_annotation" +
+                "(" +
+                "    area                INTEGER NOT NULL," +
+                "    annotation          INTEGER NOT NULL," +
+                ")");
+
+        stmt.addBatch("CREATE TABLE instrument_annotation" +
+                "(" +
+                "    instrument          INTEGER NOT NULL," +
+                "    annotation          INTEGER NOT NULL," +
                 ")");
     }
 
