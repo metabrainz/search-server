@@ -15,6 +15,7 @@ public enum ResourceType {
   INSTRUMENT("instrument", InstrumentIndex.class, InstrumentSearch.class, InstrumentDismaxSearch.class, MusicbrainzSimilarity.class, true),
   LABEL("label", LabelIndex.class, LabelSearch.class, LabelDismaxSearch.class, MusicbrainzSimilarity.class, true),
   PLACE("place", PlaceIndex.class, PlaceSearch.class, PlaceDismaxSearch.class, MusicbrainzSimilarity.class, false),
+  EVENT("event", EventIndex.class, EventSearch.class, EventDismaxSearch.class, MusicbrainzSimilarity.class, false),
   RELEASE("release", ReleaseIndex.class, ReleaseSearch.class, ReleaseDismaxSearch.class, true),
   RELEASE_GROUP("release-group", ReleaseGroupIndex.class, ReleaseGroupSearch.class, ReleaseGroupDismaxSearch.class, ReleaseGroupSimilarity.class, true),
   RECORDING("recording", RecordingIndex.class, RecordingSearch.class, RecordingDismaxSearch.class, RecordingSimilarity.class, true),

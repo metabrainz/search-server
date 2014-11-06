@@ -248,6 +248,11 @@
                 <xml-element java-attribute="place" name="places"/>
             </java-attributes>
         </java-type>
+        <java-type name="EventList">
+            <java-attributes>
+                <xml-element java-attribute="event" name="events"/>
+            </java-attributes>
+        </java-type>
         <java-type name="InstrumentList">
             <java-attributes>
                 <xml-element java-attribute="instrument" name="instruments"/>
@@ -361,6 +366,21 @@
         <java-type name="Place">
             <java-attributes>
                 <xml-element java-attribute="aliasList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Place">
+            <java-attributes>
+                <xml-element java-attribute="tagList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Event">
+            <java-attributes>
+                <xml-element java-attribute="aliasList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Event">
+            <java-attributes>
+                <xml-element java-attribute="tagList" xml-path="."/>
             </java-attributes>
         </java-type>
         <java-type name="Artist">
