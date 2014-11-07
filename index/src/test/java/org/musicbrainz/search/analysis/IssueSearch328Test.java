@@ -43,12 +43,11 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.mmd2.Artist;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.mmd2.NameCredit;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.LuceneVersion;
-import org.musicbrainz.search.index.ArtistCreditHelper;
+import org.musicbrainz.search.helper.ArtistCreditHelper;
 
 import java.io.StringReader;
 

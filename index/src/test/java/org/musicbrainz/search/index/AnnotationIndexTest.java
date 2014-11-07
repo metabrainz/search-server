@@ -6,6 +6,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
+import org.musicbrainz.search.type.AnnotationType;
 
 import java.sql.Statement;
 

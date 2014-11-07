@@ -32,22 +32,14 @@ package org.musicbrainz.search.analysis;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.mmd2.ArtistCredit;
-import org.musicbrainz.mmd2.NameCredit;
-import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.search.LuceneVersion;
-import org.musicbrainz.search.index.ArtistCreditHelper;
 
 import java.io.StringReader;
 

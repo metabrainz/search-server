@@ -27,6 +27,8 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.helper.AliasHelper;
+import org.musicbrainz.search.helper.TagHelper;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -104,19 +106,8 @@ public class ArtistIndex extends DatabaseIndex {
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
 
-        addPreparedStatement("TAGS",
-                "SELECT artist_tag.artist, tag.name as tag, artist_tag.count as count " +
-                        " FROM artist_tag " +
-                        "  INNER JOIN tag ON tag=id " +
-                        " WHERE artist between ? AND ?");
-
-        addPreparedStatement("ALIASES",
-                "SELECT a.artist as artist, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
-                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
-                        " FROM artist_alias a" +
-                        "  LEFT JOIN artist_alias_type att on (a.type=att.id)" +
-                        " WHERE artist BETWEEN ? AND ?" +
-                        " ORDER BY artist, alias, alias_sortname");
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("artist_tag", "artist"));
+        addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("artist"));
 
         addPreparedStatement("ARTISTCREDITS",
                         "SELECT artist as artist, name as artistcredit " +
@@ -199,72 +190,17 @@ public class ArtistIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        ObjectFactory of = new ObjectFactory();
-
-        // Get Tags
-        PreparedStatement st = getPreparedStatement("TAGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        ResultSet rs = st.executeQuery();
-        Map<Integer, List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs, "artist");
-        rs.close();
-
-        // IPI Codes
+        Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "artist");
         Map<Integer, List<String>> ipiCodes = loadIpiCodes(min, max);
-
-        // ISNI Codes
         Map<Integer, List<String>> isniCodes = loadIsniCodes(min, max);
-
-        //Aliases
-        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
-        st = getPreparedStatement("ALIASES");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        while (rs.next()) {
-            int artistId = rs.getInt("artist");
-            Set<Alias> list;
-            if (!aliases.containsKey(artistId)) {
-                list = new LinkedHashSet<Alias>();
-                aliases.put(artistId, list);
-            } else {
-                list = aliases.get(artistId);
-            }
-            Alias alias = of.createAlias();
-            alias.setContent(rs.getString("alias"));
-            alias.setSortName(rs.getString("alias_sortname"));
-            boolean isPrimary = rs.getBoolean("primary_for_locale");
-            if(isPrimary) {
-                alias.setPrimary("primary");
-            }
-            String locale = rs.getString("locale");
-            if(locale!=null) {
-                alias.setLocale(locale);
-            }
-            String type = rs.getString("type");
-            if(type!=null) {
-                alias.setType(type);
-            }
-
-            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
-            if(!Strings.isNullOrEmpty(begin))  {
-                alias.setBeginDate(begin);
-            }
-
-            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
-            if(!Strings.isNullOrEmpty(end))  {
-                alias.setEndDate(end);
-            }
-            list.add(alias);
-        }
-        rs.close();
+        Map<Integer, Set<Alias>> aliases = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
 
         //Artist Credits)
         Map<Integer, Set<String>> artistCredits = new HashMap<Integer, Set<String>>();
-        st = getPreparedStatement("ARTISTCREDITS");
+        PreparedStatement st = getPreparedStatement("ARTISTCREDITS");
         st.setInt(1, min);
         st.setInt(2, max);
-        rs = st.executeQuery();
+        ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int artistId = rs.getInt("artist");
             Set<String> list;

@@ -1,4 +1,4 @@
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.helper;
 
 import org.musicbrainz.mmd2.ArtistCredit;
 

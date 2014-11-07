@@ -27,6 +27,8 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.helper.AliasHelper;
+import org.musicbrainz.search.helper.TagHelper;
 
 import java.io.IOException;
 import java.sql.*;
@@ -83,15 +85,6 @@ public class InstrumentIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-        addPreparedStatement("ALIASES",
-                "SELECT a.instrument as instrument, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
-                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
-                        " FROM instrument_alias a" +
-                        "  LEFT JOIN instrument_alias_type att on (a.type=att.id)" +
-                        " WHERE instrument BETWEEN ? AND ?" +
-                        " ORDER BY instrument, alias, alias_sortname");
-
-
         addPreparedStatement("INSTRUMENTS",
                 "SELECT instrument.id, instrument.gid, instrument.name as name," +
                 "  instrument_type.name as type, " +
@@ -101,11 +94,8 @@ public class InstrumentIndex extends DatabaseIndex {
                 "  LEFT JOIN instrument_type ON instrument.type = instrument_type.id " +
                 " WHERE instrument.id BETWEEN ? AND ?");
 
-        addPreparedStatement("TAGS",
-                "SELECT t1.instrument, t2.name as tag, t1.count as count " +
-                        " FROM instrument_tag t1" +
-                        "  INNER JOIN tag t2 ON tag=id " +
-                        " WHERE t1.instrument between ? AND ?");
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("instrument_tag", "instrument"));
+        addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("instrument"));
 
 
     }
@@ -116,66 +106,15 @@ public class InstrumentIndex extends DatabaseIndex {
 
         ObjectFactory of = new ObjectFactory();
 
-
-        // Get instruments aliases
         //Aliases
-        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
-        PreparedStatement  st = getPreparedStatement("ALIASES");
+        Map<Integer, Set<Alias>> aliases = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
+        Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "instrument");
+
+        // Get instruments
+        PreparedStatement st = getPreparedStatement("INSTRUMENTS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int artistId = rs.getInt("instrument");
-            Set<Alias> list;
-            if (!aliases.containsKey(artistId)) {
-                list = new LinkedHashSet<Alias>();
-                aliases.put(artistId, list);
-            } else {
-                list = aliases.get(artistId);
-            }
-            Alias alias = of.createAlias();
-            alias.setContent(rs.getString("alias"));
-            alias.setSortName(rs.getString("alias_sortname"));
-            boolean isPrimary = rs.getBoolean("primary_for_locale");
-            if(isPrimary) {
-                alias.setPrimary("primary");
-            }
-            String locale = rs.getString("locale");
-            if(locale!=null) {
-                alias.setLocale(locale);
-            }
-            String type = rs.getString("type");
-            if(type!=null) {
-                alias.setType(type);
-            }
-
-            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
-            if(!Strings.isNullOrEmpty(begin))  {
-                alias.setBeginDate(begin);
-            }
-
-            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
-            if(!Strings.isNullOrEmpty(end))  {
-                alias.setEndDate(end);
-            }
-            list.add(alias);
-        }
-        rs.close();
-
-        // Get Tags
-        st = getPreparedStatement("TAGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"instrument");
-        rs.close();
-
-        // Get instruments
-        st = getPreparedStatement("INSTRUMENTS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }

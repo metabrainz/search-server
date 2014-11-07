@@ -35,6 +35,7 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.ReleaseGroupSimilarity;
+import org.musicbrainz.search.helper.*;
 
 import java.io.IOException;
 import java.sql.*;
@@ -91,12 +92,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-        addPreparedStatement("TAGS",
-                 "SELECT release_group_tag.release_group, tag.name as tag, release_group_tag.count as count " +
-                 " FROM release_group_tag " +
-                 "  INNER JOIN tag ON tag=id " +
-                 " WHERE release_group between ? AND ?");
-
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("release_group_tag", "release_group"));
 
         addPreparedStatement("RELEASES",
                 "SELECT DISTINCT release_group, release.gid as gid, release.name, rs.name as status " +
@@ -160,8 +156,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
 
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
-
-        Map<Integer, List<Tag>> tags                            = loadTags(min, max);
+        Map<Integer,List<Tag>> tags                             = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "release_group");
         Map<Integer, List<ReleaseWrapper>> releases             = loadReleases(min, max);
         Map<Integer, ArtistCreditWrapper> artistCredits         = updateArtistCreditWithAliases(loadArtistCredits(min, max),min, max);
         Map<Integer, List<String>> secondaryTypes               = loadSecondaryTypes(min, max);
@@ -213,29 +208,6 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         return releases;
     }
 
-    
-    /**
-     * Load Tags
-     *
-     * @param min
-     * @param max
-     * @return
-     * @throws SQLException
-     * @throws IOException
-     */
-    private Map<Integer, List<Tag>> loadTags(int min, int max) throws SQLException, IOException {
-
-        // Get Tags
-        PreparedStatement st = getPreparedStatement("TAGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        ResultSet rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release_group");
-        rs.close();
-        return tags;
-
-    }
-
     /**
      * Load Artist Credits
      *
@@ -253,17 +225,7 @@ public class ReleaseGroupIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer, ArtistCreditWrapper> artistCredits
-                = ArtistCreditHelper.completeArtistCreditFromDbResults
-                (rs,
-                        "releaseGroupId",
-                        "artist_Credit",
-                        "artistId",
-                        "artistName",
-                        "artistSortName",
-                        "comment",
-                        "joinphrase",
-                        "artistCreditName"
-                );
+                = ArtistCreditHelper.completeArtistCreditFromDbResults(rs, "releaseGroupId", "artist_Credit", "artistId", "artistName", "artistSortName", "comment", "joinphrase", "artistCreditName");
         rs.close();
         return artistCredits;
     }

@@ -1,4 +1,4 @@
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.type;
 
 public enum ReleaseGroupSecondaryType {
     COMPILATION("Compilation"),

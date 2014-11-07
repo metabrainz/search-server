@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.type.AnnotationType;
 
 import java.io.IOException;
 import java.sql.*;

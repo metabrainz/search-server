@@ -27,14 +27,17 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.helper;
 
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.mmd2.Tag;
 import org.musicbrainz.mmd2.TagList;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.IndexField;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -42,8 +45,51 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Shared for retrieving tags for an entity, all entities use the same pattern
+ */
 public class TagHelper {
 
+    public static String constructTagQuery(String tagTableName, String entityColName)
+    {
+        return "SELECT t1."
+                + entityColName
+                + ", t2.name as tag, t1.count as count " +
+                " FROM " +
+                tagTableName +
+                " t1" +
+                "  INNER JOIN tag t2 ON tag=id " +
+                " WHERE t1." +
+                entityColName +
+                " between ? AND ?";
+    }
+
+    /**
+     * Load Tags
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws java.io.IOException
+     */
+    public static Map<Integer, List<Tag>> loadTags(int min, int max, PreparedStatement st, String entityKey) throws SQLException, IOException
+    {
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        Map<Integer, List<Tag>> tags = completeTagsFromDbResults(rs, entityKey);
+        rs.close();
+        return tags;
+    }
+
+    /**
+     *
+     * @param rs
+     * @param entityKey
+     * @return
+     * @throws SQLException
+     */
     public static Map<Integer,List<Tag>> completeTagsFromDbResults(ResultSet rs,
                                                                   String entityKey) throws SQLException {
         Map<Integer, List<Tag>> tags = new HashMap<Integer, List<Tag>>();

@@ -1,9 +1,9 @@
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.helper;
 
 /**
  * Track Details for use by Recording Index
  */
-class TrackWrapper {
+public class TrackWrapper {
     private int     trackId;
     private String  trackGuid;
     private int     trackPosition;

@@ -34,6 +34,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.helper.AliasHelper;
+import org.musicbrainz.search.helper.TagHelper;
 
 import java.io.IOException;
 import java.sql.*;
@@ -105,13 +107,8 @@ public class AreaIndex extends DatabaseIndex {
                         " WHERE a2.id BETWEEN ? AND ? " +
                         " ORDER BY a2.id");
 
-        addPreparedStatement("ALIASES",
-                "SELECT a.area as area, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
-                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
-                        " FROM area_alias a" +
-                        "  LEFT JOIN area_alias_type att on (a.type=att.id)" +
-                        " WHERE area BETWEEN ? AND ?" +
-                        " ORDER BY area, alias, alias_sortname");
+        addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("area"));
+
 
         addPreparedStatement("ISO1",
                 "SELECT area, code from iso_3166_1 WHERE area BETWEEN ? AND ? ORDER BY area, code");
@@ -122,11 +119,7 @@ public class AreaIndex extends DatabaseIndex {
         addPreparedStatement("ISO3",
                 "SELECT area, code from iso_3166_3 WHERE area BETWEEN ? AND ? ORDER BY area, code");
 
-        addPreparedStatement("TAGS",
-                "SELECT t1.area, t2.name as tag, t1.count as count " +
-                        " FROM area_tag t1" +
-                        "  INNER JOIN tag t2 ON tag=id " +
-                        " WHERE t1.area between ? AND ?");
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("area_tag", "area"));
 
     }
 
@@ -135,56 +128,14 @@ public class AreaIndex extends DatabaseIndex {
 
         ObjectFactory of = new ObjectFactory();
 
-        // Get area aliases
-        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
-        PreparedStatement st = getPreparedStatement("ALIASES");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int areaId = rs.getInt("area");
-            Set<Alias> list;
-            if (!aliases.containsKey(areaId)) {
-                list = new LinkedHashSet<Alias>();
-                aliases.put(areaId, list);
-            } else {
-                list = aliases.get(areaId);
-            }
-            Alias alias = of.createAlias();
-            alias.setContent(rs.getString("alias"));
-            alias.setSortName(rs.getString("alias_sortname"));
-            boolean isPrimary = rs.getBoolean("primary_for_locale");
-            if(isPrimary) {
-                alias.setPrimary("primary");
-            }
-            String locale = rs.getString("locale");
-            if(locale!=null) {
-                alias.setLocale(locale);
-            }
-            String type = rs.getString("type");
-            if(type!=null) {
-                alias.setType(type);
-            }
-
-            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
-            if(!Strings.isNullOrEmpty(begin))  {
-                alias.setBeginDate(begin);
-            }
-
-            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
-            if(!Strings.isNullOrEmpty(end))  {
-                alias.setEndDate(end);
-            }
-            list.add(alias);
-        }
-        rs.close();
+        Map<Integer, Set<Alias>> aliases = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
 
         //Iso1Code
         Map<Integer, Iso31661CodeList> iso1 = new HashMap<Integer, Iso31661CodeList>();
-        st = getPreparedStatement("ISO1");
+        PreparedStatement st = getPreparedStatement("ISO1");
         st.setInt(1, min);
         st.setInt(2, max);
-        rs = st.executeQuery();
+        ResultSet rs = st.executeQuery();
         while (rs.next()) {
             int areaId = rs.getInt("area");
             Iso31661CodeList iso1List;
@@ -293,12 +244,7 @@ public class AreaIndex extends DatabaseIndex {
         }
 
         // Get Tags
-        st = getPreparedStatement("TAGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"area");
-        rs.close();
+        Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "area");
 
         st = getPreparedStatement("AREA");
         st.setInt(1, min);

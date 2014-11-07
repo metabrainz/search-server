@@ -34,6 +34,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.helper.AliasHelper;
+import org.musicbrainz.search.helper.TagHelper;
 import org.postgresql.geometric.PGpoint;
 
 import java.io.IOException;
@@ -95,19 +97,8 @@ public class PlaceIndex extends DatabaseIndex {
                         " WHERE p.id BETWEEN ? AND ? " +
                         " ORDER BY p.id");
 
-        addPreparedStatement("ALIASES",
-                "SELECT p.place as place, p.name as alias, p.sort_name as alias_sortname, p.primary_for_locale, p.locale, att.name as type," +
-                        "p.begin_date_year, p.begin_date_month, p.begin_date_day, p.end_date_year, p.end_date_month, p.end_date_day" +
-                        " FROM place_alias p" +
-                        "  LEFT JOIN place_alias_type att on (p.type=att.id)" +
-                        " WHERE place BETWEEN ? AND ?" +
-                        " ORDER BY place, alias, alias_sortname");
-
-        addPreparedStatement("TAGS",
-                "SELECT place_tag.place, tag.name as tag, place_tag.count as count " +
-                        " FROM place_tag " +
-                        "  INNER JOIN tag ON tag=id " +
-                        " WHERE place between ? AND ?");
+        addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("place"));
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("place_tag", "place"));
 
 
     }
@@ -115,64 +106,14 @@ public class PlaceIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        ObjectFactory of = new ObjectFactory();
-
         // Get place aliases
-        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
-        PreparedStatement st = getPreparedStatement("ALIASES");
+        Map<Integer, Set<Alias>> aliases = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
+        Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "place");
+
+        PreparedStatement st = getPreparedStatement("PLACE");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int placeId = rs.getInt("place");
-            Set<Alias> list;
-            if (!aliases.containsKey(placeId)) {
-                list = new LinkedHashSet<Alias>();
-                aliases.put(placeId, list);
-            } else {
-                list = aliases.get(placeId);
-            }
-            Alias alias = of.createAlias();
-            alias.setContent(rs.getString("alias"));
-            alias.setSortName(rs.getString("alias_sortname"));
-            boolean isPrimary = rs.getBoolean("primary_for_locale");
-            if(isPrimary) {
-                alias.setPrimary("primary");
-            }
-            String locale = rs.getString("locale");
-            if(locale!=null) {
-                alias.setLocale(locale);
-            }
-            String type = rs.getString("type");
-            if(type!=null) {
-                alias.setType(type);
-            }
-
-            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
-            if(!Strings.isNullOrEmpty(begin))  {
-                alias.setBeginDate(begin);
-            }
-
-            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
-            if(!Strings.isNullOrEmpty(end))  {
-                alias.setEndDate(end);
-            }
-            list.add(alias);
-        }
-        rs.close();
-
-        // Get Tags
-        st = getPreparedStatement("TAGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"place");
-        rs.close();
-
-        st = getPreparedStatement("PLACE");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }

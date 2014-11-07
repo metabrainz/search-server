@@ -27,6 +27,8 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.helper.AliasHelper;
+import org.musicbrainz.search.helper.TagHelper;
 
 import java.io.IOException;
 import java.sql.*;
@@ -83,15 +85,6 @@ public class SeriesIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-        addPreparedStatement("ALIASES",
-                "SELECT a.series as series, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
-                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
-                        " FROM series_alias a" +
-                        "  LEFT JOIN series_alias_type att on (a.type=att.id)" +
-                        " WHERE series BETWEEN ? AND ?" +
-                        " ORDER BY series, alias, alias_sortname");
-
-
         addPreparedStatement("SERIES",
                 "SELECT series.id, series.gid, series.name as name," +
                 "  series_type.name as type, " +
@@ -102,78 +95,21 @@ public class SeriesIndex extends DatabaseIndex {
                 "  LEFT JOIN series_type ON series.type = series_type.id " +
                 " WHERE series.id BETWEEN ? AND ?");
 
-        addPreparedStatement("TAGS",
-                "SELECT t1.series, t2.name as tag, t1.count as count " +
-                " FROM series_tag t1" +
-                "  INNER JOIN tag t2 ON tag=id " +
-                " WHERE t1.series between ? AND ?");
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("series_tag", "series"));
+        addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("series"));
     }
 
 
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
+        Map<Integer, Set<Alias>> aliases = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
+        Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "series");
 
-        ObjectFactory of = new ObjectFactory();
-
-        // Get series aliases
-        //Aliases
-        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
-        PreparedStatement  st = getPreparedStatement("ALIASES");
+        // Get series
+        PreparedStatement st = getPreparedStatement("SERIES");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        while (rs.next()) {
-            int artistId = rs.getInt("series");
-            Set<Alias> list;
-            if (!aliases.containsKey(artistId)) {
-                list = new LinkedHashSet<Alias>();
-                aliases.put(artistId, list);
-            } else {
-                list = aliases.get(artistId);
-            }
-            Alias alias = of.createAlias();
-            alias.setContent(rs.getString("alias"));
-            alias.setSortName(rs.getString("alias_sortname"));
-            boolean isPrimary = rs.getBoolean("primary_for_locale");
-            if(isPrimary) {
-                alias.setPrimary("primary");
-            }
-            String locale = rs.getString("locale");
-            if(locale!=null) {
-                alias.setLocale(locale);
-            }
-            String type = rs.getString("type");
-            if(type!=null) {
-                alias.setType(type);
-            }
-
-            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
-            if(!Strings.isNullOrEmpty(begin))  {
-                alias.setBeginDate(begin);
-            }
-
-            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
-            if(!Strings.isNullOrEmpty(end))  {
-                alias.setEndDate(end);
-            }
-            list.add(alias);
-        }
-        rs.close();
-
-        // Get Tags
-        st = getPreparedStatement("TAGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"series");
-        rs.close();
-
-        // Get series
-        st = getPreparedStatement("SERIES");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-
         while (rs.next()) {
             indexWriter.addDocument(documentFromResultSet(rs, tags, aliases));
         }

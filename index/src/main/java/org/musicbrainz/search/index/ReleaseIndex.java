@@ -35,6 +35,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.helper.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -185,12 +186,7 @@ public class  ReleaseIndex extends DatabaseIndex {
                 " FROM tmp_release_event r1 " +
                 " WHERE release BETWEEN ? AND ? ");
 
-        addPreparedStatement("TAGS",
-                "SELECT release_tag.release, tag.name as tag, release_tag.count as count " +
-                        " FROM release_tag " +
-                        "  INNER JOIN tag ON tag=id " +
-                        " WHERE release between ? AND ?");
-
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("release_tag", "release"));
     }
 
 
@@ -245,27 +241,6 @@ public class  ReleaseIndex extends DatabaseIndex {
         return secondaryTypes;
     }
 
-    /**
-     * Load Tags
-     *
-     * @param min
-     * @param max
-     * @return
-     * @throws SQLException
-     * @throws IOException
-     */
-    private Map<Integer, List<Tag>> loadTags(int min, int max) throws SQLException, IOException {
-
-        // Get Tags
-        PreparedStatement st = getPreparedStatement("TAGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        ResultSet rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"release");
-        rs.close();
-        return tags;
-
-    }
 
     private Map<Integer, List<ReleaseEvent>> loadReleaseEvents(int min, int max) throws SQLException, IOException {
 
@@ -274,7 +249,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        Map<Integer,List<ReleaseEvent>> releaseEvents = ReleaseEventHelper.completeReleaseEventsFromDbResults(rs,"release");
+        Map<Integer,List<ReleaseEvent>> releaseEvents = ReleaseEventHelper.completeReleaseEventsFromDbResults(rs, "release");
         rs.close();
         return releaseEvents;
 
@@ -282,8 +257,8 @@ public class  ReleaseIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        Map<Integer, List<Tag>> tags                        = loadTags(min, max);
         Map<Integer, List<ReleaseEvent>> releaseEvents      = loadReleaseEvents(min, max);
+        Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "release");
 
         //A particular release can have multiple catalog nos, labels when released as an imprint, typically used
         //by major labels
@@ -374,17 +349,7 @@ public class  ReleaseIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer, ArtistCreditWrapper> artistCredits
-                = ArtistCreditHelper.completeArtistCreditFromDbResults
-                (rs,
-                        "releaseId",
-                        "artist_Credit",
-                        "artistId",
-                        "artistName",
-                        "artistSortName",
-                        "comment",
-                        "joinphrase",
-                        "artistCreditName"
-                );
+                = ArtistCreditHelper.completeArtistCreditFromDbResults(rs, "releaseId", "artist_Credit", "artistId", "artistName", "artistSortName", "comment", "joinphrase", "artistCreditName");
         rs.close();
         return artistCredits;
     }

@@ -25,6 +25,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Test;
 import org.musicbrainz.mmd2.ArtistCredit;
+import org.musicbrainz.search.helper.ArtistCreditHelper;
 
 import java.sql.Statement;
 

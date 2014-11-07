@@ -1,9 +1,9 @@
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.helper;
 
 /**
  * Release Details for use by other entities
  */
-class ReleaseWrapper {
+public class ReleaseWrapper {
 
     private String  releaseId;
     private String  releaseName;

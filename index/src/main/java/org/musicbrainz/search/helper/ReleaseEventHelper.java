@@ -27,10 +27,11 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.helper;
 
 import com.google.common.base.Strings;
 import org.musicbrainz.mmd2.*;
+import org.musicbrainz.search.index.Utils;
 
 import java.math.BigInteger;
 import java.sql.ResultSet;

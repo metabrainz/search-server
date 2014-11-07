@@ -28,6 +28,7 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.RecordingSimilarity;
+import org.musicbrainz.search.helper.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -134,11 +135,7 @@ public class RecordingIndex extends DatabaseIndex {
             );
         }
 
-        addPreparedStatement("TAGS",
-                "SELECT recording_tag.recording, tag.name as tag, recording_tag.count as count " +
-                        " FROM recording_tag " +
-                        " INNER JOIN tag ON tag=id " +
-                        " WHERE recording between ? AND ?");
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("recording_tag", "recording"));
 
         addPreparedStatement("ISRCS",
                 "SELECT recording as recordingId, isrc " +
@@ -355,17 +352,7 @@ public class RecordingIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         Map<Integer, ArtistCreditWrapper> artistCredits
-                = ArtistCreditHelper.completeArtistCreditFromDbResults
-                (rs,
-                        "recordingId",
-                        "artist_Credit",
-                        "artistId",
-                        "artistName",
-                        "artistSortName",
-                        "comment",
-                        "joinphrase",
-                        "artistCreditName"
-                );
+                = ArtistCreditHelper.completeArtistCreditFromDbResults(rs, "recordingId", "artist_Credit", "artistId", "artistName", "artistSortName", "comment", "joinphrase", "artistCreditName");
         rs.close();
         artistClock.suspend();
         return artistCredits;
@@ -913,8 +900,7 @@ public class RecordingIndex extends DatabaseIndex {
                             doc.addField(RecordingIndexField.RELEASE_SECONDARY_TYPE, secondaryType);
                         }
 
-                        String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType,
-                                rg.getSecondaryTypeList().getSecondaryType());
+                        String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType, rg.getSecondaryTypeList().getSecondaryType());
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, type);
                         rg.setType(type);
                     } else {

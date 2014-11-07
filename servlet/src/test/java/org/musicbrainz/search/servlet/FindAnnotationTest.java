@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.AnnotationIndexField;
-import org.musicbrainz.search.index.AnnotationType;
+import org.musicbrainz.search.type.AnnotationType;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.MetaIndexField;
 

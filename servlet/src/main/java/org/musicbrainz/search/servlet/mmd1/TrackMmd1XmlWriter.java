@@ -31,14 +31,10 @@ package org.musicbrainz.search.servlet.mmd1;
 import com.google.common.base.Strings;
 import com.jthink.brainz.mmd.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.mmd2.ArtistCredit;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.ArtistCreditHelper;
 import org.musicbrainz.search.index.MMDSerializer;
 import org.musicbrainz.search.index.RecordingIndexField;
-import org.musicbrainz.search.index.ReleaseIndexField;
 import org.musicbrainz.search.servlet.Result;
 import org.musicbrainz.search.servlet.Results;
 

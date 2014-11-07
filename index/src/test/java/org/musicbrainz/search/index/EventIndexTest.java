@@ -8,8 +8,6 @@ import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
 import org.musicbrainz.mmd2.Event;
 import org.musicbrainz.mmd2.RelationList;
-import org.musicbrainz.mmd2.Work;
-
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;

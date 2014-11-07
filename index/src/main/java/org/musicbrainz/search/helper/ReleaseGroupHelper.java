@@ -1,4 +1,7 @@
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.helper;
+
+import org.musicbrainz.search.type.ReleaseGroupPrimaryType;
+import org.musicbrainz.search.type.ReleaseGroupSecondaryType;
 
 import java.util.List;
 

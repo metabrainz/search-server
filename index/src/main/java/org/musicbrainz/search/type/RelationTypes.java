@@ -1,4 +1,4 @@
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.type;
 
 /**
  * Created by Paul on 06/11/2014.

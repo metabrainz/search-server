@@ -27,6 +27,8 @@ import org.apache.lucene.search.similarities.Similarity;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
+import org.musicbrainz.search.helper.AliasHelper;
+import org.musicbrainz.search.helper.TagHelper;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -86,21 +88,8 @@ public class LabelIndex extends DatabaseIndex {
     @Override
     public void init(IndexWriter indexWriter, boolean isUpdater) throws SQLException {
 
-        addPreparedStatement("TAGS",
-                "SELECT label_tag.label, tag.name as tag, label_tag.count as count " +
-                " FROM label_tag " +
-                "  INNER JOIN tag ON tag=id " +
-                " WHERE label between ? AND ?");
-
-        addPreparedStatement("ALIASES",
-                "SELECT a.label as label, a.name as alias, a.sort_name as alias_sortname, a.primary_for_locale, a.locale, att.name as type," +
-                        "a.begin_date_year, a.begin_date_month, a.begin_date_day, a.end_date_year, a.end_date_month, a.end_date_day" +
-                        " FROM label_alias a" +
-                        "  LEFT JOIN label_alias_type att on (a.type=att.id)" +
-                        " WHERE label BETWEEN ? AND ?" +
-                        " ORDER BY label, alias, alias_sortname");
-
-
+        addPreparedStatement("TAGS", TagHelper.constructTagQuery("label_tag", "label"));
+        addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("label"));
         addPreparedStatement("LABELS",
                 "SELECT label.id, label.gid, label.name as name," +
                 "  label_type.name as type, label.begin_date_year, label.begin_date_month, label.begin_date_day, " +
@@ -146,71 +135,15 @@ public class LabelIndex extends DatabaseIndex {
 
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
-        ObjectFactory of = new ObjectFactory();
+        Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "label");
+        Map<Integer, List<String>> ipiCodes = loadIpiCodes(min,max);
+        Map<Integer, Set<Alias>> aliases = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
 
-        // Get Tags
-        PreparedStatement st = getPreparedStatement("TAGS");
+        // Get labels
+        PreparedStatement st = getPreparedStatement("LABELS");
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
-        Map<Integer,List<Tag>> tags = TagHelper.completeTagsFromDbResults(rs,"label");
-        rs.close();
-
-        // IPI Codes
-        Map<Integer, List<String>> ipiCodes = loadIpiCodes(min,max);
-
-
-        // Get labels aliases
-        //Aliases
-        Map<Integer, Set<Alias>> aliases = new HashMap<Integer, Set<Alias>>();
-        st = getPreparedStatement("ALIASES");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-        while (rs.next()) {
-            int artistId = rs.getInt("label");
-            Set<Alias> list;
-            if (!aliases.containsKey(artistId)) {
-                list = new LinkedHashSet<Alias>();
-                aliases.put(artistId, list);
-            } else {
-                list = aliases.get(artistId);
-            }
-            Alias alias = of.createAlias();
-            alias.setContent(rs.getString("alias"));
-            alias.setSortName(rs.getString("alias_sortname"));
-            boolean isPrimary = rs.getBoolean("primary_for_locale");
-            if(isPrimary) {
-                alias.setPrimary("primary");
-            }
-            String locale = rs.getString("locale");
-            if(locale!=null) {
-                alias.setLocale(locale);
-            }
-            String type = rs.getString("type");
-            if(type!=null) {
-                alias.setType(type);
-            }
-
-            String begin = Utils.formatDate(rs.getInt("begin_date_year"), rs.getInt("begin_date_month"), rs.getInt("begin_date_day"));
-            if(!Strings.isNullOrEmpty(begin))  {
-                alias.setBeginDate(begin);
-            }
-
-            String end = Utils.formatDate(rs.getInt("end_date_year"), rs.getInt("end_date_month"), rs.getInt("end_date_day"));
-            if(!Strings.isNullOrEmpty(end))  {
-                alias.setEndDate(end);
-            }
-            list.add(alias);
-        }
-        rs.close();
-
-        // Get labels
-        st = getPreparedStatement("LABELS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        rs = st.executeQuery();
-
         while (rs.next()) {
             if(rs.getString("gid").equals(DELETED_LABEL_MBID))
             {

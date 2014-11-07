@@ -17,14 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package org.musicbrainz.search.index;
+package org.musicbrainz.search.helper;
 
 import com.google.common.base.Strings;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
+import org.musicbrainz.search.index.IndexField;
+import org.musicbrainz.search.index.MMDSerializer;
+import org.musicbrainz.search.index.Utils;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
