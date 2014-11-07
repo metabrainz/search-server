@@ -13,8 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Use for artist relation information
@@ -23,29 +21,43 @@ import java.util.Set;
 public class LinkedArtistsHelper
 {
     /**
-     * Construct Artist Relation query for the given artist relation table
+     * Construct Relation query for the given artist relation table
      *
-     * @param artistRelationTableName
+     * @param placeRelationTableName
+     * @param isLinkedEntityFirst if true then the relation table has place as the first entity rather than the second
      * @return
      */
-    public static String constructArtistRelationQuery(String artistRelationTableName, String entityTableName)
+    public static String constructRelationQuery(String placeRelationTableName, String entityTableName, boolean isLinkedEntityFirst)
     {
-        return " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as artist_name, a.sort_name as artist_sortname," +
-                " lt.name as link, lat.name as attribute" +
-                " FROM " +
-                artistRelationTableName +
-                " aw " +
-                " INNER JOIN artist a ON a.id    = aw.entity0" +
-                " INNER JOIN " +
-                entityTableName +
-                "  w ON w.id     = aw.entity1" +
+        StringBuilder sb = new StringBuilder(
+                " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as name, a.sort_name as sortname, " +
+                        " lt.name as link, lat.name as attribute" +
+                        " FROM " +
+                        placeRelationTableName +
+                        " aw");
+
+        if(isLinkedEntityFirst)
+        {
+            sb.append(" INNER JOIN artist a ON a.id    = aw.entity0" +
+                    " INNER JOIN " + entityTableName + " w ON w.id     = aw.entity1");
+        }
+        else
+        {
+            sb.append(" INNER JOIN artist a ON a.id    = aw.entity1" +
+                    " INNER JOIN " + entityTableName + " w ON w.id     = aw.entity0");
+        }
+
+        sb.append(
                 " INNER JOIN link l ON aw.link = l.id " +
-                " INNER JOIN link_type lt on l.link_type=lt.id" +
-                " LEFT JOIN  link_attribute la on la.link=l.id" +
-                " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
-                " WHERE w.id BETWEEN ? AND ?  "  +
-                " ORDER BY aw.id";
+                        " INNER JOIN link_type lt on l.link_type=lt.id" +
+                        " LEFT JOIN  link_attribute la on la.link=l.id" +
+                        " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
+                        " WHERE w.id BETWEEN ? AND ?  "  +
+                        " ORDER BY aw.id");
+
+        return sb.toString();
     }
+
     /**
      * Load Artist Relations using prepared statement
      *
@@ -55,7 +67,7 @@ public class LinkedArtistsHelper
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
-    public static ArrayListMultimap<Integer, Relation> loadArtistRelations(int min, int max, PreparedStatement st) throws SQLException, IOException
+    public static ArrayListMultimap<Integer, Relation> loadRelations(int min, int max, PreparedStatement st) throws SQLException, IOException
     {
         ObjectFactory of = new ObjectFactory();
         ArrayListMultimap<Integer, Relation> artists = ArrayListMultimap.create();
@@ -82,8 +94,8 @@ public class LinkedArtistsHelper
 
                 Artist artist = of.createArtist();
                 artist.setId(rs.getString("aid"));
-                artist.setName(rs.getString("artist_name"));
-                artist.setSortName(rs.getString("artist_sortname"));
+                artist.setName(rs.getString("name"));
+                artist.setSortName(rs.getString("sortname"));
 
                 relation.setArtist(artist);
                 relation.setType(rs.getString("link"));

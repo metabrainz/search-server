@@ -5,7 +5,6 @@ import com.google.common.collect.ArrayListMultimap;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.IndexField;
-import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.type.RelationTypes;
 
 import java.io.IOException;
@@ -15,10 +14,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Use for recording relation information
+ * Use for place relation information
  *
  */
-public class LinkedRecordingsHelper
+public class LinkedPlaceHelper
 {
     /**
      * Construct Relation query for the given artist relation table
@@ -31,35 +30,35 @@ public class LinkedRecordingsHelper
     {
         StringBuilder sb = new StringBuilder(
                 " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as name, " +
-                        " lt.name as link, lat.name as attribute" +
-                        " FROM " +
-                        placeRelationTableName +
-                        " aw");
+                " lt.name as link, lat.name as attribute" +
+                " FROM " +
+                placeRelationTableName +
+                " aw");
 
         if(isLinkedEntityFirst)
         {
-            sb.append(" INNER JOIN recording a ON a.id    = aw.entity0" +
+            sb.append(" INNER JOIN place a ON a.id    = aw.entity0" +
                     " INNER JOIN " + entityTableName + " w ON w.id     = aw.entity1");
         }
         else
         {
-            sb.append(" INNER JOIN recording a ON a.id    = aw.entity1" +
+            sb.append(" INNER JOIN place a ON a.id    = aw.entity1" +
                     " INNER JOIN " + entityTableName + " w ON w.id     = aw.entity0");
         }
 
         sb.append(
                 " INNER JOIN link l ON aw.link = l.id " +
-                        " INNER JOIN link_type lt on l.link_type=lt.id" +
-                        " LEFT JOIN  link_attribute la on la.link=l.id" +
-                        " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
-                        " WHERE w.id BETWEEN ? AND ?  "  +
-                        " ORDER BY aw.id");
+                " INNER JOIN link_type lt on l.link_type=lt.id" +
+                " LEFT JOIN  link_attribute la on la.link=l.id" +
+                " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
+                " WHERE w.id BETWEEN ? AND ?  "  +
+                " ORDER BY aw.id");
 
         return sb.toString();
     }
 
     /**
-     * Load Recording Relations using prepared statement
+     * Load Relations using prepared statement
      *
      * @param min
      * @param max
@@ -70,7 +69,7 @@ public class LinkedRecordingsHelper
     public static ArrayListMultimap<Integer, Relation> loadRelations(int min, int max, PreparedStatement st) throws SQLException, IOException
     {
         ObjectFactory of = new ObjectFactory();
-        ArrayListMultimap<Integer, Relation> recordings = ArrayListMultimap.create();
+        ArrayListMultimap<Integer, Relation> links = ArrayListMultimap.create();
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -92,11 +91,11 @@ public class LinkedRecordingsHelper
 
                 Relation relation = of.createRelation();
 
-                Recording recording = of.createRecording();
-                recording.setId(rs.getString("aid"));
-                recording.setTitle(rs.getString("name"));
+                Place place = of.createPlace();
+                place.setId(rs.getString("aid"));
+                place.setName(rs.getString("name"));
 
-                relation.setRecording(recording);
+                relation.setPlace(place);
                 relation.setType(rs.getString("link"));
                 relation.setDirection(DefDirection.BACKWARD);
 
@@ -111,14 +110,14 @@ public class LinkedRecordingsHelper
                     attributeList.getAttribute().add(attribute);
                 }
                 //Add relation
-                recordings.put(entityId, relation);
+                links.put(entityId, relation);
 
                 lastRelation=relation;
                 lastLinkId=linkId;
             }
         }
         rs.close();
-        return recordings;
+        return links;
     }
 
     /**
@@ -134,12 +133,12 @@ public class LinkedRecordingsHelper
     public static RelationList addToDocAndConstructList(ObjectFactory of, MbDocument doc,  List<Relation> rl, IndexField idIndexField, IndexField nameIndexField)
     {
         RelationList relationList = of.createRelationList();
-        relationList.setTargetType(RelationTypes.RECORDING_RELATION_TYPE);
+        relationList.setTargetType(RelationTypes.PLACE_RELATION_TYPE);
         for (Relation r : rl)
         {
             relationList.getRelation().add(r);
-            doc.addField(idIndexField, r.getRecording().getId());
-            doc.addField(nameIndexField, r.getRecording().getTitle());
+            doc.addField(idIndexField, r.getPlace().getId());
+            doc.addField(nameIndexField, r.getPlace().getName());
         }
         return relationList;
     }

@@ -30,10 +30,8 @@ import org.musicbrainz.search.helper.AliasHelper;
 import org.musicbrainz.search.helper.LinkedArtistsHelper;
 import org.musicbrainz.search.helper.LinkedRecordingsHelper;
 import org.musicbrainz.search.helper.TagHelper;
-import org.musicbrainz.search.type.RelationTypes;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
 
@@ -82,8 +80,8 @@ public class WorkIndex extends DatabaseIndex {
 
         addPreparedStatement("TAGS", TagHelper.constructTagQuery("work_tag", "work"));
         addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("work"));
-        addPreparedStatement("ARTISTS",LinkedArtistsHelper.constructArtistRelationQuery("l_artist_work", "work"));
-        addPreparedStatement("RECORDINGS", LinkedRecordingsHelper.constructRecordingRelationQuery("l_recording_work", "work"));
+        addPreparedStatement("ARTISTS",LinkedArtistsHelper.constructRelationQuery("l_artist_work", "work", true));
+        addPreparedStatement("RECORDINGS", LinkedRecordingsHelper.constructRelationQuery("l_recording_work", "work", true));
 
         addPreparedStatement("ISWCS",
                 "SELECT work, iswc" +
@@ -141,8 +139,8 @@ public class WorkIndex extends DatabaseIndex {
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         Map<Integer, List<Tag>>              tags               = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "work");
-        ArrayListMultimap<Integer, Relation> artistRelations    = LinkedArtistsHelper.loadArtistRelations(min, max, getPreparedStatement("ARTISTS"));
-        ArrayListMultimap<Integer, Relation> recordingRelations = LinkedRecordingsHelper.loadRecordingRelations(min, max, getPreparedStatement("RECORDINGS"));
+        ArrayListMultimap<Integer, Relation> artistRelations    = LinkedArtistsHelper.loadRelations(min, max, getPreparedStatement("ARTISTS"));
+        ArrayListMultimap<Integer, Relation> recordingRelations = LinkedRecordingsHelper.loadRelations(min, max, getPreparedStatement("RECORDINGS"));
         Map<Integer, Set<Alias>>             aliases            = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
         Map<Integer, List<String>>           iswcs              = loadISWCs(min,max);
 

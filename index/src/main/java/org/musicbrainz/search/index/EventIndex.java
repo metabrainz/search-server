@@ -37,6 +37,7 @@ import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.helper.AliasHelper;
 import org.musicbrainz.search.helper.LinkedArtistsHelper;
+import org.musicbrainz.search.helper.LinkedPlaceHelper;
 import org.musicbrainz.search.helper.TagHelper;
 
 
@@ -97,7 +98,8 @@ public class EventIndex extends DatabaseIndex {
 
         addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("event"));
         addPreparedStatement("TAGS", TagHelper.constructTagQuery("event_tag", "event"));
-        addPreparedStatement("ARTISTS",LinkedArtistsHelper.constructArtistRelationQuery("l_artist_event", "event"));
+        addPreparedStatement("ARTISTS",LinkedArtistsHelper.constructRelationQuery("l_artist_event", "event", true));
+        addPreparedStatement("PLACES", LinkedPlaceHelper.constructRelationQuery("l_event_place", "event", false));
     }
 
 
@@ -106,7 +108,8 @@ public class EventIndex extends DatabaseIndex {
     public void indexData(IndexWriter indexWriter, int min, int max) throws SQLException, IOException {
 
         Map<Integer, Set<Alias>> aliases = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
-        ArrayListMultimap<Integer, Relation> artistRelations = LinkedArtistsHelper.loadArtistRelations(min, max, getPreparedStatement("ARTISTS"));
+        ArrayListMultimap<Integer, Relation> artistRelations = LinkedArtistsHelper.loadRelations(min, max, getPreparedStatement("ARTISTS"));
+        ArrayListMultimap<Integer, Relation> placeRelations  = LinkedPlaceHelper.loadRelations(min, max, getPreparedStatement("PLACES"));
         Map<Integer,List<Tag>> tags = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "event");
 
         PreparedStatement st = getPreparedStatement("EVENT");
@@ -114,7 +117,7 @@ public class EventIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, artistRelations, tags, aliases));
+            indexWriter.addDocument(documentFromResultSet(rs, artistRelations, placeRelations, tags, aliases));
         }
         rs.close();
 
@@ -122,6 +125,7 @@ public class EventIndex extends DatabaseIndex {
 
     public Document documentFromResultSet(ResultSet rs,
                                           ArrayListMultimap<Integer, Relation> artistRelations,
+                                          ArrayListMultimap<Integer, Relation> placeRelations,
                                           Map<Integer,List<Tag>> tags,
                                           Map<Integer, Set<Alias>> aliases) throws SQLException {
 
@@ -180,6 +184,10 @@ public class EventIndex extends DatabaseIndex {
 
         if (artistRelations.containsKey(eventId)) {
             event.getRelationList().add(LinkedArtistsHelper.addToDocAndConstructList(of, doc, artistRelations.get(eventId), EventIndexField.ARTIST_ID, EventIndexField.ARTIST));
+        }
+
+        if (placeRelations.containsKey(eventId)) {
+            event.getRelationList().add(LinkedPlaceHelper.addToDocAndConstructList(of, doc, placeRelations.get(eventId), EventIndexField.PLACE_ID, EventIndexField.PLACE));
         }
 
         if (aliases.containsKey(eventId))

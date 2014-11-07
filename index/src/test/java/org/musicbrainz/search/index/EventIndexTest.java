@@ -49,6 +49,12 @@ public class EventIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO link(id, link_type)VALUES (1, 1)");
         stmt.addBatch("INSERT INTO link_type(id,name) VALUES (1, 'composer')");
 
+
+        stmt.addBatch("INSERT INTO place (comment,coordinates, id, gid,name,address,type, begin_date_year, end_date_year,area) VALUES ('comment',(180.56,120),1, 'aa95182f-df0a-3ad6-8bfb-4b63482cd276', 'Manor Studios','1 New Street',1,1830,2020,38)");
+        stmt.addBatch("INSERT INTO l_event_place(id, link, entity0, entity1) VALUES (2, 2, 1, 1)");
+        stmt.addBatch("INSERT INTO link(id, link_type)VALUES (2, 2)");
+        stmt.addBatch("INSERT INTO link_type(id,name) VALUES (2, 'town')");
+
         stmt.executeBatch();
         stmt.close();
     }
@@ -203,6 +209,29 @@ public class EventIndexTest extends AbstractIndexTest {
         }
     }
 
+    @Test
+    public void testIndexWithAPlaceRelationWithNoAttributes() throws Exception {
+
+        addEventOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            Event event = (Event) MMDSerializer
+                    .unserialize(doc.get(EventIndexField.EVENT_STORE.getName()), Event.class);
+
+            RelationList placeList = event.getRelationList().get(1);
+            assertNotNull(placeList);
+            assertEquals("place", placeList.getTargetType());
+            assertEquals("aa95182f-df0a-3ad6-8bfb-4b63482cd276", placeList.getRelation().get(0).getPlace().getId());
+            assertEquals("Manor Studios", placeList.getRelation().get(0).getPlace().getName());
+            assertEquals("town", placeList.getRelation().get(0).getType());
+            assertNull(placeList.getRelation().get(0).getAttributeList());
+            ir.close();
+        }
+    }
     @Test
     public void testStoredIndexEvent() throws Exception {
 
