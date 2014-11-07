@@ -25,6 +25,11 @@
         </java-type>
         <java-type name="Metadata">
             <java-attributes>
+                <xml-element java-attribute="eventList" xml-path="."/>
+            </java-attributes>
+        </java-type>
+        <java-type name="Metadata">
+            <java-attributes>
                 <xml-element java-attribute="areaList" xml-path="."/>
             </java-attributes>
         </java-type>
@@ -462,6 +467,13 @@
             <java-attributes>
                 <xml-element java-attribute="work" name="works">
                     <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.WorkAdapter"/>
+                </xml-element>
+            </java-attributes>
+        </java-type>
+        <java-type name="EventList">
+            <java-attributes>
+                <xml-element java-attribute="event" name="events">
+                    <xml-java-type-adapter value="org.musicbrainz.search.servlet.moxy.EventAdapter"/>
                 </xml-element>
             </java-attributes>
         </java-type>

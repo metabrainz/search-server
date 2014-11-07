@@ -14,51 +14,51 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Use for place relation information
+ * Use for artist relation information
  *
  */
-public class LinkedPlaceHelper
+public class LinkedAreasHelper
 {
     /**
      * Construct Relation query for the given artist relation table
      *
-     * @param placeRelationTableName
+     * @param relationTableName
      * @param isLinkedEntityFirst if true then the relation table has place as the first entity rather than the second
      * @return
      */
-    public static String constructRelationQuery(String placeRelationTableName, String entityTableName, boolean isLinkedEntityFirst)
+    public static String constructRelationQuery(String relationTableName, String entityTableName, boolean isLinkedEntityFirst)
     {
         StringBuilder sb = new StringBuilder(
                 " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as name, " +
-                " lt.name as link, lat.name as attribute" +
-                " FROM " +
-                placeRelationTableName +
-                " aw");
+                        " lt.name as link, lat.name as attribute" +
+                        " FROM " +
+                        relationTableName +
+                        " aw");
 
         if(isLinkedEntityFirst)
         {
-            sb.append(" INNER JOIN place a ON a.id    = aw.entity0" +
+            sb.append(" INNER JOIN area a ON a.id    = aw.entity0" +
                     " INNER JOIN " + entityTableName + " w ON w.id     = aw.entity1");
         }
         else
         {
-            sb.append(" INNER JOIN place a ON a.id    = aw.entity1" +
+            sb.append(" INNER JOIN area a ON a.id    = aw.entity1" +
                     " INNER JOIN " + entityTableName + " w ON w.id     = aw.entity0");
         }
 
         sb.append(
                 " INNER JOIN link l ON aw.link = l.id " +
-                " INNER JOIN link_type lt on l.link_type=lt.id" +
-                " LEFT JOIN  link_attribute la on la.link=l.id" +
-                " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
-                " WHERE w.id BETWEEN ? AND ?  "  +
-                " ORDER BY aw.id");
+                        " INNER JOIN link_type lt on l.link_type=lt.id" +
+                        " LEFT JOIN  link_attribute la on la.link=l.id" +
+                        " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
+                        " WHERE w.id BETWEEN ? AND ?  "  +
+                        " ORDER BY aw.id");
 
         return sb.toString();
     }
 
     /**
-     * Load Relations using prepared statement
+     * Load Artist Relations using prepared statement
      *
      * @param min
      * @param max
@@ -69,7 +69,7 @@ public class LinkedPlaceHelper
     public static ArrayListMultimap<Integer, Relation> loadRelations(int min, int max, PreparedStatement st) throws SQLException, IOException
     {
         ObjectFactory of = new ObjectFactory();
-        ArrayListMultimap<Integer, Relation> links = ArrayListMultimap.create();
+        ArrayListMultimap<Integer, Relation> relations = ArrayListMultimap.create();
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -77,7 +77,6 @@ public class LinkedPlaceHelper
         Relation lastRelation = null;
         while (rs.next()) {
             int linkId = rs.getInt("awid");
-
             //If have another attribute for the same relation
             if(linkId==lastLinkId) {
                 Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
@@ -87,15 +86,15 @@ public class LinkedPlaceHelper
             }
             //New relation (may or may not be new entity but doesn't matter)
             else {
-                int entityId = rs.getInt("wid");
+                int workId = rs.getInt("wid");
 
                 Relation relation = of.createRelation();
 
-                Place place = of.createPlace();
-                place.setId(rs.getString("aid"));
-                place.setName(rs.getString("name"));
+                DefAreaElementInner area = of.createDefAreaElementInner();
+                area.setId(rs.getString("aid"));
+                area.setName(rs.getString("name"));
 
-                relation.setPlace(place);
+                relation.setArea(area);
                 relation.setType(rs.getString("link"));
                 relation.setDirection(DefDirection.BACKWARD);
 
@@ -110,14 +109,14 @@ public class LinkedPlaceHelper
                     attributeList.getAttribute().add(attribute);
                 }
                 //Add relation
-                links.put(entityId, relation);
+                relations.put(workId, relation);
 
                 lastRelation=relation;
                 lastLinkId=linkId;
             }
         }
         rs.close();
-        return links;
+        return relations;
     }
 
     /**
@@ -130,18 +129,16 @@ public class LinkedPlaceHelper
      * @param nameIndexField
      * @return
      */
-    public static RelationList addToDocAndConstructList(ObjectFactory of, MbDocument doc,  List<Relation> rl, IndexField idIndexField, IndexField nameIndexField)
+    public static RelationList addToDocAndConstructList(ObjectFactory of, MbDocument doc, List<Relation> rl, IndexField idIndexField, IndexField nameIndexField)
     {
         RelationList relationList = of.createRelationList();
-        relationList.setTargetType(RelationTypes.PLACE_RELATION_TYPE);
+        relationList.setTargetType(RelationTypes.AREA_RELATION_TYPE);
         for (Relation r : rl)
         {
             relationList.getRelation().add(r);
-            doc.addField(idIndexField, r.getPlace().getId());
-            doc.addField(nameIndexField, r.getPlace().getName());
+            doc.addField(idIndexField, r.getArea().getId());
+            doc.addField(nameIndexField, r.getArea().getName());
         }
         return relationList;
     }
-
-
 }

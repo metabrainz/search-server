@@ -55,6 +55,9 @@ public class EventIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO link(id, link_type)VALUES (2, 2)");
         stmt.addBatch("INSERT INTO link_type(id,name) VALUES (2, 'town')");
 
+        stmt.addBatch("INSERT INTO l_area_event(id, link, entity0, entity1) VALUES (1, 3, 38, 1)");
+        stmt.addBatch("INSERT INTO link(id, link_type)VALUES (3, 3)");
+        stmt.addBatch("INSERT INTO link_type(id,name) VALUES (3, 'country')");
         stmt.executeBatch();
         stmt.close();
     }
@@ -210,7 +213,7 @@ public class EventIndexTest extends AbstractIndexTest {
     }
 
     @Test
-    public void testIndexWithAPlaceRelationWithNoAttributes() throws Exception {
+    public void testIndexWithPlaceRelationWithNoAttributes() throws Exception {
 
         addEventOne();
         RAMDirectory ramDir = new RAMDirectory();
@@ -229,6 +232,30 @@ public class EventIndexTest extends AbstractIndexTest {
             assertEquals("Manor Studios", placeList.getRelation().get(0).getPlace().getName());
             assertEquals("town", placeList.getRelation().get(0).getType());
             assertNull(placeList.getRelation().get(0).getAttributeList());
+            ir.close();
+        }
+    }
+
+    @Test
+    public void testIndexWithAreaRelationWithNoAttributes() throws Exception {
+
+        addEventOne();
+        RAMDirectory ramDir = new RAMDirectory();
+        createIndex(ramDir);
+        IndexReader ir = DirectoryReader.open(ramDir);
+        assertEquals(2, ir.numDocs());
+        {
+            Document doc = ir.document(1);
+            Event event = (Event) MMDSerializer
+                    .unserialize(doc.get(EventIndexField.EVENT_STORE.getName()), Event.class);
+
+            RelationList areaList = event.getRelationList().get(2);
+            assertNotNull(areaList);
+            assertEquals("area", areaList.getTargetType());
+            assertEquals("b8caa692-704d-412b-a410-4fbcf5b9c796", areaList.getRelation().get(0).getArea().getId());
+            assertEquals("County of OxfordShire", areaList.getRelation().get(0).getArea().getName());
+            assertEquals("country", areaList.getRelation().get(0).getType());
+            assertNull(areaList.getRelation().get(0).getAttributeList());
             ir.close();
         }
     }

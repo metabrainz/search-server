@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.EventIndexField;
 import org.musicbrainz.search.index.IndexField;
 import org.musicbrainz.search.type.RelationTypes;
 
@@ -23,17 +22,17 @@ public class LinkedArtistsHelper
     /**
      * Construct Relation query for the given artist relation table
      *
-     * @param placeRelationTableName
+     * @param relationTableName
      * @param isLinkedEntityFirst if true then the relation table has place as the first entity rather than the second
      * @return
      */
-    public static String constructRelationQuery(String placeRelationTableName, String entityTableName, boolean isLinkedEntityFirst)
+    public static String constructRelationQuery(String relationTableName, String entityTableName, boolean isLinkedEntityFirst)
     {
         StringBuilder sb = new StringBuilder(
                 " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as name, a.sort_name as sortname, " +
                         " lt.name as link, lat.name as attribute" +
                         " FROM " +
-                        placeRelationTableName +
+                        relationTableName +
                         " aw");
 
         if(isLinkedEntityFirst)

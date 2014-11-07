@@ -82,27 +82,48 @@ public class FindEventTest
             tagList.getTag().add(tag);
             event.setTagList(tagList);
 
-            RelationList rl = of.createRelationList();
-            rl.setTargetType("artist");
             {
-                Relation relation = of.createRelation();
-                Relation.AttributeList al = of.createRelationAttributeList();
-                Artist artist1 = of.createArtist();
-                artist1.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
-                artist1.setName("Пётр Ильич Чайковский");
-                artist1.setSortName("Пётр Ильич Чайковский");
-                relation.setArtist(artist1);
-                relation.setType("composer");
-                relation.setDirection(DefDirection.BACKWARD);
-                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
-                attribute.setContent("additional");
-                al.getAttribute().add(attribute);
-                relation.setAttributeList(al);
-                rl.getRelation().add(relation);
+                RelationList rl = of.createRelationList();
+                rl.setTargetType("artist");
+                {
+                    Relation relation = of.createRelation();
+                    Relation.AttributeList al = of.createRelationAttributeList();
+                    Artist artist1 = of.createArtist();
+                    artist1.setId("1f9df192-a621-4f54-8850-2c5373b7eac9");
+                    artist1.setName("Пётр Ильич Чайковский");
+                    artist1.setSortName("Пётр Ильич Чайковский");
+                    relation.setArtist(artist1);
+                    relation.setType("composer");
+                    relation.setDirection(DefDirection.BACKWARD);
+                    Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
+                    attribute.setContent("additional");
+                    al.getAttribute().add(attribute);
+                    relation.setAttributeList(al);
+                    rl.getRelation().add(relation);
+                }
+                event.getRelationList().add(rl);
+                doc.addField(EventIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
+                doc.addField(EventIndexField.ARTIST, "Пётр Ильич Чайковский");
             }
-            event.getRelationList().add(rl);
-            doc.addField(EventIndexField.ARTIST_ID, "1f9df192-a621-4f54-8850-2c5373b7eac9");
-            doc.addField(EventIndexField.ARTIST, "Пётр Ильич Чайковский");
+
+            {
+                RelationList rl = of.createRelationList();
+                rl.setTargetType("place");
+                {
+                    Relation relation = of.createRelation();
+                    Relation.AttributeList al = of.createRelationAttributeList();
+                    Place place1 = of.createPlace();
+                    place1.setId("abcdef");
+                    place1.setName("netherbury");
+                    relation.setPlace(place1);
+                    relation.setType("village");
+                    relation.setDirection(DefDirection.BACKWARD);
+                    rl.getRelation().add(relation);
+                }
+                event.getRelationList().add(rl);
+                doc.addField(EventIndexField.PLACE_ID, "abcdef");
+                doc.addField(EventIndexField.PLACE, "netherbury");
+            }
 
 
             doc.addField(EventIndexField.EVENT_STORE, MMDSerializer.serialize(event));
@@ -184,6 +205,26 @@ public class FindEventTest
     @Test
     public void testFindEventByArtist() throws Exception {
         Results res = ss.search("artist:\"Пётр Ильич Чайковский\"", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(EventIndexField.EVENT_ID));
+        assertEquals("Afghanistan", doc.get(EventIndexField.EVENT));
+    }
+
+    @Test
+    public void testFindEventByPlace() throws Exception {
+        Results res = ss.search("place:netherbury", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        Result result = res.results.get(0);
+        MbDocument doc = result.getDoc();
+        assertEquals("ff571ff4-04cb-4b9c-8a1c-354c330f863c", doc.get(EventIndexField.EVENT_ID));
+        assertEquals("Afghanistan", doc.get(EventIndexField.EVENT));
+    }
+
+    @Test
+    public void testFindEventByPlaceId() throws Exception {
+        Results res = ss.search("pid:abcdef", 0, 10);
         assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
         MbDocument doc = result.getDoc();
