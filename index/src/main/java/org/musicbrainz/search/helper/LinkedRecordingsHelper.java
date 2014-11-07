@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
-import org.musicbrainz.search.index.EventIndexField;
 import org.musicbrainz.search.index.IndexField;
+import org.musicbrainz.search.index.WorkIndexField;
 import org.musicbrainz.search.type.RelationTypes;
 
 import java.io.IOException;
@@ -13,32 +13,30 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
- * Use for artist relation information
+ * Use for recording relation information
  *
  */
-public class LinkedArtistsHelper
+public class LinkedRecordingsHelper
 {
     /**
      * Construct Artist Relation query for the given artist relation table
      *
-     * @param artistRelationTableName
+     * @param recordingRelationTableName
      * @return
      */
-    public static String constructArtistRelationQuery(String artistRelationTableName, String entityTableName)
+    public static String constructRecordingRelationQuery(String recordingRelationTableName, String entityTableName)
     {
-        return " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as artist_name, a.sort_name as artist_sortname," +
+        return  " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as recording_name, " +
                 " lt.name as link, lat.name as attribute" +
                 " FROM " +
-                artistRelationTableName +
-                " aw " +
-                " INNER JOIN artist a ON a.id    = aw.entity0" +
+                recordingRelationTableName +
+                " aw" +
+                " INNER JOIN recording a ON a.id    = aw.entity0" +
                 " INNER JOIN " +
                 entityTableName +
-                "  w ON w.id     = aw.entity1" +
+                " w ON w.id     = aw.entity1" +
                 " INNER JOIN link l ON aw.link = l.id " +
                 " INNER JOIN link_type lt on l.link_type=lt.id" +
                 " LEFT JOIN  link_attribute la on la.link=l.id" +
@@ -46,8 +44,9 @@ public class LinkedArtistsHelper
                 " WHERE w.id BETWEEN ? AND ?  "  +
                 " ORDER BY aw.id";
     }
+
     /**
-     * Load Artist Relations using prepared statement
+     * Load Recording Relations using prepared statement
      *
      * @param min
      * @param max
@@ -55,10 +54,10 @@ public class LinkedArtistsHelper
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
-    public static ArrayListMultimap<Integer, Relation> loadArtistRelations(int min, int max, PreparedStatement st) throws SQLException, IOException
+    public static ArrayListMultimap<Integer, Relation> loadRecordingRelations(int min, int max, PreparedStatement st) throws SQLException, IOException
     {
         ObjectFactory of = new ObjectFactory();
-        ArrayListMultimap<Integer, Relation> artists = ArrayListMultimap.create();
+        ArrayListMultimap<Integer, Relation> recordings = ArrayListMultimap.create();
         st.setInt(1, min);
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
@@ -74,18 +73,17 @@ public class LinkedArtistsHelper
                 Relation.AttributeList attributeList=lastRelation.getAttributeList();
                 attributeList.getAttribute().add(attribute);
             }
-            //New relation (may or may not be new work but doesn't matter)
+            //New relation (may or may not be new entity but doesn't matter)
             else {
-                int workId = rs.getInt("wid");
+                int entityId = rs.getInt("wid");
 
                 Relation relation = of.createRelation();
 
-                Artist artist = of.createArtist();
-                artist.setId(rs.getString("aid"));
-                artist.setName(rs.getString("artist_name"));
-                artist.setSortName(rs.getString("artist_sortname"));
+                Recording recording = of.createRecording();
+                recording.setId(rs.getString("aid"));
+                recording.setTitle(rs.getString("recording_name"));
 
-                relation.setArtist(artist);
+                relation.setRecording(recording);
                 relation.setType(rs.getString("link"));
                 relation.setDirection(DefDirection.BACKWARD);
 
@@ -100,14 +98,14 @@ public class LinkedArtistsHelper
                     attributeList.getAttribute().add(attribute);
                 }
                 //Add relation
-                artists.put(workId, relation);
+                recordings.put(entityId, relation);
 
                 lastRelation=relation;
                 lastLinkId=linkId;
             }
         }
         rs.close();
-        return artists;
+        return recordings;
     }
 
     /**
@@ -120,16 +118,18 @@ public class LinkedArtistsHelper
      * @param nameIndexField
      * @return
      */
-    public static RelationList addToDocAndConstructList(ObjectFactory of, MbDocument doc, List<Relation> rl, IndexField idIndexField, IndexField nameIndexField)
+    public static RelationList addToDocAndConstructList(ObjectFactory of, MbDocument doc,  List<Relation> rl, IndexField idIndexField, IndexField nameIndexField)
     {
         RelationList relationList = of.createRelationList();
-        relationList.setTargetType(RelationTypes.ARTIST_RELATION_TYPE);
+        relationList.setTargetType(RelationTypes.RECORDING_RELATION_TYPE);
         for (Relation r : rl)
         {
             relationList.getRelation().add(r);
-            doc.addField(idIndexField, r.getArtist().getId());
-            doc.addField(nameIndexField, r.getArtist().getName());
+            doc.addField(idIndexField, r.getRecording().getId());
+            doc.addField(nameIndexField, r.getRecording().getTitle());
         }
         return relationList;
     }
+
+
 }

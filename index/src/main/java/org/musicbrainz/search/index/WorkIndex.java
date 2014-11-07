@@ -28,6 +28,7 @@ import org.musicbrainz.mmd2.*;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.helper.AliasHelper;
 import org.musicbrainz.search.helper.LinkedArtistsHelper;
+import org.musicbrainz.search.helper.LinkedRecordingsHelper;
 import org.musicbrainz.search.helper.TagHelper;
 import org.musicbrainz.search.type.RelationTypes;
 
@@ -82,19 +83,7 @@ public class WorkIndex extends DatabaseIndex {
         addPreparedStatement("TAGS", TagHelper.constructTagQuery("work_tag", "work"));
         addPreparedStatement("ALIASES", AliasHelper.constructAliasQuery("work"));
         addPreparedStatement("ARTISTS",LinkedArtistsHelper.constructArtistRelationQuery("l_artist_work", "work"));
-
-        addPreparedStatement("RECORDINGS",
-                " SELECT aw.id as awid, l.id as lid, w.id as wid, w.gid, a.gid as aid, a.name as recording_name, " +
-                        " lt.name as link, lat.name as attribute" +
-                        " FROM l_recording_work aw" +
-                        " INNER JOIN recording a ON a.id    = aw.entity0" +
-                        " INNER JOIN work   w ON w.id     = aw.entity1" +
-                        " INNER JOIN link l ON aw.link = l.id " +
-                        " INNER JOIN link_type lt on l.link_type=lt.id" +
-                        " LEFT JOIN  link_attribute la on la.link=l.id" +
-                        " LEFT JOIN  link_attribute_type lat on la.attribute_type=lat.id" +
-                        " WHERE w.id BETWEEN ? AND ?  "  +
-                        " ORDER BY aw.id");
+        addPreparedStatement("RECORDINGS", LinkedRecordingsHelper.constructRecordingRelationQuery("l_recording_work", "work"));
 
         addPreparedStatement("ISWCS",
                 "SELECT work, iswc" +
@@ -108,70 +97,6 @@ public class WorkIndex extends DatabaseIndex {
                         "  LEFT JOIN language l on w.language = l.id " +
                         " WHERE w.id BETWEEN ? AND ? " +
                         " ORDER BY w.id");
-    }
-
-
-    /**
-     * Load Recording Relations
-     *
-     * @param min
-     * @param max
-     * @return
-     * @throws SQLException
-     * @throws IOException
-     */
-    private ArrayListMultimap<Integer, Relation> loadRecordingRelations(int min, int max) throws SQLException, IOException {
-        ObjectFactory of = new ObjectFactory();
-        ArrayListMultimap<Integer, Relation> recordings = ArrayListMultimap.create();
-        PreparedStatement st  = getPreparedStatement("RECORDINGS");
-        st.setInt(1, min);
-        st.setInt(2, max);
-        ResultSet rs = st.executeQuery();
-        int lastLinkId=-1;
-        Relation lastRelation = null;
-        while (rs.next()) {
-            int linkId = rs.getInt("awid");
-
-            //If have another attribute for the same relation
-            if(linkId==lastLinkId) {
-                Relation.AttributeList.Attribute attribute = of.createRelationAttributeListAttribute();
-                attribute.setContent(rs.getString("attribute"));
-                Relation.AttributeList attributeList=lastRelation.getAttributeList();
-                attributeList.getAttribute().add(attribute);
-            }
-            //New relation (may or may not be new work but doesn't matter)
-            else {
-                int workId = rs.getInt("wid");
-
-                Relation relation = of.createRelation();
-
-                Recording recording = of.createRecording();
-                recording.setId(rs.getString("aid"));
-                recording.setTitle(rs.getString("recording_name"));
-
-                relation.setRecording(recording);
-                relation.setType(rs.getString("link"));
-                relation.setDirection(DefDirection.BACKWARD);
-
-                //Each relation may contain attributes if it does needs attribute list
-                String attributeValue = rs.getString("attribute");
-                if(!Strings.isNullOrEmpty(attributeValue))
-                {
-                    Relation.AttributeList attributeList = of.createRelationAttributeList();
-                    relation.setAttributeList(attributeList);
-                    Relation.AttributeList.Attribute attribute = new ObjectFactory().createRelationAttributeListAttribute();
-                    attribute.setContent(attributeValue);
-                    attributeList.getAttribute().add(attribute);
-                }
-                //Add relation
-                recordings.put(workId, relation);
-
-                lastRelation=relation;
-                lastLinkId=linkId;
-            }
-        }
-        rs.close();
-        return recordings;
     }
 
     /**
@@ -217,7 +142,7 @@ public class WorkIndex extends DatabaseIndex {
 
         Map<Integer, List<Tag>>              tags               = TagHelper.loadTags(min, max, getPreparedStatement("TAGS"), "work");
         ArrayListMultimap<Integer, Relation> artistRelations    = LinkedArtistsHelper.loadArtistRelations(min, max, getPreparedStatement("ARTISTS"));
-        ArrayListMultimap<Integer, Relation> recordingRelations = loadRecordingRelations(min, max);
+        ArrayListMultimap<Integer, Relation> recordingRelations = LinkedRecordingsHelper.loadRecordingRelations(min, max, getPreparedStatement("RECORDINGS"));
         Map<Integer, Set<Alias>>             aliases            = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
         Map<Integer, List<String>>           iswcs              = loadISWCs(min,max);
 
@@ -268,6 +193,7 @@ public class WorkIndex extends DatabaseIndex {
             work.setType(type);
         }
 
+
         String comment = rs.getString("comment");
         doc.addFieldOrNoValue(WorkIndexField.COMMENT, comment);
         if (!Strings.isNullOrEmpty(comment)) {
@@ -275,28 +201,15 @@ public class WorkIndex extends DatabaseIndex {
         }
 
         if (artistRelations.containsKey(id)) {
-            List<Relation> rl = artistRelations.get(id);
-            RelationList relationList = of.createRelationList();
-            relationList.setTargetType(RelationTypes.ARTIST_RELATION_TYPE);
-            work.getRelationList().add(relationList);
-            for (Relation r : rl) {
-                relationList.getRelation().add(r);
-                doc.addField(WorkIndexField.ARTIST_ID, r.getArtist().getId());
-                doc.addField(WorkIndexField.ARTIST, r.getArtist().getName());
-            }
+            work.getRelationList().add(LinkedArtistsHelper.addToDocAndConstructList(of, doc, artistRelations.get(id),
+                    WorkIndexField.ARTIST_ID,
+                    WorkIndexField.ARTIST));
         }
 
-
         if (recordingRelations.containsKey(id)) {
-            List<Relation> rl = recordingRelations.get(id);
-            RelationList relationList = of.createRelationList();
-            relationList.setTargetType(RelationTypes.RECORDING_RELATION_TYPE);
-            work.getRelationList().add(relationList);
-            for (Relation r : rl) {
-                relationList.getRelation().add(r);
-                doc.addField(WorkIndexField.RECORDING_ID, r.getRecording().getId());
-                doc.addField(WorkIndexField.RECORDING, r.getRecording().getTitle());
-            }
+            work.getRelationList().add(LinkedRecordingsHelper.addToDocAndConstructList(of, doc, recordingRelations.get(id),
+                    WorkIndexField.RECORDING_ID,
+                    WorkIndexField.RECORDING));
         }
 
         if (aliases.containsKey(id))
@@ -317,16 +230,9 @@ public class WorkIndex extends DatabaseIndex {
             doc.addFieldOrNoValue(WorkIndexField.ISWC, null);
         }
 
-        if (tags.containsKey(id)) {
-            TagList tagList = of.createTagList();
-            for (Tag nextTag : tags.get(id)) {
-                Tag tag = of.createTag();
-                doc.addField(WorkIndexField.TAG, nextTag.getName());
-                tag.setName(nextTag.getName());
-                tag.setCount(new BigInteger(nextTag.getCount().toString()));
-                tagList.getTag().add(tag);
-            }
-            work.setTagList(tagList);
+        if (tags.containsKey(id))
+        {
+            work.setTagList(TagHelper.addTagsToDocAndConstructTagList(of, doc, tags, id, WorkIndexField.TAG));
         }
 
         String store = MMDSerializer.serialize(work);

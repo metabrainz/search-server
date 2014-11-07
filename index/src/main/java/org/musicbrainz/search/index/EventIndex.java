@@ -38,7 +38,6 @@ import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.helper.AliasHelper;
 import org.musicbrainz.search.helper.LinkedArtistsHelper;
 import org.musicbrainz.search.helper.TagHelper;
-import org.musicbrainz.search.type.RelationTypes;
 
 
 import java.io.IOException;
@@ -180,15 +179,7 @@ public class EventIndex extends DatabaseIndex {
 
 
         if (artistRelations.containsKey(eventId)) {
-            List<Relation> rl = artistRelations.get(eventId);
-            RelationList relationList = of.createRelationList();
-            relationList.setTargetType(RelationTypes.ARTIST_RELATION_TYPE);
-            event.getRelationList().add(relationList);
-            for (Relation r : rl) {
-                relationList.getRelation().add(r);
-                doc.addField(EventIndexField.ARTIST_ID, r.getArtist().getId());
-                doc.addField(EventIndexField.ARTIST, r.getArtist().getName());
-            }
+            event.getRelationList().add(LinkedArtistsHelper.addToDocAndConstructList(of, doc, artistRelations.get(eventId), EventIndexField.ARTIST_ID, EventIndexField.ARTIST));
         }
 
         if (aliases.containsKey(eventId))
