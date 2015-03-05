@@ -100,6 +100,7 @@ public class RateLimiterChecker {
      */
     private static RateLimiterResponse validateAgainstRateLimiter(String remoteIpAddress)
     {
+        DatagramSocket ds = null;
         try {
 
             int requestId = count.incrementAndGet();
@@ -108,7 +109,7 @@ public class RateLimiterChecker {
             //Send Request
             String rateLimiter=requestId+OVER_LIMIT_SEARCH_IP+remoteIpAddress;
             byte[] msg = rateLimiter.getBytes();
-            DatagramSocket ds = new DatagramSocket();
+            ds = new DatagramSocket();
             DatagramPacket dp = new DatagramPacket(msg,msg.length,rateLimiterHost,rateLimiterPort.intValue());
             ds.send(dp);
 
@@ -137,6 +138,13 @@ public class RateLimiterChecker {
         }
         catch(IOException ioe) {
             log.log(Level.SEVERE, "ValidateAgainstRateLimiter:"+ioe.getMessage(),ioe);
+        }
+        finally
+        {
+            if(ds!=null && !ds.isClosed())
+            {
+                ds.close();
+            }
         }
         return ALWAYS_TRUE;
     }
