@@ -286,7 +286,7 @@ public class SearchServerServlet extends HttpServlet
      * Ensures that admin requests are coming direct from local machine
      *
      * @param request
-     * @return
+     * @return true if request has come from server, false otherwise
      */
     private boolean isRequestFromLocalHost(HttpServletRequest request)
     {
@@ -297,6 +297,107 @@ public class SearchServerServlet extends HttpServlet
             return true;
         }
         log.info("isRequestFromLocalHost:INVALID:" + request.getRemoteHost() + "/" + request.getRemoteAddr());
+        return false;
+    }
+
+    /**
+     * Output plain text confirmation of  an admin command
+     *
+     * @param response
+     * @param msg
+     * @throws IOException
+     */
+    private void outputConfirmation( HttpServletResponse response, String msg) throws IOException
+    {
+        response.setCharacterEncoding(CHARSET);
+        response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+        response.getWriter().println(msg);
+        response.getWriter().close();
+    }
+
+    /**
+     * Has an admin command been made, if so deal with it now and then return
+     *
+     * @param request
+     * @param response
+     * @return true if admin command, false otherwise
+     * @throws IOException
+     */
+    private boolean processedAdminCommand(HttpServletRequest request, HttpServletResponse response)
+        throws IOException
+    {
+        // Force initialization of search server should be called when index have been replaced by new indexes
+        String init = request.getParameter(RequestParameter.INIT.getName());
+        if (init != null)
+        {
+            log.info("Checking init request");
+            if (isRequestFromLocalHost(request))
+            {
+                init(init.equals("mmap"));
+                outputConfirmation( response, "Indexes Loaded:");
+                return true;
+            }
+            else
+            {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return true;
+            }
+
+        }
+
+        // Enabled/Disable Rate Limiter
+        String rate = request.getParameter(RequestParameter.RATE.getName());
+        if (rate != null)
+        {
+            log.info("Checking rate request");
+            if (isRequestFromLocalHost(request))
+            {
+                initRateLimiter(rate);
+                outputConfirmation( response, "Rate Limiter:" + rate);
+                return true ;
+            }
+            else
+            {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return true ;
+            }
+        }
+
+        // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
+        String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
+        if (reloadIndexes != null)
+        {
+            log.info("Checking reloadindex request");
+            if (isRequestFromLocalHost(request))
+            {
+                reloadIndexes();
+                outputConfirmation( response, "Indexes Reloaded");
+                return true ;
+            }
+            else
+            {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return true ;
+            }
+        }
+
+        // Force GC
+        String gc = request.getParameter(RequestParameter.GC.getName());
+        if (gc != null)
+        {
+            log.info("Garbage Collection Requested");
+            if (isRequestFromLocalHost(request))
+            {
+                System.gc();
+                outputConfirmation( response, "Garbage Collection Requested");
+                return true ;
+            }
+            else
+            {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return true ;
+            }
+        }
         return false;
     }
 
@@ -315,91 +416,11 @@ public class SearchServerServlet extends HttpServlet
             // Ensure encoding set to UTF8
             request.setCharacterEncoding(CHARSET);
 
-            // Force initialization of search server should be called when index have been replaced by new indexes
-            String init = request.getParameter(RequestParameter.INIT.getName());
-            if (init != null)
+
+            if(processedAdminCommand(request, response))
             {
-                log.info("Checking init request");
-                if (isRequestFromLocalHost(request))
-                {
-                    init(init.equals("mmap"));
-                    response.setCharacterEncoding(CHARSET);
-                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                    response.getWriter().println("Indexes Loaded:");
-                    response.getWriter().close();
-                    return;
-                }
-                else
-                {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    return;
-                }
-
+                return;
             }
-
-            // Enabled/Disable Rate Limiter
-            String rate = request.getParameter(RequestParameter.RATE.getName());
-            if (rate != null)
-            {
-                log.info("Checking rate request");
-                if (isRequestFromLocalHost(request))
-                {
-                    initRateLimiter(rate);
-                    response.setCharacterEncoding(CHARSET);
-                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                    response.getWriter().println("Rate Limiter:" + rate);
-                    response.getWriter().close();
-                    return;
-                }
-                else
-                {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    return;
-                }
-            }
-
-            // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
-            String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
-            if (reloadIndexes != null)
-            {
-                log.info("Checking reloadindex request");
-                if (isRequestFromLocalHost(request))
-                {
-                    reloadIndexes();
-                    response.setCharacterEncoding(CHARSET);
-                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                    response.getWriter().println("Indexes Reloaded");
-                    response.getWriter().close();
-                    return;
-                }
-                else
-                {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    return;
-                }
-            }
-
-            // Force GC
-            String gc = request.getParameter(RequestParameter.GC.getName());
-            if (gc != null)
-            {
-                log.info("Garbage Collection Requested");
-                if (isRequestFromLocalHost(request))
-                {
-                    System.gc();
-                    response.setCharacterEncoding(CHARSET);
-                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                    response.getWriter().println("Garbage Collection Requested");
-                    response.getWriter().close();
-                    return;
-                }
-                else
-                {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    return;
-                }
-            }
-
 
             // If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
             // parameter
@@ -415,10 +436,7 @@ public class SearchServerServlet extends HttpServlet
                 }
 
                 SearchServer searchServerCount = searchers.get(resourceType);
-                response.setCharacterEncoding(CHARSET);
-                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getWriter().println(searchServerCount.getCount());
-                response.getWriter().close();
+                outputConfirmation( response, searchServerCount.getCount());
                 return;
             }
 
