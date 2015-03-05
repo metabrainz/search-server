@@ -588,7 +588,6 @@ public class SearchServerServlet extends HttpServlet
         }
         catch (ParseException pe)
         {
-            log.log(Level.WARNING, query + ":" + pe.getMessage(), pe);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
             return;
         }
