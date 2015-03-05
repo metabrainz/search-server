@@ -45,6 +45,7 @@ public enum RequestParameter {
     INIT ("init"),
     RELOAD_INDEXES ("reload"),
     RATE("rate"),
+    GC("gc"),
     ;
     
     private String name;

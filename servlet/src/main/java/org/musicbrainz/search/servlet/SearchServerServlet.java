@@ -28,29 +28,6 @@
 
 package org.musicbrainz.search.servlet;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.google.common.base.Strings;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -60,6 +37,20 @@ import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.musicbrainz.search.servlet.mmd2.AllWriter;
 import org.musicbrainz.search.servlet.mmd2.ResultsWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SearchServerServlet extends HttpServlet
 {
@@ -90,10 +81,8 @@ public class SearchServerServlet extends HttpServlet
     // When doing search over multiple indexes use this executorservice to run in parallel
     private final ExecutorService es = Executors.newCachedThreadPool();
 
-    private final EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(
-            ResourceType.class);
-    private final EnumMap<ResourceType, SearchServer> dismaxSearchers = new EnumMap<ResourceType, SearchServer>(
-            ResourceType.class);
+    private final EnumMap<ResourceType, SearchServer> searchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
+    private final EnumMap<ResourceType, SearchServer> dismaxSearchers = new EnumMap<ResourceType, SearchServer>(ResourceType.class);
 
     private final String initMessage = null;
     private static String searchWebPage = "";
@@ -104,7 +93,7 @@ public class SearchServerServlet extends HttpServlet
     public void init()
     {
         String init = getServletConfig().getInitParameter("init");
-        if(init!=null && init.equals("nfio"))
+        if (init != null && init.equals("nfio"))
         {
             init(false);
         }
@@ -133,20 +122,18 @@ public class SearchServerServlet extends HttpServlet
         String indexDir = getServletConfig().getInitParameter("index_dir");
         if (useMMapDirectory)
         {
-            log.info("Start:Loading Indexes from " + indexDir + ",Type:mmap," + "MaxHeap:"
-                    + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
-        } else
+            log.info("Start:Loading Indexes from " + indexDir + ",Type:mmap," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
+        }
+        else
         {
-            log.info("Start:loading Indexes from " + indexDir + ",Type:nfio," + "MaxHeap:"
-                    + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
+            log.info("Start:loading Indexes from " + indexDir + ",Type:nfio," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         }
 
         // Initialize all search servers
         for (ResourceType resourceType : ResourceType.values())
         {
 
-            File indexFileDir = new File(indexDir + System.getProperty("file.separator") + resourceType.getIndexName()
-                    + "_index");
+            File indexFileDir = new File(indexDir + System.getProperty("file.separator") + resourceType.getIndexName() + "_index");
 
             AbstractSearchServer searchServer = null;
             AbstractDismaxSearchServer dismaxSearchServer = null;
@@ -156,8 +143,7 @@ public class SearchServerServlet extends HttpServlet
                 Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
                 SearcherManager searcherManager = new SearcherManager(directory, new MusicBrainzSearcherFactory(resourceType));
                 searchServer = resourceType.getSearchServerClass().getConstructor(SearcherManager.class).newInstance(searcherManager);
-                dismaxSearchServer = resourceType.getDismaxSearchServerClass().getConstructor(AbstractSearchServer.class)
-                        .newInstance(searchServer);
+                dismaxSearchServer = resourceType.getDismaxSearchServerClass().getConstructor(AbstractSearchServer.class).newInstance(searchServer);
 
             }
             catch (CorruptIndexException e)
@@ -195,8 +181,7 @@ public class SearchServerServlet extends HttpServlet
                 }
                 catch (IOException e)
                 {
-                    log.severe("Caught exception during closing of index searcher within Init: " + resourceType.getIndexName()
-                            + ":" + e.getMessage());
+                    log.severe("Caught exception during closing of index searcher within Init: " + resourceType.getIndexName() + ":" + e.getMessage());
                 }
             }
 
@@ -205,8 +190,7 @@ public class SearchServerServlet extends HttpServlet
             dismaxSearchers.put(resourceType, dismaxSearchServer);
 
         }
-        log.info("End:loaded Indexes from " + indexDir + ",Type:nfio," + "MaxHeap:"
-                + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
+        log.info("End:loaded Indexes from " + indexDir + ",Type:nfio," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         isServletInitialized = true;
 
     }
@@ -221,7 +205,9 @@ public class SearchServerServlet extends HttpServlet
         for (SearchServer searchServer : searchers.values())
         {
             if (searchServer == null)
+            {
                 continue;
+            }
             try
             {
                 searchServer.close();
@@ -236,7 +222,9 @@ public class SearchServerServlet extends HttpServlet
         for (SearchServer searchServer : dismaxSearchers.values())
         {
             if (searchServer == null)
+            {
                 continue;
+            }
             try
             {
                 searchServer.close();
@@ -278,7 +266,9 @@ public class SearchServerServlet extends HttpServlet
         for (SearchServer searchServer : searchers.values())
         {
             if (searchServer == null)
+            {
                 continue;
+            }
             try
             {
                 searchServer.reloadIndex();
@@ -301,8 +291,7 @@ public class SearchServerServlet extends HttpServlet
     private boolean isRequestFromLocalHost(HttpServletRequest request)
     {
 
-        if (isAdminRemoteEnabled || (request.getRemoteAddr().equals("127.0.0.1"))
-                || (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1")))
+        if (isAdminRemoteEnabled || (request.getRemoteAddr().equals("127.0.0.1")) || (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1")))
         {
             log.info("isRequestFromLocalHost:VALID:" + request.getRemoteHost() + "/" + request.getRemoteAddr());
             return true;
@@ -314,7 +303,7 @@ public class SearchServerServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-        String query="";
+        String query = "";
         try
         {
             // Check if servlet is initialized ok
@@ -326,24 +315,25 @@ public class SearchServerServlet extends HttpServlet
             // Ensure encoding set to UTF8
             request.setCharacterEncoding(CHARSET);
 
-        // Force initialization of search server should be called when index have been replaced by new indexes
-        String init = request.getParameter(RequestParameter.INIT.getName());
-        if (init != null)
-        {
-            log.info("Checking init request");
-            if (isRequestFromLocalHost(request))
+            // Force initialization of search server should be called when index have been replaced by new indexes
+            String init = request.getParameter(RequestParameter.INIT.getName());
+            if (init != null)
             {
-                init(init.equals("mmap"));
-                response.setCharacterEncoding(CHARSET);
-                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getWriter().println("Indexes Loaded:");
-                response.getWriter().close();
-                return;
-            } else
-            {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
+                log.info("Checking init request");
+                if (isRequestFromLocalHost(request))
+                {
+                    init(init.equals("mmap"));
+                    response.setCharacterEncoding(CHARSET);
+                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                    response.getWriter().println("Indexes Loaded:");
+                    response.getWriter().close();
+                    return;
+                }
+                else
+                {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
 
             }
 
@@ -388,6 +378,28 @@ public class SearchServerServlet extends HttpServlet
                     return;
                 }
             }
+
+            // Force GC
+            String gc = request.getParameter(RequestParameter.GC.getName());
+            if (gc != null)
+            {
+                log.info("Garbage Collection Requested");
+                if (isRequestFromLocalHost(request))
+                {
+                    System.gc();
+                    response.setCharacterEncoding(CHARSET);
+                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                    response.getWriter().println("Garbage Collection Requested");
+                    response.getWriter().close();
+                    return;
+                }
+                else
+                {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
+            }
+
 
             // If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
             // parameter
@@ -590,24 +602,22 @@ public class SearchServerServlet extends HttpServlet
      * @param responseVersion @throws ParseException
      * @throws IOException
      */
-    private void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax,
-                          boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion)
-            throws ParseException, IOException
+    private void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax, boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion) throws ParseException, IOException
     {
 
         SearchServer searchServer;
         if (isDismax)
         {
             searchServer = dismaxSearchers.get(resourceType);
-        } else
+        }
+        else
         {
             searchServer = searchers.get(resourceType);
         }
 
         if (searchServer == null)
         {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(resourceType));
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(resourceType));
             return;
         }
 
@@ -632,8 +642,7 @@ public class SearchServerServlet extends HttpServlet
 
         if (writer == null)
         {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.NO_HANDLER_FOR_TYPE_AND_FORMAT.getMsg(resourceType, responseFormat));
             return;
         }
         response.setCharacterEncoding(CHARSET);
@@ -674,22 +683,15 @@ public class SearchServerServlet extends HttpServlet
      * @param isPretty
      * @throws IOException
      */
-    private void doAllSearch(HttpServletResponse response, String query, boolean isDismax, Integer offset, Integer limit,
-                             String responseFormat, boolean isPretty) throws Exception
+    private void doAllSearch(HttpServletResponse response, String query, boolean isDismax, Integer offset, Integer limit, String responseFormat, boolean isPretty) throws Exception
     {
 
-        SearchServer artistSearch = isDismax ? dismaxSearchers.get(ResourceType.ARTIST) : searchers
-                .get(ResourceType.ARTIST);
-        SearchServer releaseSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE) : searchers
-                .get(ResourceType.RELEASE);
-        SearchServer releaseGroupSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE_GROUP) : searchers
-                .get(ResourceType.RELEASE_GROUP);
-        SearchServer labelSearch = isDismax ? dismaxSearchers.get(ResourceType.LABEL) : searchers
-                .get(ResourceType.LABEL);
-        SearchServer recordingSearch = isDismax ? dismaxSearchers.get(ResourceType.RECORDING) : searchers
-                .get(ResourceType.RECORDING);
-        SearchServer workSearch = isDismax ? dismaxSearchers.get(ResourceType.WORK) : searchers
-                .get(ResourceType.WORK);
+        SearchServer artistSearch = isDismax ? dismaxSearchers.get(ResourceType.ARTIST) : searchers.get(ResourceType.ARTIST);
+        SearchServer releaseSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE) : searchers.get(ResourceType.RELEASE);
+        SearchServer releaseGroupSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE_GROUP) : searchers.get(ResourceType.RELEASE_GROUP);
+        SearchServer labelSearch = isDismax ? dismaxSearchers.get(ResourceType.LABEL) : searchers.get(ResourceType.LABEL);
+        SearchServer recordingSearch = isDismax ? dismaxSearchers.get(ResourceType.RECORDING) : searchers.get(ResourceType.RECORDING);
+        SearchServer workSearch = isDismax ? dismaxSearchers.get(ResourceType.WORK) : searchers.get(ResourceType.WORK);
 
         Collection<Callable<Results>> searches = new ArrayList<Callable<Results>>();
         searches.add(new CallableSearch(artistSearch, query, offset, limit));
@@ -710,14 +712,14 @@ public class SearchServerServlet extends HttpServlet
         Results recordingResults = results.get(4).get();
         Results workResults = results.get(5).get();
 
-        AllWriter writer = new AllWriter(offset, limit, artistResults, releaseResults, releaseGroupResults, labelResults,
-                recordingResults, workResults);
+        AllWriter writer = new AllWriter(offset, limit, artistResults, releaseResults, releaseGroupResults, labelResults, recordingResults, workResults);
         response.setCharacterEncoding(CHARSET);
 
         if (responseFormat.equals(RESPONSE_XML))
         {
             response.setContentType(writer.getMimeType());
-        } else
+        }
+        else
         {
             response.setContentType(writer.getJsonMimeType());
         }
