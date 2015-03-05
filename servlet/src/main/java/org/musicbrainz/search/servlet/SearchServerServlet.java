@@ -594,13 +594,13 @@ public class SearchServerServlet extends HttpServlet
         }
         catch (Exception e)
         {
-            log.log(Level.WARNING, e.getMessage(), e);
+            log.log(Level.WARNING, query + ":" + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
         }
         catch (Throwable t)
         {
-            log.log(Level.WARNING, t.getMessage(), t);
+            log.log(Level.WARNING, query + ":" + t.getMessage(), t);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
             return;
         }
