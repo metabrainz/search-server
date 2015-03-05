@@ -422,6 +422,7 @@ public class SearchServerServlet extends HttpServlet
             if (type == null)
             {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg("none"));
+                return;
             }
 
             // V1 Compatibility
