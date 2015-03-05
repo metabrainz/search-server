@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.SearcherManager;
@@ -313,16 +314,17 @@ public class SearchServerServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-
-        // Check if servlet is initialized ok
-        if (!isServletInitialized)
+        String query="";
+        try
         {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    ErrorMessage.SERVLET_INIT_FAILED.getMsg(initMessage));
-            return;
-        }
-        // Ensure encoding set to UTF8
-        request.setCharacterEncoding(CHARSET);
+            // Check if servlet is initialized ok
+            if (!isServletInitialized)
+            {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.SERVLET_INIT_FAILED.getMsg(initMessage));
+                return;
+            }
+            // Ensure encoding set to UTF8
+            request.setCharacterEncoding(CHARSET);
 
         // Force initialization of search server should be called when index have been replaced by new indexes
         String init = request.getParameter(RequestParameter.INIT.getName());
@@ -343,227 +345,232 @@ public class SearchServerServlet extends HttpServlet
                 return;
             }
 
-        }
-
-        // Enabled/Disable Rate Limiter
-        String rate = request.getParameter(RequestParameter.RATE.getName());
-        if (rate != null)
-        {
-            log.info("Checking rate request");
-            if (isRequestFromLocalHost(request))
-            {
-                initRateLimiter(rate);
-                response.setCharacterEncoding(CHARSET);
-                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getWriter().println("Rate Limiter:" + rate);
-                response.getWriter().close();
-                return;
-            } else
-            {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
-        }
-
-        // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
-        String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
-        if (reloadIndexes != null)
-        {
-            log.info("Checking reloadindex request");
-            if (isRequestFromLocalHost(request))
-            {
-                reloadIndexes();
-                response.setCharacterEncoding(CHARSET);
-                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-                response.getWriter().println("Indexes Reloaded");
-                response.getWriter().close();
-                return;
-            } else
-            {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                return;
-            }
-        }
-
-        // If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
-        // parameter
-        String count = request.getParameter(RequestParameter.COUNT.getName());
-        if (count != null)
-        {
-            log.info("Checking count request");
-            ResourceType resourceType = ResourceType.getValue(count);
-            if (resourceType == null)
-            {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
-                return;
             }
 
-            SearchServer searchServerCount = searchers.get(resourceType);
-            response.setCharacterEncoding(CHARSET);
-            response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
-            response.getWriter().println(searchServerCount.getCount());
-            response.getWriter().close();
-            return;
-        }
-
-        // If they have entered nothing, redirect to them the Musicbrainz Search Page
-        if (request.getParameterMap().size() == 0)
-        {
-            response.sendRedirect(searchWebPage);
-            return;
-        }
-
-        // Must be a type parameter and must be type ALL or map to a valid resource type
-        String type = request.getParameter(RequestParameter.TYPE.getName());
-        if (type == null)
-        {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg("none"));
-        }
-
-        // V1 Compatibility
-        if (type.equals(TYPE_TRACK))
-        {
-            type = ResourceType.RECORDING.getName();
-        }
-
-        ResourceType resourceType = null;
-        if (!type.equalsIgnoreCase(TYPE_ALL))
-        {
-            resourceType = ResourceType.getValue(type);
-            if (resourceType == null)
+            // Enabled/Disable Rate Limiter
+            String rate = request.getParameter(RequestParameter.RATE.getName());
+            if (rate != null)
             {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
-                return;
-            }
-        } else if (!isSearchAllEnabled)
-        {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(TYPE_ALL));
-        }
-
-        if (isRateLimiterEnabled)
-        {
-            RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
-            if (!rateLimiterResponse.isValid())
-            {
-                if (rateLimiterResponse.getHeaderMsg() != null)
+                log.info("Checking rate request");
+                if (isRequestFromLocalHost(request))
                 {
-                    response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
+                    initRateLimiter(rate);
+                    response.setCharacterEncoding(CHARSET);
+                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                    response.getWriter().println("Rate Limiter:" + rate);
+                    response.getWriter().close();
+                    return;
                 }
-                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, rateLimiterResponse.getMsg());
-                return;
-            }
-        }
-
-        String query = request.getParameter(RequestParameter.QUERY.getName());
-        if (query == null || query.isEmpty())
-        {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_QUERY_PARAMETER.getMsg());
-            return;
-        }
-
-        // Response Format, first defined by fmt parameter, if not set defined by accept header, if not set default
-        // to Xml. Note if accept header set to json this will set format to RESPONSE_JSON_NEW not RESPONSE_JSON (the
-        // old internal format)
-        String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
-        if (responseFormat == null || responseFormat.isEmpty())
-        {
-
-            Enumeration<String> headers = request.getHeaders("Accept");
-            while (headers.hasMoreElements())
-            {
-                String nextHeader = headers.nextElement();
-                if (nextHeader.equals("application/json"))
+                else
                 {
-                    responseFormat = RESPONSE_JSON_NEW;
-                    break;
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
                 }
             }
-            // Default to xml if not provided
-            if (responseFormat == null)
+
+            // Reopen the indexes in an efficient way when existing indexes have been updated (not replaced)
+            String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
+            if (reloadIndexes != null)
             {
-                responseFormat = RESPONSE_XML;
+                log.info("Checking reloadindex request");
+                if (isRequestFromLocalHost(request))
+                {
+                    reloadIndexes();
+                    response.setCharacterEncoding(CHARSET);
+                    response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                    response.getWriter().println("Indexes Reloaded");
+                    response.getWriter().close();
+                    return;
+                }
+                else
+                {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    return;
+                }
             }
-        }
 
-        String responseVersion = request.getParameter(RequestParameter.VERSION.getName());
-        if (responseVersion == null || responseVersion.isEmpty())
-        {
-            responseVersion = WS_VERSION_2;
-        }
-
-        Integer offset = DEFAULT_OFFSET;
-        String strOffset = request.getParameter(RequestParameter.OFFSET.getName());
-        if (strOffset != null && !strOffset.isEmpty())
-        {
-            offset = new Integer(strOffset);
-        }
-
-        Integer limit = DEFAULT_MATCHES_LIMIT;
-        String strLimit = request.getParameter(RequestParameter.LIMIT.getName());
-        String strMax = request.getParameter(RequestParameter.MAX.getName());
-        // Used by webservice
-        if (strLimit != null && !strLimit.isEmpty())
-        {
-            limit = new Integer(strLimit);
-            if (limit > MAX_MATCHES_LIMIT)
+            // If we receive Count Parameter then we just return a count immediately, the options are the same as for the type
+            // parameter
+            String count = request.getParameter(RequestParameter.COUNT.getName());
+            if (count != null)
             {
-                limit = MAX_MATCHES_LIMIT;
+                log.info("Checking count request");
+                ResourceType resourceType = ResourceType.getValue(count);
+                if (resourceType == null)
+                {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_COUNT_TYPE.getMsg(count));
+                    return;
+                }
+
+                SearchServer searchServerCount = searchers.get(resourceType);
+                response.setCharacterEncoding(CHARSET);
+                response.setContentType("text/plain; charset=UTF-8; charset=UTF-8");
+                response.getWriter().println(searchServerCount.getCount());
+                response.getWriter().close();
+                return;
             }
-        }
-        // Used by web search (although entered as limit on website then converted to max !)
-        // TODO perhaps could be simplified
-        else if (strMax != null && !strMax.isEmpty())
-        {
-            limit = new Integer(strMax);
-            if (limit > MAX_MATCHES_LIMIT)
+
+            // If they have entered nothing, redirect to them the Musicbrainz Search Page
+            if (request.getParameterMap().size() == 0)
             {
-                limit = MAX_MATCHES_LIMIT;
+                response.sendRedirect(searchWebPage);
+                return;
             }
-        }
 
-        boolean isExplain = false;
-        String strIsExplain = request.getParameter(RequestParameter.EXPLAIN.getName());
-        if (strIsExplain != null && strIsExplain.equals("true"))
-        {
-            isExplain = true;
-        }
+            // Must be a type parameter and must be type ALL or map to a valid resource type
+            String type = request.getParameter(RequestParameter.TYPE.getName());
+            if (type == null)
+            {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg("none"));
+            }
 
-        boolean isPretty = false;
-        String strIsPretty = request.getParameter(RequestParameter.PRETTY.getName());
-        if (strIsPretty != null && strIsPretty.equals("true"))
-        {
-            isPretty = true;
-        }
+            // V1 Compatibility
+            if (type.equals(TYPE_TRACK))
+            {
+                type = ResourceType.RECORDING.getName();
+            }
 
-        boolean isDismax = false;
-        String strIsDismax = request.getParameter(RequestParameter.DISMAX.getName());
-        if (strIsDismax != null && strIsDismax.equals("true"))
-        {
-            isDismax = true;
-        }
+            ResourceType resourceType = null;
+            if (!type.equalsIgnoreCase(TYPE_ALL))
+            {
+                resourceType = ResourceType.getValue(type);
+                if (resourceType == null)
+                {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
+                    return;
+                }
+            }
+            else if (!isSearchAllEnabled)
+            {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(TYPE_ALL));
+                return;
+            }
 
-        try
-        {
+            if (isRateLimiterEnabled)
+            {
+                RateLimiterChecker.RateLimiterResponse rateLimiterResponse = RateLimiterChecker.checkRateLimiter(request);
+                if (!rateLimiterResponse.isValid())
+                {
+                    if (rateLimiterResponse.getHeaderMsg() != null)
+                    {
+                        response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
+                    }
+                    response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, rateLimiterResponse.getMsg());
+                    return;
+                }
+            }
+
+            query = request.getParameter(RequestParameter.QUERY.getName());
+            if (Strings.isNullOrEmpty(query))
+            {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_QUERY_PARAMETER.getMsg());
+                return;
+            }
+
+            // Response Format, first defined by fmt parameter, if not set defined by accept header, if not set default
+            // to Xml. Note if accept header set to json this will set format to RESPONSE_JSON_NEW not RESPONSE_JSON (the
+            // old internal format)
+            String responseFormat = request.getParameter(RequestParameter.FORMAT.getName());
+            if (Strings.isNullOrEmpty(responseFormat))
+            {
+                Enumeration<String> headers = request.getHeaders("Accept");
+                while (headers.hasMoreElements())
+                {
+                    String nextHeader = headers.nextElement();
+                    if (nextHeader.equals("application/json"))
+                    {
+                        responseFormat = RESPONSE_JSON_NEW;
+                        break;
+                    }
+                }
+                // Default to xml if not provided
+                if (responseFormat == null)
+                {
+                    responseFormat = RESPONSE_XML;
+                }
+            }
+
+            String responseVersion = request.getParameter(RequestParameter.VERSION.getName());
+            if (Strings.isNullOrEmpty(responseVersion))
+            {
+                responseVersion = WS_VERSION_2;
+            }
+
+            Integer offset = DEFAULT_OFFSET;
+            String strOffset = request.getParameter(RequestParameter.OFFSET.getName());
+            if (!Strings.isNullOrEmpty(strOffset))
+            {
+                offset = new Integer(strOffset);
+            }
+
+            Integer limit = DEFAULT_MATCHES_LIMIT;
+            String strLimit = request.getParameter(RequestParameter.LIMIT.getName());
+            String strMax = request.getParameter(RequestParameter.MAX.getName());
+            // Used by webservice
+            if (!Strings.isNullOrEmpty(strLimit))
+            {
+                limit = new Integer(strLimit);
+                if (limit > MAX_MATCHES_LIMIT)
+                {
+                    limit = MAX_MATCHES_LIMIT;
+                }
+            }
+            // Used by web search (although entered as limit on website then converted to max !)
+            else if (!Strings.isNullOrEmpty(strMax))
+            {
+                limit = new Integer(strMax);
+                if (limit > MAX_MATCHES_LIMIT)
+                {
+                    limit = MAX_MATCHES_LIMIT;
+                }
+            }
+
+            boolean isExplain = false;
+            String strIsExplain = request.getParameter(RequestParameter.EXPLAIN.getName());
+            if (strIsExplain != null && strIsExplain.equals("true"))
+            {
+                isExplain = true;
+            }
+
+            boolean isPretty = false;
+            String strIsPretty = request.getParameter(RequestParameter.PRETTY.getName());
+            if (strIsPretty != null && strIsPretty.equals("true"))
+            {
+                isPretty = true;
+            }
+
+            boolean isDismax = false;
+            String strIsDismax = request.getParameter(RequestParameter.DISMAX.getName());
+            if (strIsDismax != null && strIsDismax.equals("true"))
+            {
+                isDismax = true;
+            }
+
             if (resourceType != null)
             {
-                // log.log(Level.SEVERE,"Query sent"+query);
-                doSearch(response, resourceType, query, isDismax, isExplain, isPretty, offset, limit, responseFormat,
-                        responseVersion);
-            } else
+                doSearch(response, resourceType, query, isDismax, isExplain, isPretty, offset, limit, responseFormat, responseVersion);
+            }
+            else
             {
                 doAllSearch(response, query, isDismax, offset, limit, responseFormat, isPretty);
             }
         }
         catch (ParseException pe)
         {
+            log.log(Level.WARNING, query + ":" + pe.getMessage(), pe);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
             return;
         }
         catch (Exception e)
         {
-            log.log(Level.SEVERE, e.getMessage(), e);
+            log.log(Level.WARNING, e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            return;
+        }
+        catch (Throwable t)
+        {
+            log.log(Level.WARNING, t.getMessage(), t);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
             return;
         }
     }
@@ -605,12 +612,18 @@ public class SearchServerServlet extends HttpServlet
 
         if (isExplain)
         {
-            String explainationOutput = searchServer.explain(query, offset, limit);
-            response.setCharacterEncoding(CHARSET);
-            response.setContentType("text/html");
-            response.getWriter().println(explainationOutput);
-            response.getWriter().close();
-            return;
+            try
+            {
+                String explainationOutput = searchServer.explain(query, offset, limit);
+                response.setCharacterEncoding(CHARSET);
+                response.setContentType("text/html");
+                response.getWriter().println(explainationOutput);
+                return;
+            }
+            finally
+            {
+                response.getWriter().close();
+            }
         }
 
         Results results = searchServer.search(query, offset, limit);
@@ -626,7 +639,8 @@ public class SearchServerServlet extends HttpServlet
         if (responseFormat.equals(RESPONSE_XML))
         {
             response.setContentType(writer.getMimeType());
-        } else
+        }
+        else
         {
             response.setContentType(((ResultsWriter) writer).getJsonMimeType());
         }
@@ -637,8 +651,14 @@ public class SearchServerServlet extends HttpServlet
         }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-        writer.write(out, results, responseFormat, isPretty);
-        out.close();
+        try
+        {
+            writer.write(out, results, responseFormat, isPretty);
+        }
+        finally
+        {
+            out.close();
+        }
     }
 
     /**
@@ -707,8 +727,14 @@ public class SearchServerServlet extends HttpServlet
         }
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
-        writer.write(out, allResults, responseFormat, isPretty);
-        out.close();
+        try
+        {
+            writer.write(out, allResults, responseFormat, isPretty);
+        }
+        finally
+        {
+            out.close();
+        }
     }
 
 }
