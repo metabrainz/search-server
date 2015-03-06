@@ -33,6 +33,7 @@ public enum ErrorMessage {
     UNABLE_TO_PARSE_SEARCH ("Unable to parse search:{0}"),
     NO_MATCHES ("zero search hits"),    //Formatting as is because depended on by mb_server
     UNKNOWN_COUNT_TYPE ("Count parameter {0} not valid, should be a type "),
+    UNABLE_TO_PARSE_SEARCH_SLASHES_ARE_REGEXP ("Unable to parse search, forward slash is used for regex unless escaped:{0}"),
     ;
 
     String msg;

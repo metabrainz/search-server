@@ -591,6 +591,19 @@ public class SearchServerServlet extends HttpServlet
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
             return;
         }
+        catch(NullPointerException npe)
+        {
+            if(isUnescapedBackslashIssue(npe.getStackTrace(), query))
+            {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH_SLASHES_ARE_REGEXP.getMsg(query));
+            }
+            else
+            {
+                log.log(Level.WARNING, query + ":" + npe.getMessage(), npe);
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, npe.getMessage());
+                return;
+            }
+        }
         catch (Exception e)
         {
             log.log(Level.WARNING, query + ":" + e.getMessage(), e);
@@ -603,6 +616,26 @@ public class SearchServerServlet extends HttpServlet
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
             return;
         }
+    }
+
+    /**
+     * See http://tickets.musicbrainz.org/browse/SEARCH-411
+     *
+     * @param stackTrace
+     * @param query
+     * @return
+     */
+    public boolean isUnescapedBackslashIssue(StackTraceElement[] stackTrace, String query)
+    {
+        if(query.contains("/"))
+        {
+            if((stackTrace[0].getClassName().equals("java.util.TreeMap")) &&
+               (stackTrace[0].getMethodName().equals("getEntry")))
+            {
+                    return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -619,7 +652,7 @@ public class SearchServerServlet extends HttpServlet
      * @param responseVersion @throws ParseException
      * @throws IOException
      */
-    private void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax, boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion) throws ParseException, IOException
+    public void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax, boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion) throws ParseException, IOException
     {
 
         SearchServer searchServer;
