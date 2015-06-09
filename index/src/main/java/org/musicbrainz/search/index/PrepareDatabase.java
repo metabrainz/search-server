@@ -22,5 +22,6 @@ public class PrepareDatabase {
 
         //Tables within this schema
 		st.executeUpdate("SET search_path TO '" + IndexOptions.DB_SCHEMA + "'");
+		st.executeUpdate("SET statement_timeout = 0");
     }
 }
