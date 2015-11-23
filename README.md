@@ -10,7 +10,7 @@ This server can be run on linux/osx/windows, but these instructions assume
 that you will be running linux and will be using the tomcat7 server to host
 the servlet.
 
-It also assumes you have created a user called search with a home folder of /home/search
+It also assumes you have created a user called search with a home folder of `/home/search`.
 
 To run this search server you will also need to have a MusicBrainz database
 with the core data set loaded. Please see 
@@ -22,9 +22,9 @@ document assumes that you have completed the setup of this server.
 
 You will also need these tools:
 
-    - Java complete with JDK 1.6, not just the JRE
-    - Apache Tomcat 7
-    - Maven 2
+- Java complete with JDK 1.6, not just the JRE
+- Apache Tomcat 7
+- Maven 2
 
 In a recent Ubuntu, you can install these with this command:
 
@@ -32,11 +32,11 @@ In a recent Ubuntu, you can install these with this command:
 
 Alternatively if you're not on Ubuntu, install the required tools from the following links
 
-    - Java complete with JDK 1.6, not just the JRE (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-    - Apache Tomcat 6    ( http://tomcat.apache.org )
-    - Maven version 2    ( http://maven.apache.org/download.html )
+- Java complete with JDK 1.6, not just the JRE (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- Apache Tomcat 6    ( http://tomcat.apache.org )
+- Maven version 2    ( http://maven.apache.org/download.html )
 
-setup Java Home directory in your profile (not needed on ubuntu):
+Setup Java Home directory in your profile (not needed on Ubuntu):
 
     export JAVA_HOME="/usr/bin/java"
 
@@ -44,7 +44,7 @@ setup Java Home directory in your profile (not needed on ubuntu):
 Check out and build server code
 -------------------------------
 
-Check out the mmd-schema and search-server repositories using Git as follows:
+Check out the **mmd-schema** and **search-server** repositories using Git as follows:
 
     git clone https://github.com/metabrainz/mmd-schema.git
     git clone https://ijabz@bitbucket.org/metabrainz/search-server.git
@@ -74,8 +74,8 @@ This step will download any required java components and then compile and test t
 Deploy the Search Server Code
 ----------------------------------
 
-Unjar the search server webapp into the ROOT directory under webapps for your tomcat installation. If you installed
-Tomcat using apt this will be
+Unjar the search server webapp into the `ROOT` directory under `webapps` for your tomcat installation. If you installed
+Tomcat using `apt` this will be
 
     /var/lib/tomcat7/webapps
 
@@ -114,8 +114,7 @@ Place the downloaded file into `/home/search`.
 Now build indexes with these commands:
 
     cd /home/search
-    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --indexes-dir /home/search/indexdata
-         --freedb-dump /home/search/<freedb tar.bz2 file>
+    java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --indexes-dir /home/search/indexdata --freedb-dump /home/search/<freedb tar.bz2 file>
 
 This will build all of the indexes using upto 512mb of memory using all of the defaults for connecting
 to the database servers. If your database isn't on the same server and named according to the
@@ -124,9 +123,8 @@ defaults you will need to give the command line more options. To see the options
     java -Xmx512M -jar index-2.0-SNAPSHOT-jar-with-dependencies.jar --help
 
 Usually you will want to build the freedb index at a different time to the other indexes so you can also
-build it separately. If you want to build just the freedb_index, you can specify
-
-    --indexes freedb
+build it separately.
+If you want to build just the freedb_index, you can specify `--indexes freedb`.
 
 Building the search indexes will take some time -- even on a fast machine it will still take an hour.
 Once indexes are built, ensure that your tomcat instance has the permissions to access your data.
@@ -140,7 +138,8 @@ Update Indexes using the Live Data Feed
 
 It's possible to update search indexes using replication packets, the same way your slave MusicBrainz database is updated.
 
-You need to edit the updateindex.sh and adapt the SETTINGS section to fit your setup:
+You need to edit the updateindex.sh and adapt the `SETTINGS` section to fit your setup:
+
 	vi /home/search/searchserver/updater/updateindex.cfg
 
 Once you're done, you can launch the indexes updating:
@@ -152,20 +151,25 @@ Advanced options:
 
 * You can get more verbose log by using the `--verbose` parameter:
 
-	/home/search/searchserver/updater/updateindex.sh --verbose
+```
+/home/search/searchserver/updater/updateindex.sh --verbose
+```
 
 * The default settings allow you update most of the indexes excepted recording ones. 
 If you want to choose specifically the indexes to be updated, either update the `INDEXES` variable in `updateindex.cfg`,
 or comment the `INDEXES` variable in `updateindex.cfg` and run the script using the `--indexes` args:
 
-	/home/search/searchserver/updater/updateindex.sh --indexes artist,label
+```
+/home/search/searchserver/updater/updateindex.sh --indexes artist,label
+```
 
 * A lock file is created to ensure you're not running concurrently the script.
-You can provide the lock file by setting the LOCK_FILE env variable. This can be useful if you can to update concurrently different indexes:
+You can provide the lock file by setting the `LOCK_FILE` env variable. This can be useful if you can to update concurrently different indexes:
 
-	LOCK_FILE=/tmp/lock_updating_release /home/search/searchserver/updater/updateindex.sh --indexes release
-	LOCK_FILE=/tmp/lock_updating_label /home/search/searchserver/updater/updateindex.sh --indexes label
-
+```
+LOCK_FILE=/tmp/lock_updating_release /home/search/searchserver/updater/updateindex.sh --indexes release
+LOCK_FILE=/tmp/lock_updating_label /home/search/searchserver/updater/updateindex.sh --indexes label
+```
 
 Tuning Tomcat
 -------------
@@ -198,7 +202,7 @@ So it nows looks like:
 
     <Connector port="8080" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443" URIEncoding="UTF-8">
 
-By default Tomcat runs on port 8080. To switch it to port 80, edit the Connector line in server.xml again:
+By default Tomcat runs on port 8080. To switch it to port 80, edit the Connector line in `server.xml` again:
 
     <Connector port="80" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443" URIEncoding="UTF-8">
 
