@@ -45,6 +45,7 @@ Check out and build server code
 -------------------------------
 
 Check out the mmd-schema and search-server repositories using Git as follows:
+
     git clone https://github.com/metabrainz/mmd-schema.git
     git clone https://ijabz@bitbucket.org/metabrainz/search-server.git
 
@@ -53,7 +54,7 @@ Build and install the model:
     cd mmd-schema/brainz-mmd2-jaxb
     mvn install
 
-By default the search server home will be at: /home/search and the indexes will live in /home/search/indexdata.
+By default the search server home will be at: `/home/search` and the indexes will live in `/home/search/indexdata`.
 But the index location can be overridden by editing
 
     ... /webapps/ROOT/WEB-INF/web.xml
@@ -72,6 +73,7 @@ This step will download any required java components and then compile and test t
 
 Deploy the Search Server Code
 ----------------------------------
+
 Unjar the search server webapp into the ROOT directory under webapps for your tomcat installation. If you installed
 Tomcat using apt this will be
 
@@ -107,7 +109,7 @@ The file you download should be a complete dump and should look like this:
 
     freedb-complete-20090901.tar.bz2
 
-Place the downloaded file into /home/search.
+Place the downloaded file into `/home/search`.
 
 Now build indexes with these commands:
 
@@ -132,6 +134,7 @@ In Ubuntu:
 
     chown -R tomcat7:tomcat7 /home/search
 
+
 Update Indexes using the Live Data Feed
 ---------------------------------------
 
@@ -147,24 +150,28 @@ You can run this script hourly using cron.
 
 Advanced options:
 
-* You can get more verbose log by using the --verbose parameter:
+* You can get more verbose log by using the `--verbose` parameter:
+
 	/home/search/searchserver/updater/updateindex.sh --verbose
 
 * The default settings allow you update most of the indexes excepted recording ones. 
-If you want to choose specifically the indexes to be updated, either update the INDEXES variable in updateindex.cfg,
-or comment the INDEXES variable in updateindex.cfg and run the script using the --indexes args:
+If you want to choose specifically the indexes to be updated, either update the `INDEXES` variable in `updateindex.cfg`,
+or comment the `INDEXES` variable in `updateindex.cfg` and run the script using the `--indexes` args:
+
 	/home/search/searchserver/updater/updateindex.sh --indexes artist,label
 
 * A lock file is created to ensure you're not running concurrently the script.
 You can provide the lock file by setting the LOCK_FILE env variable. This can be useful if you can to update concurrently different indexes:
+
 	LOCK_FILE=/tmp/lock_updating_release /home/search/searchserver/updater/updateindex.sh --indexes release
 	LOCK_FILE=/tmp/lock_updating_label /home/search/searchserver/updater/updateindex.sh --indexes label
+
 
 Tuning Tomcat
 -------------
 
 Ubuntu enables the Java security manager by default, this will prevent the search server working.
-For Ubuntu, set TOMCAT6_SECURITY in /etc/default/tomcat7 to no:
+For Ubuntu, set `TOMCAT6_SECURITY` in `/etc/default/tomcat7` to no:
 
     # Use the Java security manager? (yes/no)
     TOMCAT6_SECURITY=no
@@ -175,14 +182,14 @@ the following to your profile sets up Tomcat with 512MB. This is the optimum amo
 allocate more than this because search can use the unallocated memory to cache the indexes.
 
 Also configure Tomcat to run with file encoding UTF-8, otherwise it will use the default which 
-will vary from platform to platform. To accomplish both, set the JAVA_OPTS like this:
+will vary from platform to platform. To accomplish both, set the `JAVA_OPTS` like this:
 
     export JAVA_OPTS="-Xms512M -Xmx512M -Dfile.encoding=UTF-8"
 
-In Ubuntu, you can change JAVA_OPTS in /etc/default/tomcat7 -- you do not need to set an environment var.
+In Ubuntu, you can change `JAVA_OPTS` in `/etc/default/tomcat7` -- you do not need to set an environment var.
 
 Next, specify that Tomcat expects URIEncodings in UTF-8 format so they are decoded correctly.
-In server.xml (in ubuntu thats in /etc/tomcat7/server.xml) add the URIEncoding parameter to this
+In `server.xml` (in Ubuntu that's in `/etc/tomcat7/server.xml`) add the URIEncoding parameter to this
 line:
 
     <Connector port="8080" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443">
@@ -196,7 +203,7 @@ By default Tomcat runs on port 8080. To switch it to port 80, edit the Connector
     <Connector port="80" protocol="HTTP/1.1"connectionTimeout="20000" redirectPort="8443" URIEncoding="UTF-8">
 
 Finally, to enable a threadpool so that Tomcat can use multiple processors/cores, uncomment/add this line
-in server.xml
+in `server.xml`:
 
     <Executor name="tomcatThreadPool" namePrefix="catalina-exec-" 
               maxThreads="150" minSpareThreads="4" minThreads="8"/>
