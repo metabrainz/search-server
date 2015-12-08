@@ -30,6 +30,7 @@ package org.musicbrainz.search;
 
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.util.BytesRefBuilder;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
 import org.musicbrainz.search.index.Index;
@@ -88,9 +89,9 @@ public class MbDocument {
      */
     public void addNumericField(IndexField field, Integer value) {
 
-        BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
+        BytesRefBuilder bytes = new BytesRefBuilder();
         NumericUtils.intToPrefixCoded(value, 0, bytes);
-        doc.add(new Field(field.getName(),bytes.utf8ToString(), field.getFieldType()));
+        doc.add(new Field(field.getName(),bytes.toBytesRef().utf8ToString(), field.getFieldType()));
     }
 
     /**
@@ -101,9 +102,9 @@ public class MbDocument {
      */
     public void addNumericField(IndexField field,Float value) {
 
-        BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_INT);
+        BytesRefBuilder bytes = new BytesRefBuilder();
         NumericUtils.intToPrefixCoded(NumericUtils.floatToSortableInt(value), 0, bytes);
-        doc.add(new Field(field.getName(),bytes.utf8ToString(), field.getFieldType()));
+        doc.add(new Field(field.getName(),bytes.toBytesRef().utf8ToString(), field.getFieldType()));
     }
 
 
@@ -115,9 +116,9 @@ public class MbDocument {
      */
     public void addNumericField(IndexField field, Long value) {
 
-        BytesRef bytes = new BytesRef(NumericUtils.BUF_SIZE_LONG);
+        BytesRefBuilder bytes = new BytesRefBuilder();
         NumericUtils.longToPrefixCoded(value, 0, bytes);
-        doc.add(new Field(field.getName(),bytes.utf8ToString(), field.getFieldType()));
+        doc.add(new Field(field.getName(),bytes.toBytesRef().utf8ToString(), field.getFieldType()));
     }
 
     /**
