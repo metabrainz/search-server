@@ -189,11 +189,13 @@ public class IssueSearch328Test
         termsEnum.next();
 
         //Now add another document without the cross, this still matches because we remove punctuation
+        writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
         writer = new IndexWriter(dir, writerConfig);
         doc = new Document();
         doc.add(new Field("name", "T.M.Revolution水樹奈", TextField.TYPE_STORED));
         writer.addDocument(doc);
         writer.close();
+
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"T.M.Revolution×\"");
@@ -225,6 +227,7 @@ public class IssueSearch328Test
             Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"水樹奈々\"");
             assertEquals(1, searcher.search(q, 10).totalHits);
         }
+
     }
 
 }
