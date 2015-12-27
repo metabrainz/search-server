@@ -12,7 +12,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.Arrays;
 
 public class RateLimiterChecker {
 
@@ -122,8 +121,7 @@ public class RateLimiterChecker {
             //Parse Response
             String result = new String(dpReceive.getData(), dpReceive.getOffset(), dpReceive.getLength());
             if(result.startsWith(requestIdAsString)) {
-                RateLimiterResponse rlr = new RateLimiterResponse(new String(Arrays.copyOfRange(receiveData, requestIdAsString.length() + 1, 
-                                                                                     dpReceive.getLength() - requestIdAsString.length() - 1)));
+                RateLimiterResponse rlr = new RateLimiterResponse("You have exceeded your rate limit.");
                 return rlr;
             }
             //RequestId not matching so just let through
