@@ -121,7 +121,7 @@ public class RateLimiterChecker {
             //Parse Response
             String result = new String(dpReceive.getData(), dpReceive.getOffset(), dpReceive.getLength());
             if(result.startsWith(requestIdAsString)) {
-                RateLimiterResponse rlr = new RateLimiterResponse("You have exceeded your rate limit.");
+                RateLimiterResponse rlr = new RateLimiterResponse(result.substring(requestIdAsString.length() + 1));
                 return rlr;
             }
             //RequestId not matching so just let through
