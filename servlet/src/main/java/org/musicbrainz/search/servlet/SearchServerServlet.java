@@ -123,6 +123,7 @@ public class SearchServerServlet extends HttpServlet
         String indexDir = getServletConfig().getInitParameter("index_dir");
 
         System.err.println("hello mom!");
+        log.info("WHY THE FUCKKKK?");
 
         if (useMMapDirectory)
         {
