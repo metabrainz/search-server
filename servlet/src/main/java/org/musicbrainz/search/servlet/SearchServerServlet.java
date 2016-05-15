@@ -42,6 +42,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.util.*;
@@ -654,6 +655,9 @@ public class SearchServerServlet extends HttpServlet
      */
     public void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax, boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion) throws ParseException, IOException
     {
+        long threadId = Thread.currentThread().getId();
+
+        log.info("Start:doSearch " + threadId + " " + query);
 
         SearchServer searchServer;
         if (isDismax)
@@ -719,6 +723,7 @@ public class SearchServerServlet extends HttpServlet
         {
             out.close();
         }
+        log.info("End:doSearch " + threadId + " " + query);
     }
 
     /**
