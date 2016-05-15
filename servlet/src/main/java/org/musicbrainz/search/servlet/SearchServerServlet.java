@@ -121,6 +121,9 @@ public class SearchServerServlet extends HttpServlet
         initRateLimiter(rateLimiterEnabled);
 
         String indexDir = getServletConfig().getInitParameter("index_dir");
+
+        System.out.println("hello mom!");
+
         if (useMMapDirectory)
         {
             log.info("Start:Loading Indexes from " + indexDir + ",Type:mmap," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
