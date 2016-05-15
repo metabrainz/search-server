@@ -160,7 +160,7 @@ public class SearchServerServlet extends HttpServlet
             }
             catch (IOException e)
             {
-                log.log("Could not load " + resourceType.getIndexName() + " index: " + e.getMessage());
+                log.warning("Could not load " + resourceType.getIndexName() + " index: " + e.getMessage());
                 if (resourceType.isUsedBySearchAll())
                 {
                     isSearchAllEnabled = false;
