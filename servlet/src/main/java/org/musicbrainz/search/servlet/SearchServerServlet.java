@@ -50,13 +50,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 
 public class SearchServerServlet extends HttpServlet
 {
 
-    final Logger log = Logger.getLogger(SearchServerServlet.class.getName());
+    final Logger log = null;
 
     final static int DEFAULT_OFFSET = 0;
     final static int DEFAULT_MATCHES_LIMIT = 25;
@@ -93,7 +95,21 @@ public class SearchServerServlet extends HttpServlet
     @Override
     public void init()
     {
-        String init = getServletConfig().getInitParameter("init");
+		String realPath = getServletContext().getRealPath("/");
+		String fileSep = System.getProperty("file.separator");
+
+		if (realPath != null && (!realPath.endsWith(fileSep)))
+			realPath = realPath + fileSep;
+
+		System.out.println(realPath);
+
+		PropertyConfigurator.configure(realPath
+			+ "WEB-INF/classes/log4j.properties");
+
+		log = Logger.getLogger(SearchServerServlet.class);
+		log.info("SearchServerServlet started.");
+
+		String init = getServletConfig().getInitParameter("init");
         if (init != null && init.equals("nfio"))
         {
             init(false);
