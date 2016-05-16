@@ -119,7 +119,7 @@ public class RateLimiterChecker {
             ds.receive(dpReceive);
 
             //Parse Response
-            String result = new String(dpReceive.getData());
+            String result = new String(dpReceive.getData(), dpReceive.getOffset(), dpReceive.getLength());
             if(result.startsWith(requestIdAsString)) {
                 RateLimiterResponse rlr = new RateLimiterResponse(result.substring(requestIdAsString.length() + 1));
                 return rlr;

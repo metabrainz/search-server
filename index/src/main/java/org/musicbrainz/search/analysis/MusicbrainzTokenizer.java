@@ -107,24 +107,6 @@ public final class MusicbrainzTokenizer extends Tokenizer {
     init(input, matchVersion);
   }
 
-  /**
-   * Creates a new MusicbrainzTokenizer with a given {@link AttributeSource}.
-   */
-  public MusicbrainzTokenizer(Version matchVersion, AttributeSource source, Reader input) {
-    super(source, input);
-    this.scanner = new MusicbrainzTokenizerImpl(input);
-    init(input, matchVersion);
-  }
-
-  /**
-   * Creates a new MusicbrainzTokenizer with a given {@link org.apache.lucene.util.AttributeSource.AttributeFactory}
-   */
-  public MusicbrainzTokenizer(Version matchVersion, AttributeFactory factory, Reader input) {
-    super(factory, input);
-    this.scanner = new MusicbrainzTokenizerImpl(input);
-    init(input, matchVersion);
-  }
-
   private void init(Reader input, Version matchVersion) {
     termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     offsetAtt = addAttribute(OffsetAttribute.class);

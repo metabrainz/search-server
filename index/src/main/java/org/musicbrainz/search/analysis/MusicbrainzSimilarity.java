@@ -30,7 +30,6 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.index.FieldInvertState;
-import org.apache.lucene.index.Norm;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
 
 /**

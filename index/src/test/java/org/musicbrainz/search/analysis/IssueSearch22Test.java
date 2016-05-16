@@ -68,7 +68,7 @@ public class IssueSearch22Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"pay income tax return\"");
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"pay income tax\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
@@ -90,8 +90,8 @@ public class IssueSearch22Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"pay income tax return\"");
-            assertEquals(0, searcher.search(q,10).totalHits);
+            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"pay income tax\"");
+            assertEquals(1, searcher.search(q,10).totalHits);
         }
 
     }
