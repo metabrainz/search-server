@@ -13,7 +13,7 @@
     </repository>
     <repository>
       <id>brainz-mmd-jaxb</id>
-      <url>http://brainz-mmd-jaxb.googlecode.com/svn/trunk/repo</url>
+      <url>http://ftp.musicbrainz.org/pub/musicbrainz/search/java/</url>
     </repository>
     <repository>
         <id>maven2-repository.dev.java.net</id>
@@ -74,7 +74,7 @@
       <groupId>com.jthink.brainz</groupId>
       <artifactId>mmd</artifactId>
       <version>1.4.0</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.musicbrainz.mmd2</groupId>
