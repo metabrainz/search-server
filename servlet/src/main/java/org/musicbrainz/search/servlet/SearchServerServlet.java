@@ -93,6 +93,7 @@ public class SearchServerServlet extends HttpServlet
     @Override
     public void init()
     {
+        /*
         String init = getServletConfig().getInitParameter("init");
         if (init != null && init.equals("nfio"))
         {
@@ -102,6 +103,8 @@ public class SearchServerServlet extends HttpServlet
         {
             init(true);
         }
+        */
+        init(false);
     }
 
     /**
@@ -719,6 +722,10 @@ public class SearchServerServlet extends HttpServlet
         log.info("debug " + threadId + " 2 " + (System.currentTimeMillis()-start));
         Results results = searchServer.search(query, offset, limit);
         log.info("debug " + threadId + " 3 " + (System.currentTimeMillis()-start));
+        if (System.currentTimeMillis()-start > 5000)
+        {
+            log.info("slow " + threadId + " " + (System.currentTimeMillis()-start) + " " + query);
+        }
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseVersion);
 
         if (writer == null)
