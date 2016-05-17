@@ -674,6 +674,7 @@ public class SearchServerServlet extends HttpServlet
     public void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax, boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion) throws ParseException, IOException
     {
         long threadId = Thread.currentThread().getId();
+        long start = System.currentTimeMillis();
 
         log.info("Start:doSearch " + threadId + " " + query);
 
@@ -709,9 +710,9 @@ public class SearchServerServlet extends HttpServlet
             }
         }
 
-        System.err.println("debug " + threadId + " 2");
+        System.err.println("debug " + threadId + " 2 " + (start-System.currentTimeMillis()));
         Results results = searchServer.search(query, offset, limit);
-        System.err.println("debug " + threadId + " 3");
+        System.err.println("debug " + threadId + " 3 " + (start-System.currentTimeMillis()));
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseVersion);
 
         if (writer == null)
@@ -737,15 +738,15 @@ public class SearchServerServlet extends HttpServlet
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
         try
         {
-            System.err.println("debug " + threadId + " 4");
+            System.err.println("debug " + threadId + " 4 " + (start-System.currentTimeMillis()));
             writer.write(out, results, responseFormat, isPretty);
-            System.err.println("debug " + threadId + " 5");
+            System.err.println("debug " + threadId + " 5 " + (start-System.currentTimeMillis()));
         }
         finally
         {
             out.close();
         }
-        log.info("End:doSearch " + threadId + " " + query);
+        System.err.println("End:doSearch " + threadId + " " + (start-System.currentTimeMillis()));
     }
 
     /**
