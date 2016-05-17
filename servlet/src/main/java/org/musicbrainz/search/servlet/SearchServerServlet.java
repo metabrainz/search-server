@@ -408,7 +408,7 @@ public class SearchServerServlet extends HttpServlet
     {
         long threadId = Thread.currentThread().getId();
 
-        System.err.println("Start:doGet " + threadId);
+        log.info("Start:doGet " + threadId);
 
         String query = "";
         try
@@ -417,7 +417,7 @@ public class SearchServerServlet extends HttpServlet
             if (!isServletInitialized)
             {
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.SERVLET_INIT_FAILED.getMsg(initMessage));
-                System.err.println("Err:doSearch " + threadId + " failed to init");
+                log.info("Err:doSearch " + threadId + " failed to init");
                 return;
             }
             // Ensure encoding set to UTF8
@@ -426,7 +426,7 @@ public class SearchServerServlet extends HttpServlet
 
             if(processedAdminCommand(request, response))
             {
-                System.err.println("Err:doSearch " + threadId + " process adming command");
+                log.info("Err:doSearch " + threadId + " process adming command");
                 return;
             }
 
@@ -435,7 +435,7 @@ public class SearchServerServlet extends HttpServlet
             String count = request.getParameter(RequestParameter.COUNT.getName());
             if (count != null)
             {
-                System.err.println("Err:doSearch " + threadId + " check count parameter");
+                log.info("Err:doSearch " + threadId + " check count parameter");
                 ResourceType resourceType = ResourceType.getValue(count);
                 if (resourceType == null)
                 {
@@ -451,7 +451,7 @@ public class SearchServerServlet extends HttpServlet
             // If they have entered nothing, redirect to them the Musicbrainz Search Page
             if (request.getParameterMap().size() == 0)
             {
-                System.err.println("Err:doSearch " + threadId + " redirect");
+                log.info("Err:doSearch " + threadId + " redirect");
                 response.sendRedirect(searchWebPage);
                 return;
             }
@@ -460,7 +460,7 @@ public class SearchServerServlet extends HttpServlet
             String type = request.getParameter(RequestParameter.TYPE.getName());
             if (type == null)
             {
-                System.err.println("End:doSearch " + threadId + " redirect");
+                log.info("End:doSearch " + threadId + " redirect");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg("none"));
                 return;
             }
@@ -477,14 +477,14 @@ public class SearchServerServlet extends HttpServlet
                 resourceType = ResourceType.getValue(type);
                 if (resourceType == null)
                 {
-                    System.err.println("Err:doSearch " + threadId + " bad request");
+                    log.info("Err:doSearch " + threadId + " bad request");
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNKNOWN_RESOURCE_TYPE.getMsg(type));
                     return;
                 }
             }
             else if (!isSearchAllEnabled)
             {
-                System.err.println("Err:doSearch " + threadId + "  index not avail");
+                log.info("Err:doSearch " + threadId + "  index not avail");
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorMessage.INDEX_NOT_AVAILABLE_FOR_TYPE.getMsg(TYPE_ALL));
                 return;
             }
@@ -498,7 +498,7 @@ public class SearchServerServlet extends HttpServlet
                     {
                         response.setHeader(RateLimiterChecker.HEADER_RATE_LIMITED, rateLimiterResponse.getHeaderMsg());
                     }
-                    System.err.println("End:doSearch " + threadId + "  rate limit not avail");
+                    log.info("End:doSearch " + threadId + "  rate limit not avail");
                     response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, rateLimiterResponse.getMsg());
                     return;
                 }
@@ -510,7 +510,7 @@ public class SearchServerServlet extends HttpServlet
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.NO_QUERY_PARAMETER.getMsg());
                 return;
             }
-            System.err.println("Query:doGet " + threadId + " query " + query);
+            log.info("Query:doGet " + threadId + " query " + query);
 
             // Response Format, first defined by fmt parameter, if not set defined by accept header, if not set default
             // to Xml. Note if accept header set to json this will set format to RESPONSE_JSON_NEW not RESPONSE_JSON (the
@@ -599,11 +599,11 @@ public class SearchServerServlet extends HttpServlet
             {
                 doAllSearch(response, query, isDismax, offset, limit, responseFormat, isPretty);
             }
-            System.err.println("Done:doGet " + threadId);
+            log.info("Done:doGet " + threadId);
         }
         catch (ParseException pe)
         {
-            System.err.println("Exc:doGet " + threadId + " cannot parse result");
+            log.info("Exc:doGet " + threadId + " cannot parse result");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ErrorMessage.UNABLE_TO_PARSE_SEARCH.getMsg(query));
             return;
         }
@@ -615,7 +615,7 @@ public class SearchServerServlet extends HttpServlet
             }
             else
             {
-                System.err.println("Exc:doGet " + threadId + " npe");
+                log.info("Exc:doGet " + threadId + " npe");
                 log.log(Level.WARNING, query + ":" + npe.getMessage(), npe);
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, npe.getMessage());
                 return;
@@ -623,14 +623,14 @@ public class SearchServerServlet extends HttpServlet
         }
         catch (Exception e)
         {
-            System.err.println("Exc:doGet " + threadId + " bad request 1");
+            log.info("Exc:doGet " + threadId + " bad request 1");
             log.log(Level.WARNING, query + ":" + e.getMessage(), e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
         }
         catch (Throwable t)
         {
-            System.err.println("Exc:doGet " + threadId + " bad request 2");
+            log.info("Exc:doGet " + threadId + " bad request 2");
             log.log(Level.WARNING, query + ":" + t.getMessage(), t);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
             return;
@@ -687,6 +687,7 @@ public class SearchServerServlet extends HttpServlet
         {
             searchServer = searchers.get(resourceType);
         }
+        log.info("debug " + threadId + " 1 " + (System.currentTimeMillis()-start));
 
         if (searchServer == null)
         {
@@ -696,6 +697,10 @@ public class SearchServerServlet extends HttpServlet
 
         if (isExplain)
         {
+            log.info("Fuck:isExplain " + threadId + " " + query);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Fuck you and the process you booted up on!");
+            return;
+            /*
             try
             {
                 String explainationOutput = searchServer.explain(query, offset, limit);
@@ -708,11 +713,12 @@ public class SearchServerServlet extends HttpServlet
             {
                 response.getWriter().close();
             }
+            */
         }
 
-        System.err.println("debug " + threadId + " 2 " + (start-System.currentTimeMillis()));
+        log.info("debug " + threadId + " 2 " + (System.currentTimeMillis()-start));
         Results results = searchServer.search(query, offset, limit);
-        System.err.println("debug " + threadId + " 3 " + (start-System.currentTimeMillis()));
+        log.info("debug " + threadId + " 3 " + (System.currentTimeMillis()-start));
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseVersion);
 
         if (writer == null)
@@ -738,15 +744,15 @@ public class SearchServerServlet extends HttpServlet
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
         try
         {
-            System.err.println("debug " + threadId + " 4 " + (start-System.currentTimeMillis()));
+            log.info("debug " + threadId + " 4 " + (System.currentTimeMillis()-start));
             writer.write(out, results, responseFormat, isPretty);
-            System.err.println("debug " + threadId + " 5 " + (start-System.currentTimeMillis()));
+            log.info("debug " + threadId + " 5 " + (System.currentTimeMillis()-start));
         }
         finally
         {
             out.close();
         }
-        System.err.println("End:doSearch " + threadId + " " + (start-System.currentTimeMillis()));
+        log.info("End:doSearch " + threadId + " " + (System.currentTimeMillis()-start));
     }
 
     /**
@@ -763,9 +769,6 @@ public class SearchServerServlet extends HttpServlet
      */
     private void doAllSearch(HttpServletResponse response, String query, boolean isDismax, Integer offset, Integer limit, String responseFormat, boolean isPretty) throws Exception
     {
-        long threadId = Thread.currentThread().getId();
-
-        System.err.println("debug " + threadId + " 1");
         SearchServer artistSearch = isDismax ? dismaxSearchers.get(ResourceType.ARTIST) : searchers.get(ResourceType.ARTIST);
         SearchServer releaseSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE) : searchers.get(ResourceType.RELEASE);
         SearchServer releaseGroupSearch = isDismax ? dismaxSearchers.get(ResourceType.RELEASE_GROUP) : searchers.get(ResourceType.RELEASE_GROUP);
