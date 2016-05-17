@@ -48,8 +48,12 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopDocsCollector;
+import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TimeLimitingCollector;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
+import org.apache.lucene.util.Counter;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.MetaIndexField;
 import org.musicbrainz.search.servlet.mmd1.Mmd1XmlWriter;
@@ -187,7 +191,17 @@ public abstract class AbstractSearchServer implements SearchServer {
 
     IndexSearcher searcher = searcherManager.acquire();
     try {
-      TopDocs topdocs = searcher.search(query, offset + limit);
+      TopDocsCollector<?> collector = TopScoreDocCollector.create(offset + limit, true);
+      final Counter clock = Counter.newCounter(true);
+      TimeLimitingCollector tCollector = new TimeLimitingCollector(collector, clock, 3);
+      tCollector.setBaseline(0);
+      new Thread() {
+          public void run() {
+              clock.addAndGet(1);
+              Thread.sleep(1000);
+          }
+      }.start();
+      searcher.search(query, tCollector);
       searchCount.incrementAndGet();
       return processResults(searcher, topdocs, offset);
     } finally {
