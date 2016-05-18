@@ -195,7 +195,7 @@ public abstract class AbstractSearchServer implements SearchServer {
       searcher.search(query, tCollector);
       searchCount.incrementAndGet();
       TopDocs topDocs = collector.topDocs();
-      if (!topDocs)
+      if (topDocs == null)
       {
           return new Results();
       }
