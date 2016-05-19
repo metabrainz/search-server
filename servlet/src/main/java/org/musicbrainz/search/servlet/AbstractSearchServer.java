@@ -186,7 +186,7 @@ public abstract class AbstractSearchServer implements SearchServer {
    * @throws ParseException if the query was invalid
    */
   @Override
-  public Results search(Query query, int offset, int limit) throws IOException, ParseException {
+  public Results search(Query query, int offset, int limit) throws IOException, ParseException, TimeExceededException {
 
     IndexSearcher searcher = searcherManager.acquire();
     try {

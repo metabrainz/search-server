@@ -32,6 +32,7 @@ import com.google.common.base.Strings;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.TimeLimitingCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
@@ -585,13 +586,22 @@ public class SearchServerServlet extends HttpServlet
                 isDismax = true;
             }
 
-            if (resourceType != null)
+            try 
             {
-                doSearch(response, resourceType, query, isDismax, isExplain, isPretty, offset, limit, responseFormat, responseVersion);
+                if (resourceType != null)
+                {
+                    doSearch(response, resourceType, query, isDismax, isExplain, isPretty, offset, limit, responseFormat, responseVersion);
+                }
+                else
+                {
+                    doAllSearch(response, query, isDismax, offset, limit, responseFormat, isPretty);
+                }
             }
-            else
+            catch (TimeExceededException tee)
             {
-                doAllSearch(response, query, isDismax, offset, limit, responseFormat, isPretty);
+                log.info("Query timeout: " + query);
+                response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, ErrorMessage.REQUEST_TIMEOUT_EXCEEDED.getMsg());
+                return;
             }
         }
         catch (ParseException pe)

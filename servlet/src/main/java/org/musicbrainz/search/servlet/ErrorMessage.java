@@ -34,6 +34,7 @@ public enum ErrorMessage {
     NO_MATCHES ("zero search hits"),    //Formatting as is because depended on by mb_server
     UNKNOWN_COUNT_TYPE ("Count parameter {0} not valid, should be a type "),
     UNABLE_TO_PARSE_SEARCH_SLASHES_ARE_REGEXP ("Unable to parse search, forward slash is used for regex unless escaped:{0}"),
+    REQUEST_TIMEOUT_EXCEEDED ("Search request timed out -- please wait a moment and try again")
     ;
 
     String msg;
