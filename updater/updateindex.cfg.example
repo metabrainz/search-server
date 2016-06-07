@@ -18,3 +18,8 @@ SERVLET_HOST=http://localhost:8080
 # NB: Comment the following line if you want to specify indexes to be updated while running the script:
 #   updateindex.sh --indexes artist,label,...
 INDEXES=artist,releasegroup,label,tag,annotation,work,release
+
+# You must sign in at https://metabrainz.org and generate an access token to
+# access the replication packets. Enter the access token below:
+# NOTE: DO NOT EXPOSE THIS ACCESS TOKEN PUBLICLY!
+REPLICATION_ACCESS_TOKEN=

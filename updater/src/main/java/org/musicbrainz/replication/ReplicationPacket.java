@@ -133,15 +133,15 @@ public class ReplicationPacket {
 	
 	
 	public static ReplicationPacket loadFromRepository(int sequence) {
-		return loadFromRepository(sequence, DEFAULT_REPOSITORY_PATH);
+		return loadFromRepository(sequence, DEFAULT_REPOSITORY_PATH, "");
 	}
 	
-	public static ReplicationPacket loadFromRepository(int sequence, String repositoryPath) {
+	public static ReplicationPacket loadFromRepository(int sequence, String repositoryPath, String accessToken) {
 
 		ReplicationPacket packet = null;
 		
 		try {
-			URL url = new URL(repositoryPath + "/" + "replication-"+sequence+".tar.bz2");
+			URL url = new URL(repositoryPath + "/" + "replication-"+sequence+".tar.bz2?token="+accessToken);
 			InputStream input = url.openStream();
 			packet = ReplicationPacket.loadFromRepository(input);
 		} catch (MalformedURLException e) {
