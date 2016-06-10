@@ -192,7 +192,7 @@ public abstract class AbstractSearchServer implements SearchServer {
     IndexSearcher searcher = searcherManager.acquire();
     try {
       TopDocsCollector<?> collector = TopScoreDocCollector.create(offset + limit, true);
-      TimeLimitingCollector tCollector = new TimeLimitingCollector(collector, TimeLimitingCollector.getGlobalCounter(), 3000);
+      TimeLimitingCollector tCollector = new TimeLimitingCollector(collector, TimeLimitingCollector.getGlobalCounter(), 1000);
       searcher.search(query, tCollector);
       searchCount.incrementAndGet();
       TopDocs topDocs = collector.topDocs();
