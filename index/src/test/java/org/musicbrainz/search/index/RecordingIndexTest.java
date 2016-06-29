@@ -905,7 +905,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             Release     release     = releaseList.getRelease().get(0);
             assertNotNull(release);
             assertEquals("Crocodiles (bonus disc)", release.getTitle());
-            assertEquals("Official", release.getStatus());
+            assertEquals("Official", release.getStatus().getContent());
             assertEquals("c3b8dbc9-c1ff-4743-9015-8d762819134e", release.getId());
             assertEquals(null, release.getCountry());
             assertEquals("1950", release.getDate());
@@ -934,12 +934,12 @@ public class RecordingIndexTest extends AbstractIndexTest {
             assertNotNull(releaseGroup);
             assertEquals("efd2ace2-b3b9-305f-8a53-9803595c0e37",releaseGroup.getId());
             assertEquals("Compilation",releaseGroup.getType());
-            assertEquals("Album",releaseGroup.getPrimaryType());
+            assertEquals("Album",releaseGroup.getPrimaryType().getContent());
 
             SecondaryTypeList secondaryTypeList = releaseGroup.getSecondaryTypeList();
             assertNotNull(secondaryTypeList);
-            assertEquals("Compilation",secondaryTypeList.getSecondaryType().get(0));
-            assertEquals("Interview",secondaryTypeList.getSecondaryType().get(1));
+            assertEquals("Compilation",secondaryTypeList.getSecondaryType().get(0).getContent());
+            assertEquals("Interview",secondaryTypeList.getSecondaryType().get(1).getContent());
 
             MediumList mediumList = release.getMediumList();
             assertNotNull(mediumList);
@@ -948,7 +948,7 @@ public class RecordingIndexTest extends AbstractIndexTest {
             Medium medium = mediumList.getMedium().get(0);
             assertNotNull(medium);
             assertEquals(1, medium.getPosition().intValue());
-            assertEquals("Vinyl", medium.getFormat());
+            assertEquals("Vinyl", medium.getFormat().getContent());
 
             Medium.TrackList trackList = medium.getTrackList();
             assertNotNull(trackList);

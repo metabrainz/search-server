@@ -397,14 +397,18 @@ public class  ReleaseIndex extends DatabaseIndex {
         ReleaseGroup rg = of.createReleaseGroup();
         release.setReleaseGroup(rg);
         if (!Strings.isNullOrEmpty(primaryType)){
-            release.getReleaseGroup().setPrimaryType(primaryType);
+            PrimaryType pt = new PrimaryType();
+            pt.setContent(primaryType);
+            release.getReleaseGroup().setPrimaryType(pt);
         }
 
         if (secondaryTypes.containsKey(id)) {
             SecondaryTypeList stl = of.createSecondaryTypeList();
             for (String secondaryType : secondaryTypes.get(id)) {
                 doc.addField(ReleaseIndexField.SECONDARY_TYPE, secondaryType);
-                stl.getSecondaryType().add(secondaryType);
+                SecondaryType st = new SecondaryType();
+                st.setContent(secondaryType);
+                stl.getSecondaryType().add(st);
             }
             release.getReleaseGroup().setSecondaryTypeList(stl);
         }
@@ -422,7 +426,9 @@ public class  ReleaseIndex extends DatabaseIndex {
         String status = rs.getString("status");
         doc.addFieldOrUnknown(ReleaseIndexField.STATUS, status);
         if (!Strings.isNullOrEmpty(status)) {
-            release.setStatus(status);
+            Status st = new Status();
+            st.setContent(status);
+            release.setStatus(st);
         }
 
         String barcode = rs.getString("barcode");
@@ -528,7 +534,9 @@ public class  ReleaseIndex extends DatabaseIndex {
                 String mediumFormat = entry.get(0);
                 doc.addFieldOrNoValue(ReleaseIndexField.FORMAT, mediumFormat);
                 if(mediumFormat!=null && !mediumFormat.isEmpty()) {
-                    medium.setFormat(mediumFormat);
+                    Format format = new Format();
+                    format.setContent(mediumFormat);
+                    medium.setFormat(format);
                 }
 
                 //Num of tracks on the Medium

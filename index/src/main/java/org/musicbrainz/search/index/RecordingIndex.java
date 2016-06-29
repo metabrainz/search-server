@@ -648,10 +648,14 @@ public class RecordingIndex extends DatabaseIndex {
             ReleaseGroup rg = of.createReleaseGroup();
             release.setId(rs.getString("releaseId"));
             release.setTitle(rs.getString("releasename"));
-            rg.setPrimaryType(rs.getString("type"));
+            PrimaryType pt = new PrimaryType();
+            pt.setContent(rs.getString("type"));
+            rg.setPrimaryType(pt);
             rg.setId(rs.getString("rg_gid"));
             release.setReleaseGroup(rg);
-            release.setStatus(rs.getString("status"));
+            Status status = new Status();
+            status.setContent(rs.getString("status"));
+            release.setStatus(status);
             ml.setTrackCount(BigInteger.valueOf(rs.getInt("tracks")));
             release.setReleaseGroup(rg);
             release.setMediumList(ml);
@@ -714,7 +718,9 @@ public class RecordingIndex extends DatabaseIndex {
             if (rg.getSecondaryTypeList() == null) {
                 rg.setSecondaryTypeList(of.createSecondaryTypeList());
             }
-            rg.getSecondaryTypeList().getSecondaryType().add(rs.getString("type"));
+            SecondaryType st = new SecondaryType();
+            st.setContent(rs.getString("type"));
+            rg.getSecondaryTypeList().getSecondaryType().add(st);
         }
 
         try {
@@ -889,24 +895,41 @@ public class RecordingIndex extends DatabaseIndex {
                     ReleaseGroup rg = release.getReleaseGroup();
                     String trackGuid = trackWrapper.getTrackGuid();
                     doc.addNonEmptyField(RecordingIndexField.TRACK_ID, trackGuid);
-                    String primaryType = rg.getPrimaryType();
+                    String primaryType = "";
+                    if (rg.getPrimaryType() != null)
+                    {
+                        primaryType = rg.getPrimaryType().getContent();
+                    }
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASEGROUP_ID, rg.getId());
                     doc.addFieldOrUnknown(RecordingIndexField.RELEASE_PRIMARY_TYPE, primaryType);
                     if (
                             (rg.getSecondaryTypeList() != null) &&
                                     (rg.getSecondaryTypeList().getSecondaryType() != null)
                             ) {
-                        for (String secondaryType : rg.getSecondaryTypeList().getSecondaryType()) {
-                            doc.addField(RecordingIndexField.RELEASE_SECONDARY_TYPE, secondaryType);
+                        List<String> secondaryTypeStringList = new ArrayList<String>();
+                        for (SecondaryType secondaryType : rg.getSecondaryTypeList().getSecondaryType()) {
+                            String st = "";
+                            if (secondaryType != null)
+                            {
+                                st = secondaryType.getContent();
+                            }
+                            doc.addField(RecordingIndexField.RELEASE_SECONDARY_TYPE, st);
+                            secondaryTypeStringList.add(st);
                         }
 
-                        String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType, rg.getSecondaryTypeList().getSecondaryType());
+                        String type = ReleaseGroupHelper.calculateOldTypeFromPrimaryType(primaryType, secondaryTypeStringList);
                         doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, type);
                         rg.setType(type);
                     } else {
-                        doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, release.getReleaseGroup().getPrimaryType());
-                        rg.setType(release.getReleaseGroup().getPrimaryType());
+                        String pt = "";
+                        if (release.getReleaseGroup().getPrimaryType() != null)
+                        {
+                            pt = release.getReleaseGroup().getPrimaryType().getContent();
+                        }
+                        doc.addFieldOrNoValue(RecordingIndexField.RELEASE_TYPE, pt);
+                        rg.setType(pt);
                     }
+
 
                     doc.addNumericField(RecordingIndexField.NUM_TRACKS, trackWrapper.getTrackCount());
                     doc.addNumericField(RecordingIndexField.TRACKNUM, trackWrapper.getTrackPosition());
@@ -919,7 +942,9 @@ public class RecordingIndex extends DatabaseIndex {
 
                     Medium medium = of.createMedium();
                     medium.setPosition(BigInteger.valueOf(trackWrapper.getMediumPosition()));
-                    medium.setFormat(trackWrapper.getMediumFormat());
+                    Format format = new Format();
+                    format.setContent(trackWrapper.getMediumFormat());
+                    medium.setFormat(format);
 
                     Medium.TrackList tl  = of.createMediumTrackList();
                     tl.setCount(BigInteger.valueOf(trackWrapper.getTrackCount()));
@@ -928,7 +953,12 @@ public class RecordingIndex extends DatabaseIndex {
                     release.getMediumList().getMedium().add(medium);
                     medium.setTrackList(tl);
                     tl.getDefTrack().add(track);
-                    doc.addFieldOrNoValue(RecordingIndexField.RELEASE_STATUS, release.getStatus());
+                    String st = "";
+                    if (release.getStatus() != null)
+                    {
+                        st = release.getStatus().getContent();
+                    }
+                    doc.addFieldOrNoValue(RecordingIndexField.RELEASE_STATUS, st);
 
                     if (
                             (release.getReleaseEventList() != null) &&
