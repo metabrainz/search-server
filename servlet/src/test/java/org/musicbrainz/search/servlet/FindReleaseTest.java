@@ -95,13 +95,19 @@ public class FindReleaseTest {
 
             doc.addField(ReleaseIndexField.PRIMARY_TYPE, "Album");
             release.getReleaseGroup().setType("Compilation");
-            release.getReleaseGroup().setPrimaryType("Album");
+            PrimaryType pt = new PrimaryType();
+            pt.setContent("Album");
+            release.getReleaseGroup().setPrimaryType(pt);
             doc.addField(ReleaseIndexField.TYPE, "Compilation");
             doc.addField(ReleaseIndexField.SECONDARY_TYPE, "Live");
             doc.addField(ReleaseIndexField.SECONDARY_TYPE, "Compilation");
             SecondaryTypeList stl = of.createSecondaryTypeList();
-            stl.getSecondaryType().add("Live");
-            stl.getSecondaryType().add("Compilation");
+            SecondaryType st = new SecondaryType();
+            st.setContent("Live");
+            stl.getSecondaryType().add(st);
+            st = new SecondaryType();
+            st.setContent("Compilation");
+            stl.getSecondaryType().add(st);
             release.getReleaseGroup().setSecondaryTypeList(stl);
 
 
@@ -124,7 +130,9 @@ public class FindReleaseTest {
                 doc.addNumericField(ReleaseIndexField.NUM_DISCIDS_MEDIUM, 1);
                 doc.addField(ReleaseIndexField.FORMAT, "Vinyl");
                 Medium medium = of.createMedium();
-                medium.setFormat("Vinyl");
+                Format format = new Format();
+                format.setContent("Vinyl");
+                medium.setFormat(format);
                 org.musicbrainz.mmd2.Medium.TrackList trackList = of.createMediumTrackList();
                 trackList.setCount(BigInteger.valueOf(10));
                 medium.setTrackList(trackList);
@@ -156,7 +164,9 @@ public class FindReleaseTest {
             release.setMediumList(mediumList);
 
             doc.addField(ReleaseIndexField.STATUS, "Official");
-            release.setStatus("Official");
+            Status stat = new Status();
+            stat.setContent("Official");
+            release.setStatus(stat);
 
             doc.addField(ReleaseIndexField.AMAZON_ID, "B00004Y6O9");
             release.setAsin("B00004Y6O9");

@@ -76,7 +76,9 @@ public class FindRecordingTest {
             DefTrackData track = of.createDefTrackData();
             trackList.getDefTrack().add(track);
             recording.setReleaseList(releaseList);
-            m.setFormat("Vinyl");
+            Format fmt = new Format();
+            fmt.setContent("Vinyl");
+            m.setFormat(fmt);
             track.setTitle("Gravitational Lens");
             doc.addField(RecordingIndexField.TRACK_ID,"2d9e8ed6-3893-4d3b-aa7d-72e79609e386");
 
@@ -118,9 +120,13 @@ public class FindRecordingTest {
             ReleaseGroup rg = of.createReleaseGroup();
             rg.setId("4444e264-1cf0-4d1f-aca7-2a6f89e34b36");
             rg.setType("Compilation");
-            rg.setPrimaryType("Album");
+            PrimaryType pt = new PrimaryType();
+            pt.setContent("Album");
+            rg.setPrimaryType(pt);
             SecondaryTypeList slt = of.createSecondaryTypeList();
-            slt.getSecondaryType().add("Compilation");
+            SecondaryType st = new SecondaryType();
+            st.setContent("Compilation");
+            slt.getSecondaryType().add(st);
             rg.setSecondaryTypeList(slt);
             release.setReleaseGroup(rg);
             m.setPosition(BigInteger.valueOf(1));
@@ -139,7 +145,9 @@ public class FindRecordingTest {
             doc.addField(RecordingIndexField.RELEASE_STATUS, "Official");
             doc.addField(RecordingIndexField.RELEASE_DATE, "1970-01-01");
             doc.addField(RecordingIndexField.COUNTRY, "UK");
-            release.setStatus("Official");
+            Status stat = new Status();
+            stat.setContent("Official");
+            release.setStatus(stat);
             release.setDate("1970-01-01");
             release.setCountry("UK");
             ReleaseEventList rel = of.createReleaseEventList();

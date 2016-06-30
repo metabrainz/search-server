@@ -73,8 +73,8 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             release.setId(releasev2.getId());
             release.getType().add(StringUtils.capitalize(releasev2.getReleaseGroup().getType()));
 
-            if (!Strings.isNullOrEmpty(releasev2.getStatus())) {
-                release.getType().add(releasev2.getStatus());
+            if (!Strings.isNullOrEmpty(releasev2.getStatus().getContent())) {
+                release.getType().add(releasev2.getStatus().getContent());
             }
 
             if (!Strings.isNullOrEmpty(releasev2.getTitle())) {
@@ -151,8 +151,8 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                         event.setBarcode(releasev2.getBarcode());
                     }
 
-                    if (!Strings.isNullOrEmpty(firstMediumv2.getFormat())) {
-                        event.setFormat(firstMediumv2.getFormat());
+                    if (!Strings.isNullOrEmpty(firstMediumv2.getFormat().getContent())) {
+                        event.setFormat(firstMediumv2.getFormat().getContent());
                     }
                     eventList.getEvent().add(event);
                 }
@@ -175,8 +175,8 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                     event.setBarcode(releasev2.getBarcode());
                 }
 
-                if (!Strings.isNullOrEmpty(firstMediumv2.getFormat())) {
-                    event.setFormat(firstMediumv2.getFormat());
+                if (!Strings.isNullOrEmpty(firstMediumv2.getFormat().getContent())) {
+                    event.setFormat(firstMediumv2.getFormat().getContent());
                 }
             }
 

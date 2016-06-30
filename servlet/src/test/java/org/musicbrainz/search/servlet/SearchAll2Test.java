@@ -223,7 +223,9 @@ public class SearchAll2Test
                 artist.setType("Group");
                 artist.setDisambiguation("the real one");
                 artist.setCountry("AF");
-                artist.setGender("male");
+                Gender gender = new Gender();
+                gender.setContent("male");
+                artist.setGender(gender);
                 TagList tagList = of.createTagList();
                 Tag tag = of.createTag();
                 tag.setName("thrash");

@@ -91,7 +91,9 @@ public class FindArtistTest {
 
             doc.addField(ArtistIndexField.END_AREA, "-");
 
-            artist.setGender("male");
+            Gender gender = new Gender();
+            gender.setContent("male");
+            artist.setGender(gender);
             TagList tagList = of.createTagList();
             Tag tag = of.createTag();
             tag.setName("thrash");
