@@ -1,0 +1,6 @@
+FROM jetty:9.3.10
+
+MAINTAINER Robert Kaye <rob@metabrainz.org>
+
+RUN adduser search --disabled-password --gecos 'Search User'
+COPY servlet/target/searchserver.war /var/lib/jetty/webapps/ROOT.war

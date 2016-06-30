@@ -1,0 +1,36 @@
+version: '2'
+services:
+#  db:
+#    image: postgres:9.5.3
+#    volumes:
+#       - ./pgdata:/pgdata
+#    environment:
+#       PGDATA: /pgdata
+#       POSTGRES_USER: listenbrainz
+#       POSTGRES_PASSWD: listenbrainz
+#       POSTGRES_DB: listenbrainz
+  index:
+    build: 
+       dockerfile: Dockerfile-index
+       context: .
+    command: java -jar indexer.jar $SEARCH_JAVA_OPTS_INDEXER --db-host db --db-name musicbrainz --db-user musicbrainz --db-password musicbrainz
+    volumes:
+      - ./indexdata:/home/search/indexdata
+    environment:
+      SEARCH_JAVA_OPTS_INDEXER: "-Xmx512M"
+#    links:
+#      - db
+#    depends_on:
+#      - db
+  server:
+    build: 
+       dockerfile: Dockerfile-server
+       context: .
+    volumes:
+      - ./indexdata:/home/search/indexdata
+    ports:
+      - "8080:8080"
+#    links:
+#      - index
+#    depends_on:
+#      - index

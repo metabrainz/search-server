@@ -1,0 +1,8 @@
+FROM java:8-jre
+
+MAINTAINER Robert Kaye <rob@metabrainz.org>
+
+RUN adduser search --disabled-password --gecos 'Search User'
+
+WORKDIR /code
+COPY index/target/index-2.0-SNAPSHOT-jar-with-dependencies.jar /code/indexer.jar
