@@ -336,11 +336,9 @@ public class ArtistIndex extends DatabaseIndex {
         String gender = rs.getString("gender");
         if (gender != null) {
             doc.addField(ArtistIndexField.GENDER, gender);
-            Gender gen = artist.getGender();
-            if (gen != null)
-            {
-                artist.getGender().setContent(gender);
-            }
+            Gender gen= new Gender();
+            gen.setContent(gender);
+            artist.setGender(gen);
         } else {
             if ((type != null) && (type.equalsIgnoreCase(ArtistType.PERSON.getName()))) {
                 doc.addField(ArtistIndexField.GENDER, Index.UNKNOWN);
