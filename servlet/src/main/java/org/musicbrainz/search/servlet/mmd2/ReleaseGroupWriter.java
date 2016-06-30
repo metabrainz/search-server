@@ -101,14 +101,18 @@ public class ReleaseGroupWriter extends ResultsWriter {
 
         String primaryType = doc.get(ReleaseGroupIndexField.PRIMARY_TYPE);
         if (isNotUnknown(primaryType)) {
-            releaseGroup.setPrimaryType(primaryType);
+            PrimaryType pt = new PrimaryType();
+            pt.setContent(primaryType);
+            releaseGroup.setPrimaryType(pt);
         }
 
         String[] secondaryTypes = doc.getValues(ReleaseGroupIndexField.SECONDARY_TYPE);
         if (secondaryTypes.length > 0) {
             SecondaryTypeList stl = of.createSecondaryTypeList();
             for (int i = 0; i < secondaryTypes.length; i++) {
-                stl.getSecondaryType().add(secondaryTypes[i]);
+                SecondaryType st = new SecondaryType();
+                st.setContent(secondaryTypes[i]);
+                stl.getSecondaryType().add(st);
             }
             releaseGroup.setSecondaryTypeList(stl);
         }
@@ -128,7 +132,9 @@ public class ReleaseGroupWriter extends ResultsWriter {
             Release release = of.createRelease();
             release.setId(releaseIds[i]);
             release.setTitle(releaseNames[i]);
-            release.setStatus(releaseStatuses[i]);
+            Status st = new Status();
+            st.setContent(releaseStatuses[i]);
+            release.setStatus(st);
 
             releaseList.getRelease().add(release);
         }
