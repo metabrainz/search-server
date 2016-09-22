@@ -1,0 +1,13 @@
+indexer:
+  build: indexer-dockerfile
+  links:
+   - postgresql:db
+  volumes:
+   - /mnt/data:/home/search/data
+
+search:
+  build: search-dockerfile
+  expose:
+   - "8080"
+  volumes:
+   - /mnt/data:/home/search/data
