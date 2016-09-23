@@ -16,8 +16,8 @@ while [ ! -e "$WATCH_FILE" ]; do
 done
 rm -f "$WATCH_FILE"
 
-cd $SEACH_HOME/data
-if [[ ! -d "new" ]]; then
+cd $SEARCH_HOME/data
+if [[ -d "new" ]]; then
     /smart-rotate.py cur new old
 fi
 

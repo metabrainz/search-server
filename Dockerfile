@@ -26,4 +26,4 @@ VOLUME ["/home/search/data"]
 RUN ln -s /home/search/data /home/search/indexdata
 
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
-CMD ["/watch-for-reload.sh", "/home/search/data/RELOAD", "/docker-entrypoint.sh", "java","-jar","/usr/local/jetty/start.jar"]
+CMD ["/watch-for-reload.sh", "/home/search/data/new/RELOAD", "/docker-entrypoint.sh", "java","-jar","/usr/local/jetty/start.jar"]
