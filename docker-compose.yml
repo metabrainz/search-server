@@ -1,9 +1,10 @@
 server:
-  build: server-dockerfile
-  expose:
-   - "8080"
+  build: .
+  ports:
+   - "8080:8080"
+   - "7000:7000"
   volumes:
-   - /mnt/data:/home/search/data
+   - ./data:/home/search/data
   ulimits:
     as: 40802189312
     nofile: 51200

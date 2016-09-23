@@ -2,7 +2,10 @@ FROM jetty:9.3.10
 
 MAINTAINER Robert Kaye <rob@metabrainz.org>
 
-RUN apt-get update && apt-get install -y --no-install-recommends psmisc
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        netcat-openbsd \
+        psmisc \
+        python
 
 WORKDIR $JETTY_HOME
 
@@ -14,7 +17,9 @@ RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/
 RUN chmod +x /usr/local/bin/dumb-init
 
 # Install the watcher script
-ADD watch-for-reload.sh /
+ADD bin/watch-for-reload.sh /
+ADD bin/receive-indexes.sh /
+ADD bin/smart-rotate.py /
 
 # Setup the data volumes/dirs
 VOLUME ["/home/search/data"]
