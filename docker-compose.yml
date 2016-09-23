@@ -1,11 +1,32 @@
-server:
-  build: .
-  ports:
-   - "8080:8080"
-   - "7000:7000"
-  volumes:
-   - ./data:/home/search/data
-  ulimits:
-    as: 40802189312
-    nofile: 51200
-  restart: always
+version: "2"
+services:
+
+  server:
+    build: 
+      context: .
+      dockerfile: Dockerfile-server
+    ports:
+      - "8080:8080"
+      - "7000:7000"
+    volumes:
+      - ./data:/home/search/data
+    ulimits:
+      as: 40802189312
+      nofile: 51200
+    restart: always
+
+  indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile-indexer
+    ulimits:
+      as: 40802189312
+      nofile: 51200
+# TODO: Enable this later
+#    restart: always
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: musicbrainz
+      POSTGRES_USER: musicbrainz
+      POSTGRES_PASSWD: musicbrainz

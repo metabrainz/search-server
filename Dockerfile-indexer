@@ -1,0 +1,15 @@
+FROM airdock/oracle-jdk:jdk-8u74
+
+MAINTAINER Robert Kaye <rob@metabrainz.org>
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        netcat-openbsd 
+
+WORKDIR /home/search
+
+# Install the war file
+RUN curl -o /home/search/index.jar ftp://ftp.eu.metabrainz.org/pub/musicbrainz/search/index/index.jar
+COPY bin/builder.sh /
+COPY bin/build-indexes.sh /
+
+CMD ["/builder.sh", "$POSTGRES_HOST", "$POSTGRES_PORT", "$POSTGRES_DB", "$POSTGRES_USER", "$POSTGRES_PASSWD"]
