@@ -1,13 +1,10 @@
-indexer:
-  build: indexer-dockerfile
-  links:
-   - postgresql:db
-  volumes:
-   - /mnt/data:/home/search/data
-
-search:
-  build: search-dockerfile
+server:
+  build: server-dockerfile
   expose:
    - "8080"
   volumes:
    - /mnt/data:/home/search/data
+  ulimits:
+    as: 40802189312
+    nofile: 51200
+  restart: always
