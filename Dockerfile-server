@@ -18,10 +18,10 @@ RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/
 RUN chmod +x /usr/local/bin/dumb-init
 
 # Install the watcher script
-ADD bin/watch-for-reload.sh /
+ADD bin/server-entrypoint.sh /
 
 # Setup the data volumes/dirs
 VOLUME ["/home/search/indexes"]
 
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
-CMD ["/watch-for-reload.sh", "/home/search/data/new/RELOAD", "/docker-entrypoint.sh", "java","-jar","/usr/local/jetty/start.jar"]
+CMD ["/server-entrypoint.sh", "/home/search/data/new/RELOAD", "/docker-entrypoint.sh", "java","-jar","/usr/local/jetty/start.jar"]

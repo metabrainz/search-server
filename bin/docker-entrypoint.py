@@ -39,7 +39,6 @@ def main():
     
         os.chdir(in_prog_dir)
     
-        print os.path.join(search_home, "bin", "build-indexes.sh")
         try:
             subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), 
                 "area,artist,cdstub,instrument,label,place,editor,event,release,releasegroup,cdstub,annotation,series,work,tag,url"])
