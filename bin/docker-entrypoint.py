@@ -7,6 +7,54 @@ import shutil
 import time
 import errno
 
+# TODO: Change this to 24 hours
+RECORDING_INDEX_MAX_AGE = 60 * 60 * 12
+
+def check_age_of_index(indexes_dir, version, index_type):
+    dest = os.path.join(indexes_dir, version)
+    try:
+        dirs = [ f for f in os.listdir(dest) if os.path.isdir(os.path.join(dest,f)) ]
+        dirs.sort(reverse=True)
+        latest = dirs[0]
+        index_dir = os.path.join(dest, latest, "%s_index" % index_type)
+    except OSError:
+	return int(time.time())
+    except IndexError:
+	return int(time.time())
+
+    # check to see when the index dir was last modified
+    try:
+	ts = int(os.path.getmtime(index_dir))
+    except OSError, e:
+	return int(time.time())
+
+    sys.stderr.write( "==== %s_index found, %d seconds old\n" % (index_type, int(time.time()) - ts))
+    return int(time.time()) - ts
+    
+def copy_index(indexes_dir, version, index_type, dest):
+    src = os.path.join(indexes_dir, version)
+    try:
+        dirs = [ f for f in os.listdir(src) if os.path.isdir(os.path.join(src,f)) ]
+        dirs.sort(reverse=True)
+        latest = dirs[0]
+        index_dir = os.path.join(src, latest, "%s_index" % index_type)
+    except OSError:
+	return int(time.time())
+    except IndexError:
+	return int(time.time())
+
+    try:
+        os.path.join(dest, "%s_index" % index_type)
+        sys.stderr.write("'%s' -> '%s'\n" % (index_dir, dest))
+        os.mkdir(dest)
+        subprocess.check_call(["cp", "-rav", index_dir, dest])
+    except OSError as e:
+	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
+	sys.exit(-5)
+    except subprocess.CalledProcessError as e:
+	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
+	sys.exit(-5)
+
 def main():
     try:
         search_home = os.environ['SEARCH_HOME']
@@ -38,10 +86,15 @@ def main():
                 sys.exit(-1)
     
         os.chdir(in_prog_dir)
-    
+   
+        index_list = "area,artist,cdstub,instrument,label,place,editor,event,release,releasegroup,cdstub,annotation,series,work,tag,url"
+        if check_age_of_index(indexes_dir, indexes_version, "recording") > RECORDING_INDEX_MAX_AGE:
+            index_list += ",recording"
+        else:
+            copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
+
         try:
-            subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), 
-                "area,artist,cdstub,instrument,label,place,editor,event,release,releasegroup,cdstub,annotation,series,work,tag,url"])
+            subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), index_list])
         except OSError as e:
             print "Cannot build indexes: " + str(e)
             sys.exit(-3)
@@ -55,7 +108,6 @@ def main():
 def rotate(version, new_set, indexes):
     ts = int(time.time())
     dest = os.path.join(indexes, version)
-    
     try:
         os.makedirs(dest)
     except OSError, e:
@@ -73,12 +125,12 @@ def rotate(version, new_set, indexes):
     indexes_dir = os.path.join(indexes, version)
     
     # Remove older data sets
-    dirs = [ f for f in os.listdir(indexes_dir) if os.path.isdir(os.path.join(indexes_dir,f)) ]
-    dirs.sort(reverse=True)
-    for dir in dirs[2:]:
-        index_dir = os.path.join(indexes_dir, dir)
-        print "Remove old %s" % index_dir
-        shutil.rmtree(index_dir)
+#    dirs = [ f for f in os.listdir(indexes_dir) if os.path.isdir(os.path.join(indexes_dir,f)) ]
+#    dirs.sort(reverse=True)
+#    for dir in dirs[2:]:
+#        index_dir = os.path.join(indexes_dir, dir)
+#        print "Remove old %s" % index_dir
+#        shutil.rmtree(index_dir)
 
 if __name__ == "__main__":
     main()
