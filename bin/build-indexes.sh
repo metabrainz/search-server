@@ -11,9 +11,6 @@ SEARCH_HOME=/home/search
 SEARCH_JAVA_OPTS_INDEXER="-Xmx512M"
 JAR=/home/search/index.jar
 
-mkdir -p $SEARCH_HOME/data/new
-cd $SEARCH_HOME/data/new
-
 echo $JAVA_HOME/bin/java \
 	$SEARCH_JAVA_OPTS_INDEXER \
 	-jar "$JAR" \

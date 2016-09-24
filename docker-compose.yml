@@ -1,32 +1,40 @@
 version: "2"
 services:
 
+  indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile-indexer
+    volumes:
+      - ./data:/home/search/data
+    ports:
+      - "873:873"
+    ulimits:
+      as: 40802189312
+      nofile: 51200
+    restart: always
+    environment:
+      SEARCH_HOME: /home/search
+      INDEXES_VERSION: 1
+      POSTGRES_HOST: 10.0.2.15
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: musicbrainz_db
+      POSTGRES_USER: musicbrainz
+      POSTGRES_PASSWD: musicbrainz
+
   server:
     build: 
       context: .
       dockerfile: Dockerfile-server
     ports:
       - "8080:8080"
-      - "7000:7000"
-    volumes:
-      - ./data:/home/search/indexes
     ulimits:
       as: 40802189312
       nofile: 51200
     restart: always
-
-  indexer:
-    build:
-      context: .
-      dockerfile: Dockerfile-indexer
-    ulimits:
-      as: 40802189312
-      nofile: 51200
-# TODO: Enable this later
-#    restart: always
     environment:
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: musicbrainz
-      POSTGRES_USER: musicbrainz
-      POSTGRES_PASSWD: musicbrainz
+      SEARCH_HOME: /home/search
+      RSYNC_PASSWORD: search
+      INDEXES_VERSION: 1
+    depends_on:
+      - indexer

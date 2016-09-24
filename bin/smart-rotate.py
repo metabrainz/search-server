@@ -3,33 +3,36 @@
 import sys
 import os
 import shutil
+import time
+import errno
 
 if len(sys.argv) < 4:
-    print "Usage: smart-rotate.py <cur> <new> <old>"
+    print "Usage: smart-rotate.py <version> <new> <indexes dir>"
     sys.exit(-1)
 
-cur = sys.argv[1]
-new = sys.argv[2]
-old = sys.argv[3]
+version = sys.argv[1]
+new_set = sys.argv[2]
+indexes = sys.argv[3]
+ts = int(time.time())
+dest = os.path.join(indexes, version)
 
-if not os.path.exists(cur):
-    try:
-        os.mkdir(cur)
-    except OSError, e:
-        print "Failed to create missing cur dir %s: %s" % (cur, e)
+try:
+    os.makedirs(dest)
+except OSError, e:
+    if e.errno != errno.EEXIST:
+        print "Failed to create dest dir %s: %s" % (dest, e)
         sys.exit(-1)
 
-if not os.path.exists(old):
-    try:
-        os.mkdir(old)
-    except OSError, e:
-        print "Failed to create missing old dir %s: %s" % (old, e)
-        sys.exit(-1)
-
-if not os.path.exists(new):
-    print "new path %s does not exist!" % new
+dest = os.path.join(dest, str(ts))
+try:
+    os.rename(new_set, dest)
+except OSError, e:
+    print "Failed to move new set to indexes dir %s: %s" % (dest, e)
     sys.exit(-1)
 
+sys.exit(0)
+
+# TODO: Add code to fill in blanks and remove old data sets
 dirs = [ f for f in os.listdir(new) if os.path.isdir(os.path.join(new,f)) ]
 for dir in dirs:
     if dir == '.' or dir == '..':
@@ -58,4 +61,3 @@ for dir in dirs:
         print "Cannot move %s -> %s: %s" % (os.path.join(new, dir), os.path.join(cur, dir))
         sys.exit(-1)
 
-sys.exit(0)

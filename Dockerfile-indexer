@@ -3,15 +3,23 @@ FROM airdock/oracle-jdk:jdk-8u74
 MAINTAINER Robert Kaye <rob@metabrainz.org>
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        netcat-openbsd 
+	python \
+        rsync
 
 WORKDIR /home/search
 
+RUN mkdir -p /home/search/rsync /home/search/bin
+COPY indexer/rsyncd.conf /etc
+COPY indexer/rsync.secrets /etc
+RUN chmod og-rw /etc/rsync.secrets
+
 # Install the war file
 RUN curl -o /home/search/index.jar ftp://ftp.eu.metabrainz.org/pub/musicbrainz/search/index/index.jar
-COPY bin/builder.sh /
-COPY bin/build-indexes.sh /
-COPY bin/push-to-server.sh /
-COPY bin/restart-server.sh /
 
-CMD ["/builder.sh", "$POSTGRES_HOST", "$POSTGRES_PORT", "$POSTGRES_DB", "$POSTGRES_USER", "$POSTGRES_PASSWD"]
+# Install the scripts 
+COPY bin/builder.sh /home/search/bin
+COPY bin/build-indexes.sh /home/search/bin
+COPY bin/docker-entrypoint.sh /home/search/bin
+COPY bin/smart-rotate.py /home/search/bin
+
+CMD ["/home/search/bin/docker-entrypoint.sh"]
