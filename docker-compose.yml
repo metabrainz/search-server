@@ -9,7 +9,7 @@ services:
       - "8080:8080"
       - "7000:7000"
     volumes:
-      - ./data:/home/search/data
+      - ./data:/home/search/indexes
     ulimits:
       as: 40802189312
       nofile: 51200

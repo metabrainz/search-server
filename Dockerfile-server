@@ -22,8 +22,8 @@ ADD bin/receive-indexes.sh /
 ADD bin/smart-rotate.py /
 
 # Setup the data volumes/dirs
-VOLUME ["/home/search/data"]
-RUN ln -s /home/search/data /home/search/indexdata
+VOLUME ["/home/search/indexes"]
+RUN ln -s /home/search/data/cur /home/search/indexdata
 
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
 CMD ["/watch-for-reload.sh", "/home/search/data/new/RELOAD", "/docker-entrypoint.sh", "java","-jar","/usr/local/jetty/start.jar"]

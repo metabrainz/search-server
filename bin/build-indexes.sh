@@ -11,6 +11,9 @@ SEARCH_HOME=/home/search
 SEARCH_JAVA_OPTS_INDEXER="-Xmx512M"
 JAR=/home/search/index.jar
 
+mkdir -p $SEARCH_HOME/data/new
+cd $SEARCH_HOME/data/new
+
 echo $JAVA_HOME/bin/java \
 	$SEARCH_JAVA_OPTS_INDEXER \
 	-jar "$JAR" \
@@ -22,6 +25,7 @@ echo $JAVA_HOME/bin/java \
 exec $JAVA_HOME/bin/java \
 	$SEARCH_JAVA_OPTS_INDEXER \
 	-jar "$JAR" \
+        -t \
 	--db-host "$POSTGRES_HOST" \
 	--db-name "$POSTGRES_DB" \
 	--db-user "$POSTGRES_USER" \
