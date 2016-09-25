@@ -92,6 +92,8 @@ def main():
             index_list += ",recording"
         else:
             copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
+        # TODO: REMOVE ME
+        index_list = "area,cdstub,instrument"
 
         try:
             subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), index_list])

@@ -6,7 +6,7 @@ CURRENT_TS=0
 
 while [ 1 ]
 do
-    rsync rsync://search@indexer:/data/$INDEXES_VERSION/ --list-only > /tmp/data-list
+    rsync rsync://search@$RSYNC_SERVER:/data/$INDEXES_VERSION/ --list-only > /tmp/data-list
     if [ $? != "0" ]
     then
 	echo "== Failed to get list of data sets. sleeping"
@@ -24,7 +24,7 @@ do
 
     # Sync over the indexes
     mkdir -p $SEARCH_HOME/data/$TS
-    rsync -rv rsync://search@indexer:/data/$INDEXES_VERSION/$TS $SEARCH_HOME/data
+    rsync -rv rsync://search@$RSYNC_SERVER:/data/$INDEXES_VERSION/$TS $SEARCH_HOME/data
     if [ $? != "0" ]
     then
 	echo "== Failure during sync of dataset. Starting over again."

@@ -34,6 +34,7 @@ services:
     restart: always
     environment:
       SEARCH_HOME: /home/search
+      RSYNC_SERVER: indexer
       RSYNC_PASSWORD: search
       INDEXES_VERSION: 1
     depends_on:

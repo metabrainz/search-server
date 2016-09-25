@@ -21,7 +21,7 @@ echo $JAVA_HOME/bin/java \
 	--indexes "$@"
 exec $JAVA_HOME/bin/java \
 	$SEARCH_JAVA_OPTS_INDEXER \
-	-jar "$JAR" \
+	-jar "$JAR" -t \
 	--db-host "$POSTGRES_HOST" \
 	--db-name "$POSTGRES_DB" \
 	--db-user "$POSTGRES_USER" \
