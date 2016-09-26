@@ -2,6 +2,9 @@ FROM airdock/oracle-jdk:jdk-8u74
 
 MAINTAINER Robert Kaye <rob@metabrainz.org>
 
+ENV SEARCH_HOME=/home/search
+ENV INDEXES_VERSION=1
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	python \
         rsync

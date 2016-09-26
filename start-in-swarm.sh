@@ -25,9 +25,6 @@ docker service create \
     --network search \
     -p 873:873 \
     --mount target=/home/search/data,source=`pwd`/$INDEXER_DATA,type=bind \
-    --restart-condition any \
-    -e SEARCH_HOME=/home/search \
-    -e INDEXES_VERSION=1 \
     -e POSTGRES_HOST=10.0.2.15 \
     -e POSTGRES_PORT=5432 \
     -e POSTGRES_DB=musicbrainz_db \
@@ -40,9 +37,4 @@ docker service create \
     --name search_server \
     --network search \
     -p 8080:8080 \
-    --restart-condition any \
-    -e SEARCH_HOME=/home/search \
-    -e INDEXES_VERSION=1 \
-    -e RSYNC_SERVER=search_indexer \
-    -e RSYNC_PASSWORD=search \
     searchserver_server

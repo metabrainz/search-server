@@ -2,6 +2,11 @@ FROM jetty:9.3.10
 
 MAINTAINER Robert Kaye <rob@metabrainz.org>
 
+ENV SEARCH_HOME=/home/search
+ENV INDEXES_VERSION=1
+ENV RSYNC_SERVER=search-indexer 
+ENV RSYNC_PASSWORD=search
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         bsdmainutils \
         psmisc \
