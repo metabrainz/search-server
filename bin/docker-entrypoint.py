@@ -7,8 +7,7 @@ import shutil
 import time
 import errno
 
-# TODO: Change this to 24 hours
-RECORDING_INDEX_MAX_AGE = 60 * 60 * 12
+RECORDING_INDEX_MAX_AGE = 60 * 60 * 24
 
 def check_age_of_index(indexes_dir, version, index_type):
     dest = os.path.join(indexes_dir, version)
@@ -50,10 +49,10 @@ def copy_index(indexes_dir, version, index_type, dest):
         subprocess.check_call(["cp", "-rav", index_dir, dest])
     except OSError as e:
 	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
-	sys.exit(-5)
+	sys.exit(-9)
     except subprocess.CalledProcessError as e:
 	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
-	sys.exit(-5)
+	sys.exit(-10)
 
 def main():
     try:
@@ -66,7 +65,7 @@ def main():
         indexes_version = os.environ['INDEXES_VERSION']
     except AttributeError:
         print "Environment var INDEXES_VERSION must be set for this script."
-        sys.exit(-1)
+        sys.exit(-2)
     
     in_prog_dir = os.path.join(search_home, "data", "in-progress")
     indexes_dir = os.path.join(search_home, "data")
@@ -75,7 +74,7 @@ def main():
         subprocess.check_call(["rsync", "--config=/etc/rsyncd.conf", "--daemon"])
     except subprocess.CalledProcessError as e:
         print "Cannot start rsync daemon: " + str(e)
-        sys.exit(-2)
+        sys.exit(-3)
     
     while True:
         try:
@@ -83,7 +82,7 @@ def main():
         except OSError, e:
             if e.errno != errno.EEXIST:
                 print "Failed to create in-progress dir %s: %s" % (in_progress_dir, e)
-                sys.exit(-1)
+                sys.exit(-4)
     
         os.chdir(in_prog_dir)
    
@@ -92,17 +91,15 @@ def main():
             index_list += ",recording"
         else:
             copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
-        # TODO: REMOVE ME
-        index_list = "area,cdstub,instrument"
 
         try:
             subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), index_list])
         except OSError as e:
             print "Cannot build indexes: " + str(e)
-            sys.exit(-3)
+            sys.exit(-5)
         except subprocess.CalledProcessError as e:
             print "Cannot build indexes: " + str(e)
-            sys.exit(-3)
+            sys.exit(-6)
     
         os.chdir(search_home)
         rotate(indexes_version, os.path.join(in_prog_dir, "data"), indexes_dir)
@@ -115,24 +112,24 @@ def rotate(version, new_set, indexes):
     except OSError, e:
         if e.errno != errno.EEXIST:
     	    print "Failed to create dest dir %s: %s" % (dest, e)
-            sys.exit(-1)
+            sys.exit(-7)
     
     dest = os.path.join(dest, str(ts))
     try:
         os.rename(new_set, dest)
     except OSError, e:
         print "Failed to move new set to indexes dir %s: %s" % (dest, e)
-        sys.exit(-1)
+        sys.exit(-8)
     
     indexes_dir = os.path.join(indexes, version)
     
     # Remove older data sets
-#    dirs = [ f for f in os.listdir(indexes_dir) if os.path.isdir(os.path.join(indexes_dir,f)) ]
-#    dirs.sort(reverse=True)
-#    for dir in dirs[2:]:
-#        index_dir = os.path.join(indexes_dir, dir)
-#        print "Remove old %s" % index_dir
-#        shutil.rmtree(index_dir)
+    dirs = [ f for f in os.listdir(indexes_dir) if os.path.isdir(os.path.join(indexes_dir,f)) ]
+    dirs.sort(reverse=True)
+    for dir in dirs[2:]:
+        index_dir = os.path.join(indexes_dir, dir)
+        print "Remove old %s" % index_dir
+        shutil.rmtree(index_dir)
 
 if __name__ == "__main__":
     main()
