@@ -12,11 +12,10 @@ services:
     ulimits:
       as: 40802189312
       nofile: 51200
-    restart: always
+    restart: unless-stopped
     environment:
-      SEARCH_HOME: /home/search
-      INDEXES_VERSION: 1
-      POSTGRES_HOST: 10.0.2.15
+      POSTGRES_HOST: 127.0.0.1
+#      POSTGRES_HOST: pgbouncer-master
       POSTGRES_PORT: 5432
       POSTGRES_DB: musicbrainz_db
       POSTGRES_USER: musicbrainz
@@ -31,11 +30,23 @@ services:
     ulimits:
       as: 40802189312
       nofile: 51200
-    restart: always
+    restart: unless-stopped
     environment:
-      SEARCH_HOME: /home/search
       RSYNC_SERVER: indexer
       RSYNC_PASSWORD: search
-      INDEXES_VERSION: 1
     depends_on:
       - indexer
+
+  consul:
+    command: -server -bootstrap
+    image: progrium/consul
+    ports:
+      - "8500:8500"
+
+  registrator:
+    command: -internal consul://consul:8500
+    image: gliderlabs/registrator
+    links:
+      - consul
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
