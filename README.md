@@ -32,7 +32,7 @@ In a recent Ubuntu, you can install these with this command:
 
 Alternatively if you're not on Ubuntu, install the required tools from the following links
 
-- Java complete with JDK 1.6, not just the JRE (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- Java complete with JDK 1.6, not just the JRE ( http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase6-419409.html )
 - Apache Tomcat 6    ( http://tomcat.apache.org )
 - Maven version 2    ( http://maven.apache.org/download.html )
 
@@ -47,7 +47,7 @@ Check out and build server code
 Check out the **mmd-schema** and **search-server** repositories using Git as follows:
 
     git clone https://github.com/metabrainz/mmd-schema.git
-    git clone https://ijabz@bitbucket.org/metabrainz/search-server.git
+    git clone https://github.com/metabrainz/search-server.git
 
 Build and install the model:
 
