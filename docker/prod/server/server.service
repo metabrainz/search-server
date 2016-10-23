@@ -1,7 +1,7 @@
 #!/bin/bash
 
-WATCH_FILE=${@:1:1}
-PROG=${@:2:1}
+WATCH_FILE=/home/search/data/new/RELOAD
+PROG=/docker-entrypoint.sh java -jar /usr/local/jetty/start.jar
 CURRENT_TS=0
 
 while [ 1 ]

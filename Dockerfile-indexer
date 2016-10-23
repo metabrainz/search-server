@@ -6,9 +6,26 @@ ENV SEARCH_HOME=/home/search
 ENV INDEXES_VERSION=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
 	python \
-        rsync
+        rsync \
+        runit
 
+# Install consul template 
+COPY ./docker/prod/environment /etc/consul_template_env.sh
+
+COPY ./docker/prod/docker-helpers/install_consul_template.sh \
+     ./docker/prod/docker-helpers/install_runit.sh \
+     /usr/local/bin/
+RUN chmod 755 /usr/local/bin/install_consul_template.sh /usr/local/bin/install_runit.sh && \
+    sync && \
+    install_consul_template.sh && \
+    rm -f \
+        /usr/local/bin/install_consul_template.sh \
+        /usr/local/bin/install_runit.sh
+
+# Install search indexer stuff
 WORKDIR /home/search
 
 RUN mkdir -p /home/search/rsync /home/search/bin
@@ -20,7 +37,12 @@ RUN chmod og-rw /etc/rsync.secrets
 RUN curl -o /home/search/index.jar ftp://ftp.eu.metabrainz.org/pub/musicbrainz/search/index/index.jar
 
 # Install the scripts 
-COPY bin/build-indexes.sh /home/search/bin
-COPY bin/docker-entrypoint.py /home/search/bin
+COPY ./docker/prod/indexer/build-indexes.sh /home/search/bin
+COPY ./docker/prod/indexer/indexer.service /etc/sv/indexer/run
+RUN chmod 755 /etc/sv/indexer/run && \
+    ln -sf /etc/sv/indexer /etc/service/
 
-CMD ["/home/search/bin/docker-entrypoint.py"]
+# Configuration
+COPY ./docker/prod/consul-template.conf /etc/consul-template.conf
+
+ENTRYPOINT ["/usr/local/bin/runsvinit"]
