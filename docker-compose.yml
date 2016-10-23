@@ -8,25 +8,29 @@ services:
     volumes:
       - ./data:/home/search/data
     ports:
-      - "873:873"
+      - "873:62000"
     ulimits:
       as: 40802189312
       nofile: 51200
     restart: unless-stopped
     environment:
       POSTGRES_HOST: 127.0.0.1
-#      POSTGRES_HOST: pgbouncer-master
       POSTGRES_PORT: 5432
       POSTGRES_DB: musicbrainz_db
       POSTGRES_USER: musicbrainz
       POSTGRES_PASSWD: musicbrainz
+      DEPLOY_ENV: "prod"
+      SERVICE_62000_NAME: "search-indexer"
+      SERVICE_62000_CHECK_TCP: "true"
+      SERVICE_62000_CHECK_INTERVAL: "15s"
+      SERVICE_62000_CHECK_TIMEOUT: "3s"
 
   server:
     build: 
       context: .
       dockerfile: Dockerfile-server
     ports:
-      - "8080:8080"
+      - "8080:62001"
     ulimits:
       as: 40802189312
       nofile: 51200
@@ -34,6 +38,10 @@ services:
     environment:
       RSYNC_SERVER: indexer
       RSYNC_PASSWORD: search
+      SERVICE_62001_NAME: "search-server"
+      SERVICE_62001_CHECK_TCP: "true"
+      SERVICE_62001_CHECK_INTERVAL: "15s"
+      SERVICE_62001_CHECK_TIMEOUT: "3s"
     depends_on:
       - indexer
 
