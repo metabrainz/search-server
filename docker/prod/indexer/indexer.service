@@ -46,7 +46,7 @@ def copy_index(indexes_dir, version, index_type, dest):
         os.path.join(dest, "%s_index" % index_type)
         sys.stderr.write("'%s' -> '%s'\n" % (index_dir, dest))
         os.mkdir(dest)
-        subprocess.check_call(["cp", "-rav", index_dir, dest])
+        subprocess.check_call(["cp", "-rv", index_dir, dest])
     except OSError as e:
 	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
 	sys.exit(-9)
@@ -91,6 +91,8 @@ def main():
             index_list += ",recording"
         else:
             copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
+        # TODO: Remove this line, to build all indexes,not just a subset.
+        index_list = "area,cdstub"
 
         try:
             subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), index_list])

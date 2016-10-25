@@ -1,16 +1,17 @@
 #!/bin/bash
 
 WATCH_FILE=/home/search/data/new/RELOAD
-PROG=/docker-entrypoint.sh java -jar /usr/local/jetty/start.jar
 CURRENT_TS=0
+RSYNC_SERVER=`cat /code/consul_indexer.json`
 
 while [ 1 ]
 do
-    rsync rsync://search@$RSYNC_SERVER:/data/$INDEXES_VERSION/ --list-only > /tmp/data-list
+    echo "connect rsync to $RSYNC_SERVER"
+    rsync rsync://search@$RSYNC_SERVER/data/$INDEXES_VERSION/ --list-only > /tmp/data-list
     if [ $? != "0" ]
     then
 	echo "== Failed to get list of data sets. sleeping"
-	sleep 5
+	sleep 30 
 	continue
     fi
     TS=`cat /tmp/data-list | colrm 1 46 | grep -i . | sort -r | head -1`
@@ -18,13 +19,13 @@ do
 
     if [ "$CURRENT_TS" == "$TS" ]
     then
-        sleep 10
+        sleep 30
         continue
     fi
 
     # Sync over the indexes
     mkdir -p $SEARCH_HOME/data/$TS
-    rsync -rv rsync://search@$RSYNC_SERVER:/data/$INDEXES_VERSION/$TS $SEARCH_HOME/data
+    rsync -rv rsync://search@$RSYNC_SERVER/data/$INDEXES_VERSION/$TS $SEARCH_HOME/data
     if [ $? != "0" ]
     then
 	echo "== Failure during sync of dataset. Starting over again."
@@ -45,8 +46,7 @@ do
   
     # Start the search server again
     cd $JETTY_HOME
-    echo $PROG "${@:3}" 
-    $PROG "${@:3}" &
+    /docker-entrypoint.sh java -jar /usr/local/jetty/start.jar &
 
     # take a well deserved break!
     sleep 3

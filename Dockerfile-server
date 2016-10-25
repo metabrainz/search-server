@@ -4,7 +4,6 @@ MAINTAINER Robert Kaye <rob@metabrainz.org>
 
 ENV SEARCH_HOME=/home/search
 ENV INDEXES_VERSION=1
-ENV RSYNC_SERVER=search-indexer 
 ENV RSYNC_PASSWORD=search
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -35,11 +34,8 @@ RUN curl -o $JETTY_HOME/webapps/ROOT.war ftp://ftp.eu.metabrainz.org/pub/musicbr
 VOLUME ["/home/search/indexes"]
 
 COPY ./docker/prod/server/server.service /etc/sv/server/run
-COPY ./docker/prod/server/jetty.service /etc/sv/jetty/run
 RUN chmod 755 /etc/sv/server/run && \
     ln -sf /etc/sv/server /etc/service/
-RUN chmod 755 /etc/sv/jetty/run && \
-    ln -sf /etc/sv/jetty /etc/service/
 
 # Configuration
 COPY ./docker/prod/server/consul-template.conf /etc/consul-template.conf

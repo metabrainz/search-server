@@ -1,4 +1,0 @@
-#!/bin/sh
-
-cd /usr/local/jetty
-exec /docker-entrypoint.sh java -jar ./start.jar

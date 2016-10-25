@@ -8,11 +8,12 @@ services:
     volumes:
       - ./data:/home/search/data
     ports:
-      - "873:62000"
+      - "62000:873"
     ulimits:
       as: 40802189312
       nofile: 51200
     restart: unless-stopped
+    hostname: musicbrainz
     environment:
       POSTGRES_HOST: 10.0.2.15
       POSTGRES_PORT: 5432
@@ -30,20 +31,18 @@ services:
       context: .
       dockerfile: Dockerfile-server
     ports:
-      - "8080:62001"
+      - "62001:8080"
     ulimits:
       as: 40802189312
       nofile: 51200
     restart: unless-stopped
+    hostname: musicbrainz
     environment:
-      RSYNC_SERVER: indexer
-      RSYNC_PASSWORD: search
+      DEPLOY_ENV: "prod"
       SERVICE_62001_NAME: "search-server"
       SERVICE_62001_CHECK_TCP: "true"
       SERVICE_62001_CHECK_INTERVAL: "15s"
       SERVICE_62001_CHECK_TIMEOUT: "3s"
-    depends_on:
-      - indexer
 
   consul:
     command: -server -bootstrap
