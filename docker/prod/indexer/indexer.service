@@ -7,6 +7,10 @@ import shutil
 import time
 import errno
 
+SEARCH_SERVER_LIST_FILE = "/code/consul_search_servers.txt"
+SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY = 60
+SEARCH_SERVER_REST_RESTART_SERVER_DELAY = 300
+
 RECORDING_INDEX_MAX_AGE = 60 * 60 * 24
 
 def check_age_of_index(indexes_dir, version, index_type):
@@ -27,7 +31,6 @@ def check_age_of_index(indexes_dir, version, index_type):
     except OSError, e:
 	return int(time.time())
 
-    sys.stderr.write( "==== %s_index found, %d seconds old\n" % (index_type, int(time.time()) - ts))
     return int(time.time()) - ts
     
 def copy_index(indexes_dir, version, index_type, dest):
@@ -53,6 +56,22 @@ def copy_index(indexes_dir, version, index_type, dest):
     except subprocess.CalledProcessError as e:
 	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
 	sys.exit(-10)
+
+def read_search_server_names():
+
+    f = open(SEARCH_SERVER_LIST_FILE, "r")
+    if not f:
+        return []
+
+    server_names = []
+    lines = f.readlines()
+    for line in lines:
+        line = line.strip()
+        server_names.append(line)
+
+    f.close()
+
+    return server_names
 
 def main():
     try:
@@ -104,6 +123,15 @@ def main():
             sys.exit(-6)
     
         os.chdir(search_home)
+        search_servers = read_search_server_names()
+        delay = SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY
+        for server in search_servers:
+            restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
+            f = open(restart_file, "w")
+            f.write("%d\n" % (int(time.time() + delay)))
+            delay += SEARCH_SERVER_REST_RESTART_SERVER_DELAY
+            f.close()
+
         rotate(indexes_version, os.path.join(in_prog_dir, "data"), indexes_dir)
 
 def rotate(version, new_set, indexes):

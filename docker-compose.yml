@@ -13,7 +13,7 @@ services:
       as: 40802189312
       nofile: 51200
     restart: unless-stopped
-    hostname: musicbrainz
+    hostname: indexer
     environment:
       POSTGRES_HOST: 10.0.2.15
       POSTGRES_PORT: 5432
@@ -36,7 +36,7 @@ services:
       as: 40802189312
       nofile: 51200
     restart: unless-stopped
-    hostname: musicbrainz
+    hostname: server
     environment:
       DEPLOY_ENV: "prod"
       SERVICE_62001_NAME: "search-server"
