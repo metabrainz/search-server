@@ -43,6 +43,7 @@ RUN chmod 755 /etc/sv/indexer/run && \
     ln -sf /etc/sv/indexer /etc/service/
 
 # Configuration
-COPY ./docker/prod/consul-template.conf /etc/consul-template.conf
+COPY ./docker/prod/indexer/consul-template.conf /etc/consul-template.conf
+COPY ./docker/prod/indexer/consul_search_servers.json.ctmpl /code/consul_search_servers.json.ctmpl
 
 ENTRYPOINT ["/usr/local/bin/runsvinit"]

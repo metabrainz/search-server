@@ -42,6 +42,7 @@ RUN chmod 755 /etc/sv/jetty/run && \
     ln -sf /etc/sv/jetty /etc/service/
 
 # Configuration
-COPY ./docker/prod/consul-template.conf /etc/consul-template.conf
+COPY ./docker/prod/server/consul-template.conf /etc/consul-template.conf
+COPY ./docker/prod/server/consul_indexer.json.ctmpl /code/consul_indexer.json.ctmpl
 
 ENTRYPOINT ["/usr/local/bin/runsvinit"]
