@@ -26,6 +26,10 @@ public class IndexOptions {
     private String mainDatabaseHost = "localhost";
     public String getMainDatabaseHost() { return mainDatabaseHost; }
 
+    @Option(name="--db-port", aliases = { "-r" }, usage="The database port to connect to. (default: 5432)")
+    private String mainDatabasePort = "5432";
+    public String getMainDatabasePort() { return mainDatabasePort; }
+
     @Option(name="--db-name", aliases = { "-d" }, usage="The name of the database server to connect to. (default: musicbrainz_db)")
     private String mainDatabaseName = "musicbrainz_db";        
     public String getMainDatabaseName() { return mainDatabaseName; }
@@ -39,7 +43,7 @@ public class IndexOptions {
     public String getMainDatabasePassword() { return mainDatabasePassword; }
 
     public Connection getMainDatabaseConnection() {
-        String url = "jdbc:postgresql://" + getMainDatabaseHost() + "/" + getMainDatabaseName();
+        String url = "jdbc:postgresql://" + getMainDatabaseHost() + ":" + getMainDatabasePort() + "/" + getMainDatabaseName();
         Properties props = new Properties();
         props.setProperty("user", getMainDatabaseUser());
         props.setProperty("password", getMainDatabasePassword());
