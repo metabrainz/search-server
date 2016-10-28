@@ -4,7 +4,7 @@
 "postgres" : {
     "host": "{{.Address}}",
     "port": {{.Port}},
-    "user": "musicbrainz_ro",
+    "user": "musicbrainz",
     "password": "musicbrainz",
     "database": "musicbrainz_db"
 },
