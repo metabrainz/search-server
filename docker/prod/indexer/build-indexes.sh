@@ -17,6 +17,7 @@ echo $JAVA_HOME/bin/java \
 	--db-host "$POSTGRES_HOST" \
 	--db-name "$POSTGRES_DB" \
 	--db-user "$POSTGRES_USER" \
+	--db-port "$POSTGRES_PORT" \
 	--db-password "$POSTGRES_PASSWD" \
 	--indexes "$@"
 exec $JAVA_HOME/bin/java \
@@ -25,5 +26,6 @@ exec $JAVA_HOME/bin/java \
 	--db-host "$POSTGRES_HOST" \
 	--db-name "$POSTGRES_DB" \
 	--db-user "$POSTGRES_USER" \
+	--db-port "$POSTGRES_PORT" \
 	--db-password "$POSTGRES_PASSWD" \
 	--indexes "$@"

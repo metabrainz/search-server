@@ -6,8 +6,9 @@ import subprocess
 import shutil
 import time
 import errno
+import json
 
-SEARCH_SERVER_LIST_FILE = "/code/consul_search_servers.txt"
+SEARCH_SERVER_LIST_FILE = "/code/consul_indexer_config.json"
 SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY = 60
 SEARCH_SERVER_REST_RESTART_SERVER_DELAY = 300
 
@@ -57,21 +58,16 @@ def copy_index(indexes_dir, version, index_type, dest):
 	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
 	sys.exit(-10)
 
-def read_search_server_names():
+def read_config_file():
 
     f = open(SEARCH_SERVER_LIST_FILE, "r")
     if not f:
         return []
 
-    server_names = []
-    lines = f.readlines()
-    for line in lines:
-        line = line.strip()
-        server_names.append(line)
-
+    raw = f.read()
     f.close()
-
-    return server_names
+    data = json.loads(raw)
+    return data
 
 def main():
     try:
@@ -113,6 +109,14 @@ def main():
         # TODO: Remove this line, to build all indexes,not just a subset.
         index_list = "area,cdstub"
 
+        config_data = read_config_file()
+        postgres = config_data['postgres']
+        os.environ['POSTGRES_HOST'] = postgres['host'] 
+        os.environ['POSTGRES_PORT'] = str(postgres['port'])
+        os.environ['POSTGRES_DB'] = postgres['database']
+        os.environ['POSTGRES_USER'] = postgres['user']
+        os.environ['POSTGRES_PASSWD'] = postgres['password']
+
         try:
             subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), index_list])
         except OSError as e:
@@ -123,9 +127,11 @@ def main():
             sys.exit(-6)
     
         os.chdir(search_home)
-        search_servers = read_search_server_names()
+
+        # re-read the config file, it may have changed since the last call
+        config_data = read_config_file()
         delay = SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY
-        for server in search_servers:
+        for server in config_data['search-servers']:
             restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
             f = open(restart_file, "w")
             f.write("%d\n" % (int(time.time() + delay)))

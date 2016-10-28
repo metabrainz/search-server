@@ -1,0 +1,14 @@
+{
+{{if service "postgres-master"}}
+{{with index (service "postgres-master") 0}}
+"postgres" : {
+    "host": "{{.Address}}",
+    "port": {{.Port}},
+    "user": "musicbrainz_ro",
+    "password": "musicbrainz",
+    "database": "musicbrainz_db"
+},
+{{end}}
+{{end}}
+"search-servers" : [ "boingo" ]
+}
