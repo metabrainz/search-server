@@ -34,7 +34,7 @@ COPY indexer/rsync.secrets /etc
 RUN chmod og-rw /etc/rsync.secrets
 
 # Install the war file
-RUN curl -o /home/search/index.jar ftp://ftp.metabrainz.org/pub/musicbrainz/search/index/index.jar
+RUN curl -o /home/search/index.jar ftp://ftp.musicbrainz.org/pub/musicbrainz/search/index/index.jar
 
 # Install the scripts 
 COPY ./docker/prod/indexer/build-indexes.sh /home/search/bin

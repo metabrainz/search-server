@@ -107,7 +107,7 @@ def main():
         else:
             copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
         # TODO: Remove this line, to build all indexes,not just a subset.
-        index_list = "area,cdstub"
+#index_list = "area,cdstub"
 
         config_data = read_config_file()
         postgres = config_data['postgres']
