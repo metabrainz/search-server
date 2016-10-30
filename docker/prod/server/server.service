@@ -2,7 +2,19 @@
 
 WATCH_FILE=/home/search/data/new/RELOAD
 CURRENT_TS=0
-RSYNC_SERVER=`cat /code/consul_indexer.json`
+INI_FILE=/code/consul_server.ini
+
+while [ 1 ]
+do
+    if [ ! -e "$INI_FILE" ]
+    then
+        sleep 1
+        continue
+    fi
+    break
+done
+
+RSYNC_SERVER=`cat $INI_FILE`
 
 while [ 1 ]
 do

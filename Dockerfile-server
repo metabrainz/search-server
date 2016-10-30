@@ -39,6 +39,6 @@ RUN chmod 755 /etc/sv/server/run && \
 
 # Configuration
 COPY ./docker/prod/server/consul-template.conf /etc/consul-template.conf
-COPY ./docker/prod/server/consul_indexer.json.ctmpl /code/consul_indexer.json.ctmpl
+COPY ./docker/prod/server/consul_server.ini.ctmpl /code/consul_server.ini.ctmpl
 
 ENTRYPOINT ["/usr/local/bin/runsvinit"]

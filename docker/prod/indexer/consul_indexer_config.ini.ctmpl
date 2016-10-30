@@ -1,0 +1,10 @@
+{{if service "postgres-master"}}
+{{with index (service "postgres-master") 0}}
+pg_host={{.Address}}
+pg_port={{.Port}}
+pg_user=musicbrainz
+pg_passwd=musicbrainz
+pg_database=musicbrainz_db
+{{end}}
+{{end}}
+search-servers={{range (service "search-server")}}{{print .Address ","}}{{end}}

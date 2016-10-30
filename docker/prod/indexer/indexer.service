@@ -8,7 +8,7 @@ import time
 import errno
 import json
 
-SEARCH_SERVER_LIST_FILE = "/code/consul_indexer_config.json"
+SEARCH_SERVER_LIST_FILE = "/code/consul_indexer_config.ini"
 SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY = 60
 SEARCH_SERVER_REST_RESTART_SERVER_DELAY = 300
 
@@ -64,9 +64,21 @@ def read_config_file():
     if not f:
         return []
 
-    raw = f.read()
+    data = {}
+    for line in f.readlines():
+        sys.stderr.write(line)
+        line = line.strip()
+        kv = line.split("=")
+        k = kv[0]
+        if len(kv) == 1:
+            v = ""
+        else:
+            v = kv[1]
+        if v.endswith(","):
+            v = v[:-1]
+        data[k] = v
+
     f.close()
-    data = json.loads(raw)
     return data
 
 def main():
@@ -106,16 +118,14 @@ def main():
             index_list += ",recording"
         else:
             copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
-        # TODO: Remove this line, to build all indexes,not just a subset.
-#index_list = "area,cdstub"
+        index_list = "area,cdstub"
 
         config_data = read_config_file()
-        postgres = config_data['postgres']
-        os.environ['POSTGRES_HOST'] = postgres['host'] 
-        os.environ['POSTGRES_PORT'] = str(postgres['port'])
-        os.environ['POSTGRES_DB'] = postgres['database']
-        os.environ['POSTGRES_USER'] = postgres['user']
-        os.environ['POSTGRES_PASSWD'] = postgres['password']
+        os.environ['POSTGRES_HOST'] = config_data['pg_host'] 
+        os.environ['POSTGRES_PORT'] = config_data['pg_port']
+        os.environ['POSTGRES_DB'] = config_data['pg_database']
+        os.environ['POSTGRES_USER'] = config_data['pg_user']
+        os.environ['POSTGRES_PASSWD'] = config_data['pg_passwd']
 
         try:
             subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), index_list])
