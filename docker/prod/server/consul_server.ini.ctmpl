@@ -1,1 +1,5 @@
-10.0.2.15:62000
+{{if service "search-indexer"}}
+{{with index (service "search-indexer") 0}}
+{{.Address}}:{{.Port}}
+{{end}}
+{{end}}

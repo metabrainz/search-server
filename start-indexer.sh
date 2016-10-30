@@ -7,7 +7,7 @@ docker run \
     --hostname $HOSTNAME \
     --restart unless-stopped \
     --publish 62000:873 \
-    --volume search-indexes:/home/search/data \
+    --volume search-indexer-data:/home/search/data \
     --env DEPLOY_ENV="prod" \
     --env SERVICE_873_NAME="search-indexer" \
     --env SERVICE_873_CHECK_TCP="true" \

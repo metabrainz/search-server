@@ -1,6 +1,5 @@
 #!/bin/bash
 
-WATCH_FILE=/home/search/data/new/RELOAD
 CURRENT_TS=0
 INI_FILE=/code/consul_server.ini
 
@@ -14,10 +13,9 @@ do
     break
 done
 
-RSYNC_SERVER=`cat $INI_FILE`
-
 while [ 1 ]
 do
+    RSYNC_SERVER=`grep . $INI_FILE | awk '{$1=$1};1'`
     echo "connect rsync to $RSYNC_SERVER"
     rsync rsync://search@$RSYNC_SERVER/data/$INDEXES_VERSION/ --list-only > /tmp/data-list
     if [ $? != "0" ]
@@ -64,10 +62,3 @@ do
     sleep 3
 
 done   
-
-#    rm -f "$WATCH_FILE"
-#    while [ ! -e "$WATCH_FILE" ]; do
-#        sleep 1
-#    done
-#    rm -f "$WATCH_FILE"
-#    
