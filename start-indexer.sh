@@ -4,6 +4,7 @@
 # later add: --detach
 HOSTNAME=`hostname`
 docker run \
+    --detach \
     --hostname $HOSTNAME \
     --restart unless-stopped \
     --publish 62000:873 \

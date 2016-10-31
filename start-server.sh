@@ -10,6 +10,7 @@ fi
 HOSTNAME=`hostname`
 source /root/docker-server-configs/scripts/constants.sh
 docker run \
+    --detach \
     --hostname $HOSTNAME \
     --restart unless-stopped \
     --publish 62001:8080 \
@@ -18,5 +19,5 @@ docker run \
     --env SERVICE_8080_CHECK_TCP="true" \
     --env SERVICE_8080_CHECK_INTERVAL="15s" \
     --env SERVICE_8080_CHECK_TIMEOUT="3s" \
-    --env PRIVATE_IP=$PRIVATE_IP \
+    --env PRIVATE_IP="$PRIVATE_IP" \
     searchserver_server

@@ -66,7 +66,6 @@ def read_config_file():
 
     data = {}
     for line in f.readlines():
-        sys.stderr.write(line)
         line = line.strip()
         kv = line.split("=")
         k = kv[0]
@@ -105,6 +104,12 @@ def main():
     
     while True:
         try:
+            shutil.rmtree(in_prog_dir)
+        except OSError, e:
+            print "Failed to clean up in-progress dir"
+            sys.exit(-4)
+
+        try:
             os.makedirs(in_prog_dir)
         except OSError, e:
             if e.errno != errno.EEXIST:
@@ -118,7 +123,8 @@ def main():
             index_list += ",recording"
         else:
             copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
-        index_list = "area,cdstub"
+
+#        index_list = "area,cdstub,label,releasegroup"
 
         config_data = read_config_file()
         os.environ['POSTGRES_HOST'] = config_data['pg_host'] 
@@ -141,7 +147,9 @@ def main():
         # re-read the config file, it may have changed since the last call
         config_data = read_config_file()
         delay = SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY
-        for server in config_data['search-servers']:
+        for server in config_data['search-servers'].split(","):
+            if not server:
+                continue
             restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
             f = open(restart_file, "w")
             f.write("%d\n" % (int(time.time() + delay)))

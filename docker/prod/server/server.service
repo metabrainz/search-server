@@ -16,11 +16,11 @@ done
 while [ 1 ]
 do
     RSYNC_SERVER=`grep . $INI_FILE | awk '{$1=$1};1'`
-    echo "connect rsync to $RSYNC_SERVER"
+    echo -n "connect rsync to $RSYNC_SERVER: "
     rsync rsync://search@$RSYNC_SERVER/data/$INDEXES_VERSION/ --list-only > /tmp/data-list
     if [ $? != "0" ]
     then
-	echo "== Failed to get list of data sets. sleeping"
+	echo "Failed to get list of data sets. sleeping"
 	sleep 30 
 	continue
     fi
@@ -29,6 +29,7 @@ do
 
     if [ "$CURRENT_TS" == "$TS" ]
     then
+        echo "no new data. sleeping."
         sleep 30
         continue
     fi
@@ -38,9 +39,24 @@ do
     rsync -rv rsync://search@$RSYNC_SERVER/data/$INDEXES_VERSION/$TS $SEARCH_HOME/data
     if [ $? != "0" ]
     then
-	echo "== Failure during sync of dataset. Starting over again."
+	echo "Failure during sync of dataset. Starting over again."
 	sleep 5
 	continue
+    fi
+
+    if [ -f "/home/search/indexdata/restart-$PRIVATE_IP" ];
+    then
+        RESTART_TS=`cat "/home/search/indexdata/restart-$PRIVATE_IP"`
+        echo "restart: $RESTART_TS"
+        while [ 1 ]
+        do
+            if [ "`date +%s`" -lt "$RESTART_TS" ];
+            then
+                sleep 1
+            else
+                break
+            fi
+        done
     fi
 
     # remove the old data set and move the current one into place
