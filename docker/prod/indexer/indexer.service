@@ -106,8 +106,7 @@ def main():
         try:
             shutil.rmtree(in_prog_dir)
         except OSError, e:
-            print "Failed to clean up in-progress dir"
-            sys.exit(-4)
+            print "Failed to clean up in-progress dir. ignoring."
 
         try:
             os.makedirs(in_prog_dir)
