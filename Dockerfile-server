@@ -28,7 +28,7 @@ RUN chmod 755 /usr/local/bin/install_consul_template.sh /usr/local/bin/install_r
 WORKDIR $JETTY_HOME
 
 # Install the war file
-RUN curl -o $JETTY_HOME/webapps/ROOT.war ftp://ftp.eu.metabrainz.org/pub/musicbrainz/search/servlet/searchserver.war 
+RUN curl -o $JETTY_HOME/webapps/ROOT.war ftp://data.musicbrainz.org/pub/musicbrainz/search/servlet/searchserver.war 
 
 # Setup the data volumes/dirs
 VOLUME ["/home/search/indexes"]
