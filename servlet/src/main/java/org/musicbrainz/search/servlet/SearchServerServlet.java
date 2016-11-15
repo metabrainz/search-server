@@ -193,7 +193,6 @@ public class SearchServerServlet extends HttpServlet
             dismaxSearchers.put(resourceType, dismaxSearchServer);
 
         }
-        log.info("End:loaded Indexes from " + indexDir + ",Type:nfio," + "MaxHeap:" + ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax());
         isServletInitialized = true;
 
     }
@@ -201,8 +200,6 @@ public class SearchServerServlet extends HttpServlet
     @Override
     public void destroy()
     {
-
-        log.info("Start:Destroy Indexes");
 
         // Close all search servers
         for (SearchServer searchServer : searchers.values())
@@ -238,8 +235,6 @@ public class SearchServerServlet extends HttpServlet
             }
         }
         dismaxSearchers.clear();
-        log.info("End:Destroy Indexes");
-
     }
 
     /**
@@ -249,7 +244,6 @@ public class SearchServerServlet extends HttpServlet
     {
         String rateLimiterHost = getServletConfig().getInitParameter("ratelimitserver_host");
         String rateLimiterPort = getServletConfig().getInitParameter("ratelimitserver_port");
-        log.info("RateLimiter:" + rateLimiterEnabled + ":RateLimiterHost:" + rateLimiterHost + ":Port:" + rateLimiterPort);
         isRateLimiterEnabled = Boolean.parseBoolean(rateLimiterEnabled);
         if (isRateLimiterEnabled)
         {
@@ -263,8 +257,6 @@ public class SearchServerServlet extends HttpServlet
      */
     protected void reloadIndexes()
     {
-
-        log.info("Start:Reloading Indexes");
         // We iterate over searchers only, since dismaxSearchers share the exact same SearcherManagers
         for (SearchServer searchServer : searchers.values())
         {
@@ -281,7 +273,6 @@ public class SearchServerServlet extends HttpServlet
                 log.severe("Caught exception during reopening of index: " + e.getMessage());
             }
         }
-        log.info("End:Reloading Indexes");
 
     }
 
@@ -296,10 +287,8 @@ public class SearchServerServlet extends HttpServlet
 
         if (isAdminRemoteEnabled || (request.getRemoteAddr().equals("127.0.0.1")) || (request.getRemoteAddr().equals("0:0:0:0:0:0:0:1")))
         {
-            log.info("isRequestFromLocalHost:VALID:" + request.getRemoteHost() + "/" + request.getRemoteAddr());
             return true;
         }
-        log.info("isRequestFromLocalHost:INVALID:" + request.getRemoteHost() + "/" + request.getRemoteAddr());
         return false;
     }
 
@@ -333,7 +322,6 @@ public class SearchServerServlet extends HttpServlet
         String init = request.getParameter(RequestParameter.INIT.getName());
         if (init != null)
         {
-            log.info("Checking init request");
             if (isRequestFromLocalHost(request))
             {
                 init(init.equals("mmap"));
@@ -352,7 +340,6 @@ public class SearchServerServlet extends HttpServlet
         String rate = request.getParameter(RequestParameter.RATE.getName());
         if (rate != null)
         {
-            log.info("Checking rate request");
             if (isRequestFromLocalHost(request))
             {
                 initRateLimiter(rate);
@@ -370,7 +357,6 @@ public class SearchServerServlet extends HttpServlet
         String reloadIndexes = request.getParameter(RequestParameter.RELOAD_INDEXES.getName());
         if (reloadIndexes != null)
         {
-            log.info("Checking reloadindex request");
             if (isRequestFromLocalHost(request))
             {
                 reloadIndexes();
@@ -388,7 +374,6 @@ public class SearchServerServlet extends HttpServlet
         String gc = request.getParameter(RequestParameter.GC.getName());
         if (gc != null)
         {
-            log.info("Garbage Collection Requested");
             if (isRequestFromLocalHost(request))
             {
                 System.gc();
@@ -407,10 +392,6 @@ public class SearchServerServlet extends HttpServlet
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
-//        long threadId = Thread.currentThread().getId();
-
-//        log.info("Start:doGet " + threadId);
-
         String query = "";
         try
         {
@@ -669,10 +650,7 @@ public class SearchServerServlet extends HttpServlet
      */
     public void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax, boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion) throws ParseException, IOException
     {
-//        long threadId = Thread.currentThread().getId();
         long start = System.currentTimeMillis();
-
-//        log.info("Start:doSearch " + threadId + " " + query);
 
         SearchServer searchServer;
         if (isDismax)
@@ -683,7 +661,6 @@ public class SearchServerServlet extends HttpServlet
         {
             searchServer = searchers.get(resourceType);
         }
-//        log.info("debug " + threadId + " 1 " + (System.currentTimeMillis()-start));
 
         if (searchServer == null)
         {
@@ -711,13 +688,11 @@ public class SearchServerServlet extends HttpServlet
             */
         }
 
-//        log.info("debug " + threadId + " 2 " + (System.currentTimeMillis()-start));
         Results results = searchServer.search(query, offset, limit);
-//        log.info("debug " + threadId + " 3 " + (System.currentTimeMillis()-start));
-//        if (System.currentTimeMillis()-start > 5000)
-//        {
+        if (System.currentTimeMillis()-start > 1000)
+        {
             log.info("duration " + (System.currentTimeMillis()-start) + " " + query);
-//        }
+        }
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseVersion);
 
         if (writer == null)
@@ -743,15 +718,12 @@ public class SearchServerServlet extends HttpServlet
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
         try
         {
-//            log.info("debug " + threadId + " 4 " + (System.currentTimeMillis()-start));
             writer.write(out, results, responseFormat, isPretty);
-//            log.info("debug " + threadId + " 5 " + (System.currentTimeMillis()-start));
         }
         finally
         {
             out.close();
         }
-//        log.info("End:doSearch " + threadId + " " + (System.currentTimeMillis()-start));
     }
 
     /**
