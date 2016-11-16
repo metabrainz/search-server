@@ -48,15 +48,20 @@ do
     then
         RESTART_TS=`cat "/home/search/indexdata/restart-$PRIVATE_IP"`
         echo "restart: $RESTART_TS"
+        echo -n "current time: "
+        date +%s
         while [ 1 ]
         do
             if [ "`date +%s`" -lt "$RESTART_TS" ];
             then
                 sleep 1
+                date +%s
             else
                 break
             fi
         done
+    else
+        echo "Found no restart timestamp."
     fi
 
     # remove the old data set and move the current one into place

@@ -151,7 +151,6 @@ public class SearchServerServlet extends HttpServlet
             }
             catch (CorruptIndexException e)
             {
-                log.warning("Could not load " + resourceType.getIndexName() + " index, index is corrupted: " + e.getMessage());
                 if (resourceType.isUsedBySearchAll())
                 {
                     isSearchAllEnabled = false;
@@ -159,7 +158,6 @@ public class SearchServerServlet extends HttpServlet
             }
             catch (IOException e)
             {
-                log.warning("Could not load " + resourceType.getIndexName() + " index: " + e.getMessage());
                 if (resourceType.isUsedBySearchAll())
                 {
                     isSearchAllEnabled = false;
