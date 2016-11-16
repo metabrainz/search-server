@@ -73,7 +73,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
             release.setId(releasev2.getId());
             release.getType().add(StringUtils.capitalize(releasev2.getReleaseGroup().getType()));
 
-            if (!Strings.isNullOrEmpty(releasev2.getStatus().getContent())) {
+            if (releasev2 != null && releasev2.getStatus() != null && !Strings.isNullOrEmpty(releasev2.getStatus().getContent())) {
                 release.getType().add(releasev2.getStatus().getContent());
             }
 
@@ -151,7 +151,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                         event.setBarcode(releasev2.getBarcode());
                     }
 
-                    if (!Strings.isNullOrEmpty(firstMediumv2.getFormat().getContent())) {
+                    if (firstMediumv2 != null & firstMediumv2.getFormat() != null && !Strings.isNullOrEmpty(firstMediumv2.getFormat().getContent())) {
                         event.setFormat(firstMediumv2.getFormat().getContent());
                     }
                     eventList.getEvent().add(event);
