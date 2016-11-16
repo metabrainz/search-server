@@ -175,7 +175,7 @@ public class ReleaseMmd1XmlWriter extends Mmd1XmlWriter {
                     event.setBarcode(releasev2.getBarcode());
                 }
 
-                if (firstMediumv2 != null && !Strings.isNullOrEmpty(firstMediumv2.getFormat().getContent())) {
+                if (firstMediumv2.getFormat() != null && !Strings.isNullOrEmpty(firstMediumv2.getFormat().getContent())) {
                     event.setFormat(firstMediumv2.getFormat().getContent());
                 }
             }
