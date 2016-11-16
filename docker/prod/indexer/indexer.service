@@ -49,7 +49,6 @@ def copy_index(indexes_dir, version, index_type, dest):
 
     try:
         os.path.join(dest, "%s_index" % index_type)
-        sys.stderr.write("'%s' -> '%s'\n" % (index_dir, dest))
         os.mkdir(dest)
         subprocess.check_call(["cp", "-rv", index_dir, dest])
     except OSError as e:
@@ -151,13 +150,14 @@ def main():
             restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
             f = open(restart_file, "w")
             f.write("%d\n" % (int(time.time() + delay)))
+            sys.stderr.write("write restart timestamp %d for %s" % (int(time.time()), server))
             delay += SEARCH_SERVER_REST_RESTART_SERVER_DELAY
             f.close()
 
         rotate(indexes_version, os.path.join(in_prog_dir, "data"), indexes_dir)
 
         # Wait for search servers to sync and rotate, then start the next run
-        print "Sleep for %d seconds, because I'm lazy and I need a break." % SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS
+        sys.stderr.write("%s: Sleep for %d seconds, because I'm lazy and I need a break.\n" % (time.time(), SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS))
         time.sleep(SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS)
 
 def rotate(version, new_set, indexes):
