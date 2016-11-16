@@ -9,8 +9,9 @@ import errno
 import json
 
 SEARCH_SERVER_LIST_FILE = "/code/consul_indexer_config.ini"
-SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY = 60
-SEARCH_SERVER_REST_RESTART_SERVER_DELAY = 300
+SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY = 500
+SEARCH_SERVER_REST_RESTART_SERVER_DELAY = 800
+SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS = 800
 
 RECORDING_INDEX_MAX_AGE = 60 * 60 * 24
 
@@ -123,8 +124,6 @@ def main():
         else:
             copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
 
-#        index_list = "area,cdstub,label,releasegroup"
-
         config_data = read_config_file()
         os.environ['POSTGRES_HOST'] = config_data['pg_host'] 
         os.environ['POSTGRES_PORT'] = config_data['pg_port']
@@ -156,6 +155,9 @@ def main():
             f.close()
 
         rotate(indexes_version, os.path.join(in_prog_dir, "data"), indexes_dir)
+
+        # Wait for search servers to sync and rotate, then start the next run
+        sleep(SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS)
 
 def rotate(version, new_set, indexes):
     ts = int(time.time())
