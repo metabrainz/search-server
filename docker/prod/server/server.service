@@ -24,7 +24,8 @@ do
 	sleep 30 
 	continue
     fi
-    TS=`cat /tmp/data-list | colrm 1 46 | grep -i . | sort -r | head -1`
+    cat /tmp/data-list
+    TS=`cat /tmp/data-list | colrm 1 46 | grep -i . | sort -rn | head -1`
     rm /tmp/data-list
 
     if [ "$CURRENT_TS" == "$TS" ]
