@@ -50,6 +50,7 @@ do
         echo "restart: $RESTART_TS"
         echo -n "current time: "
         date +%s
+        date
         while [ 1 ]
         do
             if [ "`date +%s`" -lt "$RESTART_TS" ];
