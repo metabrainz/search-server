@@ -149,7 +149,7 @@ def main():
             restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
             f = open(restart_file, "w")
             f.write("%d\n" % (int(time.time() + delay)))
-            sys.stderr.write("write restart timestamp %d for %s\n" % (int(time.asctime()), server))
+            sys.stderr.write("write restart timestamp %d (%s) for %s\n" % (int(time.time()), time.asctime(), server))
             delay += SEARCH_SERVER_RESTART_SERVER_DELAY
             f.close()
 
