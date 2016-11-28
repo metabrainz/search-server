@@ -45,26 +45,29 @@ do
 	continue
     fi
 
-    if [ -f "$SEARCH_HOME/data/$TS/restart-$PRIVATE_IP" ];
+    # If we already have a data-set, check to see if we should delay the restart
+    if [ -d "$SEARCH_HOME/data/current" ];
     then
-        RESTART_TS=`cat "/home/search/data/$TS/restart-$PRIVATE_IP"`
-        echo -n "restart: $RESTART_TS "
-        date -d @$RESTART_TS
-        echo -n "current time: "
-        date +%s
-        date
-        while [ 1 ]
-        do
-            if [ "`date +%s`" -lt "$RESTART_TS" ];
-            then
-                sleep 1
-                date +%s
-            else
-                break
-            fi
-        done
-    else
-        echo "Found no restart timestamp."
+        if [ -f "$SEARCH_HOME/data/$TS/restart-$PRIVATE_IP" ];
+        then
+            RESTART_TS=`cat "/home/search/data/$TS/restart-$PRIVATE_IP"`
+            echo -n "restart time: "
+            date -d @$RESTART_TS
+            echo -n "current time: "
+            date
+            echo "sleeping..."
+            while [ 1 ]
+            do
+                if [ "`date +%s`" -lt "$RESTART_TS" ];
+                then
+                    sleep 1
+                else
+                    break
+                fi
+            done
+        else
+            echo "Found no restart timestamp."
+        fi
     fi
 
     # remove the old data set and move the current one into place
