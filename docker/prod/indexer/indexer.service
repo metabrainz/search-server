@@ -9,8 +9,7 @@ import errno
 import json
 
 SEARCH_SERVER_LIST_FILE = "/code/consul_indexer_config.ini"
-SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY = 500
-SEARCH_SERVER_REST_RESTART_SERVER_DELAY = 900
+SEARCH_SERVER_RESTART_SERVER_DELAY = 900
 SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS = 900
 
 RECORDING_INDEX_MAX_AGE = 60 * 60 * 24
@@ -143,15 +142,15 @@ def main():
 
         # re-read the config file, it may have changed since the last call
         config_data = read_config_file()
-        delay = SEARCH_SERVER_FIRST_RESTART_SERVER_DELAY
+        delay = 0
         for server in config_data['search-servers'].split(","):
             if not server:
                 continue
             restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
             f = open(restart_file, "w")
             f.write("%d\n" % (int(time.time() + delay)))
-            sys.stderr.write("write restart timestamp %d for %s\n" % (int(time.time()), server))
-            delay += SEARCH_SERVER_REST_RESTART_SERVER_DELAY
+            sys.stderr.write("write restart timestamp %d for %s\n" % (int(time.asctime()), server))
+            delay += SEARCH_SERVER_RESTART_SERVER_DELAY
             f.close()
 
         rotate(indexes_version, os.path.join(in_prog_dir, "data"), indexes_dir)
