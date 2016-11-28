@@ -45,9 +45,9 @@ do
 	continue
     fi
 
-    if [ -f "/home/search/indexdata/restart-$PRIVATE_IP" ];
+    if [ -f "$SEARCH_HOME/data/$TS/restart-$PRIVATE_IP" ];
     then
-        RESTART_TS=`cat "/home/search/indexdata/restart-$PRIVATE_IP"`
+        RESTART_TS=`cat "/home/search/data/$TS/restart-$PRIVATE_IP"`
         echo -n "restart: $RESTART_TS "
         date -d @$RESTART_TS
         echo -n "current time: "
