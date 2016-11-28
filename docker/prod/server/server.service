@@ -47,7 +47,8 @@ do
     if [ -f "/home/search/indexdata/restart-$PRIVATE_IP" ];
     then
         RESTART_TS=`cat "/home/search/indexdata/restart-$PRIVATE_IP"`
-        echo "restart: $RESTART_TS"
+        echo -n "restart: $RESTART_TS "
+        date -d @$RESTART_TS
         echo -n "current time: "
         date +%s
         date

@@ -5,6 +5,7 @@ import os
 import subprocess
 import shutil
 import time
+import datetime
 import errno
 import json
 
@@ -143,13 +144,15 @@ def main():
         # re-read the config file, it may have changed since the last call
         config_data = read_config_file()
         delay = 0
+        sys.stderr.write("Starting restarts at %s\n" % (datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S.%f')))
         for server in config_data['search-servers'].split(","):
             if not server:
                 continue
             restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
             f = open(restart_file, "w")
-            f.write("%d\n" % (int(time.time() + delay)))
-            sys.stderr.write("write restart timestamp %d (%s) for %s\n" % (int(time.time()), time.asctime(), server))
+            restart = int(time.time() + delay)
+            f.write("%d\n" % restart)
+            sys.stderr.write("write restart timestamp %s for %s\n" % (datetime.datetime.fromtimestamp(restart).strftime('%Y-%m-%d %H:%M:%S.%f'), server))
             delay += SEARCH_SERVER_RESTART_SERVER_DELAY
             f.close()
 
