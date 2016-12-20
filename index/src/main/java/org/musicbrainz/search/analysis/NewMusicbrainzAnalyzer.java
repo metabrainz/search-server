@@ -65,11 +65,11 @@ public class NewMusicbrainzAnalyzer extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        Tokenizer source = new StandardTokenizer(LuceneVersion.LUCENE_VERSION,reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        Tokenizer source = new StandardTokenizer();
         //TokenStream filter = new ICUTransformFilter(source, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         //filter = new ICUTransformFilter(filter, Transliterator.getInstance("Traditional-Simplified"));
-        TokenStream filter = new StandardFilter(LuceneVersion.LUCENE_VERSION,source);
+        TokenStream filter = new StandardFilter(source);
         //filter = new AccentFilter(filter);
         filter = new LowercaseFilter(filter);
         /*filter = new MusicbrainzWordDelimiterFilter(filter,

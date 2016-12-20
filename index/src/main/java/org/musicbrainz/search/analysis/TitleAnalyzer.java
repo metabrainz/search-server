@@ -74,8 +74,8 @@ public class TitleAnalyzer extends Analyzer {
 
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        Tokenizer source = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        Tokenizer source = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
         TokenStream filter = new ICUTransformFilter(source, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
         filter = new ICUTransformFilter(filter, Transliterator.getInstance("Traditional-Simplified"));
         filter = new AccentFilter(filter);

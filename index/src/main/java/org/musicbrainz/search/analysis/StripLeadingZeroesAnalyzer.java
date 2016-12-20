@@ -17,8 +17,8 @@ public class StripLeadingZeroesAnalyzer extends Analyzer {
     }
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        Tokenizer source = new KeywordTokenizer(reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        Tokenizer source = new KeywordTokenizer();
         TokenStream filter = new StripLeadingZeroesFilter(source);
         return new TokenStreamComponents(source, filter);
     }

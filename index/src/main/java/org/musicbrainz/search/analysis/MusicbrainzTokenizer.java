@@ -97,21 +97,19 @@ public final class MusicbrainzTokenizer extends Tokenizer {
    * Creates a new instance of the {@link org.apache.lucene.analysis.standard.StandardTokenizer}.  Attaches
    * the <code>input</code> to the newly created JFlex scanner.
    *
-   * @param input The input reader
-   *
    * See http://issues.apache.org/jira/browse/LUCENE-1068
    */
-  public MusicbrainzTokenizer(Version matchVersion, Reader input) {
-    super(input);
-    this.scanner = new MusicbrainzTokenizerImpl(input);
-    init(input, matchVersion);
+  public MusicbrainzTokenizer(Version matchVersion) {
+    this.scanner = new MusicbrainzTokenizerImpl();
+    init(matchVersion);
   }
 
-  private void init(Reader input, Version matchVersion) {
+  private void init(Version matchVersion) {
     termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     offsetAtt = addAttribute(OffsetAttribute.class);
     posIncrAtt = addAttribute(PositionIncrementAttribute.class);
     typeAtt = addAttribute(TypeAttribute.class);
+    this.scanner.setReader(input);
   }
 
   // this tokenizer generates three attributes:

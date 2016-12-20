@@ -32,6 +32,7 @@ package org.musicbrainz.search.index;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexOptions;
 
 public class MusicBrainzFieldTypes
 {
@@ -49,7 +50,7 @@ public class MusicBrainzFieldTypes
 
         TEXT_STORED_ANALYZED.freeze();
 
-        TEXT_STORED_NOT_INDEXED.setIndexed(false);
+        TEXT_STORED_NOT_INDEXED.setIndexOptions(IndexOptions.NONE);
         TEXT_STORED_NOT_INDEXED.freeze();
 
         TEXT_STORED_ANALYZED_NO_NORMS.setOmitNorms(true);

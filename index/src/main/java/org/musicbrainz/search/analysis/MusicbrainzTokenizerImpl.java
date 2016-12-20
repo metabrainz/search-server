@@ -357,6 +357,12 @@ final void getText(CharTermAttribute t) {
 
   /**
    * Creates a new scanner
+   */
+  MusicbrainzTokenizerImpl() {
+  }
+
+  /**
+   * Creates a new scanner
    * There is also a java.io.InputStream version of this constructor.
    *
    * @param   in  the java.io.Reader to read input from.
@@ -373,6 +379,15 @@ final void getText(CharTermAttribute t) {
    */
   MusicbrainzTokenizerImpl(java.io.InputStream in) {
     this(new java.io.InputStreamReader(in));
+  }
+
+  /**
+   * Set the input reader
+   *
+   * @param   in  the java.io.Reader to read input from.
+   */
+  public void setReader(java.io.Reader in) {
+    this.zzReader = in;
   }
 
   /** 
