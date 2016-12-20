@@ -648,6 +648,7 @@ public class SearchServerServlet extends HttpServlet
      */
     public void doSearch(HttpServletResponse response, ResourceType resourceType, String query, boolean isDismax, boolean isExplain, boolean isPretty, Integer offset, Integer limit, String responseFormat, String responseVersion) throws ParseException, IOException
     {
+
         SearchServer searchServer;
         if (isDismax)
         {
@@ -684,7 +685,11 @@ public class SearchServerServlet extends HttpServlet
             */
         }
 
+        long start = System.currentTimeMillis();
         Results results = searchServer.search(query, offset, limit);
+        if (resourceType.getName() == "recording")
+            log.info("lucene:" + (System.currentTimeMillis()-start));
+
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseVersion);
 
         if (writer == null)
@@ -710,7 +715,10 @@ public class SearchServerServlet extends HttpServlet
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
         try
         {
+            start = System.currentTimeMillis();
             writer.write(out, results, responseFormat, isPretty);
+            if (resourceType.getName() == "recording")
+                log.info("serialize:" + (System.currentTimeMillis()-start));
         }
         finally
         {
