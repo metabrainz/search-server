@@ -43,7 +43,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -65,7 +64,7 @@ public class Issue24Test {
             Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("artist", "fred", TextField.TYPE_STORED));
@@ -96,7 +95,7 @@ public class Issue24Test {
 
             IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             {
-                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod");
+                Query q = new QueryParser("artist", analyzer).parse("alias:rod");
 
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
@@ -116,7 +115,7 @@ public class Issue24Test {
             Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             writerConfig.setSimilarity(new MusicbrainzSimilarity());
             IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
@@ -149,7 +148,7 @@ public class Issue24Test {
             IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             searcher.setSimilarity(new MusicbrainzSimilarity());
             {
-                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod");
+                Query q = new QueryParser("artist", analyzer).parse("alias:rod");
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
                 System.out.println("With Fix: Diff "+((topDocs.scoreDocs[0].score / topDocs.scoreDocs[1].score) * 100 - 100) +"%");
@@ -161,7 +160,7 @@ public class Issue24Test {
 
                 //Search multiple FieldQuery
                 System.out.println("Multiple Fields OR Query");
-                q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:rod OR alias:rod");
+                q = new QueryParser("artist", analyzer).parse("artist:rod OR alias:rod");
                 topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
                 System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);
@@ -171,7 +170,7 @@ public class Issue24Test {
 
                 //Search multiple FieldQuery
                 System.out.println("Multiple Fields AND Query");
-                q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:rod AND alias:rod");
+                q = new QueryParser("artist", analyzer).parse("artist:rod AND alias:rod");
                 topDocs = searcher.search(q, 10);
                 assertEquals(1, topDocs.totalHits);
                 System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);
@@ -179,7 +178,7 @@ public class Issue24Test {
 
                 //Search multiple FieldQuery
                 System.out.println("Multiple Fields AND Query");
-                q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("alias:rod OR alias:fred");
+                q = new QueryParser("artist", analyzer).parse("alias:rod OR alias:fred");
                 topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
                 System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);
@@ -205,7 +204,7 @@ public class Issue24Test {
             Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("artist", "Vanguard", TextField.TYPE_STORED));
@@ -223,7 +222,7 @@ public class Issue24Test {
 
             IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             {
-                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:queen OR alias:queen");
+                Query q = new QueryParser("artist", analyzer).parse("artist:queen OR alias:queen");
                 
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
@@ -243,7 +242,7 @@ public class Issue24Test {
             Analyzer analyzer = new MusicbrainzAnalyzer();
 
             RAMDirectory dir = new RAMDirectory();
-            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             writerConfig.setSimilarity(new MusicbrainzSimilarity());
             IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
@@ -262,7 +261,7 @@ public class Issue24Test {
             IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
             searcher.setSimilarity(new MusicbrainzSimilarity());
             {
-                Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "artist", analyzer).parse("artist:queen OR alias:queen");
+                Query q = new QueryParser("artist", analyzer).parse("artist:queen OR alias:queen");
                 TopDocs topDocs = searcher.search(q, 10);
                 assertEquals(2, topDocs.totalHits);
                 System.out.println(topDocs.scoreDocs[0].score+":"+topDocs.scoreDocs[0].doc);

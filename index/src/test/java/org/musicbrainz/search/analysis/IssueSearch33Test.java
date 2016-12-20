@@ -61,14 +61,16 @@ public class IssueSearch33Test  {
 
         //Show no token generated with Lucene Standard Tokenizer
         {
-            Tokenizer tokenizer = new org.apache.lucene.analysis.standard.StandardTokenizer(Version.LUCENE_41, new StringReader("!!!"));
+            Tokenizer tokenizer = new org.apache.lucene.analysis.standard.StandardTokenizer();
+            tokenizer.setReader(new StringReader("!!!"));
             tokenizer.reset();
             tokenizer.incrementToken();
         }
 
         //But token is generated with Musicbrainz modification grammar
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!!!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("!!!"));
             assertNotNull(tokenizer);
             tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
@@ -76,7 +78,7 @@ public class IssueSearch33Test  {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!!!", TextField.TYPE_STORED));
@@ -87,13 +89,13 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals("!!!", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!!!"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("!!!"));
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -103,7 +105,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@*!%"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("!\"@*!%"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -117,7 +120,8 @@ public class IssueSearch33Test  {
 
         //Another example to show is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("♠!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("♠!"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -133,7 +137,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!\"@*!%", TextField.TYPE_STORED));
@@ -145,14 +149,14 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("!\"@*!%", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@*!%"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("!\"@*!%"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -164,7 +168,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("fred!!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("fred!!"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -179,7 +184,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "fred!!", TextField.TYPE_STORED));
@@ -190,13 +195,13 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("fred", termsEnum.term().utf8ToString());
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("fred"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("fred"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -213,7 +218,8 @@ public class IssueSearch33Test  {
     @Test
     public void testGidBehaviour() throws Exception {
 
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -227,7 +233,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "bdb24cb5-404b-4f60-bba4-7b730325ae47", TextField.TYPE_STORED));
@@ -238,7 +244,7 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("bdb24cb5-404b-4f60-bba4-7b730325ae47", termsEnum.term().utf8ToString());
@@ -246,7 +252,7 @@ public class IssueSearch33Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer)
+            Query q = new QueryParser("name", analyzer)
                     .parse(QueryParser.escape("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
@@ -259,7 +265,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("กข!!"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("กข!!"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -274,7 +281,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "กข!!", TextField.TYPE_STORED));
@@ -286,14 +293,14 @@ public class IssueSearch33Test  {
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("กข", termsEnum.term().utf8ToString());
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("กข"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("กข"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -306,7 +313,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* !%"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("!\"@* !%"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -325,7 +333,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!\"@* !%", TextField.TYPE_STORED));
@@ -337,7 +345,7 @@ public class IssueSearch33Test  {
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("!\"@*", termsEnum.term().utf8ToString());
@@ -347,7 +355,7 @@ public class IssueSearch33Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("!\"@* !%"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -359,7 +367,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("!\"@* fred"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("!\"@* fred"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -378,7 +387,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "!\"@* fred", TextField.TYPE_STORED));
@@ -390,7 +399,7 @@ public class IssueSearch33Test  {
         Fields fields = MultiFields.getFields(ir);
 
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("!\"@*", termsEnum.term().utf8ToString());
@@ -400,7 +409,7 @@ public class IssueSearch33Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("!\"@* !%"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("!\"@* !%"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -412,7 +421,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("This_is"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("This_is"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -427,7 +437,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "This_is", TextField.TYPE_STORED));
@@ -437,7 +447,7 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("is", termsEnum.term().utf8ToString());
@@ -448,7 +458,7 @@ public class IssueSearch33Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -461,7 +471,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("This___is"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("This___is"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -476,7 +487,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "This_is", TextField.TYPE_STORED));
@@ -487,7 +498,7 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("is", termsEnum.term().utf8ToString());
@@ -496,7 +507,7 @@ public class IssueSearch33Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -508,7 +519,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("__This___is_"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("__This___is_"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -523,7 +535,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "This_is", TextField.TYPE_STORED));
@@ -534,7 +546,7 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("is", termsEnum.term().utf8ToString());
@@ -543,7 +555,7 @@ public class IssueSearch33Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("This is"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("This is"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
         }
@@ -554,7 +566,8 @@ public class IssueSearch33Test  {
 
         //Show token is kept intact
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("3OH!3"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("3OH!3"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -569,7 +582,7 @@ public class IssueSearch33Test  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "3Oh!j", TextField.TYPE_STORED));
@@ -580,7 +593,7 @@ public class IssueSearch33Test  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("3oh", termsEnum.term().utf8ToString());
@@ -589,15 +602,15 @@ public class IssueSearch33Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("j"));
+            Query q = new QueryParser("name", analyzer).parse(QueryParser.escape("j"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
 
-            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("3OH"));
+            q = new QueryParser("name", analyzer).parse(QueryParser.escape("3OH"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
 
-            q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse(QueryParser.escape("3OH!j"));
+            q = new QueryParser("name", analyzer).parse(QueryParser.escape("3OH!j"));
             System.out.println(q.toString());
             assertEquals(1, searcher.search(q,10).totalHits);
 

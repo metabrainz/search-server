@@ -44,7 +44,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.ArtistBoostDoc;
 import org.musicbrainz.search.index.ArtistIndexField;
 
@@ -64,7 +63,7 @@ public class ArtistBoostTest
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
 
         //This field has arid that means it gets doc boost
@@ -91,7 +90,7 @@ public class ArtistBoostTest
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, ArtistIndexField.ALIAS.getName(), analyzer).parse("Bach");
+            Query q = new QueryParser(ArtistIndexField.ALIAS.getName(), analyzer).parse("Bach");
             TopDocs td = searcher.search(q,10);
             assertEquals(2, td.totalHits);
             for(ScoreDoc sd:td.scoreDocs)

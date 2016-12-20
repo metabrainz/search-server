@@ -36,8 +36,8 @@ public class AmpersandTest  {
         CharEquivToCharHelper.addToMap(builder);
         HebrewCharMappingHelper.addToMap(builder);
         NormalizeCharMap charConvertMap = builder.build();
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION,
-                new MappingCharFilter(charConvertMap, new StringReader("platinum & gold")));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new MappingCharFilter(charConvertMap, new StringReader("platinum & gold")));
 
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -65,7 +65,7 @@ public class AmpersandTest  {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         {
             Document doc = new Document();
@@ -77,7 +77,7 @@ public class AmpersandTest  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         BytesRef text;
         while((text = termsEnum.next()) != null) {
             System.out.println("--term=" + text.utf8ToString()+"--");
@@ -86,7 +86,7 @@ public class AmpersandTest  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"platinum & gold\"");
+            Query q = new QueryParser("name", analyzer).parse("\"platinum & gold\"");
             System.out.println(q);
             TopDocs td = searcher.search(q, 10);
             System.out.println("Size"+td.scoreDocs.length);
@@ -94,7 +94,7 @@ public class AmpersandTest  {
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"Platinum and Gold\"");
+            Query q = new QueryParser("name", analyzer).parse("\"Platinum and Gold\"");
             System.out.println(q);
             assertEquals(1, searcher.search(q, 10).totalHits);
         }

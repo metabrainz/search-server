@@ -41,7 +41,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 
 import static org.junit.Assert.assertEquals;
 
@@ -57,7 +56,7 @@ public class IssueSearch258Test {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         //Stored as unicode hyphen
@@ -70,35 +69,35 @@ public class IssueSearch258Test {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink‐182\"");
+            Query q = new QueryParser("name", analyzer).parse("name:\"blink‐182\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         //Search hyphen 2
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink–182\"");
+            Query q = new QueryParser("name", analyzer).parse("name:\"blink–182\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         //Search hyphen 3
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink‒182\"");
+            Query q = new QueryParser("name", analyzer).parse("name:\"blink‒182\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         //Search hyphen 4
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink—182\"");
+            Query q = new QueryParser("name", analyzer).parse("name:\"blink—182\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         //Search hyphen 5
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"blink−182\"");
+            Query q = new QueryParser("name", analyzer).parse("name:\"blink−182\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }

@@ -17,8 +17,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
-import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
+import org.junit.Test;
 
 import java.io.StringReader;
 
@@ -29,7 +29,8 @@ public class Issue3309Test {
     @Test
     public void testTokenizeAcronyms() throws Exception {
 
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("R.E.S"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("R.E.S"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -44,7 +45,8 @@ public class Issue3309Test {
     @Test
     public void testFilterAcronyms() throws Exception {
 
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("R.E.S"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("R.E.S"));
         MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
         assertTrue(filter.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -60,7 +62,8 @@ public class Issue3309Test {
     @Test
     public void testFilterAcronyms2() throws Exception {
 
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("R.E.S."));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("R.E.S."));
             MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
             assertTrue(filter.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -79,7 +82,7 @@ public class Issue3309Test {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "R.E.S.", TextField.TYPE_STORED));
@@ -87,7 +90,7 @@ public class Issue3309Test {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S");
+        Query q = new QueryParser("name", analyzer).parse("R.E.S");
         TopDocs docs = searcher.search(q,10);
         assertEquals(1, docs.totalHits);
     }
@@ -97,7 +100,7 @@ public class Issue3309Test {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "R.E.S", TextField.TYPE_STORED));
@@ -105,7 +108,7 @@ public class Issue3309Test {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S.");
+        Query q = new QueryParser("name", analyzer).parse("R.E.S.");
         TopDocs docs = searcher.search(q,10);
         assertEquals(1, docs.totalHits);
     }

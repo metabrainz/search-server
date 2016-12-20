@@ -42,10 +42,9 @@ public class Lucene41CharFilterTest
         }
 
         @Override
-        protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-            Tokenizer source = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION,
-                    reader);
-            TokenStream filter = new LowerCaseFilter(LuceneVersion.LUCENE_VERSION,source);
+        protected TokenStreamComponents createComponents(String fieldName) {
+            Tokenizer source = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            TokenStream filter = new LowerCaseFilter(source);
             return new TokenStreamComponents(source, filter);
         }
 
@@ -62,7 +61,7 @@ public class Lucene41CharFilterTest
 
         Analyzer analyzer = new SimpleAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         {
             Document doc = new Document();
@@ -74,7 +73,7 @@ public class Lucene41CharFilterTest
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         BytesRef text;
         while((text = termsEnum.next()) != null) {
             System.out.println("--term=" + text.utf8ToString()+"--");
@@ -83,7 +82,7 @@ public class Lucene41CharFilterTest
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"Platinum and Gold\"");
+            Query q = new QueryParser("name", analyzer).parse("\"Platinum and Gold\"");
             System.out.println(q);
             TopDocs td = searcher.search(q, 10);
             System.out.println("Size"+td.scoreDocs.length);
@@ -92,7 +91,7 @@ public class Lucene41CharFilterTest
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"Platinum & Gold\"");
+            Query q = new QueryParser("name", analyzer).parse("\"Platinum & Gold\"");
             TopDocs td = searcher.search(q, 10);
             System.out.println("Size"+td.scoreDocs.length);
             assertEquals(1, searcher.search(q, 10).totalHits);

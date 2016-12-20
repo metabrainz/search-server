@@ -13,7 +13,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,7 +27,7 @@ public class Issue5538Test  {
 
         Analyzer analyzer = new TitleAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "No. 11", TextField.TYPE_STORED));
@@ -37,12 +36,12 @@ public class Issue5538Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"no. 11\"");
+            Query q = new QueryParser("name", analyzer).parse("\"no. 11\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"no.11\"");
+            Query q = new QueryParser("name", analyzer).parse("\"no.11\"");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

@@ -38,8 +38,8 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.store.RAMDirectory;
-import org.junit.Test;
 import org.musicbrainz.search.LuceneVersion;
+import org.junit.Test;
 
 import java.io.StringReader;
 
@@ -55,7 +55,8 @@ public class IssueSearch386Test
     @Test
     public void convertHanToBigram() throws Exception
     {
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("陪著"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("陪著"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -70,7 +71,7 @@ public class IssueSearch386Test
         if (false) {
             Analyzer analyzer = new MusicbrainzAnalyzer();
             RAMDirectory dir = new RAMDirectory();
-            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("name", "陪著", TextField.TYPE_STORED));
@@ -80,7 +81,7 @@ public class IssueSearch386Test
             IndexReader ir = DirectoryReader.open(dir);
             Fields fields = MultiFields.getFields(ir);
             Terms terms = fields.terms("name");
-            TermsEnum termsEnum = terms.iterator(null);
+            TermsEnum termsEnum = terms.iterator();
             termsEnum.next();
             assertEquals(1, termsEnum.docFreq());
             assertEquals("陪著", termsEnum.term().utf8ToString());
@@ -90,7 +91,7 @@ public class IssueSearch386Test
         if (false) {
             Analyzer analyzer = new TitleAnalyzer();
             RAMDirectory dir = new RAMDirectory();
-            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("name", "陪著", TextField.TYPE_STORED));
@@ -100,7 +101,7 @@ public class IssueSearch386Test
             IndexReader ir = DirectoryReader.open(dir);
             Fields fields = MultiFields.getFields(ir);
             Terms terms = fields.terms("name");
-            TermsEnum termsEnum = terms.iterator(null);
+            TermsEnum termsEnum = terms.iterator();
             termsEnum.next();
             assertEquals(1, termsEnum.docFreq());
             assertEquals("陪著", termsEnum.term().utf8ToString());
@@ -110,7 +111,7 @@ public class IssueSearch386Test
         if (false) {
             Analyzer analyzer = new MusicbrainzKeepAccentsAnalyzer();
             RAMDirectory dir = new RAMDirectory();
-            IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+            IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, writerConfig);
             Document doc = new Document();
             doc.add(new Field("name", "陪著", TextField.TYPE_STORED));
@@ -120,7 +121,7 @@ public class IssueSearch386Test
             IndexReader ir = DirectoryReader.open(dir);
             Fields fields = MultiFields.getFields(ir);
             Terms terms = fields.terms("name");
-            TermsEnum termsEnum = terms.iterator(null);
+            TermsEnum termsEnum = terms.iterator();
             termsEnum.next();
             assertEquals(1, termsEnum.docFreq());
             assertEquals("陪著", termsEnum.term().utf8ToString());

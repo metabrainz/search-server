@@ -38,7 +38,8 @@ public class Issue1006Test {
     public void testKatakanaHiraganaTokenizer() throws Exception {
 
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("ゲーム"));
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -53,7 +54,8 @@ public class Issue1006Test {
         }
 
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("ゲエム"));
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -70,7 +72,8 @@ public class Issue1006Test {
         }
 
         {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("げえむ"));
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -95,7 +98,8 @@ public class Issue1006Test {
 
         {
 
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲーム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("ゲーム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -113,7 +117,8 @@ public class Issue1006Test {
 
         {
 
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ゲエム"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("ゲエム"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -131,7 +136,8 @@ public class Issue1006Test {
 
         {
 
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("げえむ"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("げえむ"));
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -158,7 +164,7 @@ public class Issue1006Test {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         {
             Document doc = new Document();
@@ -180,19 +186,19 @@ public class Issue1006Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ゲーム");
+            Query q = new QueryParser("name", analyzer).parse("ゲーム");
             //System.out.println(q);
             assertEquals(3, searcher.search(q, 10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ゲエム");
+            Query q = new QueryParser("name", analyzer).parse("ゲエム");
             //System.out.println(q);
             assertEquals(3, searcher.search(q, 10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("げえむ");
+            Query q = new QueryParser("name", analyzer).parse("げえむ");
             //System.out.println(q);
             assertEquals(3, searcher.search(q, 10).totalHits);
         }

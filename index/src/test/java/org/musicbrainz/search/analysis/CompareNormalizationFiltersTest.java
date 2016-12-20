@@ -8,7 +8,6 @@ import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -32,7 +31,8 @@ public class CompareNormalizationFiltersTest {
             }
         }
         System.out.println(sb.toString());
-        Tokenizer tokenizer = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
+        Tokenizer tokenizer = new WhitespaceTokenizer();
+        tokenizer.setReader(new StringReader(sb.toString()));
         tokenizer.reset();
         while(tokenizer.incrementToken())
         {
@@ -52,11 +52,16 @@ public class CompareNormalizationFiltersTest {
                 sb.append(new Character(i).toString() + ' ');
             }
         }
-        Tokenizer tokenizer0 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
-        Tokenizer tokenizer1 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
-        Tokenizer tokenizer2 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
-        Tokenizer tokenizer3 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
-        Tokenizer tokenizer4 = new WhitespaceTokenizer(LuceneVersion.LUCENE_VERSION,new StringReader(sb.toString()));
+        Tokenizer tokenizer0 = new WhitespaceTokenizer();
+        tokenizer0.setReader(new StringReader(sb.toString()));
+        Tokenizer tokenizer1 = new WhitespaceTokenizer();
+        tokenizer1.setReader(new StringReader(sb.toString()));
+        Tokenizer tokenizer2 = new WhitespaceTokenizer();
+        tokenizer2.setReader(new StringReader(sb.toString()));
+        Tokenizer tokenizer3 = new WhitespaceTokenizer();
+        tokenizer3.setReader(new StringReader(sb.toString()));
+        Tokenizer tokenizer4 = new WhitespaceTokenizer();
+        tokenizer4.setReader(new StringReader(sb.toString()));
 
         TokenStream result1 = new AccentFilter(tokenizer1);
         TokenStream result2 = new ASCIIFoldingFilter(tokenizer2);

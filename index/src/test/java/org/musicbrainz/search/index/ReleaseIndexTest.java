@@ -324,7 +324,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         {
             Fields fields = MultiFields.getFields(ir);
             Terms terms = fields.terms(ReleaseIndexField.NUM_MEDIUMS.getName());
-            TermsEnum termsEnum = terms.iterator(null);
+            TermsEnum termsEnum = terms.iterator();
             termsEnum.next();
             assertEquals(1, NumericUtils.prefixCodedToInt(termsEnum.term()));
         }

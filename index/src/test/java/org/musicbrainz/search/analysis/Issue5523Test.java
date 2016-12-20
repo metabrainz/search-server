@@ -56,7 +56,7 @@ public class Issue5523Test {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "寧夏", TextField.TYPE_STORED));
@@ -65,12 +65,12 @@ public class Issue5523Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("寧夏");
+            Query q = new QueryParser("name", analyzer).parse("寧夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("宁夏");
+            Query q = new QueryParser("name", analyzer).parse("宁夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -80,7 +80,7 @@ public class Issue5523Test {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "宁夏", TextField.TYPE_STORED));
@@ -89,12 +89,12 @@ public class Issue5523Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("寧夏");
+            Query q = new QueryParser("name", analyzer).parse("寧夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("宁夏");
+            Query q = new QueryParser("name", analyzer).parse("宁夏");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -104,7 +104,7 @@ public class Issue5523Test {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "麯", TextField.TYPE_STORED));
@@ -113,12 +113,12 @@ public class Issue5523Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("曲");
+            Query q = new QueryParser("name", analyzer).parse("曲");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("麯");
+            Query q = new QueryParser("name", analyzer).parse("麯");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

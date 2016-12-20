@@ -59,7 +59,7 @@ public class IssueSearch72Test
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "aaaaahhh!", TextField.TYPE_STORED));
@@ -69,14 +69,14 @@ public class IssueSearch72Test
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("aaaaahhh\\!");
+            Query q = new QueryParser("name", analyzer).parse("aaaaahhh\\!");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         /* TODO Should work
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("aaaaahhh\\!*");
+            Query q = new QueryParser("name", analyzer).parse("aaaaahhh\\!*");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
         */

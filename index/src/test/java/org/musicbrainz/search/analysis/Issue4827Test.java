@@ -42,7 +42,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 
 import static org.junit.Assert.assertEquals;
 
@@ -57,7 +56,7 @@ public class Issue4827Test  {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "ארלס"+"\u05f3"+"צ", TextField.TYPE_STORED));
@@ -67,12 +66,12 @@ public class Issue4827Test  {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
 
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"\u05f3"+"צ");
+            Query q = new QueryParser("name", analyzer).parse("ארלס"+"\u05f3"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"'"+"צ");
+            Query q = new QueryParser("name", analyzer).parse("ארלס"+"'"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
@@ -85,7 +84,7 @@ public class Issue4827Test  {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "ארלס"+"'"+"צ", TextField.TYPE_STORED));
@@ -95,12 +94,12 @@ public class Issue4827Test  {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
 
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"\u05f3"+"צ");
+            Query q = new QueryParser("name", analyzer).parse("ארלס"+"\u05f3"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ארלס"+"'"+"צ");
+            Query q = new QueryParser("name", analyzer).parse("ארלס"+"'"+"צ");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

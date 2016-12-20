@@ -270,7 +270,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
         {
             Fields fields = MultiFields.getFields(ir);
             Terms terms = fields.terms(ReleaseGroupIndexField.NUM_RELEASES.getName());
-            TermsEnum termsEnum = terms.iterator(null);
+            TermsEnum termsEnum = terms.iterator();
             termsEnum.next();
             assertEquals(1, NumericUtils.prefixCodedToInt(termsEnum.term()));
         }
@@ -362,7 +362,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
 
             Fields fields = MultiFields.getFields(ir);
             Terms terms = fields.terms(ReleaseGroupIndexField.ARTIST_NAME.getName());
-            TermsEnum tr = terms.iterator(null);
+            TermsEnum tr = terms.iterator();
             tr.next();
             assertEquals(1, tr.docFreq());
             assertEquals("cincinnati", tr.term().utf8ToString());
@@ -382,7 +382,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             assertEquals("the", tr.term().utf8ToString());
 
             terms = fields.terms(ReleaseGroupIndexField.ARTIST_ID.getName());
-            tr = terms.iterator(null);
+            tr = terms.iterator();
             tr.next();
             assertEquals(1, tr.docFreq());
             assertEquals("99845d0c-f239-4051-a6b1-4b5e9f7ede0b", tr.term().utf8ToString());
@@ -391,7 +391,7 @@ public class ReleaseGroupIndexTest extends AbstractIndexTest {
             tr.next();
 
             terms = fields.terms(ReleaseGroupIndexField.ARTIST_NAMECREDIT.getName());
-            tr = terms.iterator(null);
+            tr = terms.iterator();
             tr.next();
             assertEquals(1, tr.docFreq());
             assertEquals("cincinnati", tr.term().utf8ToString());

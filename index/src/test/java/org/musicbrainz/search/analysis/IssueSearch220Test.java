@@ -25,7 +25,7 @@ public class IssueSearch220Test {
 
         Analyzer analyzer = new TitleAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "森山\u3000直太朗", Field.Store.YES, Field.Index.ANALYZED));
@@ -34,14 +34,14 @@ public class IssueSearch220Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u0020直太朗\"");
+            Query q = new QueryParser("name", analyzer).parse("\"森山\u0020直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u3000直太朗\"");
+            Query q = new QueryParser("name", analyzer).parse("\"森山\u3000直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
@@ -52,7 +52,7 @@ public class IssueSearch220Test {
 
         Analyzer analyzer = new TitleAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "森山\u0020直太朗", Field.Store.YES, Field.Index.ANALYZED));
@@ -61,14 +61,14 @@ public class IssueSearch220Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u0020直太朗\"");
+            Query q = new QueryParser( "name", analyzer).parse("\"森山\u0020直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"森山\u3000直太朗\"");
+            Query q = new QueryParser( "name", analyzer).parse("\"森山\u3000直太朗\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
@@ -79,7 +79,7 @@ public class IssueSearch220Test {
 
         Analyzer analyzer = new TitleAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "fred\u3000james", TextField.TYPE_STORED));
@@ -88,14 +88,14 @@ public class IssueSearch220Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"fred\u0020james\"");
+            Query q = new QueryParser( "name", analyzer).parse("\"fred\u0020james\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"fred\u3000james\"");
+            Query q = new QueryParser( "name", analyzer).parse("\"fred\u3000james\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
@@ -106,7 +106,7 @@ public class IssueSearch220Test {
 
         Analyzer analyzer = new TitleAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "\"マキシマム　ザ　ホルモン\"", TextField.TYPE_STORED));
@@ -115,14 +115,14 @@ public class IssueSearch220Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"マキシマム　ザ　ホルモン\"");
+            Query q = new QueryParser( "name", analyzer).parse("\"マキシマム　ザ　ホルモン\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"マキシマム ザ ホルモン\"");
+            Query q = new QueryParser( "name", analyzer).parse("\"マキシマム ザ ホルモン\"");
             assertEquals(1, searcher.search(q,10).totalHits);
 
         }

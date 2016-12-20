@@ -42,7 +42,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,7 +57,7 @@ public class IssueSearch163Test {
 
         Analyzer analyzer = new MusicbrainzKeepAccentsAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "Európa", TextField.TYPE_STORED));
@@ -68,13 +67,13 @@ public class IssueSearch163Test {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Európa");
+            Query q = new QueryParser("name", analyzer).parse("Európa");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Europa");
+            Query q = new QueryParser("name", analyzer).parse("Europa");
             assertEquals(0, searcher.search(q,10).totalHits);
         }
     }

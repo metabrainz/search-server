@@ -25,7 +25,7 @@ public abstract class AbstractIndexTest {
     protected IndexWriter createIndexWriter(RAMDirectory ramDir, Class indexFieldClass) throws Exception
     {
         Analyzer analyzer = DatabaseIndex.getAnalyzer(indexFieldClass);
-        IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         return new IndexWriter(ramDir, config);
     }
@@ -57,7 +57,7 @@ public abstract class AbstractIndexTest {
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms(field.getName());
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(value,termsEnum.term().utf8ToString());
     }
@@ -66,7 +66,7 @@ public abstract class AbstractIndexTest {
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms(field.getName());
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(value, NumericUtils.prefixCodedToInt(termsEnum.term()));
     }
@@ -75,7 +75,7 @@ public abstract class AbstractIndexTest {
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms(field.getName());
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(value, NumericUtils.sortableIntToFloat(NumericUtils.prefixCodedToInt(termsEnum.term())),0);
     }
@@ -93,7 +93,7 @@ public abstract class AbstractIndexTest {
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms(field.getName());
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         int count=0;
         while(termsEnum.next()!=null)
         {

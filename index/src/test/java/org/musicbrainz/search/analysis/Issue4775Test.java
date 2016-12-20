@@ -30,7 +30,7 @@ public class Issue4775Test  {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "O'reilly", TextField.TYPE_STORED));
@@ -43,32 +43,32 @@ public class Issue4775Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Oreilly");
+            Query q = new QueryParser("name", analyzer).parse("Oreilly");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("Theres");
+            Query q = new QueryParser("name", analyzer).parse("Theres");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("there's");
+            Query q = new QueryParser("name", analyzer).parse("there's");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("There");
+            Query q = new QueryParser("name", analyzer).parse("There");
             assertEquals(0, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("it's'");
+            Query q = new QueryParser("name", analyzer).parse("it's'");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("johns");
+            Query q = new QueryParser("name", analyzer).parse("johns");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
     }
@@ -76,7 +76,8 @@ public class Issue4775Test  {
     @Test
     public void testTokenizeApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("There's"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -91,7 +92,8 @@ public class Issue4775Test  {
     @Test
     public void testFilterApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("There's"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("There's"));
         MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
         assertTrue(filter.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -107,7 +109,8 @@ public class Issue4775Test  {
     @Test
     public void testTokenizeDoubleApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("it's'"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -122,7 +125,8 @@ public class Issue4775Test  {
     @Test
     public void testFilterDoubleApostrophe() throws Exception {
 
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("it's'"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("it's'"));
         MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
         assertTrue(filter.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -140,7 +144,7 @@ public class Issue4775Test  {
 
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "1999-2000", TextField.TYPE_STORED));
@@ -153,12 +157,12 @@ public class Issue4775Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("1999-2000");
+            Query q = new QueryParser("name", analyzer).parse("1999-2000");
             assertEquals(2, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("1999–2000");
+            Query q = new QueryParser("name", analyzer).parse("1999–2000");
             assertEquals(2, searcher.search(q,10).totalHits);
         }
 
@@ -172,7 +176,7 @@ public class Issue4775Test  {
     public void testAcronymHandling() throws Exception {
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "R.E.S.", TextField.TYPE_STORED));
@@ -182,17 +186,17 @@ public class Issue4775Test  {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("res");
+            Query q = new QueryParser("name", analyzer).parse("res");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S.");
+            Query q = new QueryParser("name", analyzer).parse("R.E.S.");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("R.E.S");
+            Query q = new QueryParser("name", analyzer).parse("R.E.S");
             assertEquals(1, searcher.search(q,10).totalHits);
         }
 

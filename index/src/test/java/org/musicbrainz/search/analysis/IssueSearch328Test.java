@@ -77,7 +77,8 @@ public class IssueSearch328Test
     @Test
     public void testXchar() throws Exception
     {
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("Revolution×"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("Revolution×"));
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -88,7 +89,7 @@ public class IssueSearch328Test
 
         Analyzer analyzer = new MusicbrainzWithPosGapAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "Revolution×", TextField.TYPE_STORED));
@@ -98,7 +99,7 @@ public class IssueSearch328Test
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("revolution", termsEnum.term().utf8ToString());
@@ -111,7 +112,8 @@ public class IssueSearch328Test
 
         //Show token is kept intact
        {
-            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("T.M.Revolution×水樹奈々"));
+            Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+            tokenizer.setReader(new StringReader("T.M.Revolution×水樹奈々"));
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -156,7 +158,7 @@ public class IssueSearch328Test
 
         Analyzer analyzer = new MusicbrainzWithPosGapAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "T.M.Revolution×水樹奈々", TextField.TYPE_STORED));
@@ -167,7 +169,7 @@ public class IssueSearch328Test
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("", termsEnum.term().utf8ToString());
@@ -189,7 +191,7 @@ public class IssueSearch328Test
         termsEnum.next();
 
         //Now add another document without the cross, this still matches because we remove punctuation
-        writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+        writerConfig = new IndexWriterConfig(analyzer);
         writer = new IndexWriter(dir, writerConfig);
         doc = new Document();
         doc.add(new Field("name", "T.M.Revolution水樹奈", TextField.TYPE_STORED));
@@ -198,33 +200,33 @@ public class IssueSearch328Test
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"T.M.Revolution×\"");
+            Query q = new QueryParser("name", analyzer).parse("name:\"T.M.Revolution×\"");
             assertEquals(1, searcher.search(q, 10).totalHits);
         }
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:\"T.M.Revolution×水樹奈々\"");
+            Query q = new QueryParser("name", analyzer).parse("name:\"T.M.Revolution×水樹奈々\"");
             assertEquals(1, searcher.search(q, 10).totalHits);
         }
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("name:T.M.Revolution×");
+            Query q = new QueryParser("name", analyzer).parse("name:T.M.Revolution×");
             assertEquals(1, searcher.search(q, 10).totalHits);
         }
 
         //Because Chinese chars are basically ORED so matches both docs
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("水樹奈々");
+            Query q = new QueryParser("name", analyzer).parse("水樹奈々");
             assertEquals(2, searcher.search(q, 10).totalHits);
         }
 
         //unless make a phrase search
         searcher = new IndexSearcher(DirectoryReader.open(dir));
         {
-            Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("\"水樹奈々\"");
+            Query q = new QueryParser("name", analyzer).parse("\"水樹奈々\"");
             assertEquals(1, searcher.search(q, 10).totalHits);
         }
 

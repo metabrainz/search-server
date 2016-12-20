@@ -35,7 +35,7 @@ public class AccentFilterTest  {
 
 	@Before
     public void setUp() throws Exception {
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "test", TextField.TYPE_STORED));
@@ -72,7 +72,7 @@ public class AccentFilterTest  {
     @Test
     public void testSearchUnaccented() throws Exception {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("test");
+        Query q = new QueryParser("name", analyzer).parse("test");
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
@@ -83,7 +83,7 @@ public class AccentFilterTest  {
     @Test
     public void testSearchAccented() throws Exception {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("tést");
+        Query q = new QueryParser("name", analyzer).parse("tést");
         TopDocs docs = searcher.search(q,10);
         assertEquals(2, docs.totalHits);
         ScoreDoc scoredocs[] = docs.scoreDocs;
@@ -94,7 +94,7 @@ public class AccentFilterTest  {
     @Test
     public void testSearchAccented2() throws Exception {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("abcaef");
+        Query q = new QueryParser("name", analyzer).parse("abcaef");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -105,14 +105,14 @@ public class AccentFilterTest  {
     public void testSearchAccented3() throws Exception {
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION,"name", analyzer).parse("NaJiAsn");
+        Query q = new QueryParser("name", analyzer).parse("NaJiAsn");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
         assertEquals("ŃåᴊıÃšņ", searcher.doc(scoredocs[0].doc).getField("name").stringValue());
 
         searcher = new IndexSearcher(DirectoryReader.open(dir));
-        q = new QueryParser(LuceneVersion.LUCENE_VERSION,"name", analyzer).parse("ŃåᴊıÃšņ");
+        q = new QueryParser("name", analyzer).parse("ŃåᴊıÃšņ");
         docs = searcher.search(q,10);
         scoredocs = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -126,7 +126,7 @@ public class AccentFilterTest  {
     @Test
     public void testSearchQe() throws Exception {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("qwe");
+        Query q = new QueryParser("name", analyzer).parse("qwe");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -138,7 +138,7 @@ public class AccentFilterTest  {
     @Test
     public void testSearchQe2() throws Exception {
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("qwee");
+        Query q = new QueryParser("name", analyzer).parse("qwee");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -152,7 +152,8 @@ public class AccentFilterTest  {
     public void testShowHowAccentsAndSpecialCharsConverted()throws Exception
     {
         //Tokenizer on its won has no effect
-        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION, new StringReader("ŃåᴊıÃšņ"));
+        Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
+        tokenizer.setReader(new StringReader("ŃåᴊıÃšņ"));
         tokenizer.reset();
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -163,7 +164,7 @@ public class AccentFilterTest  {
         //Analyse field
         Analyzer analyzer = new MusicbrainzAnalyzer();
         RAMDirectory dir = new RAMDirectory();
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "ŃåᴊıÃšņ", TextField.TYPE_STORED));
@@ -174,7 +175,7 @@ public class AccentFilterTest  {
         IndexReader ir = DirectoryReader.open(dir);
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms("name");
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(1, termsEnum.docFreq());
         assertEquals("najiasn", termsEnum.term().utf8ToString());

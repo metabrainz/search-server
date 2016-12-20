@@ -15,7 +15,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,7 +29,7 @@ public class Issue1446Test {
     @Test
     public void testUppercaseKanatakaMatchesLowercaseKanataka() throws Exception {
 
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
         Document doc = new Document();
         doc.add(new Field("name", "ァ", TextField.TYPE_STORED));
@@ -38,7 +37,7 @@ public class Issue1446Test {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ア");
+        Query q = new QueryParser("name", analyzer).parse("ア");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -49,7 +48,7 @@ public class Issue1446Test {
     @Test
     public void testLowercaseKanatakaMatchesUppercaseKanataka() throws Exception {
 
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
 
         Document doc = new Document();
@@ -58,7 +57,7 @@ public class Issue1446Test {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("ョ");
+        Query q = new QueryParser("name", analyzer).parse("ョ");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -68,7 +67,7 @@ public class Issue1446Test {
     @Test
     public void testUppercaseHiruganaMatchesLowercaseHirugana() throws Exception {
 
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
 
         Document doc = new Document();
@@ -77,7 +76,7 @@ public class Issue1446Test {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("え");
+        Query q = new QueryParser("name", analyzer).parse("え");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
@@ -87,7 +86,7 @@ public class Issue1446Test {
     @Test
     public void testLowercaseHiruganaMatchesUppercaseHirugana() throws Exception {
 
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(dir, writerConfig);
 
         Document doc = new Document();
@@ -96,7 +95,7 @@ public class Issue1446Test {
         writer.close();
 
         IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(dir));
-        Query q = new QueryParser(LuceneVersion.LUCENE_VERSION, "name", analyzer).parse("っ");
+        Query q = new QueryParser("name", analyzer).parse("っ");
         TopDocs docs = searcher.search(q,10);
         ScoreDoc scoredocs[] = docs.scoreDocs;
         assertEquals(1, docs.totalHits);
