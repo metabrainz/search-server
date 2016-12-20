@@ -100,16 +100,15 @@ public final class MusicbrainzTokenizer extends Tokenizer {
    * See http://issues.apache.org/jira/browse/LUCENE-1068
    */
   public MusicbrainzTokenizer(Version matchVersion) {
-    this.scanner = new MusicbrainzTokenizerImpl();
-    init(matchVersion);
+    this.scanner = new MusicbrainzTokenizerImpl(input);
+    init();
   }
 
-  private void init(Version matchVersion) {
+  private void init() {
     termAtt = (CharTermAttribute) addAttribute(CharTermAttribute.class);
     offsetAtt = addAttribute(OffsetAttribute.class);
     posIncrAtt = addAttribute(PositionIncrementAttribute.class);
     typeAtt = addAttribute(TypeAttribute.class);
-    this.scanner.setReader(input);
   }
 
   // this tokenizer generates three attributes:

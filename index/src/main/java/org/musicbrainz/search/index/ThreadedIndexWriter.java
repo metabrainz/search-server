@@ -34,21 +34,17 @@ import java.util.concurrent.TimeUnit;
 
 public class ThreadedIndexWriter extends IndexWriter {
     private ExecutorService threadPool;
-    private Analyzer defaultAnalyzer;
 
     private class Job implements Runnable {
         Document doc;
-        Analyzer analyzer;
 
-        public Job(Document doc, Analyzer analyzer) {
+        public Job(Document doc) {
             this.doc = doc;
-            this.analyzer = analyzer;
         }
 
         public void run() {
             try {
-
-                ThreadedIndexWriter.super.addDocument(doc, analyzer);
+                ThreadedIndexWriter.super.addDocument(doc);
             } catch (IOException ioe) {
                 ioe.printStackTrace(System.err);
             }
@@ -64,7 +60,6 @@ public class ThreadedIndexWriter extends IndexWriter {
 
     {
         super(dir, config);
-        defaultAnalyzer = config.getAnalyzer();
         threadPool = new ThreadPoolExecutor(
                 numThreads, numThreads, 0,
                 TimeUnit.SECONDS,
@@ -73,11 +68,11 @@ public class ThreadedIndexWriter extends IndexWriter {
     }
 
     public void addDocument(Document doc) {
-        threadPool.execute(new Job(doc, defaultAnalyzer));
+        threadPool.execute(new Job(doc));
     }
 
     public void addDocument(Document doc, Analyzer a) {
-        threadPool.execute(new Job(doc,  a));
+        throw new UnsupportedOperationException();
     }
 
     public void updateDocument(Term term, Document doc) {
@@ -93,12 +88,6 @@ public class ThreadedIndexWriter extends IndexWriter {
     public void close() throws  IOException {
         finish();
         super.close();
-    }
-
-    public void close(boolean doWait) throws IOException {
-        finish();
-
-        super.close(doWait);
     }
 
     public void rollback() throws IOException {

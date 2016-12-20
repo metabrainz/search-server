@@ -38,7 +38,6 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NoLockFactory;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.musicbrainz.search.LuceneVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -224,9 +223,9 @@ public class IndexBuilder
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
 
-        FSDirectory fsDir = FSDirectory.open(new File(path), NoLockFactory.getNoLockFactory() );
+        FSDirectory fsDir = FSDirectory.open(new File(path).toPath());
 
-        IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
+        IndexWriterConfig config = new IndexWriterConfig(index.getAnalyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         config.setMaxBufferedDocs(options.getMaxBufferedDocs());
 
@@ -304,14 +303,14 @@ public class IndexBuilder
         clock.start();
         System.out.println(index.getName()+":Started at "+ Utils.formatCurrentTimeForOutput());
 
-        IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, index.getAnalyzer());
+        IndexWriterConfig config = new IndexWriterConfig(index.getAnalyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         config.setMaxBufferedDocs(options.getMaxBufferedDocs());
 
         IndexWriter indexWriter;
         String path = options.getIndexesDir() + index.getFilename();
         System.out.println("Building index: " + path);
-        indexWriter = new IndexWriter(FSDirectory.open(new File(path)), config);
+        indexWriter = new IndexWriter(FSDirectory.open(new File(path).toPath()), config);
         //indexWriter.setMergeFactor(options.getMergeFactor());
 
         index.addMetaInformation(indexWriter);
@@ -364,7 +363,7 @@ public class IndexBuilder
                 // For debugging to check sql is not creating too few/many rows
                 if(true) {
                     int dbRows = index.getNoOfRows(maxId);
-                    reader = DirectoryReader.open(FSDirectory.open(new File(path)));
+                    reader = DirectoryReader.open(FSDirectory.open(new File(path).toPath()));
                     System.out.println(index.getName()+":"+dbRows+" db rows:"+(reader.maxDoc() - 1)+" lucene docs");
                 }
                 System.out.println(index.getName()+":Finished Optimization:" + Utils.formatClock(clock));
