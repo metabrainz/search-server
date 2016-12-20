@@ -685,10 +685,8 @@ public class SearchServerServlet extends HttpServlet
             */
         }
 
-        long start = System.currentTimeMillis();
+        long startLucene = System.currentTimeMillis();
         Results results = searchServer.search(query, offset, limit);
-        if (resourceType.getName() == "recording")
-            log.info("lucene:" + (System.currentTimeMillis()-start));
 
         org.musicbrainz.search.servlet.ResultsWriter writer = searchServer.getWriter(responseVersion);
 
@@ -715,10 +713,12 @@ public class SearchServerServlet extends HttpServlet
         PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), CHARSET)));
         try
         {
-            start = System.currentTimeMillis();
+            long startSer = System.currentTimeMillis();
             writer.write(out, results, responseFormat, isPretty);
             if (resourceType.getName() == "recording")
-                log.info("serialize:" + (System.currentTimeMillis()-start));
+                log.info("lucene:" + (System.currentTimeMillis()-startLucene) + 
+                         " serialize:" + (System.currentTimeMillis()-startSer) +
+                         " query " + query);
         }
         finally
         {
