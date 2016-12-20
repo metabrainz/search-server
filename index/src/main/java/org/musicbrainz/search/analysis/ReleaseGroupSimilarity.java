@@ -30,7 +30,7 @@
 package org.musicbrainz.search.analysis;
 
 import org.apache.lucene.index.FieldInvertState;
-import org.apache.lucene.search.similarities.DefaultSimilarity;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.musicbrainz.search.index.ReleaseGroupIndexField;
 
 /**
@@ -38,7 +38,7 @@ import org.musicbrainz.search.index.ReleaseGroupIndexField;
  */
 //TODO in Lucene 4.1 we can now use PerFieldSimailrityWrapper so that we only oerform this on fields that need it, with
 //current code tf() is performed on every field because we are not passed fieldname
-public class ReleaseGroupSimilarity extends DefaultSimilarity
+public class ReleaseGroupSimilarity extends BM25Similarity
 {
     /**
      * Calculates a value which is inversely proportional to the number of terms in the field. When multiple
