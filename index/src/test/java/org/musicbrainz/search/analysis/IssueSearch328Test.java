@@ -79,6 +79,7 @@ public class IssueSearch328Test
     {
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
         tokenizer.setReader(new StringReader("Revolution×"));
+        tokenizer.reset();
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -114,6 +115,7 @@ public class IssueSearch328Test
        {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("T.M.Revolution×水樹奈々"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);

@@ -71,8 +71,8 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("!!!"));
-            assertNotNull(tokenizer);
             tokenizer.reset();
+            assertNotNull(tokenizer);
             assertTrue(tokenizer.incrementToken());
         }
 
@@ -107,6 +107,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("!\"@*!%"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -122,6 +123,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("♠!"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -170,6 +172,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("fred!!"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -220,6 +223,7 @@ public class IssueSearch33Test  {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
         tokenizer.setReader(new StringReader("bdb24cb5-404b-4f60-bba4-7b730325ae47"));
+        tokenizer.reset();
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -267,6 +271,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("กข!!"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -315,6 +320,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("!\"@* !%"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -369,6 +375,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("!\"@* fred"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -423,6 +430,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("This_is"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -473,6 +481,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("This___is"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -514,6 +523,7 @@ public class IssueSearch33Test  {
 
     }
 
+
     @Test
     public void testAlphaNumPunc3() throws Exception {
 
@@ -521,6 +531,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("__This___is_"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -568,6 +579,7 @@ public class IssueSearch33Test  {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("3OH!3"));
+            tokenizer.reset();
             assertTrue(tokenizer.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);

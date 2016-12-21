@@ -38,6 +38,7 @@ public class AmpersandTest  {
         NormalizeCharMap charConvertMap = builder.build();
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
         tokenizer.setReader(new MappingCharFilter(charConvertMap, new StringReader("platinum & gold")));
+        tokenizer.reset();
 
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -51,8 +52,7 @@ public class AmpersandTest  {
         assertEquals("<ALPHANUM>", type.type());
         assertEquals("and", new String(term.buffer(),0,term.length()));
         assertEquals(9, offset.startOffset());
-        /* This is a kludge -- it should produce 10 */
-        assertEquals(12, offset.endOffset());
+        assertEquals(10, offset.endOffset());
         assertTrue(tokenizer.incrementToken());
 
     }

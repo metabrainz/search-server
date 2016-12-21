@@ -31,6 +31,7 @@ public class Issue3309Test {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
         tokenizer.setReader(new StringReader("R.E.S"));
+        tokenizer.reset();
         assertTrue(tokenizer.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
         TypeAttribute type = tokenizer.addAttribute(TypeAttribute.class);
@@ -47,6 +48,7 @@ public class Issue3309Test {
 
         Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
         tokenizer.setReader(new StringReader("R.E.S"));
+        tokenizer.reset();
         MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
         assertTrue(filter.incrementToken());
         CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);
@@ -64,6 +66,7 @@ public class Issue3309Test {
 
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("R.E.S."));
+            tokenizer.reset();
             MusicbrainzTokenizerFilter filter = new MusicbrainzTokenizerFilter(tokenizer);
             assertTrue(filter.incrementToken());
             CharTermAttribute term = tokenizer.addAttribute(CharTermAttribute.class);

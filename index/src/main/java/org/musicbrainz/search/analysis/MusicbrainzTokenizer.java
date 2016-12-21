@@ -167,4 +167,5 @@ public final class MusicbrainzTokenizer extends Tokenizer {
     super.reset();
     scanner.yyreset(input);
   }
+
 }

@@ -40,6 +40,7 @@ public class Issue1006Test {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("ゲーム"));
+            tokenizer.reset();
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -56,6 +57,7 @@ public class Issue1006Test {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("ゲエム"));
+            tokenizer.reset();
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -74,6 +76,7 @@ public class Issue1006Test {
         {
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("げえむ"));
+            tokenizer.reset();
             CharTermAttribute term = (CharTermAttribute) tokenizer.addAttribute(CharTermAttribute.class);
             TypeAttribute type = (TypeAttribute) tokenizer.addAttribute(TypeAttribute.class);
             OffsetAttribute offset = (OffsetAttribute) tokenizer.addAttribute(OffsetAttribute.class);
@@ -100,6 +103,7 @@ public class Issue1006Test {
 
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("ゲーム"));
+            tokenizer.reset();
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -119,6 +123,7 @@ public class Issue1006Test {
 
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("ゲエム"));
+            tokenizer.reset();
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
@@ -138,6 +143,7 @@ public class Issue1006Test {
 
             Tokenizer tokenizer = new MusicbrainzTokenizer(LuceneVersion.LUCENE_VERSION);
             tokenizer.setReader(new StringReader("げえむ"));
+            tokenizer.reset();
             TokenStream result = new ICUTransformFilter(tokenizer, Transliterator.getInstance("[ー[:Script=Katakana:]]Katakana-Hiragana"));
 
             CharTermAttribute term = (CharTermAttribute) result.addAttribute(CharTermAttribute.class);
