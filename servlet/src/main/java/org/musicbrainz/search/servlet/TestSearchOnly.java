@@ -108,7 +108,7 @@ public class TestSearchOnly {
             AbstractSearchServer searchServer = null;
             try {
 
-                Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
+                Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir.toPath()) : new NIOFSDirectory(indexFileDir.toPath());
                 IndexSearcher indexSearcher = new IndexSearcher(DirectoryReader.open(directory));
                 searchServer = resourceType.getSearchServerClass().getConstructor(IndexSearcher.class).newInstance(indexSearcher);
 

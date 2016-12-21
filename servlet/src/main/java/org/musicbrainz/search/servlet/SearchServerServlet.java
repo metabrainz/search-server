@@ -143,7 +143,7 @@ public class SearchServerServlet extends HttpServlet
 
             try
             {
-                Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir) : new NIOFSDirectory(indexFileDir);
+                Directory directory = useMMapDirectory ? new MMapDirectory(indexFileDir.toPath()) : new NIOFSDirectory(indexFileDir.toPath());
                 SearcherManager searcherManager = new SearcherManager(directory, new MusicBrainzSearcherFactory(resourceType));
                 searchServer = resourceType.getSearchServerClass().getConstructor(SearcherManager.class).newInstance(searcherManager);
                 dismaxSearchServer = resourceType.getDismaxSearchServerClass().getConstructor(AbstractSearchServer.class).newInstance(searchServer);

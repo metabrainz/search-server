@@ -4,7 +4,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.ArtistIndexField;
 import org.musicbrainz.search.index.ArtistType;
 
@@ -16,7 +15,7 @@ import org.musicbrainz.search.index.ArtistType;
 public class ArtistQueryParser extends MultiFieldQueryParser {
 
     public ArtistQueryParser(java.lang.String[] strings, org.apache.lucene.analysis.Analyzer analyzer) {
-        super(LuceneVersion.LUCENE_VERSION, strings, analyzer);
+        super(strings, analyzer);
     }
 
     protected Query newTermQuery(Term term) {

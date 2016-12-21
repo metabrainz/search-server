@@ -51,10 +51,13 @@ public class ArtistDismaxQueryParser extends DismaxQueryParser {
         }
 
         protected Query getFuzzyQuery(String field, String termStr, float minSimilarity) {
+            /*
             Term t = new Term(field, termStr);
             FuzzyQuery fq = new FuzzyQuery(t,  2, MIN_FIELD_LENGTH_IN_ARTIST_INDEX_TO_MAKE_FUZZY);
             fq.setRewriteMethod(fuzzyRewrite);
             return fq;
+            */
+            return null;
         }
 
         @Override

@@ -31,13 +31,12 @@
 package org.musicbrainz.search.servlet;
 
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
-import org.musicbrainz.search.LuceneVersion;
 
 public class EditorQueryParser extends MultiFieldQueryParser
 {
 
     public EditorQueryParser(String[] strings, org.apache.lucene.analysis.Analyzer analyzer)
     {
-        super(LuceneVersion.LUCENE_VERSION, strings, analyzer);
+        super(strings, analyzer);
     }
 }

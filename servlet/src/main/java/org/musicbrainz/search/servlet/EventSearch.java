@@ -6,7 +6,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.index.EventIndexField;
 import org.musicbrainz.search.servlet.mmd2.EventWriter;
@@ -39,7 +38,7 @@ public class EventSearch extends AbstractSearchServer {
 
     @Override
     public QueryParser getParser() {
-        return new QueryParser(LuceneVersion.LUCENE_VERSION, defaultFields.get(0), analyzer);
+        return new QueryParser(defaultFields.get(0), analyzer);
     }
 
 

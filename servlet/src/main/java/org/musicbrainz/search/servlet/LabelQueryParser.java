@@ -7,7 +7,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.LabelIndexField;
 import org.musicbrainz.search.servlet.mmd1.LabelType;
 
@@ -16,7 +15,7 @@ public class LabelQueryParser extends MultiFieldQueryParser
 
     public LabelQueryParser(java.lang.String[] strings, org.apache.lucene.analysis.Analyzer analyzer)
     {
-        super(LuceneVersion.LUCENE_VERSION, strings, analyzer);
+        super(strings, analyzer);
     }
 
     @Override

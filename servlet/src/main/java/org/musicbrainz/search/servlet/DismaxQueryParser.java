@@ -37,7 +37,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
-import org.musicbrainz.search.LuceneVersion;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -111,7 +110,7 @@ public class DismaxQueryParser {
 
 
         public DisjunctionQueryParser(String defaultField, org.apache.lucene.analysis.Analyzer analyzer) {
-            super(LuceneVersion.LUCENE_VERSION, defaultField, analyzer);
+            super(defaultField, analyzer);
         }
 
         protected Map<String, DismaxAlias> aliases = new HashMap<String, DismaxAlias>(3);
@@ -123,7 +122,7 @@ public class DismaxQueryParser {
 
         // Rewrite Method used by Prefix Search and Fuzzy Search, use idf of the original term
         MultiTermQuery.RewriteMethod prefixRewrite = new PrefixTermRewrite(200);
-        MultiTermQuery.RewriteMethod fuzzyRewrite = new FuzzyTermRewrite(200);
+        /* MultiTermQuery.RewriteMethod fuzzyRewrite = new FuzzyTermRewrite(200); */
 
 
         protected boolean checkQuery(DisjunctionMaxQuery q, Query querySub, boolean quoted, DismaxAlias a, String f) {
@@ -148,7 +147,7 @@ public class DismaxQueryParser {
         protected Query getFuzzyQuery(String field, String termStr, float minSimilarity) {
             Term t = new Term(field, termStr);
             FuzzyQuery fq = new FuzzyQuery(t,  2, MIN_FIELD_LENGTH_TO_MAKE_FUZZY);
-            fq.setRewriteMethod(fuzzyRewrite);
+            /*fq.setRewriteMethod(fuzzyRewrite);*/
             return fq;
         }
 
@@ -234,6 +233,7 @@ public class DismaxQueryParser {
      *
      * @param <Q>
      */
+    /*
     public static class FuzzyTermRewrite<Q extends DisjunctionMaxQuery> extends TopTermsRewrite<Query> {
 
         public FuzzyTermRewrite(int size) {
@@ -257,6 +257,7 @@ public class DismaxQueryParser {
             ((DisjunctionMaxQuery)topLevel).add(tq);
         }
     }
+    */
 
     /**
      *
@@ -272,10 +273,10 @@ public class DismaxQueryParser {
     public static class PrefixTermRewrite extends MultiTermQuery.RewriteMethod {
 
         private TFIDFSimilarity     similarity;
-        private FuzzyTermRewrite    rewrite;
+        /*private FuzzyTermRewrite    rewrite;*/
 
         public PrefixTermRewrite(int size) {
-            this.rewrite    = new FuzzyTermRewrite(size);
+            /* this.rewrite    = new FuzzyTermRewrite(size); */
             this.similarity = new DefaultSimilarity();
         }
 
@@ -296,6 +297,7 @@ public class DismaxQueryParser {
 
         @Override
         public Query rewrite(final IndexReader reader, final MultiTermQuery query) throws IOException {
+            /*
             DisjunctionMaxQuery  dmq = (DisjunctionMaxQuery)rewrite.rewrite(reader, query);
             float idfBoost = getQueryBoost(reader, query);
             Iterator<Query> iterator = dmq.iterator();
@@ -305,6 +307,8 @@ public class DismaxQueryParser {
                 next.setBoost(next.getBoost() * idfBoost);
             }
             return dmq;
+            */
+            return null;
         }
     }
 

@@ -10,7 +10,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
 import org.musicbrainz.search.servlet.mmd2.CDStubWriter;
@@ -36,7 +35,7 @@ public class CDStubSearch extends AbstractSearchServer {
 
   @Override
   public QueryParser getParser() {
-    return new MultiFieldQueryParser(LuceneVersion.LUCENE_VERSION, defaultFields.toArray(new String[0]), analyzer);
+    return new MultiFieldQueryParser(defaultFields.toArray(new String[0]), analyzer);
   }
 
   @Override

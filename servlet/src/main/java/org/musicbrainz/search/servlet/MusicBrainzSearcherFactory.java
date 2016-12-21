@@ -16,9 +16,9 @@ public class MusicBrainzSearcherFactory extends SearcherFactory {
   }
 
   @Override
-  public IndexSearcher newSearcher(IndexReader reader) throws IOException {
+  public IndexSearcher newSearcher(IndexReader reader, IndexReader previousReader) throws IOException {
 
-    IndexSearcher searcher = super.newSearcher(reader);
+    IndexSearcher searcher = super.newSearcher(reader, previousReader);
 
     // Try to set the similarity if it's defined by the ResourceType
     if (this.resourceType.getSimilarityClass() != null) {

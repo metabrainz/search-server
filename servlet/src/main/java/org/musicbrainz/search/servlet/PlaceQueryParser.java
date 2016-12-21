@@ -8,7 +8,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.BytesRefBuilder;
 import org.apache.lucene.util.NumericUtils;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.index.PlaceIndexField;
 import org.musicbrainz.search.index.RecordingIndexField;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
@@ -22,7 +21,7 @@ public class PlaceQueryParser extends MultiFieldQueryParser
 
     public PlaceQueryParser(String[] strings, Analyzer analyzer)
     {
-        super(LuceneVersion.LUCENE_VERSION, strings, analyzer);
+        super(strings, analyzer);
     }
 
     @Override
