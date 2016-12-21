@@ -359,6 +359,7 @@ public class IndexBuilder
                 clock.start();
                 String path = options.getIndexesDir() + index.getFilename();
                 System.out.println(index.getName()+":Started Optimization at "+Utils.formatCurrentTimeForOutput());
+                indexWriter.forceMerge(10);
                 indexWriter.close();
                 clock.stop();
                 // For debugging to check sql is not creating too few/many rows
