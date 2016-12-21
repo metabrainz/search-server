@@ -49,17 +49,14 @@ public class ArtistDismaxQueryParser extends DismaxQueryParser {
         public ArtistDisjunctionQueryParser(String defaultField, org.apache.lucene.analysis.Analyzer analyzer) {
             super(defaultField, analyzer);
         }
-
+/*
         protected Query getFuzzyQuery(String field, String termStr, float minSimilarity) {
-            /*
             Term t = new Term(field, termStr);
             FuzzyQuery fq = new FuzzyQuery(t,  2, MIN_FIELD_LENGTH_IN_ARTIST_INDEX_TO_MAKE_FUZZY);
             fq.setRewriteMethod(fuzzyRewrite);
             return fq;
-            */
-            return null;
         }
-
+*/
         @Override
         protected Query getFieldQuery(String field, String queryText, boolean quoted)
                 throws ParseException
