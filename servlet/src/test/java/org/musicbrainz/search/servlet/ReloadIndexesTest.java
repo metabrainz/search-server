@@ -14,7 +14,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.ArtistIndexField;
@@ -39,7 +38,7 @@ public class ReloadIndexesTest {
 
   private void addArtist1() throws Exception {
     Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
-    IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+    IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
     writerConfig.setSimilarity(new MusicbrainzSimilarity());
     IndexWriter writer = new IndexWriter(ramDir, writerConfig);
     // General Purpose Artist
@@ -71,7 +70,7 @@ public class ReloadIndexesTest {
 
   private void addArtist2() throws Exception {
     Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
-    IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+    IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
     writerConfig.setSimilarity(new MusicbrainzSimilarity());
     IndexWriter writer = new IndexWriter(ramDir, writerConfig);
     // General Purpose Artist
@@ -109,7 +108,7 @@ public class ReloadIndexesTest {
 
   private void updateIndexMetadata() throws Exception {
     Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
-    IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+    IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
     writerConfig.setSimilarity(new MusicbrainzSimilarity());
     IndexWriter writer = new IndexWriter(ramDir, writerConfig);
     // General Purpose Artist

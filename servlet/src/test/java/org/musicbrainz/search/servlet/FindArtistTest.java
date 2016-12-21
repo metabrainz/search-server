@@ -18,7 +18,6 @@ import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.mmd2.*;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.*;
@@ -40,7 +39,7 @@ public class FindArtistTest {
         ObjectFactory of = new ObjectFactory();
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ArtistIndexField.class);
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         writerConfig.setSimilarity(new MusicbrainzSimilarity());
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 

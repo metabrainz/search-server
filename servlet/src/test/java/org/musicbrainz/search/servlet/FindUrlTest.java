@@ -8,7 +8,6 @@ import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.mmd2.*;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.*;
 
@@ -35,7 +34,7 @@ public class FindUrlTest {
         ObjectFactory of = new ObjectFactory();
 
         Analyzer analyzer = DatabaseIndex.getAnalyzer(UrlIndexField.class);
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
         {
             MbDocument doc = new MbDocument();

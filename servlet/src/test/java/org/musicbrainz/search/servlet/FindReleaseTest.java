@@ -22,7 +22,6 @@ import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.musicbrainz.mmd2.*;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.*;
 import org.musicbrainz.search.servlet.mmd1.ReleaseGroupType;
@@ -38,7 +37,7 @@ public class FindReleaseTest {
 
         Fields fields = MultiFields.getFields(ir);
         Terms terms = fields.terms(field.getName());
-        TermsEnum termsEnum = terms.iterator(null);
+        TermsEnum termsEnum = terms.iterator();
         termsEnum.next();
         assertEquals(value, termsEnum.term().utf8ToString());
     }
@@ -52,7 +51,7 @@ public class FindReleaseTest {
         ObjectFactory of = new ObjectFactory();
 
         Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
         {
             MbDocument doc = new MbDocument();

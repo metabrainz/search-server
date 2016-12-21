@@ -17,7 +17,6 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.NumericUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.DatabaseIndex;
@@ -33,7 +32,7 @@ public class IssueSearch173Test  {
   public void setUp() throws Exception {
     RAMDirectory ramDir = new RAMDirectory();
     Analyzer analyzer = DatabaseIndex.getAnalyzer(ReleaseIndexField.class);
-    IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+    IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
     writerConfig.setSimilarity(new MusicbrainzSimilarity());
     IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
@@ -58,7 +57,7 @@ public class IssueSearch173Test  {
     IndexReader ir = DirectoryReader.open(ramDir);
     Fields fields = MultiFields.getFields(ir);
     Terms terms = fields.terms("catno");
-    TermsEnum termsEnum = terms.iterator(null);
+    TermsEnum termsEnum = terms.iterator();
     termsEnum.next();
     assertEquals(1, termsEnum.docFreq());
     assertEquals("ad17t", termsEnum.term().utf8ToString());

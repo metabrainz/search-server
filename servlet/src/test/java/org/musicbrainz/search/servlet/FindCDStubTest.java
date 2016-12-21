@@ -14,7 +14,6 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.CDStubIndexField;
 import org.musicbrainz.search.index.DatabaseIndex;
@@ -34,7 +33,7 @@ public class FindCDStubTest {
   public void setUp() throws Exception {
     RAMDirectory ramDir = new RAMDirectory();
     Analyzer analyzer = DatabaseIndex.getAnalyzer(CDStubIndexField.class);
-    IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+    IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
     IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
 

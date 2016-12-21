@@ -11,7 +11,6 @@ import org.musicbrainz.mmd2.Alias;
 import org.musicbrainz.mmd2.AliasList;
 import org.musicbrainz.mmd2.ObjectFactory;
 import org.musicbrainz.mmd2.Editor;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.analysis.MusicbrainzSimilarity;
 import org.musicbrainz.search.index.*;
@@ -38,7 +37,7 @@ public class FindEditorTest {
         ObjectFactory of = new ObjectFactory();
         RAMDirectory ramDir = new RAMDirectory();
         Analyzer analyzer = DatabaseIndex.getAnalyzer(EditorIndexField.class);
-        IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION, analyzer);
+        IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
         writerConfig.setSimilarity(new MusicbrainzSimilarity());
         IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 

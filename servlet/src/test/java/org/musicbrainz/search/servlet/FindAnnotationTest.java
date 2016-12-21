@@ -14,7 +14,6 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.RAMDirectory;
 import org.junit.Before;
 import org.junit.Test;
-import org.musicbrainz.search.LuceneVersion;
 import org.musicbrainz.search.MbDocument;
 import org.musicbrainz.search.index.AnnotationIndexField;
 import org.musicbrainz.search.type.AnnotationType;
@@ -34,7 +33,7 @@ public class FindAnnotationTest {
   public void setUp() throws Exception {
     RAMDirectory ramDir = new RAMDirectory();
     Analyzer analyzer = DatabaseIndex.getAnalyzer(AnnotationIndexField.class);
-    IndexWriterConfig writerConfig = new IndexWriterConfig(LuceneVersion.LUCENE_VERSION,analyzer);
+    IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
     IndexWriter writer = new IndexWriter(ramDir, writerConfig);
 
     //A complete Release Annotation entry
