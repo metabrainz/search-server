@@ -358,8 +358,8 @@ public class IndexBuilder
                 StopWatch clock = new StopWatch();
                 clock.start();
                 String path = options.getIndexesDir() + index.getFilename();
-                System.out.println(index.getName()+":Started Optimization at "+Utils.formatCurrentTimeForOutput());
-                indexWriter.forceMerge(10);
+                System.out.println(index.getName()+":Started forceMerge at "+Utils.formatCurrentTimeForOutput());
+                indexWriter.forceMerge(1);
                 indexWriter.close();
                 clock.stop();
                 // For debugging to check sql is not creating too few/many rows
@@ -368,7 +368,7 @@ public class IndexBuilder
                     reader = DirectoryReader.open(FSDirectory.open(new File(path)));
                     System.out.println(index.getName()+":"+dbRows+" db rows:"+(reader.maxDoc() - 1)+" lucene docs");
                 }
-                System.out.println(index.getName()+":Finished Optimization:" + Utils.formatClock(clock));
+                System.out.println(index.getName()+":Finished forceMerge:" + Utils.formatClock(clock));
                 return true;
             }
             catch(IOException ioe)
