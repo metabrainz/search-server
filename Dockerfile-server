@@ -1,7 +1,12 @@
-FROM jetty:9.3.10
+FROM airdock/oracle-jdk:jdk-8u122
 
 MAINTAINER Robert Kaye <rob@metabrainz.org>
 
+RUN cd /
+RUN wget http://central.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.0.v20161208/jetty-distribution-9.4.0.v20161208.tar.gz
+RUN tar xzf jetty-distribution-9.4.0.v20161208.tar.gz && mv jetty-distribution-9.4.0.v20161208 jetty && rm jetty-distribution-9.4.0.v20161208.t>
+
+env JETTY_HOME=/jetty
 ENV SEARCH_HOME=/home/search
 ENV INDEXES_VERSION=1
 ENV RSYNC_PASSWORD=search
