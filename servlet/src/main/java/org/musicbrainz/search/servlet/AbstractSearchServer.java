@@ -80,7 +80,7 @@ public abstract class AbstractSearchServer implements SearchServer {
   /**
    * Set the last updated date by getting the value from the index, then for efficiency convert to a format suitable for
    * use in output html
-   * 
+   *
    * @throws IOException
    */
   protected void setLastServerUpdatedDate() throws IOException {
@@ -135,6 +135,12 @@ public abstract class AbstractSearchServer implements SearchServer {
 
   @Override
   public void close() throws IOException {
+    if (searcherManager == null) {
+      return;
+    }
+    // In some cases, when indices are reloaded, the old index files are not released.
+    // This ensures that they are and disk space is not exhausted
+    searcherManager.close();
   }
 
   public org.musicbrainz.search.servlet.mmd2.ResultsWriter getMmd2Writer() {
@@ -163,7 +169,7 @@ public abstract class AbstractSearchServer implements SearchServer {
 
   /**
    * Parse and search lucene query, returning between results from offset up to limit
-   * 
+   *
    * @param query
    * @param offset
    * @param limit
@@ -178,7 +184,7 @@ public abstract class AbstractSearchServer implements SearchServer {
 
   /**
    * Parse and search lucene query, returning between results from offset up to limit
-   * 
+   *
    * @param query
    * @param offset
    * @param limit
@@ -208,7 +214,7 @@ public abstract class AbstractSearchServer implements SearchServer {
 
   /**
    * Parse the query
-   * 
+   *
    * @param query
    * @return
    * @throws ParseException
@@ -230,14 +236,14 @@ public abstract class AbstractSearchServer implements SearchServer {
   /**
    * Get Query Parser for parsing queries for this resourceType , QueryParser is not thread safe so always get a new
    * instance;
-   * 
+   *
    * @return
    */
   public abstract QueryParser getParser();
 
   /**
    * Process results of search
-   * 
+   *
    * @param searcher
    * @param topDocs
    * @param offset
@@ -292,7 +298,7 @@ public abstract class AbstractSearchServer implements SearchServer {
 
   /**
    * Output the Explain for the document
-   * 
+   *
    * @param sb
    * @param searcher
    * @param query
@@ -310,7 +316,7 @@ public abstract class AbstractSearchServer implements SearchServer {
 
   /**
    * Print details about the matching document, override to give resource type specific information
-   * 
+   *
    * @param doc
    * @return
    * @throws IOException
