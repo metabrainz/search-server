@@ -50,7 +50,7 @@ def copy_index(indexes_dir, version, index_type, dest):
     try:
         os.path.join(dest, "%s_index" % index_type)
         os.mkdir(dest)
-        subprocess.check_call(["cp", "-rv", index_dir, dest])
+        subprocess.check_call(["cp", "-rav", index_dir, dest])
     except OSError as e:
 	print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
 	sys.exit(-9)
