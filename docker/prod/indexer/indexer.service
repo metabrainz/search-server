@@ -16,6 +16,16 @@ SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS = 900
 RECORDING_INDEX_MAX_AGE = 60 * 60 * 24
 
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+
 def lastest_index_dir(indexes_dir, version, index_type):
     topdir = os.path.join(indexes_dir, version)
     dirs = [f for f in os.listdir(topdir) if os.path.isdir(os.path.join(topdir, f))]
@@ -42,6 +52,7 @@ def check_age_of_index(indexes_dir, version, index_type):
 def copy_index(indexes_dir, version, index_type, dest):
     try:
         index_dir = lastest_index_dir(indexes_dir, version, index_type)
+        mkdir_p(dest)
         subprocess.check_call(["cp", "-rav", index_dir, os.path.join(dest, "%s_index" % index_type)])
     except (IndexError, OSError, subprocess.CalledProcessError) as e:
         print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
