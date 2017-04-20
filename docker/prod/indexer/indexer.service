@@ -27,15 +27,13 @@ def lastest_index_dir(indexes_dir, version, index_type):
 def check_age_of_index(indexes_dir, version, index_type):
     try:
         index_dir = lastest_index_dir(indexes_dir, version, index_type)
-    except OSError:
-        return int(time.time())
-    except IndexError:
+    except (OSError, IndexError):
         return int(time.time())
 
     # check to see when the index dir was last modified
     try:
         ts = int(os.path.getmtime(index_dir))
-    except OSError, e:
+    except OSError:
         return int(time.time())
 
     return int(time.time()) - ts
