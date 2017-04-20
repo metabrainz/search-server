@@ -111,11 +111,10 @@ def main():
             print "Failed to clean up in-progress dir. ignoring."
 
         try:
-            os.makedirs(in_prog_dir)
+            mkdir_p(in_prog_dir)
         except OSError, e:
-            if e.errno != errno.EEXIST:
-                print "Failed to create in-progress dir %s: %s" % (in_progress_dir, e)
-                sys.exit(-4)
+            print "Failed to create in-progress dir %s: %s" % (in_progress_dir, e)
+            sys.exit(-4)
 
         os.chdir(in_prog_dir)
 
@@ -169,11 +168,10 @@ def rotate(version, new_set, indexes):
     ts = int(time.time())
     dest = os.path.join(indexes, version)
     try:
-        os.makedirs(dest)
+        mkdir_p(dest)
     except OSError, e:
-        if e.errno != errno.EEXIST:
-            print "Failed to create dest dir %s: %s" % (dest, e)
-            sys.exit(-7)
+        print "Failed to create dest dir %s: %s" % (dest, e)
+        sys.exit(-7)
 
     dest = os.path.join(dest, str(ts))
     try:
