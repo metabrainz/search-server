@@ -16,13 +16,17 @@ SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS = 900
 RECORDING_INDEX_MAX_AGE = 60 * 60 * 24
 
 
+def lastest_index_dir(indexes_dir, version, index_type):
+    topdir = os.path.join(indexes_dir, version)
+    dirs = [f for f in os.listdir(topdir) if os.path.isdir(os.path.join(topdir, f))]
+    dirs.sort(reverse=True)
+    latest = dirs[0]
+    return os.path.join(topdir, latest, "%s_index" % index_type)
+
+
 def check_age_of_index(indexes_dir, version, index_type):
-    dest = os.path.join(indexes_dir, version)
     try:
-        dirs = [f for f in os.listdir(dest) if os.path.isdir(os.path.join(dest, f))]
-        dirs.sort(reverse=True)
-        latest = dirs[0]
-        index_dir = os.path.join(dest, latest, "%s_index" % index_type)
+        index_dir = lastest_index_dir(indexes_dir, version, index_type)
     except OSError:
         return int(time.time())
     except IndexError:
@@ -38,12 +42,8 @@ def check_age_of_index(indexes_dir, version, index_type):
 
 
 def copy_index(indexes_dir, version, index_type, dest):
-    src = os.path.join(indexes_dir, version)
     try:
-        dirs = [f for f in os.listdir(src) if os.path.isdir(os.path.join(src, f))]
-        dirs.sort(reverse=True)
-        latest = dirs[0]
-        index_dir = os.path.join(src, latest, "%s_index" % index_type)
+        index_dir = lastest_index_dir(indexes_dir, version, index_type)
     except OSError:
         return int(time.time())
     except IndexError:
