@@ -150,12 +150,11 @@ def main():
             if not server:
                 continue
             restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
-            f = open(restart_file, "w")
-            restart = int(time.time() + delay)
-            f.write("%d\n" % restart)
-            sys.stderr.write("write restart timestamp %s for %s\n" % (datetime.datetime.fromtimestamp(restart).strftime('%Y-%m-%d %H:%M:%S.%f'), server))
-            delay += SEARCH_SERVER_RESTART_SERVER_DELAY
-            f.close()
+            with open(restart_file, "w") as f:
+                restart = int(time.time() + delay)
+                f.write("%d\n" % restart)
+                sys.stderr.write("write restart timestamp %s for %s\n" % (datetime.datetime.fromtimestamp(restart).strftime('%Y-%m-%d %H:%M:%S.%f'), server))
+                delay += SEARCH_SERVER_RESTART_SERVER_DELAY
 
         rotate(indexes_version, os.path.join(in_prog_dir, "data"), indexes_dir)
 
