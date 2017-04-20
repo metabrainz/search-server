@@ -107,12 +107,12 @@ def main():
     while True:
         try:
             shutil.rmtree(in_prog_dir)
-        except OSError, e:
-            print "Failed to clean up in-progress dir. ignoring."
+        except OSError as e:
+            print "Failed to clean up in-progress dir. ignoring. %s: %s" % (in_progress_dir, e)
 
         try:
             mkdir_p(in_prog_dir)
-        except OSError, e:
+        except OSError as e:
             print "Failed to create in-progress dir %s: %s" % (in_progress_dir, e)
             sys.exit(-4)
 
@@ -169,14 +169,14 @@ def rotate(version, new_set, indexes):
     dest = os.path.join(indexes, version)
     try:
         mkdir_p(dest)
-    except OSError, e:
+    except OSError as e:
         print "Failed to create dest dir %s: %s" % (dest, e)
         sys.exit(-7)
 
     dest = os.path.join(dest, str(ts))
     try:
         os.rename(new_set, dest)
-    except OSError, e:
+    except OSError as e:
         print "Failed to move new set to indexes dir %s: %s" % (dest, e)
         sys.exit(-8)
 
