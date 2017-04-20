@@ -95,6 +95,8 @@ def main():
         print "Environment var INDEXES_VERSION must be set for this script."
         sys.exit(-2)
 
+    build_index_bin = os.path.join(search_home, "bin", "build-indexes.sh")
+
     in_prog_dir = os.path.join(search_home, "data", "in-progress")
     indexes_dir = os.path.join(search_home, "data")
 
@@ -103,6 +105,24 @@ def main():
     except subprocess.CalledProcessError as e:
         print "Cannot start rsync daemon: " + str(e)
         sys.exit(-3)
+
+    default_index_list = [
+        'annotation',
+        'area',
+        'artist',
+        'cdstub',
+        'editor',
+        'event',
+        'instrument',
+        'label',
+        'place',
+        'release',
+        'releasegroup',
+        'series',
+        'tag',
+        'url',
+        'work',
+    ]
 
     while True:
         try:
@@ -119,9 +139,9 @@ def main():
         os.chdir(in_prog_dir)
         datadir = os.path.join(in_prog_dir, "data")
 
-        index_list = "area,artist,cdstub,instrument,label,place,editor,event,release,releasegroup,cdstub,annotation,series,work,tag,url"
+        index_list = list(default_index_list)
         if check_age_of_index(indexes_dir, indexes_version, "recording") > RECORDING_INDEX_MAX_AGE:
-            index_list += ",recording"
+            index_list.append('recording')
         else:
             copy_index(indexes_dir, indexes_version, "recording", datadir)
 
@@ -133,7 +153,7 @@ def main():
         os.environ['POSTGRES_PASSWD'] = config_data['pg_passwd']
 
         try:
-            subprocess.check_call([os.path.join(search_home, "bin", "build-indexes.sh"), index_list])
+            subprocess.check_call([build_index_bin, ",".join(index_list)])
         except OSError as e:
             print "Cannot build indexes: " + str(e)
             sys.exit(-5)
