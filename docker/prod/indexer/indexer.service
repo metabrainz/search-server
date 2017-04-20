@@ -117,12 +117,13 @@ def main():
             sys.exit(-4)
 
         os.chdir(in_prog_dir)
+        datadir = os.path.join(in_prog_dir, "data")
 
         index_list = "area,artist,cdstub,instrument,label,place,editor,event,release,releasegroup,cdstub,annotation,series,work,tag,url"
         if check_age_of_index(indexes_dir, indexes_version, "recording") > RECORDING_INDEX_MAX_AGE:
             index_list += ",recording"
         else:
-            copy_index(indexes_dir, indexes_version, "recording", os.path.join(in_prog_dir, "data"))
+            copy_index(indexes_dir, indexes_version, "recording", datadir)
 
         config_data = read_config_file()
         os.environ['POSTGRES_HOST'] = config_data['pg_host']
@@ -149,14 +150,14 @@ def main():
         for server in config_data['search-servers'].split(","):
             if not server:
                 continue
-            restart_file = os.path.join(in_prog_dir, "data", "restart-" + server)
+            restart_file = os.path.join(datadir, "restart-" + server)
             with open(restart_file, "w") as f:
                 restart = int(time.time() + delay)
                 f.write("%d\n" % restart)
                 sys.stderr.write("write restart timestamp %s for %s\n" % (datetime.datetime.fromtimestamp(restart).strftime('%Y-%m-%d %H:%M:%S.%f'), server))
                 delay += SEARCH_SERVER_RESTART_SERVER_DELAY
 
-        rotate(indexes_version, os.path.join(in_prog_dir, "data"), indexes_dir)
+        rotate(indexes_version, datadir, indexes_dir)
 
         # Wait for search servers to sync and rotate, then start the next run
         sys.stderr.write("%s: Sleep for %d seconds, because I'm lazy and I need a break.\n" % (time.time(), SEARCH_SERVER_CHILL_TIME_BETWEEN_RUNS))
