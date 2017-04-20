@@ -122,12 +122,12 @@ def main():
         try:
             shutil.rmtree(in_prog_dir)
         except OSError as e:
-            print "Failed to clean up in-progress dir. ignoring. %s: %s" % (in_progress_dir, e)
+            print "Failed to clean up in-progress dir. ignoring. %s: %s" % (in_prog_dir, e)
 
         try:
             mkdir_p(in_prog_dir)
         except OSError as e:
-            print "Failed to create in-progress dir %s: %s" % (in_progress_dir, e)
+            print "Failed to create in-progress dir %s: %s" % (in_prog_dir, e)
             sys.exit(-4)
 
         os.chdir(in_prog_dir)
