@@ -91,8 +91,8 @@ def main():
 
     build_index_bin = os.path.join(search_home, "bin", "build-indexes.sh")
 
-    in_prog_dir = os.path.join(search_home, "data", "in-progress")
     indexes_dir = os.path.join(search_home, "data")
+    in_prog_dir = os.path.join(indexes_dir, "in-progress")
 
     try:
         subprocess.check_call(["rsync", "--config=/etc/rsyncd.conf", "--daemon"])
