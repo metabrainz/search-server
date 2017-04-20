@@ -60,25 +60,19 @@ def copy_index(indexes_dir, version, index_type, dest):
 
 
 def read_config_file():
-
-    f = open(SEARCH_SERVER_LIST_FILE, "r")
-    if not f:
-        return []
-
     data = {}
-    for line in f.readlines():
-        line = line.strip()
-        kv = line.split("=")
-        k = kv[0]
-        if len(kv) == 1:
-            v = ""
-        else:
-            v = kv[1]
-        if v.endswith(","):
-            v = v[:-1]
-        data[k] = v
+    with open(SEARCH_SERVER_LIST_FILE, "r") as f:
+        for line in f.readlines():
+            kv = line.strip().split("=")
+            k = kv[0]
+            if len(kv) == 1:
+                v = ""
+            else:
+                v = kv[1]
+            if v.endswith(","):
+                v = v[:-1]
+            data[k] = v
 
-    f.close()
     return data
 
 
