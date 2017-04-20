@@ -42,9 +42,7 @@ def check_age_of_index(indexes_dir, version, index_type):
 def copy_index(indexes_dir, version, index_type, dest):
     try:
         index_dir = lastest_index_dir(indexes_dir, version, index_type)
-        os.path.join(dest, "%s_index" % index_type)
-        os.mkdir(dest)
-        subprocess.check_call(["cp", "-rav", index_dir, dest])
+        subprocess.check_call(["cp", "-rav", index_dir, os.path.join(dest, "%s_index" % index_type)])
     except (IndexError, OSError, subprocess.CalledProcessError) as e:
         print "Cannot copy index from %s to %s: " % (index_dir, dest) + str(e)
         sys.exit(-10)
