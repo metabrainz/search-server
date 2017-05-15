@@ -88,11 +88,17 @@ public class WorkIndex extends DatabaseIndex {
                         " FROM iswc " +
                         " WHERE work BETWEEN ? AND ?");
 
+        addPreparedStatement("LANGUAGES",
+                "SELECT wl.work, l.iso_code_3 AS language" +
+                        " FROM work_language wl " +
+                        " JOIN language l ON l.id = wl.language" +
+                        " WHERE wl.work BETWEEN ? AND ?" +
+                        " ORDER BY wl.created, wl.language");
+
         addPreparedStatement("WORKS",
-                "SELECT w.id as wid, w.gid, w.name as name, wt.name as type, l.iso_code_3 as language, comment " +
+                "SELECT w.id as wid, w.gid, w.name as name, wt.name as type, comment " +
                         " FROM work AS w " +
                         "  LEFT JOIN work_type wt ON w.type = wt.id " +
-                        "  LEFT JOIN language l on w.language = l.id " +
                         " WHERE w.id BETWEEN ? AND ? " +
                         " ORDER BY w.id");
     }
@@ -128,6 +134,36 @@ public class WorkIndex extends DatabaseIndex {
         return iswcs;
     }
     /**
+     * Load work languages
+     *
+     * @param min
+     * @param max
+     * @return
+     * @throws SQLException
+     * @throws IOException
+     */
+    private Map<Integer, List<String>> loadLanguages(int min, int max) throws SQLException, IOException {
+        Map<Integer, List<String>> languages = new HashMap<Integer, List<String>>();
+        PreparedStatement st = getPreparedStatement("LANGUAGES");
+        st.setInt(1, min);
+        st.setInt(2, max);
+        ResultSet rs = st.executeQuery();
+        while (rs.next()) {
+            int workId = rs.getInt("work");
+
+            List<String> list;
+            if (!languages.containsKey(workId)) {
+                list = new LinkedList<String>();
+                languages.put(workId, list);
+            } else {
+                list = languages.get(workId);
+            }
+            list.add(rs.getString("language"));
+        }
+        rs.close();
+        return languages;
+    }
+    /**
      * Index data with workids between min and max
      *
      * @param indexWriter
@@ -143,6 +179,7 @@ public class WorkIndex extends DatabaseIndex {
         ArrayListMultimap<Integer, Relation> recordingRelations = LinkedRecordingsHelper.loadRelations(min, max, getPreparedStatement("RECORDINGS"));
         Map<Integer, Set<Alias>>             aliases            = AliasHelper.completeFromDbResults(min, max, getPreparedStatement("ALIASES"));
         Map<Integer, List<String>>           iswcs              = loadISWCs(min,max);
+        Map<Integer, List<String>>           languages          = loadLanguages(min, max);
 
         //Works
         PreparedStatement st = getPreparedStatement("WORKS");
@@ -150,7 +187,7 @@ public class WorkIndex extends DatabaseIndex {
         st.setInt(2, max);
         ResultSet rs = st.executeQuery();
         while (rs.next()) {
-            indexWriter.addDocument(documentFromResultSet(rs, tags, artistRelations, recordingRelations, aliases, iswcs));
+            indexWriter.addDocument(documentFromResultSet(rs, tags, artistRelations, recordingRelations, aliases, iswcs, languages));
         }
         rs.close();
 
@@ -161,7 +198,8 @@ public class WorkIndex extends DatabaseIndex {
                                           ArrayListMultimap<Integer, Relation> artistRelations,
                                           ArrayListMultimap<Integer, Relation> recordingRelations,
                                           Map<Integer, Set<Alias>>   aliases,
-                                          Map<Integer, List<String>> iswcs
+                                          Map<Integer, List<String>> iswcs,
+                                          Map<Integer, List<String>> languages
                                           ) throws SQLException {
         MbDocument doc = new MbDocument();
 
@@ -178,12 +216,6 @@ public class WorkIndex extends DatabaseIndex {
         doc.addField(WorkIndexField.WORK, name);
         doc.addField(WorkIndexField.WORK_ACCENT, name);
         work.setTitle(name);
-
-        String language = rs.getString("language");
-        doc.addFieldOrNoValue(WorkIndexField.LYRICS_LANG,language);
-        if (!Strings.isNullOrEmpty(language)) {
-            work.setLanguage(language);
-        }
 
         String type = rs.getString("type");
         doc.addFieldOrNoValue(WorkIndexField.TYPE, type);
@@ -226,6 +258,32 @@ public class WorkIndex extends DatabaseIndex {
         else
         {
             doc.addFieldOrNoValue(WorkIndexField.ISWC, null);
+        }
+
+        if (languages.containsKey(id)) {
+            LanguageList languageList = of.createLanguageList();
+            String firstLanguageCode = null;
+            for (String languageCode : languages.get(id)) {
+                if (Strings.isNullOrEmpty(firstLanguageCode)) {
+                    firstLanguageCode = languageCode;
+                }
+                doc.addField(WorkIndexField.LYRICS_LANG, languageCode);
+                LanguageList.Language language = new LanguageList.Language();
+                language.setValue(languageCode);
+                languageList.getLanguage().add(language);
+            }
+            work.setLanguageList(languageList);
+
+            // Pre-MBS-5452 legacy property.
+            if (languageList.getLanguage().size() > 1) {
+                work.setLanguage("mul");
+            } else {
+                work.setLanguage(firstLanguageCode);
+            }
+        }
+        else
+        {
+            doc.addFieldOrNoValue(WorkIndexField.LYRICS_LANG, null);
         }
 
         if (tags.containsKey(id))

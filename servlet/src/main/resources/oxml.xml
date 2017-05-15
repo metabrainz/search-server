@@ -196,6 +196,7 @@
         <java-type name="Work">
             <java-attributes>
                 <xml-element java-attribute="iswcList" xml-path="."/>
+                <xml-element java-attribute="languageList" xml-path="."/>
             </java-attributes>
         </java-type>
         <java-type name="Recording">
@@ -206,6 +207,11 @@
         <java-type name="IswcList">
             <java-attributes>
                 <xml-element java-attribute="iswc" name="iswcs"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="LanguageList">
+            <java-attributes>
+                <xml-element java-attribute="language" name="languages"/>
             </java-attributes>
         </java-type>
         <java-type name="UrlList">

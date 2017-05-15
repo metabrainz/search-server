@@ -50,10 +50,13 @@ public class WorkIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO artist_credit_name (artist_credit, position, artist, name) " +
                 " VALUES (1, 0, 16153, 1)");
 
-        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, comment, language)" +
-                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 'Work', 1,  'demo', 1)");
-        stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
-                " VALUES (1, 'eng', 'eng', 'eng', 'en', 'English', 1)");
+        stmt.addBatch("INSERT INTO work (id, gid, name, artist_credit, comment)" +
+                " VALUES (1, 'a539bb1e-f2e1-4b45-9db8-8053841e7503', 'Work', 1,  'demo')");
+        stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_1, name, frequency) " +
+                " VALUES (1, 'eng', 'eng', 'eng', 'en', 'English', 1), (2, 'fra', 'fra', 'fre', 'fr', 'French', 1)");
+        stmt.addBatch("INSERT INTO work_language (work, language, created)" +
+                " VALUES (1, 1, '2017-05-05 00:55:34.429968+00'), (1, 2, '2017-05-05 00:55:55.663305+00')");
+
         stmt.addBatch("INSERT INTO work_alias (work, name, sort_name) VALUES (1, 'Play', '')");
 
         stmt.addBatch("INSERT INTO tag (id, name, ref_count) VALUES (1, 'Classical', 2);");
@@ -201,7 +204,7 @@ public class WorkIndexTest extends AbstractIndexTest {
     }
 
     @Test
-    public void testIndexWorkWithLanguage() throws Exception {
+    public void testIndexWorkWithLanguages() throws Exception {
 
         addWorkOne();
         RAMDirectory ramDir = new RAMDirectory();
@@ -210,8 +213,9 @@ public class WorkIndexTest extends AbstractIndexTest {
         assertEquals(2, ir.numDocs());
         {
             Document doc = ir.document(1);
-            assertEquals(1, doc.getFields(WorkIndexField.LYRICS_LANG.getName()).length);
-            assertEquals("eng", doc.getField(WorkIndexField.LYRICS_LANG.getName()).stringValue());
+            assertEquals(2, doc.getFields(WorkIndexField.LYRICS_LANG.getName()).length);
+            assertEquals("eng", doc.getFields(WorkIndexField.LYRICS_LANG.getName())[0].stringValue());
+            assertEquals("fra", doc.getFields(WorkIndexField.LYRICS_LANG.getName())[1].stringValue());
             ir.close();
         }
     }

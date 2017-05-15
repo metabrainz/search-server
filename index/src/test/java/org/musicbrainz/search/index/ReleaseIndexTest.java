@@ -181,7 +181,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO area (id, name) VALUES (222, 'Sweden')");
         stmt.addBatch("INSERT INTO iso_3166_1 (area, code) VALUES (222, 'SW')");
 
-        stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
+        stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_1, name, frequency) " +
         	" VALUES (1, null, 'eng', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
         stmt.addBatch("INSERT INTO release_meta (id, amazon_asin) VALUES (491240, 'B00005NTQ7')");
@@ -217,7 +217,7 @@ public class ReleaseIndexTest extends AbstractIndexTest {
         stmt.addBatch("INSERT INTO release (id, gid, name, artist_credit, release_group, status, packaging, " +
                 "  language, script, barcode) " +
                 " VALUES (491240, 'c3b8dbc9-c1ff-4743-9015-8d762819134e', 2, 1, 491240, 1, 1, 1, 28,'5060180310066')");
-        stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_2, name, frequency) " +
+        stmt.addBatch("INSERT INTO language (id, iso_code_3, iso_code_2t, iso_code_2b, iso_code_1, name, frequency) " +
         	" VALUES (1, null, 'end', 'eng', 'en', 'English', 1)");
         stmt.addBatch("INSERT INTO script (id, iso_code, iso_number, name, frequency) VALUES (28, 'Latn' , 215, 'Latin', 4)");
 

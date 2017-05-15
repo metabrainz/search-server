@@ -652,7 +652,7 @@ public abstract class AbstractIndexTest {
                 "  iso_code_3  character(3)," +
                 "  iso_code_2t character(3) NOT NULL," +
                 "  iso_code_2b character(3) NOT NULL," +
-                "  iso_code_2 character(2)," +
+                "  iso_code_1 character(2)," +
                 "  name character varying(100) NOT NULL," +
                 "  frequency integer NOT NULL DEFAULT 0" +
                 ")");
@@ -893,7 +893,6 @@ public abstract class AbstractIndexTest {
                 "  artist_credit integer NOT NULL," +
                 "  type integer," +
                 "  comment character varying(255)," +
-                "  language integer," +
                 "  last_updated timestamp," +
                 "  edits_pending integer NOT NULL DEFAULT 0" +
                 ")");
@@ -903,6 +902,13 @@ public abstract class AbstractIndexTest {
                 "work INTEGER NOT NULL," +
                 "iswc CHARACTER(15)," +
                 "source SMALLINT," +
+                "edits_pending INTEGER NOT NULL DEFAULT 0," +
+                "created TIMESTAMP" +
+                ")");
+
+        stmt.addBatch("CREATE TABLE work_language (" +
+                "work INTEGER NOT NULL," +
+                "language INTEGER NOT NULL," +
                 "edits_pending INTEGER NOT NULL DEFAULT 0," +
                 "created TIMESTAMP" +
                 ")");

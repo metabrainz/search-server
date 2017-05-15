@@ -46,6 +46,9 @@
 			<join src_field='id' target_field='work'>
 				<table name='iswc' />
 			</join>			
+			<join src_field='id' target_field='work'>
+				<table name='work_language' />
+			</join>
 			<join src_field='id' target_field='entity1'>
 				<table name='l_artist_work'>
 					<join src_field='entity0' target_field='id'>
