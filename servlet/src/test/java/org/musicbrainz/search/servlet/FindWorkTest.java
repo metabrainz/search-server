@@ -63,8 +63,17 @@ public class FindWorkTest {
             doc.addField(WorkIndexField.COMMENT, "demo");
             work.setDisambiguation("demo");
 
+            LanguageList languageList = of.createLanguageList();
+            LanguageList.Language eng = new LanguageList.Language();
+            LanguageList.Language fra = new LanguageList.Language();
+            eng.setValue("eng");
+            fra.setValue("fra");
+            languageList.getLanguage().add(eng);
+            languageList.getLanguage().add(fra);
             doc.addField(WorkIndexField.LYRICS_LANG, "eng");
-            work.setLanguage("eng");
+            doc.addField(WorkIndexField.LYRICS_LANG, "fra");
+            work.setLanguageList(languageList);
+            work.setLanguage("mul");
 
             doc.addField(WorkIndexField.TYPE, "Opera");
             work.setType("Opera");
@@ -149,7 +158,12 @@ public class FindWorkTest {
             doc.addField(WorkIndexField.WORK, "Debaser");
             work.setTitle("Debaser");
 
+            LanguageList languageList = of.createLanguageList();
+            LanguageList.Language esp = new LanguageList.Language();
+            esp.setValue("esp");
+            languageList.getLanguage().add(esp);
             doc.addField(WorkIndexField.LYRICS_LANG, "esp");
+            work.setLanguageList(languageList);
             work.setLanguage("esp");
 
             doc.addField(WorkIndexField.TYPE, "Song");
@@ -237,6 +251,13 @@ public class FindWorkTest {
         assertEquals(1, res.getTotalHits());
         Result result = res.results.get(0);
         MbDocument doc = result.getDoc();
+        assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
+        assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
+
+        res = ss.search("lang:fra", 0, 10);
+        assertEquals(1, res.getTotalHits());
+        result = res.results.get(0);
+        doc = result.getDoc();
         assertEquals("4ff89cf0-86af-11de-90ed-001fc6f176ff", doc.get(WorkIndexField.WORK_ID));
         assertEquals("Symphony No. 5", doc.get(WorkIndexField.WORK));
     }
@@ -421,7 +442,10 @@ public class FindWorkTest {
         assertTrue(output.contains("<relation type=\"composer\""));
         assertTrue(output.contains("<iswc>T-101779304-1</iswc>"));
         assertTrue(output.contains("<iswc>B-101779304-1</iswc>"));
+        assertTrue(output.contains("<language>mul</language>"));
+        assertTrue(output.contains("<language-list>"));
         assertTrue(output.contains("<language>eng</language>"));
+        assertTrue(output.contains("<language>fra</language>"));
         assertTrue(output.contains("<relation-list target-type=\"artist\">"));
         assertTrue(output.contains("<direction>backward</direction>"));
         assertTrue(output.contains("<attribute-list>"));
@@ -461,7 +485,7 @@ public class FindWorkTest {
         assertTrue(output.contains("\"type\":\"Opera\""));
         assertTrue(output.contains("\"score\":\"100\""));
         assertTrue(output.contains("\"title\":\"Symphony No. 5\""));
-        assertTrue(output.contains("\"language\":\"eng\""));
+        assertTrue(output.contains("\"language\":\"mul\""));
         assertTrue(output.contains("\"iswc-list\":{\"iswc\":[\"T-101779304-1\",\"B-101779304-1\"]}"));
         assertTrue(output.contains("\"disambiguation\":\"demo\""));
         assertTrue(output.contains("\"alias-list\":{\"alias\":[\"Symp5\"]}"));
@@ -500,7 +524,8 @@ public class FindWorkTest {
         assertTrue(output.contains("\"type\":\"Opera\""));
         assertTrue(output.contains("\"score\":\"100\""));
         assertTrue(output.contains("\"title\":\"Symphony No. 5\""));
-        assertTrue(output.contains("\"language\":\"eng\""));
+        assertTrue(output.contains("\"language\":\"mul\""));
+        assertTrue(output.contains("languages\":[\"eng\",\"fra\"]"));
         assertTrue(output.contains("iswcs\":[\"T-101779304-1\",\"B-101779304-1\"]"));
         assertTrue(output.contains("\"disambiguation\":\"demo\""));
         assertTrue(output.contains("\"aliases\":[{\"name\":\"Symp5\",\"locale\":null,\"type\":null,\"primary\":null,\"begin-date\":null,\"end-date\":null}]"));

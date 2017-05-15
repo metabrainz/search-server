@@ -65,6 +65,7 @@ public class WorkAdapter extends XmlAdapter<WorkAdapter.AdaptedWork, Work> {
         adaptedWork.setId(work.getId());
         adaptedWork.setIswcList(work.getIswcList());
         adaptedWork.setLanguage(work.getLanguage());
+        adaptedWork.setLanguageList(work.getLanguageList());
         adaptedWork.setRating(work.getRating());
         adaptedWork.setScore(work.getScore());
         adaptedWork.setTitle(work.getTitle());
