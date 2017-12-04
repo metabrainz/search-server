@@ -82,7 +82,7 @@ public class SeriesWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Series series = (Series) MMDSerializer.unserialize(doc.get(SeriesIndexField.SERIES_STORE), Series.class);
-        series.setScore(String.valueOf(result.getNormalizedScore()));
+        series.setScore(result.getNormalizedScore());
         list.add(series);
     }
 

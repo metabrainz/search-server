@@ -84,7 +84,7 @@ public class AreaWriter extends ResultsWriter {
         //TODO DefAreaElementInner not defined as @Xmlrootelement so we have to wrap in list
         AreaList areaList = (AreaList) MMDSerializer.unserialize(doc.get(AreaIndexField.AREA_STORE), AreaList.class);
         DefAreaElementInner area= areaList.getArea().get(0);
-        area.setScore(String.valueOf(result.getNormalizedScore()));
+        area.setScore(result.getNormalizedScore());
         list.add(area);
     }
 

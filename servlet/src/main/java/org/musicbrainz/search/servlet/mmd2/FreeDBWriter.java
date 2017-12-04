@@ -63,7 +63,7 @@ public class FreeDBWriter extends ResultsWriter {
             freeDB.setYear(doc.get(FreeDBIndexField.YEAR));
 
             result.setNormalizedScore(results.getMaxScore());
-            freeDB.setScore(String.valueOf(result.getNormalizedScore()));
+            freeDB.setScore(result.getNormalizedScore());
             Cdstub.TrackList trackList = of.createCdstubTrackList();
             trackList.setCount(new BigInteger(doc.get(FreeDBIndexField.TRACKS)));
             freeDB.setTrackList(trackList);

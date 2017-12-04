@@ -84,7 +84,7 @@ public class ArtistWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Artist artist = (Artist) MMDSerializer.unserialize(doc.get(ArtistIndexField.ARTIST_STORE), Artist.class);
-        artist.setScore(String.valueOf(result.getNormalizedScore()));
+        artist.setScore(result.getNormalizedScore());
         list.add(artist);
     }
 

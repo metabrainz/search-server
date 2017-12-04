@@ -82,7 +82,7 @@ public class UrlWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Url url = (Url) MMDSerializer.unserialize(doc.get(UrlIndexField.URL_STORE), Url.class);
-        url.setScore(String.valueOf(result.getNormalizedScore()));
+        url.setScore(result.getNormalizedScore());
         list.add(url);
     }
 }

@@ -82,7 +82,7 @@ public class EditorWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Editor editor = (Editor) MMDSerializer.unserialize(doc.get(EditorIndexField.EDITOR_STORE), Editor.class);
-        editor.setScore(String.valueOf(result.getNormalizedScore()));
+        editor.setScore(result.getNormalizedScore());
         list.add(editor);
     }
 }

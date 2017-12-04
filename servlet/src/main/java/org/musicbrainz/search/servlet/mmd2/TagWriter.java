@@ -61,7 +61,7 @@ public class TagWriter extends ResultsWriter {
             Tag tag = of.createTag();
             tag.setName(doc.get(TagIndexField.TAG));;
             result.setNormalizedScore(results.getMaxScore());
-            tag.setScore(String.valueOf(result.getNormalizedScore()));
+            tag.setScore(result.getNormalizedScore());
             tagList.getTag().add(tag);
         }
         tagList.setCount(BigInteger.valueOf(results.getTotalHits()));
