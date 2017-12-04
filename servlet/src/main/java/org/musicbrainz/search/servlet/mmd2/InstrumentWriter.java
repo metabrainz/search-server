@@ -82,7 +82,7 @@ public class InstrumentWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Instrument instrument = (Instrument) MMDSerializer.unserialize(doc.get(InstrumentIndexField.INSTRUMENT_STORE), Instrument.class);
-        instrument.setScore(String.valueOf(result.getNormalizedScore()));
+        instrument.setScore(result.getNormalizedScore());
         list.add(instrument);
     }
 

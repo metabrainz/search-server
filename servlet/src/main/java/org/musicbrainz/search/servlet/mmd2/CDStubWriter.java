@@ -111,7 +111,7 @@ public class CDStubWriter extends ResultsWriter {
 
 
             result.setNormalizedScore(results.getMaxScore());
-            cdstub.setScore(String.valueOf(result.getNormalizedScore()));
+            cdstub.setScore(result.getNormalizedScore());
             cdstubList.getCdstub().add(cdstub);
         }
         cdstubList.setCount(BigInteger.valueOf(results.getTotalHits()));

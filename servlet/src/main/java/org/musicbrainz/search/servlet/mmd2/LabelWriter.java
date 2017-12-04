@@ -88,7 +88,7 @@ public class LabelWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Label label = (Label) MMDSerializer.unserialize(doc.get(LabelIndexField.LABEL_STORE), Label.class);
-        label.setScore(String.valueOf(result.getNormalizedScore()));
+        label.setScore(result.getNormalizedScore());
         list.add(label);
     }
 

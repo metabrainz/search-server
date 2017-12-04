@@ -82,7 +82,7 @@ public class PlaceWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Place place = (Place) MMDSerializer.unserialize(doc.get(PlaceIndexField.PLACE_STORE), Place.class);
-        place.setScore(String.valueOf(result.getNormalizedScore()));
+        place.setScore(result.getNormalizedScore());
         list.add(place);
     }
 

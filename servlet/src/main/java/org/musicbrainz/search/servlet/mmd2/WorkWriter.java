@@ -90,7 +90,7 @@ public class WorkWriter extends ResultsWriter
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Work work = (Work) MMDSerializer.unserialize(doc.get(WorkIndexField.WORK_STORE), Work.class);
-        work.setScore(String.valueOf(result.getNormalizedScore()));
+        work.setScore(result.getNormalizedScore());
         list.add(work);
     }
 

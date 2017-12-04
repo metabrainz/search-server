@@ -82,7 +82,7 @@ public class EventWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Event event = (Event) MMDSerializer.unserialize(doc.get(EventIndexField.EVENT_STORE), Event.class);
-        event.setScore(String.valueOf(result.getNormalizedScore()));
+        event.setScore(result.getNormalizedScore());
         list.add(event);
     }
 

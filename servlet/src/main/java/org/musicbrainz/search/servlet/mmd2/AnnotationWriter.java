@@ -65,7 +65,7 @@ public class AnnotationWriter extends ResultsWriter {
             annotation.setEntity(doc.get(AnnotationIndexField.ENTITY));
 
             result.setNormalizedScore(results.getMaxScore());
-            annotation.setScore(String.valueOf(result.getNormalizedScore()));
+            annotation.setScore(result.getNormalizedScore());
             annotationList.getAnnotation().add(annotation);
 
         }

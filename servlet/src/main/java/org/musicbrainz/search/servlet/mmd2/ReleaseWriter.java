@@ -85,7 +85,7 @@ public class ReleaseWriter extends ResultsWriter {
     public void write(List list, Result result) throws IOException {
         MbDocument doc = result.getDoc();
         Release release = (Release) MMDSerializer.unserialize(doc.get(ReleaseIndexField.RELEASE_STORE), Release.class);
-        release.setScore(String.valueOf(result.getNormalizedScore()));
+        release.setScore(result.getNormalizedScore());
         list.add(release);
     }
 }

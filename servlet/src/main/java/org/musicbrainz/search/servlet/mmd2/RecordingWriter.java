@@ -91,7 +91,7 @@ public class RecordingWriter extends ResultsWriter {
     {
         MbDocument doc = result.getDoc();
         Recording recording = (Recording) MMDSerializer.unserialize(doc.get(RecordingIndexField.RECORDING_STORE), Recording.class);
-        recording.setScore(String.valueOf(result.getNormalizedScore()));
+        recording.setScore(result.getNormalizedScore());
         list.add(recording);
     }
 }
