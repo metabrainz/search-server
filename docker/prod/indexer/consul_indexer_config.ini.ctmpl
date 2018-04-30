@@ -1,5 +1,5 @@
-{{if service "postgres-slave"}}
-{{with index (service "postgres-slave") 0}}
+{{if service "postgres-master"}}
+{{with index (service "postgres-master") 0}}
 pg_host={{.Address}}
 pg_port={{.Port}}
 pg_user=musicbrainz
