@@ -524,8 +524,8 @@ public class FindReleaseGroupTest {
     String output = sw.toString();
     System.out.println("Json is" + output);
 
-    assertTrue(output.contains("\"score\":\"100\""));
-    assertTrue(output.contains("\"score\":\"43\""));
+    assertTrue(output.contains("\"score\":100"));
+    assertTrue(output.contains("\"score\":43"));
     assertTrue(output.contains("\"tag\":[{\"count\":101,\"name\":\"indie\"}"));
   }
 

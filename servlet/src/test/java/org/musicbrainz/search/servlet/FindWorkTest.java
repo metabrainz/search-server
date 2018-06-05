@@ -483,7 +483,7 @@ public class FindWorkTest {
         assertTrue(output.contains("\"offset\":0"));
         assertTrue(output.contains("\"work\":[{\"id\":\"4ff89cf0-86af-11de-90ed-001fc6f176ff\""));
         assertTrue(output.contains("\"type\":\"Opera\""));
-        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"score\":100"));
         assertTrue(output.contains("\"title\":\"Symphony No. 5\""));
         assertTrue(output.contains("\"language\":\"mul\""));
         assertTrue(output.contains("\"iswc-list\":{\"iswc\":[\"T-101779304-1\",\"B-101779304-1\"]}"));
@@ -522,7 +522,7 @@ public class FindWorkTest {
         assertTrue(output.contains("\"offset\":0"));
         assertTrue(output.contains("\"works\":[{\"id\":\"4ff89cf0-86af-11de-90ed-001fc6f176ff\""));
         assertTrue(output.contains("\"type\":\"Opera\""));
-        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"score\":100"));
         assertTrue(output.contains("\"title\":\"Symphony No. 5\""));
         assertTrue(output.contains("\"language\":\"mul\""));
         assertTrue(output.contains("languages\":[\"eng\",\"fra\"]"));

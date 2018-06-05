@@ -201,7 +201,7 @@ public class FindCDStubTest {
 
     assertTrue(output.contains("\"count\":1"));
     assertTrue(output.contains("\"offset\":0,"));
-    assertTrue(output.contains("\"score\":\"100\","));
+    assertTrue(output.contains("\"score\":100,"));
     assertTrue(output.contains("\"id\":\"qA87dKURKperVfmckD5b_xo8BO8-\""));
     assertTrue(output.contains("\"title\":\"Doo Doo First\""));
     assertTrue(output.contains("\"artist\":\"Doo Doo\""));
@@ -227,7 +227,7 @@ public class FindCDStubTest {
     assertTrue(output.contains("cdstubs"));
     assertTrue(output.contains("\"count\":1"));
     assertTrue(output.contains("\"offset\":0,"));
-    assertTrue(output.contains("\"score\":\"100\","));
+    assertTrue(output.contains("\"score\":100,"));
     assertTrue(output.contains("\"id\":\"qA87dKURKperVfmckD5b_xo8BO8-\""));
     assertTrue(output.contains("\"count\":2"));
     assertTrue(output.contains("\"title\":\"Doo Doo First\""));
