@@ -574,7 +574,7 @@ public class FindRecordingTest {
         assertTrue(output.contains("id\":\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
         assertTrue(output.contains("\"count\":1"));
         assertTrue(output.contains("\"offset\":0,"));
-        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"score\":100"));
         assertTrue(output.contains("\"type\":\"Compilation\""));
         assertTrue(output.contains("title\":\"Gravitational Lenz\""));
         assertTrue(output.contains("\"length\":234000"));
@@ -611,7 +611,7 @@ public class FindRecordingTest {
 
         assertTrue(output.contains("recordings"));
         assertTrue(output.contains("id\":\"7ca7782b-a602-448b-b108-bb881a7be2d6\""));
-        assertTrue(output.contains("\"score\":\"100\""));
+        assertTrue(output.contains("\"score\":100"));
         assertTrue(output.contains("title\":\"Gravitational Lenz\""));
         assertTrue(output.contains("\"isrcs\":[{\"id\":\"123456789"));
         assertTrue(output.contains("\"status\":\"Official\""));

@@ -181,7 +181,7 @@ public class FindFreeDBTest  {
 
     assertTrue(output.contains("\"count\":1"));
     assertTrue(output.contains("\"offset\":0,"));
-    assertTrue(output.contains("\"score\":\"100\","));
+    assertTrue(output.contains("\"score\":100,"));
     assertTrue(output.contains("\"id\":\"c20c4b0d\""));
     assertTrue(output.contains("\"title\":\"L\u00e1grimas & Gozos\""));
     assertTrue(output.contains("\"artist\":\"Ska-P\""));
@@ -205,7 +205,7 @@ public class FindFreeDBTest  {
     System.out.println("Json New is" + output);
 
     assertTrue(output.contains("freedb-discs"));
-    assertTrue(output.contains("\"score\":\"100\","));
+    assertTrue(output.contains("\"score\":100,"));
     assertTrue(output.contains("\"id\":\"c20c4b0d\""));
     assertTrue(output.contains("\"title\":\"L\u00e1grimas & Gozos\""));
     assertTrue(output.contains("\"artist\":\"Ska-P\""));

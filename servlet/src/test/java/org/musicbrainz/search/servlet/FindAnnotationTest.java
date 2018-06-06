@@ -320,7 +320,7 @@ public class FindAnnotationTest {
 
     assertTrue(output.contains("\"count\":1"));
     assertTrue(output.contains("\"offset\":0,"));
-    assertTrue(output.contains("\"score\":\"100\","));
+    assertTrue(output.contains("\"score\":100,"));
     assertTrue(output.contains("\"name\":\"Pieds nus sur la braise\""));
     assertTrue(output.contains("\"type\":\"release\""));
     assertTrue(output.contains("\"entity\":\"bdb24cb5-404b-4f60-bba4-7b730325ae47\""));
@@ -342,7 +342,7 @@ public class FindAnnotationTest {
     System.out.println("Json New is" + output);
 
     assertTrue(output.contains("annotations"));
-    assertTrue(output.contains("\"score\":\"100\","));
+    assertTrue(output.contains("\"score\":100,"));
     assertTrue(output.contains("\"name\":\"Pieds nus sur la braise\""));
     assertTrue(output.contains("\"type\":\"release\""));
     assertTrue(output.contains("\"entity\":\"bdb24cb5-404b-4f60-bba4-7b730325ae47\""));

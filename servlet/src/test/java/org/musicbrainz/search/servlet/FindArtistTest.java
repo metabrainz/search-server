@@ -625,8 +625,8 @@ public class FindArtistTest {
         writer.write(pr, res, SearchServerServlet.RESPONSE_JSON);
         pr.close();
         String output = sw.toString();
-        assertTrue(output.contains("\"score\":\"100\""));
-        assertTrue(output.contains("\"score\":\"31\""));
+        assertTrue(output.contains("\"score\":100"));
+        assertTrue(output.contains("\"score\":31"));
     }
 
     /**
