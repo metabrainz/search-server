@@ -483,7 +483,9 @@ public class  ReleaseIndex extends DatabaseIndex {
         String packaging = rs.getString("packaging");
         doc.addFieldOrUnknown(ReleaseIndexField.PACKAGING, packaging);
         if (!Strings.isNullOrEmpty(packaging)) {
-            release.setPackaging(packaging);
+	    Packaging pkg = new Packaging();
+	    pkg.setContent(packaging);
+            release.setPackaging(pkg);
         }
 
         String comment = rs.getString("comment");
