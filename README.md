@@ -1,3 +1,7 @@
+**:warning: Note: This repository has been replaced with [MB Solr](https://github.com/metabrainz/mb-solr) since June 2018, see the [blog post](https://blog.metabrainz.org/2018/06/15/musicbrainz-search-overhaul/).**
+
+----
+
 Search Server Build and Deploy Instructions
 ===========================================
 
